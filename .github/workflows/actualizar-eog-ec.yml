@@ -1,0 +1,199 @@
+name: Actualizar EPG Ecuador
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "17 4,16 * * *"
+      timezone: "America/Guayaquil"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages-epg
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Generar guía EPG
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar este repositorio
+        uses: actions/checkout@v6
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Descargar iptv-org/epg
+        run: |
+          set -euo pipefail
+
+          git clone \
+            --depth 1 \
+            --branch master \
+            https://github.com/iptv-org/epg.git \
+            upstream
+
+      - name: Instalar dependencias
+        working-directory: upstream
+        run: |
+          set -euo pipefail
+          npm ci
+
+      - name: Generar guía EPG de Ecuador
+        working-directory: upstream
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+          TZ: "America/Guayaquil"
+        run: |
+          set -euo pipefail
+
+          mkdir -p ../public
+
+          export CURR_DATE="$(date +'%Y-%m-%d')"
+
+          echo "Zona horaria: ${TZ}"
+          echo "Fecha y hora de Ecuador: $(date '+%Y-%m-%d %H:%M:%S %Z')"
+          echo "Fecha base EPG: ${CURR_DATE}"
+
+          npm run grab --- \
+            --channels=sites/epgshare01.online/epgshare01.online_EC1.channels.xml \
+            --output=../public/ec.xml \
+            --gzip=../public/ec.xml.gz \
+            --days=2 \
+            --maxConnections=1
+
+      - name: Validar guía generada
+        env:
+          TZ: "America/Guayaquil"
+        run: |
+          set -euo pipefail
+
+          test -s public/ec.xml
+          test -s public/ec.xml.gz
+
+          gzip -t public/ec.xml.gz
+
+          grep -q '<tv date="' public/ec.xml
+
+          EXPECTED_DATE="$(date +'%Y%m%d')"
+
+          ACTUAL_DATE="$(
+            python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          xml = Path("public/ec.xml").read_text(
+              encoding="utf-8",
+              errors="replace"
+          )
+
+          match = re.search(r'<tv\s+date="(\d{8})"', xml)
+
+          print(match.group(1) if match else "")
+          PY
+          )"
+
+          echo "Fecha esperada: ${EXPECTED_DATE}"
+          echo "Fecha encontrada: ${ACTUAL_DATE}"
+
+          if [ -z "${ACTUAL_DATE}" ]; then
+            echo "::error::No se encontró el atributo date en ec.xml."
+            exit 1
+          fi
+
+          if [ "${ACTUAL_DATE}" != "${EXPECTED_DATE}" ]; then
+            echo "::error::La fecha del EPG no coincide con la fecha de Ecuador."
+            exit 1
+          fi
+
+          echo "La fecha inicial del EPG es correcta."
+
+          echo "Tamaño XML:"
+          du -h public/ec.xml
+
+          echo "Tamaño XML comprimido:"
+          du -h public/ec.xml.gz
+
+          echo "Canales encontrados:"
+          grep -o '<channel ' public/ec.xml | wc -l || true
+
+          echo "Programas encontrados:"
+          grep -o '<programme ' public/ec.xml | wc -l || true
+
+      - name: Crear página informativa
+        env:
+          TZ: "America/Guayaquil"
+        run: |
+          set -euo pipefail
+
+          touch public/.nojekyll
+
+          UPDATED="$(date '+%Y-%m-%d %H:%M:%S')"
+          EPG_DATE="$(date '+%Y-%m-%d')"
+
+          cat > public/index.html <<HTML
+          <!doctype html>
+          <html lang="es">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>EPG Ecuador</title>
+          </head>
+          <body>
+            <h1>EPG Ecuador</h1>
+
+            <p>
+              Guía XMLTV generada automáticamente mediante GitHub Actions.
+            </p>
+
+            <p>
+              <a href="./ec.xml">Descargar ec.xml</a>
+            </p>
+
+            <p>
+              <a href="./ec.xml.gz">Descargar ec.xml.gz</a>
+            </p>
+
+            <p>URL recomendada para reproductores:</p>
+
+            <p>
+              <code>https://mrgmaw.github.io/epg/ec.xml.gz</code>
+            </p>
+
+            <p>Fecha inicial de la guía: ${EPG_DATE}</p>
+
+            <p>
+              Última generación: ${UPDATED}, hora de Ecuador.
+            </p>
+          </body>
+          </html>
+          HTML
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Preparar archivos para GitHub Pages
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: public
+
+  deploy:
+    name: Publicar en GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Publicar guía
+        id: deployment
+        uses: actions/deploy-pages@v4
