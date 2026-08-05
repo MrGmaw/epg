@@ -1,16 +1,18 @@
 {
-  "generated_at": "2026-08-05T10:08:48.722313-05:00",
+  "generated_at": "2026-08-05T16:07:50.567310-05:00",
   "base_date": "2026-08-05",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
     "teleamazonas": "https://www.teleamazonas.com/programacion/",
-    "ecuavisa_internacional": "https://www.gatotv.com/canal/ecuavisa_internacional"
+    "ecuavisa_internacional": "https://www.gatotv.com/canal/ecuavisa_internacional",
+    "tvc": "https://www.tvc.com.ec/programacion/"
   },
   "ecuavisa_internacional_days": 4,
-  "channels": 93,
-  "programmes": 10642,
+  "channels": 94,
+  "programmes": 10795,
   "teleamazonas_quito": 209,
-  "teleamazonas_guayaquil": 209,
+  "teleamazonas_guayaquil": 208,
   "ecuavisa": 50,
-  "ecuavisa_internacional": 71
+  "ecuavisa_internacional": 71,
+  "tvc": 154
 }
