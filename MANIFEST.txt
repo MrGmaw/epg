@@ -1,0 +1,21 @@
+EPG GitHub Ecuador — paquete completo con TVC
+
+ARCHIVO PRINCIPAL DEL WORKFLOW:
+- .github/workflows/actualizar-epg.yml
+
+OTROS ARCHIVOS:
+- scripts/build_epg.py
+- requirements.txt
+- README.md
+- .gitignore
+- MANIFEST.txt
+- IMPORTANTE-ANDROID.txt
+
+FUENTES ACTIVAS:
+- EPGShare EC1 como guía base y fuente de Ecuavisa nacional.
+- Parrilla oficial de Teleamazonas Quito y Guayaquil.
+- GatoTV para Ecuavisa Internacional.
+- Página oficial de TVC para TVC.ec.
+
+No se añade Oromar TV en esta edición.
+No se requiere Playwright, Chromium ni Selenium.
