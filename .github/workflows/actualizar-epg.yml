@@ -21,36 +21,19 @@ concurrency:
 
 jobs:
   build:
-    name: Generar guía EPG
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Descargar este repositorio
-        uses: actions/checkout@v6
-
-      - name: Configurar Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-
-      - name: Descargar iptv-org/epg
-        run: |
-          git clone \
-            --depth 1 \
-            --branch master \
-            https://github.com/iptv-org/epg.git \
-            upstream
-
-      - name: Instalar dependencias
-        working-directory: upstream
-        run: npm ci
-
-      - name: Generar guía EPG de Ecuador
+          - name: Generar guía EPG de Ecuador
         working-directory: upstream
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
+          TZ: "America/Guayaquil"
         run: |
           mkdir -p ../public
+
+          # Establecer explícitamente la fecha actual de Ecuador.
+          export CURR_DATE="$(TZ=America/Guayaquil date +'%Y-%m-%d')"
+
+          echo "Zona horaria: ${TZ}"
+          echo "Fecha base EPG: ${CURR_DATE}"
 
           npm run grab --- \
             --channels=sites/epgshare01.online/epgshare01.online_EC1.channels.xml \
