@@ -1,1 +1,346 @@
+name: Actualizar EPG Ecuador
 
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "17 4,16 * * *"
+      timezone: "America/Guayaquil"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages-epg
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Generar guía EPG
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar este repositorio
+        uses: actions/checkout@v6
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Descargar iptv-org/epg
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git clone \
+            --depth 1 \
+            --branch master \
+            https://github.com/iptv-org/epg.git \
+            upstream
+
+      - name: Instalar dependencias
+        working-directory: upstream
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+
+      - name: Generar guía EPG de Ecuador
+        working-directory: upstream
+        shell: bash
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+          TZ: "America/Guayaquil"
+        run: |
+          set -euo pipefail
+
+          mkdir -p ../public
+
+          # Fuerza la fecha de Ecuador, aunque UTC ya esté
+          # en el día siguiente.
+          CURR_DATE="$(date +'%Y-%m-%d')"
+          export CURR_DATE
+
+          # Conserva la misma fecha para los pasos posteriores.
+          echo "EPG_DATE_ISO=${CURR_DATE}" >> "${GITHUB_ENV}"
+          echo "EPG_DATE_COMPACT=${CURR_DATE//-/}" >> "${GITHUB_ENV}"
+
+          echo "Zona horaria: ${TZ}"
+          echo "Fecha y hora de Ecuador: $(date '+%Y-%m-%d %H:%M:%S %Z')"
+          echo "Fecha base EPG: ${CURR_DATE}"
+
+          npm run grab --- \
+            --channels=sites/epgshare01.online/epgshare01.online_EC1.channels.xml \
+            --output=../public/ec.xml \
+            --gzip=../public/ec.xml.gz \
+            --days=2 \
+            --maxConnections=1
+
+      - name: Normalizar XMLTV para máxima compatibilidad
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          xml_path = Path("public/ec.xml")
+
+          xml = xml_path.read_text(
+              encoding="utf-8-sig",
+              errors="strict",
+          )
+
+          # Elimina la declaración XML existente,
+          # aunque esté unida directamente a <tv>.
+          xml = re.sub(
+              r"^\s*<\?xml[^>]*\?>\s*",
+              "",
+              xml,
+              count=1,
+              flags=re.IGNORECASE,
+          )
+
+          # Elimina un DOCTYPE previo para evitar duplicados.
+          xml = re.sub(
+              r'''^\s*<!DOCTYPE\s+tv(?:\s+SYSTEM\s+(?:"[^"]*"|'[^']*'))?\s*>\s*''',
+              "",
+              xml,
+              count=1,
+              flags=re.IGNORECASE,
+          )
+
+          xml = xml.lstrip()
+
+          if not re.match(r"<tv(?:\s|>)", xml):
+              raise RuntimeError(
+                  "El archivo generado no comienza con <tv>."
+              )
+
+          header = (
+              '<?xml version="1.0" encoding="UTF-8"?>\n'
+              '<!DOCTYPE tv SYSTEM "xmltv.dtd">\n'
+          )
+
+          xml_path.write_text(
+              header + xml,
+              encoding="utf-8",
+              newline="\n",
+          )
+
+          print("Cabecera XMLTV normalizada correctamente.")
+          PY
+
+          # Descarga el DTD oficial de XMLTV.
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --location \
+            --retry 3 \
+            https://raw.githubusercontent.com/XMLTV/xmltv/master/xmltv.dtd \
+            --output public/xmltv.dtd
+
+          test -s public/xmltv.dtd
+
+          # Reemplaza el GZIP original con el XML ya normalizado.
+          gzip -9 -n -c public/ec.xml > public/ec.xml.gz.tmp
+          mv public/ec.xml.gz.tmp public/ec.xml.gz
+
+          echo "Cabecera resultante:"
+          head -n 3 public/ec.xml
+
+      - name: Validar guía generada
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -s public/ec.xml
+          test -s public/ec.xml.gz
+          test -s public/xmltv.dtd
+
+          # Comprueba que el archivo comprimido no esté dañado.
+          gzip -t public/ec.xml.gz
+
+          FIRST_LINE="$(sed -n '1p' public/ec.xml)"
+          SECOND_LINE="$(sed -n '2p' public/ec.xml)"
+          THIRD_LINE="$(sed -n '3p' public/ec.xml)"
+
+          test "${FIRST_LINE}" = \
+            '<?xml version="1.0" encoding="UTF-8"?>'
+
+          test "${SECOND_LINE}" = \
+            '<!DOCTYPE tv SYSTEM "xmltv.dtd">'
+
+          printf '%s\n' "${THIRD_LINE}" |
+            grep -q '^<tv date="[0-9]\{8\}"'
+
+          # Comprueba que el documento XML esté bien formado.
+          python3 -c \
+            'import xml.etree.ElementTree as ET; ET.parse("public/ec.xml")'
+
+          # Extrae la fecha de la etiqueta <tv>.
+          ACTUAL_DATE="$(
+            python3 -c '
+          import re
+          from pathlib import Path
+
+          xml = Path("public/ec.xml").read_text(encoding="utf-8")
+          match = re.search(r"<tv\s+date=\"(\d{8})\"", xml)
+          print(match.group(1) if match else "")
+          '
+          )"
+
+          echo "Fecha esperada: ${EPG_DATE_COMPACT}"
+          echo "Fecha encontrada: ${ACTUAL_DATE}"
+
+          if [ -z "${ACTUAL_DATE}" ]; then
+            echo "::error::No se encontró el atributo date en ec.xml."
+            exit 1
+          fi
+
+          if [ "${ACTUAL_DATE}" != "${EPG_DATE_COMPACT}" ]; then
+            echo "::error::La fecha del EPG no coincide con la fecha usada al generarlo."
+            exit 1
+          fi
+
+          CHANNELS="$(
+            grep -o '<channel ' public/ec.xml |
+              wc -l |
+              tr -d ' '
+          )"
+
+          PROGRAMMES="$(
+            grep -o '<programme ' public/ec.xml |
+              wc -l |
+              tr -d ' '
+          )"
+
+          if [ "${CHANNELS}" -eq 0 ]; then
+            echo "::error::La guía no contiene canales."
+            exit 1
+          fi
+
+          if [ "${PROGRAMMES}" -eq 0 ]; then
+            echo "::error::La guía no contiene programas."
+            exit 1
+          fi
+
+          echo "Canales encontrados: ${CHANNELS}"
+          echo "Programas encontrados: ${PROGRAMMES}"
+          echo "Tamaño XML: $(du -h public/ec.xml | cut -f1)"
+          echo "Tamaño GZIP: $(du -h public/ec.xml.gz | cut -f1)"
+          echo "Validación completada correctamente."
+
+      - name: Crear página informativa
+        shell: bash
+        env:
+          TZ: "America/Guayaquil"
+        run: |
+          set -euo pipefail
+
+          touch public/.nojekyll
+
+          UPDATED="$(date '+%Y-%m-%d %H:%M:%S')"
+
+          cat > public/index.html <<HTML
+          <!doctype html>
+          <html lang="es">
+          <head>
+            <meta charset="utf-8">
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1"
+            >
+            <title>EPG Ecuador</title>
+
+            <style>
+              body {
+                max-width: 760px;
+                margin: 50px auto;
+                padding: 0 20px;
+                font-family: system-ui, sans-serif;
+                line-height: 1.6;
+              }
+
+              a {
+                display: block;
+                margin: 14px 0;
+                font-size: 1.1rem;
+              }
+
+              code {
+                overflow-wrap: anywhere;
+              }
+            </style>
+          </head>
+
+          <body>
+            <h1>EPG Ecuador</h1>
+
+            <p>
+              Guía electrónica de programación en formato XMLTV,
+              generada automáticamente mediante GitHub Actions.
+            </p>
+
+            <h2>Archivos disponibles</h2>
+
+            <a href="./ec.xml">
+              Descargar ec.xml
+            </a>
+
+            <a href="./ec.xml.gz">
+              Descargar ec.xml.gz
+            </a>
+
+            <a href="./xmltv.dtd">
+              Descargar xmltv.dtd
+            </a>
+
+            <h2>URL recomendada</h2>
+
+            <p>
+              <code>
+                https://mrgmaw.github.io/epg/ec.xml.gz
+              </code>
+            </p>
+
+            <p>
+              Fecha inicial de la guía:
+              <strong>${EPG_DATE_ISO}</strong>
+            </p>
+
+            <p>
+              Última generación:
+              <strong>${UPDATED}</strong>,
+              hora de Ecuador.
+            </p>
+          </body>
+          </html>
+          HTML
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Preparar archivos para GitHub Pages
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: public
+
+  deploy:
+    name: Publicar en GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Publicar guía
+        id: deployment
+        uses: actions/deploy-pages@v4
