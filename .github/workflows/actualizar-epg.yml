@@ -1,10 +1,10 @@
 name: Actualizar EPG Ecuador
 
 on:
-  # Permite ejecutar el proceso manualmente desde la pestaña Actions.
+  # Permite ejecutar el proceso manualmente desde Actions.
   workflow_dispatch:
 
-  # Ejecuta la actualización dos veces al día:
+  # Actualización automática dos veces al día:
   # 04:17 y 16:17, hora de Ecuador continental.
   schedule:
     - cron: "17 4,16 * * *"
@@ -21,19 +21,52 @@ concurrency:
 
 jobs:
   build:
-          - name: Generar guía EPG de Ecuador
+    name: Generar guía EPG
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar este repositorio
+        uses: actions/checkout@v6
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Descargar iptv-org/epg
+        run: |
+          set -euo pipefail
+
+          git clone \
+            --depth 1 \
+            --branch master \
+            https://github.com/iptv-org/epg.git \
+            upstream
+
+      - name: Instalar dependencias
+        working-directory: upstream
+        run: |
+          set -euo pipefail
+          npm ci
+
+      - name: Generar guía EPG de Ecuador
         working-directory: upstream
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
           TZ: "America/Guayaquil"
         run: |
+          set -euo pipefail
+
           mkdir -p ../public
 
-          # Establecer explícitamente la fecha actual de Ecuador.
+          # Fecha actual de Ecuador, aunque en UTC ya sea el día siguiente.
           export CURR_DATE="$(TZ=America/Guayaquil date +'%Y-%m-%d')"
 
           echo "Zona horaria: ${TZ}"
-          echo "Fecha base EPG: ${CURR_DATE}"
+          echo "Fecha y hora de Ecuador:"
+          TZ=America/Guayaquil date '+%Y-%m-%d %H:%M:%S %Z'
+
+          echo "Fecha base utilizada por el EPG: ${CURR_DATE}"
 
           npm run grab --- \
             --channels=sites/epgshare01.online/epgshare01.online_EC1.channels.xml \
@@ -42,12 +75,47 @@ jobs:
             --days=2 \
             --maxConnections=1
 
-      - name: Comprobar archivos generados
+      - name: Comprobar archivos y fecha generada
+        env:
+          TZ: "America/Guayaquil"
         run: |
+          set -euo pipefail
+
+          # Comprobar que los archivos existen y no están vacíos.
           test -s public/ec.xml
           test -s public/ec.xml.gz
+
+          # Comprobar que el archivo GZIP no está dañado.
           gzip -t public/ec.xml.gz
-          grep -q "<tv" public/ec.xml
+
+          # Comprobar que existe la etiqueta principal XMLTV.
+          grep -q '<tv date="' public/ec.xml
+
+          # Fecha que debería aparecer en el encabezado.
+          EXPECTED_DATE="$(TZ=America/Guayaquil date +'%Y%m%d')"
+
+          # Extraer la fecha del encabezado:
+          # <tv date="20260804">
+          ACTUAL_DATE="$(
+            sed -n 's/.*<tv date="[0-9]\{8\}".*/\1/p' \
+              public/ec.xml |
+              head -n 1
+          )"
+
+          echo "Fecha esperada: ${EXPECTED_DATE}"
+          echo "Fecha encontrada: ${ACTUAL_DATE}"
+
+          if [ -z "${ACTUAL_DATE}" ]; then
+            echo "::error::No se pudo encontrar el atributo date en ec.xml."
+            exit 1
+          fi
+
+          if [ "${ACTUAL_DATE}" != "${EXPECTED_DATE}" ]; then
+            echo "::error::La fecha del EPG no coincide con la fecha de Ecuador."
+            exit 1
+          fi
+
+          echo "La fecha del EPG es correcta."
 
           echo "Tamaño XML:"
           du -h public/ec.xml
@@ -56,16 +124,21 @@ jobs:
           du -h public/ec.xml.gz
 
           echo "Canales encontrados:"
-          grep -c "<channel " public/ec.xml || true
+          grep -o '<channel ' public/ec.xml | wc -l || true
 
           echo "Programas encontrados:"
-          grep -c "<programme " public/ec.xml || true
+          grep -o '<programme ' public/ec.xml | wc -l || true
 
       - name: Crear página informativa
+        env:
+          TZ: "America/Guayaquil"
         run: |
+          set -euo pipefail
+
           touch public/.nojekyll
 
           UPDATED="$(TZ=America/Guayaquil date '+%Y-%m-%d %H:%M:%S')"
+          EPG_DATE="$(TZ=America/Guayaquil date '+%Y-%m-%d')"
 
           cat > public/index.html <<HTML
           <!doctype html>
@@ -74,6 +147,7 @@ jobs:
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>EPG Ecuador</title>
+
             <style>
               body {
                 max-width: 760px;
@@ -82,58 +156,23 @@ jobs:
                 font-family: system-ui, sans-serif;
                 line-height: 1.6;
               }
+
               a {
                 display: block;
                 margin: 14px 0;
                 font-size: 1.1rem;
               }
+
               code {
                 overflow-wrap: anywhere;
               }
             </style>
           </head>
+
           <body>
             <h1>EPG Ecuador</h1>
 
             <p>
               Guía electrónica de programación en formato XMLTV,
               generada automáticamente mediante GitHub Actions.
-            </p>
-
-            <h2>Archivos disponibles</h2>
-
-            <a href="./ec.xml">Descargar ec.xml</a>
-            <a href="./ec.xml.gz">Descargar ec.xml.gz</a>
-
-            <h2>URL recomendada para reproductores</h2>
-
-            <p>
-              <code>https://mrgmaw.github.io/epg/ec.xml.gz</code>
-            </p>
-
-            <p>Última generación: ${UPDATED}, hora de Ecuador.</p>
-          </body>
-          </html>
-          HTML
-
-      - name: Configurar GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Preparar archivos para GitHub Pages
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: public
-
-  deploy:
-    name: Publicar en GitHub Pages
-    needs: build
-    runs-on: ubuntu-latest
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Publicar guía
-        id: deployment
-        uses: actions/deploy-pages@v4
+            </
