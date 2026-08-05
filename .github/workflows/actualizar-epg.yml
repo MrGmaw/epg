@@ -1,0 +1,156 @@
+name: Actualizar EPG Ecuador
+
+on:
+  # Permite ejecutar el proceso manualmente desde la pestaña Actions.
+  workflow_dispatch:
+
+  # Ejecuta la actualización dos veces al día:
+  # 04:17 y 16:17, hora de Ecuador continental.
+  schedule:
+    - cron: "17 4,16 * * *"
+      timezone: "America/Guayaquil"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "github-pages-epg"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Generar guía EPG
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar este repositorio
+        uses: actions/checkout@v6
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Descargar iptv-org/epg
+        run: |
+          git clone \
+            --depth 1 \
+            --branch master \
+            https://github.com/iptv-org/epg.git \
+            upstream
+
+      - name: Instalar dependencias
+        working-directory: upstream
+        run: npm ci
+
+      - name: Generar guía EPG de Ecuador
+        working-directory: upstream
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+        run: |
+          mkdir -p ../public
+
+          npm run grab --- \
+            --channels=sites/epgshare01.online/epgshare01.online_EC1.channels.xml \
+            --output=../public/ec.xml \
+            --gzip=../public/ec.xml.gz \
+            --days=2 \
+            --maxConnections=1
+
+      - name: Comprobar archivos generados
+        run: |
+          test -s public/ec.xml
+          test -s public/ec.xml.gz
+          gzip -t public/ec.xml.gz
+          grep -q "<tv" public/ec.xml
+
+          echo "Tamaño XML:"
+          du -h public/ec.xml
+
+          echo "Tamaño XML comprimido:"
+          du -h public/ec.xml.gz
+
+          echo "Canales encontrados:"
+          grep -c "<channel " public/ec.xml || true
+
+          echo "Programas encontrados:"
+          grep -c "<programme " public/ec.xml || true
+
+      - name: Crear página informativa
+        run: |
+          touch public/.nojekyll
+
+          UPDATED="$(TZ=America/Guayaquil date '+%Y-%m-%d %H:%M:%S')"
+
+          cat > public/index.html <<HTML
+          <!doctype html>
+          <html lang="es">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>EPG Ecuador</title>
+            <style>
+              body {
+                max-width: 760px;
+                margin: 50px auto;
+                padding: 0 20px;
+                font-family: system-ui, sans-serif;
+                line-height: 1.6;
+              }
+              a {
+                display: block;
+                margin: 14px 0;
+                font-size: 1.1rem;
+              }
+              code {
+                overflow-wrap: anywhere;
+              }
+            </style>
+          </head>
+          <body>
+            <h1>EPG Ecuador</h1>
+
+            <p>
+              Guía electrónica de programación en formato XMLTV,
+              generada automáticamente mediante GitHub Actions.
+            </p>
+
+            <h2>Archivos disponibles</h2>
+
+            <a href="./ec.xml">Descargar ec.xml</a>
+            <a href="./ec.xml.gz">Descargar ec.xml.gz</a>
+
+            <h2>URL recomendada para reproductores</h2>
+
+            <p>
+              <code>https://mrgmaw.github.io/epg/ec.xml.gz</code>
+            </p>
+
+            <p>Última generación: ${UPDATED}, hora de Ecuador.</p>
+          </body>
+          </html>
+          HTML
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Preparar archivos para GitHub Pages
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: public
+
+  deploy:
+    name: Publicar en GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Publicar guía
+        id: deployment
+        uses: actions/deploy-pages@v4
