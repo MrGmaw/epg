@@ -68,6 +68,81 @@ jobs:
             --gzip=../public/ec.xml.gz \
             --days=2 \
             --maxConnections=1
+      - name: Normalizar XMLTV para GSE Smart IPTV
+        working-directory: upstream
+        run: |
+          set -euo pipefail
+
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          xml_path = Path("../public/ec.xml")
+
+          xml = xml_path.read_text(
+              encoding="utf-8-sig",
+              errors="strict"
+          )
+
+          # Eliminar la declaración XML existente, aunque esté
+          # pegada directamente a la etiqueta <tv>.
+          xml = re.sub(
+              r'^\s*<\?xml[^>]*\?>\s*',
+              '',
+              xml,
+              count=1,
+              flags=re.IGNORECASE
+          )
+
+          # Eliminar un DOCTYPE anterior para evitar duplicados.
+          xml = re.sub(
+              r"""^\s*<!DOCTYPE\s+tv(?:\s+SYSTEM\s+(?:"[^"]*"|'[^']*'))?\s*>\s*""",
+              '',
+              xml,
+              count=1,
+              flags=re.IGNORECASE
+          )
+
+          xml = xml.lstrip()
+
+          if not re.match(r'<tv(?:\s|>)', xml):
+              raise RuntimeError(
+                  "El archivo generado no comienza con la etiqueta <tv>."
+              )
+
+          header = (
+              '<?xml version="1.0" encoding="UTF-8"?>\n'
+              '<!DOCTYPE tv SYSTEM "xmltv.dtd">\n'
+          )
+
+          xml_path.write_text(
+              header + xml,
+              encoding="utf-8",
+              newline="\n"
+          )
+
+          print("Cabecera XMLTV normalizada correctamente.")
+          PY
+
+          # Publicar una copia local del DTD.
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --location \
+            --retry 3 \
+            https://raw.githubusercontent.com/XMLTV/xmltv/master/xmltv.dtd \
+            --output ../public/xmltv.dtd
+
+          test -s ../public/xmltv.dtd
+
+          # Volver a comprimir el XML ya corregido.
+          # Es indispensable reemplazar el GZIP anterior.
+          gzip -9 -n -c ../public/ec.xml > ../public/ec.xml.gz
+
+          echo "Cabecera resultante:"
+          head -n 3 ../public/ec.xml
+
 
       - name: Validar guía generada
         env:
@@ -79,6 +154,21 @@ jobs:
           test -s public/ec.xml.gz
 
           gzip -t public/ec.xml.gz
+
+          test -s public/xmltv.dtd
+
+          grep -Fxq \
+            '<?xml version="1.0" encoding="UTF-8"?>' \
+            <(sed -n '1p' public/ec.xml)
+
+          grep -Fxq \
+            '<!DOCTYPE tv SYSTEM "xmltv.dtd">' \
+            <(sed -n '2p' public/ec.xml)
+
+          grep -q '^<tv date="' public/ec.xml
+
+          echo "Primeras líneas del archivo:"
+          head -n 3 public/ec.xml
 
           grep -q '<tv date="' public/ec.xml
 
