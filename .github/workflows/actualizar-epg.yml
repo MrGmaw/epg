@@ -1,1 +1,606 @@
+name: Actualizar EPG Ecuador
 
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "17 4,16 * * *"
+      timezone: "America/Guayaquil"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages-epg
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Preparar EPG Ecuador
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Descargar este repositorio
+        uses: actions/checkout@v6
+
+      - name: Crear directorios
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p work
+          mkdir -p public
+
+      - name: Descargar EPGShare EC1 original
+        shell: bash
+        env:
+          SOURCE_URL: "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz"
+        run: |
+          set -euo pipefail
+
+          curl \
+            --fail \
+            --location \
+            --silent \
+            --show-error \
+            --retry 4 \
+            --retry-all-errors \
+            --retry-delay 5 \
+            --connect-timeout 30 \
+            --max-time 180 \
+            --user-agent "MrGmaw-EPG-Mirror/1.0" \
+            "${SOURCE_URL}" \
+            --output work/ec-source.xml.gz
+
+          test -s work/ec-source.xml.gz
+
+          gzip -t work/ec-source.xml.gz
+
+          gzip -dc work/ec-source.xml.gz \
+            > work/ec-source.xml
+
+          test -s work/ec-source.xml
+
+          echo "Fuente EC1 descargada correctamente."
+
+          echo "Tamaño original GZIP:"
+          du -h work/ec-source.xml.gz
+
+          echo "Tamaño original XML:"
+          du -h work/ec-source.xml
+
+      - name: Cambiar únicamente la cabecera XMLTV
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 - <<'PY'
+          import hashlib
+          import re
+          from pathlib import Path
+
+          source_path = Path("work/ec-source.xml")
+          output_path = Path("public/ec.xml")
+          hash_path = Path("work/source-payload.sha256")
+
+          source = source_path.read_bytes()
+
+          # Eliminar BOM UTF-8 si la fuente lo contiene.
+          if source.startswith(b"\xef\xbb\xbf"):
+              source = source[3:]
+
+          root_match = re.search(
+              br"<tv\b[^>]*>",
+              source,
+              flags=re.IGNORECASE,
+          )
+
+          if root_match is None:
+              raise RuntimeError(
+                  "No se encontró la etiqueta inicial <tv> "
+                  "en el archivo de EPGShare."
+              )
+
+          # Todo lo que se encuentra dentro de <tv> se conserva.
+          # No se analizan ni reconstruyen canales o programas.
+          payload = source[root_match.end():].lstrip(
+              b" \t\r\n"
+          )
+
+          if b"</tv>" not in payload.lower():
+              raise RuntimeError(
+                  "La fuente no contiene la etiqueta final </tv>."
+              )
+
+          exact_header = (
+              b'<?xml version="1.0" encoding="UTF-8"?>\n'
+              b'<!DOCTYPE tv SYSTEM "xmltv.dtd">\n'
+              b'\n'
+              b'<tv generator-info-name="none" '
+              b'generator-info-url="none">\n'
+          )
+
+          output_path.write_bytes(
+              exact_header + payload
+          )
+
+          payload_hash = hashlib.sha256(
+              payload
+          ).hexdigest()
+
+          hash_path.write_text(
+              payload_hash + "\n",
+              encoding="ascii",
+          )
+
+          print("Cabecera sustituida correctamente.")
+          print(
+              "SHA-256 del contenido preservado:",
+              payload_hash,
+          )
+          PY
+
+          echo "Cabecera resultante:"
+          sed -n '1,4p' public/ec.xml
+
+      - name: Verificar que no se eliminaron datos
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 - <<'PY'
+          import hashlib
+          import re
+          from pathlib import Path
+
+          source = Path(
+              "work/ec-source.xml"
+          ).read_bytes()
+
+          output = Path(
+              "public/ec.xml"
+          ).read_bytes()
+
+          if source.startswith(b"\xef\xbb\xbf"):
+              source = source[3:]
+
+          source_root = re.search(
+              br"<tv\b[^>]*>",
+              source,
+              flags=re.IGNORECASE,
+          )
+
+          output_root = re.search(
+              br"<tv\b[^>]*>",
+              output,
+              flags=re.IGNORECASE,
+          )
+
+          if source_root is None:
+              raise RuntimeError(
+                  "No se encontró <tv> en la fuente."
+              )
+
+          if output_root is None:
+              raise RuntimeError(
+                  "No se encontró <tv> en el archivo generado."
+              )
+
+          source_payload = source[
+              source_root.end():
+          ].lstrip(b" \t\r\n")
+
+          output_payload = output[
+              output_root.end():
+          ].lstrip(b" \t\r\n")
+
+          if source_payload != output_payload:
+              raise RuntimeError(
+                  "El contenido interno del XML fue modificado."
+              )
+
+          expected_hash = Path(
+              "work/source-payload.sha256"
+          ).read_text(
+              encoding="ascii"
+          ).strip()
+
+          actual_hash = hashlib.sha256(
+              output_payload
+          ).hexdigest()
+
+          if actual_hash != expected_hash:
+              raise RuntimeError(
+                  "El hash del contenido publicado "
+                  "no coincide con el original."
+              )
+
+          print(
+              "Todos los canales, programas, elementos "
+              "y atributos fueron preservados."
+          )
+
+          print(
+              "SHA-256 confirmado:",
+              actual_hash,
+          )
+          PY
+
+      - name: Descargar DTD oficial de XMLTV
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          curl \
+            --fail \
+            --location \
+            --silent \
+            --show-error \
+            --retry 4 \
+            --retry-all-errors \
+            --retry-delay 5 \
+            --connect-timeout 30 \
+            --max-time 120 \
+            https://raw.githubusercontent.com/XMLTV/xmltv/master/xmltv.dtd \
+            --output public/xmltv.dtd
+
+          test -s public/xmltv.dtd
+
+          echo "xmltv.dtd descargado correctamente."
+
+      - name: Validar cabecera exacta
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -s public/ec.xml
+          test -s public/xmltv.dtd
+
+          FIRST_LINE="$(sed -n '1p' public/ec.xml)"
+          SECOND_LINE="$(sed -n '2p' public/ec.xml)"
+          THIRD_LINE="$(sed -n '3p' public/ec.xml)"
+          FOURTH_LINE="$(sed -n '4p' public/ec.xml)"
+
+          EXPECTED_FIRST='<?xml version="1.0" encoding="UTF-8"?>'
+
+          EXPECTED_SECOND='<!DOCTYPE tv SYSTEM "xmltv.dtd">'
+
+          EXPECTED_FOURTH='<tv generator-info-name="none" generator-info-url="none">'
+
+          if [ "${FIRST_LINE}" != "${EXPECTED_FIRST}" ]; then
+            echo "::error::La primera línea es incorrecta."
+            echo "Esperada: ${EXPECTED_FIRST}"
+            echo "Obtenida: ${FIRST_LINE}"
+            exit 1
+          fi
+
+          if [ "${SECOND_LINE}" != "${EXPECTED_SECOND}" ]; then
+            echo "::error::La segunda línea es incorrecta."
+            echo "Esperada: ${EXPECTED_SECOND}"
+            echo "Obtenida: ${SECOND_LINE}"
+            exit 1
+          fi
+
+          if [ -n "${THIRD_LINE}" ]; then
+            echo "::error::La tercera línea debe estar vacía."
+            echo "Obtenida: ${THIRD_LINE}"
+            exit 1
+          fi
+
+          if [ "${FOURTH_LINE}" != "${EXPECTED_FOURTH}" ]; then
+            echo "::error::La etiqueta inicial <tv> es incorrecta."
+            echo "Esperada: ${EXPECTED_FOURTH}"
+            echo "Obtenida: ${FOURTH_LINE}"
+            exit 1
+          fi
+
+          echo "Cabecera exacta confirmada:"
+          sed -n '1,4p' public/ec.xml
+
+      - name: Validar estructura y mostrar estadísticas
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          xml_path = Path("public/ec.xml")
+
+          root = ET.parse(
+              xml_path
+          ).getroot()
+
+          expected_attributes = {
+              "generator-info-name": "none",
+              "generator-info-url": "none",
+          }
+
+          if root.tag != "tv":
+              raise RuntimeError(
+                  f"La etiqueta raíz es {root.tag!r}."
+              )
+
+          if root.attrib != expected_attributes:
+              raise RuntimeError(
+                  "Los atributos de <tv> no coinciden: "
+                  f"{root.attrib!r}"
+              )
+
+          channels = root.findall("channel")
+          programmes = root.findall("programme")
+
+          if not channels:
+              raise RuntimeError(
+                  "La guía no contiene canales."
+              )
+
+          if not programmes:
+              raise RuntimeError(
+                  "La guía no contiene programaciones."
+              )
+
+          for channel in channels:
+              channel_id = channel.get("id")
+
+              if not channel_id:
+                  raise RuntimeError(
+                      "Existe un canal sin atributo id."
+                  )
+
+              if channel.find("display-name") is None:
+                  raise RuntimeError(
+                      f"El canal {channel_id!r} "
+                      "no contiene display-name."
+                  )
+
+          for programme in programmes:
+              if not programme.get("start"):
+                  raise RuntimeError(
+                      "Existe una programación sin start."
+                  )
+
+              if not programme.get("channel"):
+                  raise RuntimeError(
+                      "Existe una programación sin channel."
+                  )
+
+              if programme.find("title") is None:
+                  raise RuntimeError(
+                      "Existe una programación sin title."
+                  )
+
+          channel_display_names = sum(
+              len(channel.findall("display-name"))
+              for channel in channels
+          )
+
+          channel_icons = sum(
+              len(channel.findall("icon"))
+              for channel in channels
+          )
+
+          channel_urls = sum(
+              len(channel.findall("url"))
+              for channel in channels
+          )
+
+          programme_icons = sum(
+              len(programme.findall("icon"))
+              for programme in programmes
+          )
+
+          episode_numbers = sum(
+              len(programme.findall("episode-num"))
+              for programme in programmes
+          )
+
+          descriptions = sum(
+              len(programme.findall("desc"))
+              for programme in programmes
+          )
+
+          categories = sum(
+              len(programme.findall("category"))
+              for programme in programmes
+          )
+
+          subtitles = sum(
+              len(programme.findall("sub-title"))
+              for programme in programmes
+          )
+
+          programme_urls = sum(
+              len(programme.findall("url"))
+              for programme in programmes
+          )
+
+          print(f"Canales: {len(channels)}")
+
+          print(
+              "Nombres de canal:",
+              channel_display_names,
+          )
+
+          print(
+              "Iconos de canal:",
+              channel_icons,
+          )
+
+          print(
+              "URLs de canal:",
+              channel_urls,
+          )
+
+          print(
+              "Programaciones:",
+              len(programmes),
+          )
+
+          print(
+              "Subtítulos o nombres de episodio:",
+              subtitles,
+          )
+
+          print(
+              "Números de episodio:",
+              episode_numbers,
+          )
+
+          print(
+              "Descripciones:",
+              descriptions,
+          )
+
+          print(
+              "Categorías:",
+              categories,
+          )
+
+          print(
+              "Iconos de programación:",
+              programme_icons,
+          )
+
+          print(
+              "URLs de programación:",
+              programme_urls,
+          )
+
+          print("XMLTV válido.")
+          PY
+
+      - name: Crear ec.xml.gz definitivo
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          gzip -9 -n -c public/ec.xml \
+            > public/ec.xml.gz.tmp
+
+          mv \
+            public/ec.xml.gz.tmp \
+            public/ec.xml.gz
+
+          test -s public/ec.xml.gz
+
+          gzip -t public/ec.xml.gz
+
+          cmp \
+            public/ec.xml \
+            <(gzip -dc public/ec.xml.gz)
+
+          echo "Tamaño final XML:"
+          du -h public/ec.xml
+
+          echo "Tamaño final GZIP:"
+          du -h public/ec.xml.gz
+
+      - name: Crear página informativa
+        shell: bash
+        env:
+          TZ: "America/Guayaquil"
+        run: |
+          set -euo pipefail
+
+          touch public/.nojekyll
+
+          UPDATED="$(date '+%Y-%m-%d %H:%M:%S')"
+
+          cat > public/index.html <<HTML
+          <!doctype html>
+          <html lang="es">
+          <head>
+            <meta charset="utf-8">
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1"
+            >
+            <title>EPG Ecuador</title>
+
+            <style>
+              body {
+                max-width: 760px;
+                margin: 50px auto;
+                padding: 0 20px;
+                font-family: system-ui, sans-serif;
+                line-height: 1.6;
+              }
+
+              a {
+                display: block;
+                margin: 14px 0;
+                font-size: 1.1rem;
+              }
+
+              code {
+                overflow-wrap: anywhere;
+              }
+            </style>
+          </head>
+
+          <body>
+            <h1>EPG Ecuador</h1>
+
+            <p>
+              Espejo XMLTV de la guía EC1 de EPGShare.
+              Se conserva la información original de canales
+              y programaciones.
+            </p>
+
+            <h2>Archivos disponibles</h2>
+
+            <a href="./ec.xml">
+              Descargar ec.xml
+            </a>
+
+            <a href="./ec.xml.gz">
+              Descargar ec.xml.gz
+            </a>
+
+            <a href="./xmltv.dtd">
+              Descargar xmltv.dtd
+            </a>
+
+            <h2>URL recomendada</h2>
+
+            <p>
+              <code>
+                https://mrgmaw.github.io/epg/ec.xml.gz
+              </code>
+            </p>
+
+            <p>
+              Última actualización:
+              <strong>${UPDATED}</strong>,
+              hora de Ecuador.
+            </p>
+          </body>
+          </html>
+          HTML
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Preparar archivos para GitHub Pages
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: public
+
+  deploy:
+    name: Publicar en GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Publicar guía
+        id: deployment
+        uses: actions/deploy-pages@v4
