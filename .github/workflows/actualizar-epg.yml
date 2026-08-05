@@ -1,0 +1,201 @@
+name: Actualizar EPG Ecuador
+
+on:
+  workflow_dispatch:
+
+  # Ecuador continental usa UTC-5 durante todo el año.
+  # 09:17 UTC = 04:17 Ecuador.
+  # 21:17 UTC = 16:17 Ecuador.
+  schedule:
+    - cron: "17 9,21 * * *"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages-epg
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Generar y publicar EPG
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Instalar dependencias
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Instalar Chromium para ReporTV
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m playwright install --with-deps chromium
+
+      - name: Preparar directorio público
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf public
+          mkdir -p public
+
+      - name: Descargar XMLTV DTD
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          curl \
+            --fail \
+            --location \
+            --silent \
+            --show-error \
+            --retry 4 \
+            --retry-all-errors \
+            --retry-delay 5 \
+            https://raw.githubusercontent.com/XMLTV/xmltv/master/xmltv.dtd \
+            --output public/xmltv.dtd
+
+          test -s public/xmltv.dtd
+
+      - name: Construir guía combinada
+        shell: bash
+        env:
+          TZ: America/Guayaquil
+          GUIDE_DAYS: "7"
+        run: |
+          set -euo pipefail
+
+          python scripts/build_epg.py \
+            --output public \
+            --dtd public/xmltv.dtd \
+            --days "${GUIDE_DAYS}"
+
+      - name: Validar archivos finales
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -s public/ec.xml
+          test -s public/ec.xml.gz
+          test -s public/xmltv.dtd
+          test -s public/status.json
+
+          gzip -t public/ec.xml.gz
+          cmp public/ec.xml <(gzip -dc public/ec.xml.gz)
+
+          EXPECTED_HEADER_FILE="$(mktemp)"
+          cat > "${EXPECTED_HEADER_FILE}" <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE tv SYSTEM "xmltv.dtd">
+
+          <tv generator-info-name="none" generator-info-url="none">
+          EOF
+
+          head -n 4 public/ec.xml | diff -u "${EXPECTED_HEADER_FILE}" -
+
+          grep -q '<channel id="TeleamazonasQuito.ec">' public/ec.xml
+          grep -q '<channel id="TeleamazonasGuayaquil.ec">' public/ec.xml
+          grep -q '<channel id="OromarTV.ec">' public/ec.xml
+
+          echo "Cabecera:"
+          head -n 4 public/ec.xml
+          echo "Estado:"
+          cat public/status.json
+          echo "Tamaños:"
+          du -h public/ec.xml public/ec.xml.gz public/xmltv.dtd
+
+      - name: Configurar identidad Git
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Publicar copia Raw en rama epg-data
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          RAW_PARENT="$(mktemp -d)"
+          RAW_DIR="${RAW_PARENT}/epg-data"
+
+          if git ls-remote --exit-code --heads origin epg-data >/dev/null 2>&1; then
+            git worktree add -B epg-data "${RAW_DIR}" origin/epg-data
+          else
+            git worktree add --detach "${RAW_DIR}"
+            (
+              cd "${RAW_DIR}"
+              git checkout --orphan epg-data
+              git rm -rf . >/dev/null 2>&1 || true
+            )
+          fi
+
+          cp public/ec.xml "${RAW_DIR}/ec.xml"
+          cp public/ec.xml.gz "${RAW_DIR}/ec.xml.gz"
+          cp public/xmltv.dtd "${RAW_DIR}/xmltv.dtd"
+          cp public/status.json "${RAW_DIR}/status.json"
+
+          cat > "${RAW_DIR}/README.md" <<'EOF'
+          # EPG Ecuador — archivos generados
+
+          Esta rama contiene la salida automática de la guía XMLTV.
+
+          - `ec.xml`
+          - `ec.xml.gz`
+          - `xmltv.dtd`
+          - `status.json`
+          EOF
+
+          (
+            cd "${RAW_DIR}"
+            git add ec.xml ec.xml.gz xmltv.dtd status.json README.md
+
+            if git diff --cached --quiet; then
+              echo "La copia Raw no tiene cambios."
+              exit 0
+            fi
+
+            git commit -m "Actualizar EPG Ecuador"
+            git push origin HEAD:epg-data
+          )
+
+          git worktree remove "${RAW_DIR}" --force
+          rm -rf "${RAW_PARENT}"
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Preparar artefacto de Pages
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: public
+
+  deploy:
+    name: Desplegar GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Publicar GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
