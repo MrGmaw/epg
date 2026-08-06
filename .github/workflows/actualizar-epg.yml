@@ -68,6 +68,12 @@ jobs:
 
           test -s public/xmltv.dtd
 
+      - name: Validar conversión horaria de mi.tv
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/build_epg_mitv_utc.py --self-test
+
       - name: Construir guía combinada
         shell: bash
         env:
@@ -76,7 +82,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          python scripts/build_epg.py \
+          python scripts/build_epg_mitv_utc.py \
             --output public \
             --dtd public/xmltv.dtd \
             --days "${GUIDE_DAYS}"
