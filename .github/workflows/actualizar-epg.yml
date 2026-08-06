@@ -109,12 +109,16 @@ jobs:
           grep -q '<channel id="Ecuavisa.ec">' public/ec.xml
           grep -q '<channel id="EcuavisaInternacional.ec">' public/ec.xml
           grep -q '<channel id="TVC.ec">' public/ec.xml
+          grep -q '<channel id="Canal.CNN.en.Español.ec">' public/ec.xml
+          grep -q '<channel id="NTN24.co">' public/ec.xml
 
           grep -q 'channel="TeleamazonasQuito.ec"' public/ec.xml
           grep -q 'channel="TeleamazonasGuayaquil.ec"' public/ec.xml
           grep -q 'channel="Ecuavisa.ec"' public/ec.xml
           grep -q 'channel="EcuavisaInternacional.ec"' public/ec.xml
           grep -q 'channel="TVC.ec"' public/ec.xml
+          grep -q 'channel="Canal.CNN.en.Español.ec"' public/ec.xml
+          grep -q 'channel="NTN24.co"' public/ec.xml
 
           python - <<'PY'
           import json
@@ -127,6 +131,8 @@ jobs:
               "ecuavisa",
               "ecuavisa_internacional",
               "tvc",
+              "cnn_en_espanol",
+              "ntn24",
           )
           for key in required:
               if int(status.get(key, 0)) <= 0:
@@ -134,6 +140,10 @@ jobs:
 
           if int(status.get("ecuavisa_internacional_days", 0)) <= 0:
               raise SystemExit("No se cargó ningún día de Ecuavisa Internacional.")
+          if int(status.get("cnn_en_espanol_days", 0)) <= 0:
+              raise SystemExit("No se cargó ningún día de CNN en Español desde mi.tv.")
+          if int(status.get("ntn24_days", 0)) <= 0:
+              raise SystemExit("No se cargó ningún día de NTN24 desde mi.tv.")
           PY
 
           echo "Cabecera:"
@@ -183,7 +193,7 @@ jobs:
           - `xmltv.dtd`
           - `status.json`
 
-          Incluye Teleamazonas Quito, Teleamazonas Guayaquil, Ecuavisa, Ecuavisa Internacional y TVC.
+          Incluye Teleamazonas Quito, Teleamazonas Guayaquil, Ecuavisa, Ecuavisa Internacional, TVC, CNN en Español y NTN24.
           EOF
 
           (
