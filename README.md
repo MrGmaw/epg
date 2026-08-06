@@ -7,4 +7,4 @@ Esta rama contiene la salida automática de la guía XMLTV.
 - `xmltv.dtd`
 - `status.json`
 
-Incluye Teleamazonas Quito, Teleamazonas Guayaquil, Ecuavisa, Ecuavisa Internacional y TVC.
+Incluye Teleamazonas Quito, Teleamazonas Guayaquil, Ecuavisa, Ecuavisa Internacional, TVC, CNN en Español y NTN24.
