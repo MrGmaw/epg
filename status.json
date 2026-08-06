@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-05T16:37:22.655520-05:00",
-  "base_date": "2026-08-05",
+  "generated_at": "2026-08-06T06:35:09.459829-05:00",
+  "base_date": "2026-08-06",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
     "teleamazonas": "https://www.teleamazonas.com/programacion/",
@@ -9,10 +9,10 @@
   },
   "ecuavisa_internacional_days": 4,
   "channels": 94,
-  "programmes": 10796,
+  "programmes": 11917,
   "teleamazonas_quito": 209,
   "teleamazonas_guayaquil": 208,
-  "ecuavisa": 50,
-  "ecuavisa_internacional": 72,
+  "ecuavisa": 55,
+  "ecuavisa_internacional": 81,
   "tvc": 154
 }
