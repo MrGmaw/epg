@@ -1,0 +1,42 @@
+EPG ECUADOR — REEMPLAZO TOTAL DEL REPOSITORIO
+
+1. Descarga y extrae el ZIP.
+
+2. En la rama main del repositorio EPG, elimina los archivos y carpetas
+   anteriores. No elimines el repositorio ni su historial Git.
+
+3. Sube TODO el contenido extraído, incluida la carpeta oculta .github.
+   Los archivos deben quedar directamente en la raíz del repositorio.
+
+4. Confirma que existan estas rutas:
+   .github/workflows/actualizar-epg.yml
+   scripts/build_epg.py
+   requirements.txt
+   README.md
+
+5. Confirma los cambios en GitHub.
+
+6. Revisa:
+   Settings > Pages > Build and deployment > Source: GitHub Actions
+
+7. Ejecuta:
+   Actions > Actualizar EPG Ecuador > Run workflow
+
+8. En “Generar y publicar EPG” deben completarse los pasos:
+   - Recuperar generador base estable
+   - Validar conversión horaria de mi.tv
+   - Construir guía combinada
+   - Validar archivos finales
+
+9. La prueba horaria debe mostrar:
+   Prueba mi.tv correcta: 15:00 UTC se publica como 10:00 America/Guayaquil.
+
+10. Al terminar, verifica ec.xml. En el caso comprobado del 6 de agosto de
+    2026, “Conclusiones” debe publicarse a las 10:00 -0500 y no a las
+    15:00 -0500.
+
+IMPORTANTE:
+- Conserva el historial del repositorio: el workflow recupera el generador
+  estable desde el commit inmutable 5a0e7c59d94e8fc20ad83237727b1a49a6246248.
+- No añadas manualmente scripts/build_epg_base.py; el workflow lo descarga.
+- No modifiques la rama epg-data manualmente.
