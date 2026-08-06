@@ -8,8 +8,11 @@ Este proyecto genera una guía XMLTV combinada con:
 - Ecuavisa nacional, conservada desde EPGShare y normalizada al ID `Ecuavisa.ec`.
 - Ecuavisa Internacional, obtenida desde su parrilla diaria en GatoTV.
 - TVC, desde la parrilla semanal oficial incrustada en su página de programación.
+- CNN en Español, sustituyendo la parrilla anterior por la publicada en mi.tv Colombia.
+- NTN24, incorporado desde la parrilla publicada en mi.tv Colombia.
 
-Esta edición no incluye Oromar TV ni requiere Playwright/Chromium.
+Esta edición no incluye Oromar TV ni requiere Playwright, Chromium o Selenium.
+La integración de mi.tv usa solo cuatro solicitudes HTML por ejecución: dos canales por dos días.
 
 ## Archivos que debes copiar al repositorio
 
@@ -29,6 +32,8 @@ TeleamazonasGuayaquil.ec
 Ecuavisa.ec
 EcuavisaInternacional.ec
 TVC.ec
+Canal.CNN.en.Español.ec
+NTN24.co
 ```
 
 ## Entradas M3U
@@ -47,6 +52,12 @@ URL_DEL_CANAL
 URL_DEL_CANAL
 
 #EXTINF:-1 tvg-id="TVC.ec" tvg-name="TVC",TVC
+URL_DEL_CANAL
+
+#EXTINF:-1 tvg-id="Canal.CNN.en.Español.ec" tvg-name="CNN en Español",CNN en Español
+URL_DEL_CANAL
+
+#EXTINF:-1 tvg-id="NTN24.co" tvg-name="NTN24",NTN24
 URL_DEL_CANAL
 ```
 
@@ -93,4 +104,6 @@ https://raw.githubusercontent.com/MrGmaw/epg/epg-data/status.json
 - Si GatoTV no entrega ningún día válido de Ecuavisa Internacional, el workflow se detiene.
 - Si algunos días futuros de GatoTV no están disponibles, se publican los días válidos y se registra su número en `status.json`.
 - Si la página oficial de TVC no entrega `script#app-model` o una parrilla suficiente, el workflow se detiene para evitar publicar `TVC.ec` incompleto.
+- CNN en Español y NTN24 se obtienen del endpoint asíncrono de mi.tv para hoy y mañana; si ninguno de esos días es válido para un canal, el workflow se detiene.
+- La programación anterior de CNN en Español procedente de EPGShare se elimina antes de insertar la parrilla de mi.tv.
 - Antes del despliegue se valida el XML contra `xmltv.dtd` y se comprueba que XML y GZIP sean idénticos.

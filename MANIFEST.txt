@@ -1,4 +1,4 @@
-EPG GitHub Ecuador — paquete completo con TVC
+EPG GitHub Ecuador — paquete completo con TVC, CNN en Español y NTN24
 
 ARCHIVO PRINCIPAL DEL WORKFLOW:
 - .github/workflows/actualizar-epg.yml
@@ -16,6 +16,17 @@ FUENTES ACTIVAS:
 - Parrilla oficial de Teleamazonas Quito y Guayaquil.
 - GatoTV para Ecuavisa Internacional.
 - Página oficial de TVC para TVC.ec.
+- mi.tv Colombia para sustituir la parrilla de CNN en Español.
+- mi.tv Colombia para incorporar NTN24.
+
+IDENTIFICADORES PERSONALIZADOS O GARANTIZADOS:
+- TeleamazonasQuito.ec
+- TeleamazonasGuayaquil.ec
+- Ecuavisa.ec
+- EcuavisaInternacional.ec
+- TVC.ec
+- Canal.CNN.en.Español.ec
+- NTN24.co
 
 No se añade Oromar TV en esta edición.
 No se requiere Playwright, Chromium ni Selenium.
