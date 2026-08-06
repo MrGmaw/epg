@@ -1,7 +1,0 @@
-Algunos gestores de archivos de Android ocultan la carpeta .github porque comienza con un punto.
-
-El ZIP incluye el workflow en su ubicación correcta:
-.github/workflows/actualizar-epg.yml
-
-Activa la opción “Mostrar archivos ocultos” antes de extraer o subir el proyecto.
-No muevas el workflow a la raíz del repositorio.
