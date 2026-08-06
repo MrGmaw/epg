@@ -1,0 +1,13 @@
+ENLACES RECOMENDADOS PARA APLICACIONES IPTV
+
+GUÍA PRINCIPAL:
+https://mrgmaw.github.io/epg/ec.xml.gz
+
+NUEVA GUÍA SELECCIONADA DE 20 CANALES:
+https://mrgmaw.github.io/epg/latam.xml.gz
+
+ALTERNATIVAS MEDIANTE JSDELIVR:
+https://cdn.jsdelivr.net/gh/MrGmaw/epg@epg-data/ec.xml.gz
+https://cdn.jsdelivr.net/gh/MrGmaw/epg@epg-data/latam.xml.gz
+
+Use en la lista M3U los tvg-id exactos documentados en README.md.
