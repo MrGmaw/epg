@@ -1,0 +1,64 @@
+{
+  "generated_at": "2026-08-06T14:05:55.659832-05:00",
+  "base_date": "2026-08-06",
+  "window_days": 7,
+  "mitv_local_days": 2,
+  "channels": 20,
+  "programmes": 1582,
+  "programme_counts": {
+    "Canal.TC.Televisión.ec": 75,
+    "Canal.Gamavisión.ec": 68,
+    "Canal.RTS.ec": 63,
+    "Canal.TVE.Internacional.(Televisión.Española).ec": 87,
+    "TeleamazonasQuito.ec": 209,
+    "TeleamazonasGuayaquil.ec": 208,
+    "Ecuavisa.ec": 42,
+    "EcuavisaInternacional.ec": 79,
+    "TVC.ec": 154,
+    "Canal.CNN.en.Español.ec": 49,
+    "NTN24.co": 40,
+    "CanalRCN.co": 33,
+    "CaracolTV.co": 35,
+    "Canal.Elgourmet.ec": 92,
+    "Canal.History.co": 58,
+    "Canal.History.2.co": 64,
+    "TV.Publica.canal.7.ar": 33,
+    "Telefe.ar": 41,
+    "Deutsche.Welle.cl": 90,
+    "Canal.Ecuador.TV.ec": 62
+  },
+  "mitv_source_days": {
+    "CanalRCN.co": 3,
+    "CaracolTV.co": 3,
+    "Canal.Elgourmet.ec": 3,
+    "Canal.History.co": 3,
+    "Canal.History.2.co": 3,
+    "TV.Publica.canal.7.ar": 3,
+    "Telefe.ar": 3,
+    "Deutsche.Welle.cl": 3
+  },
+  "ecuador_tv": {
+    "source": "epgshare_fallback",
+    "official_dates": [],
+    "fallback_dates": [
+      "2026-08-06",
+      "2026-08-07",
+      "2026-08-08"
+    ]
+  },
+  "sources": {
+    "base_guide": "ec.xml",
+    "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
+    "ecuador_tv_official": "https://www.ecuadortv.ec/programas",
+    "mi_tv": {
+      "CanalRCN.co": "https://mi.tv/co/canales/rcn",
+      "CaracolTV.co": "https://mi.tv/co/canales/caracol",
+      "Canal.Elgourmet.ec": "https://mi.tv/co/canales/el-gourmet",
+      "Canal.History.co": "https://mi.tv/co/canales/history",
+      "Canal.History.2.co": "https://mi.tv/co/canales/h2",
+      "TV.Publica.canal.7.ar": "https://mi.tv/ar/canales/canal-7-capital",
+      "Telefe.ar": "https://mi.tv/ar/canales/telefe",
+      "Deutsche.Welle.cl": "https://mi.tv/cl/canales/deutsche-welle-espanol"
+    }
+  }
+}

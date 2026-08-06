@@ -1,10 +1,16 @@
-# EPG Ecuador — archivos generados
+# EPG MrG — archivos generados
 
-Esta rama contiene la salida automática de la guía XMLTV.
+Esta rama contiene las salidas automáticas XMLTV.
 
+Guía principal:
 - `ec.xml`
 - `ec.xml.gz`
-- `xmltv.dtd`
 - `status.json`
 
-Incluye Teleamazonas Quito, Teleamazonas Guayaquil, Ecuavisa, Ecuavisa Internacional, TVC, CNN en Español y NTN24.
+Guía seleccionada de 20 canales:
+- `latam.xml`
+- `latam.xml.gz`
+- `latam-status.json`
+
+Archivo compartido:
+- `xmltv.dtd`
