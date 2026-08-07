@@ -12,5 +12,9 @@ Guía seleccionada de 21 canales:
 - `latam.xml.gz`
 - `latam-status.json`
 
+Logos locales persistentes:
+- `logos/<tvg-id>.png`
+- `logos/manifest.json`
+
 Archivo compartido:
 - `xmltv.dtd`

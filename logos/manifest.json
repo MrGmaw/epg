@@ -1,0 +1,119 @@
+{
+  "generated_at": "2026-08-07T14:29:35.080220-05:00",
+  "public_base_url": "https://mrgmaw.github.io/epg/logos",
+  "targets": 11,
+  "available": 11,
+  "missing": [],
+  "channels": {
+    "Canal.CNN.en.Español.ec": {
+      "page_url": "https://mi.tv/co/canales/cnn-en-espanol",
+      "local_url": "https://mrgmaw.github.io/epg/logos/Canal.CNN.en.Español.ec.png",
+      "available": true,
+      "source": "discovered",
+      "source_url": "https://cdn.mitvstatic.com/channels/147a869f-f2cc-42b6-83fa-ad66ff6745ca_m.jpg",
+      "width": 250,
+      "height": 250,
+      "sha256": "a4ada21e91d43000f2925b5be76266c7a6d6712340e11f450ab77e72bd6c650f"
+    },
+    "NTN24.co": {
+      "page_url": "https://mi.tv/co/canales/nuestra-tele-noticias-24hs",
+      "local_url": "https://mrgmaw.github.io/epg/logos/NTN24.co.png",
+      "available": true,
+      "source": "discovered",
+      "source_url": "https://cdn.mitvstatic.com/channels/0a057f6d-f43c-4384-af72-8276c8545859_m.jpg",
+      "width": 250,
+      "height": 250,
+      "sha256": "552d62af160a62f2542129fa8afb2a3fcfd16770bffff77cdcf9f2fb9673bb31"
+    },
+    "CanalRCN.co": {
+      "page_url": "https://mi.tv/co/canales/rcn",
+      "local_url": "https://mrgmaw.github.io/epg/logos/CanalRCN.co.png",
+      "available": true,
+      "source": "discovered",
+      "source_url": "https://cdn.mitvstatic.com/channels/60ef29f0-d7fb-487d-85c8-a1fbcf2ff8da_m.jpg",
+      "width": 250,
+      "height": 250,
+      "sha256": "7038ace7e5632290752228b7725d5ce70727d7238778cc22d5f5c514090fc8b7"
+    },
+    "CaracolTV.co": {
+      "page_url": "https://mi.tv/co/canales/caracol",
+      "local_url": "https://mrgmaw.github.io/epg/logos/CaracolTV.co.png",
+      "available": true,
+      "source": "discovered",
+      "source_url": "https://cdn.mitvstatic.com/channels/co_caracol_m.png",
+      "width": 200,
+      "height": 200,
+      "sha256": "79650eaa7dfcf1cdaaff76af3c33b279490f6cf0a7870744a0470cb7e1d5eec0"
+    },
+    "Canal.Elgourmet.ec": {
+      "page_url": "https://mi.tv/co/canales/el-gourmet",
+      "local_url": "https://mrgmaw.github.io/epg/logos/Canal.Elgourmet.ec.png",
+      "available": true,
+      "source": "discovered",
+      "source_url": "https://cdn.mitvstatic.com/channels/2c15cb09-f111-4b08-b86e-421cbf221fe1_m.jpg",
+      "width": 250,
+      "height": 250,
+      "sha256": "5bb60a7be3dac32d42fad65f3374c915520cbcd15673ab2d272cff28d61fa412"
+    },
+    "Canal.History.co": {
+      "page_url": "https://mi.tv/co/canales/history",
+      "local_url": "https://mrgmaw.github.io/epg/logos/Canal.History.co.png",
+      "available": true,
+      "source": "discovered",
+      "source_url": "https://cdn.mitvstatic.com/channels/976613c0-bf70-498c-b2d0-a83373964c02_m.jpg",
+      "width": 250,
+      "height": 250,
+      "sha256": "a42506d981c2c1335fac6067f67fed8544e3c76e412cf8b0c89b066ecaf0fac1"
+    },
+    "Canal.History.2.co": {
+      "page_url": "https://mi.tv/co/canales/h2",
+      "local_url": "https://mrgmaw.github.io/epg/logos/Canal.History.2.co.png",
+      "available": true,
+      "source": "discovered",
+      "source_url": "https://cdn.mitvstatic.com/channels/co_h2_m.png",
+      "width": 250,
+      "height": 250,
+      "sha256": "c0b31261c47fc52991958a4ce509b226145fc95440f68d30eea26374251e2d06"
+    },
+    "TV.Publica.canal.7.ar": {
+      "page_url": "https://mi.tv/ar/canales/canal-7-capital",
+      "local_url": "https://mrgmaw.github.io/epg/logos/TV.Publica.canal.7.ar.png",
+      "available": true,
+      "source": "discovered",
+      "source_url": "https://cdn.mitvstatic.com/channels/ar_canal-7-capital_m.png",
+      "width": 250,
+      "height": 250,
+      "sha256": "6a8efa92b3930d5ee6d277508995e9e609ad07f853aeb4862ed6b0ec3b1d259e"
+    },
+    "Telefe.ar": {
+      "page_url": "https://mi.tv/ar/canales/telefe",
+      "local_url": "https://mrgmaw.github.io/epg/logos/Telefe.ar.png",
+      "available": true,
+      "source": "discovered",
+      "source_url": "https://cdn.mitvstatic.com/channels/ar_telefe_m.png",
+      "width": 250,
+      "height": 250,
+      "sha256": "bef21592c3b1cf5c8c522744194937e2864f25414d07670bd28478f8c4c20bde"
+    },
+    "Deutsche.Welle.cl": {
+      "page_url": "https://mi.tv/cl/canales/deutsche-welle-espanol",
+      "local_url": "https://mrgmaw.github.io/epg/logos/Deutsche.Welle.cl.png",
+      "available": true,
+      "source": "discovered",
+      "source_url": "https://cdn.mitvstatic.com/channels/cl_deutsche-welle-espanol_m.png",
+      "width": 200,
+      "height": 200,
+      "sha256": "e46d6a248862375d19926bf5b22c72d6cd903629c6bb5cc168b9976adfb15751"
+    },
+    "hgtv.ar": {
+      "page_url": "https://mi.tv/ar/canales/hgtv",
+      "local_url": "https://mrgmaw.github.io/epg/logos/hgtv.ar.png",
+      "available": true,
+      "source": "discovered",
+      "source_url": "https://cdn.mitvstatic.com/channels/ar_hgtv_m.png",
+      "width": 200,
+      "height": 200,
+      "sha256": "7c632826a71930cc67a1c7ae1fed020012d743e9d1ff57ae7a234e2a9c75a5ab"
+    }
+  }
+}
