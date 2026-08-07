@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-08-07T05:13:50.596497-05:00",
+  "generated_at": "2026-08-07T14:16:44.582451-05:00",
   "base_date": "2026-08-07",
   "window_days": 7,
   "mitv_local_days": 2,
-  "channels": 20,
-  "programmes": 1565,
+  "channels": 21,
+  "programmes": 1650,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 74,
     "Canal.Gamavisión.ec": 54,
@@ -25,6 +25,7 @@
     "TV.Publica.canal.7.ar": 37,
     "Telefe.ar": 36,
     "Deutsche.Welle.cl": 99,
+    "hgtv.ar": 85,
     "Canal.Ecuador.TV.ec": 63
   },
   "mitv_source_days": {
@@ -35,7 +36,8 @@
     "Canal.History.2.co": 3,
     "TV.Publica.canal.7.ar": 3,
     "Telefe.ar": 3,
-    "Deutsche.Welle.cl": 3
+    "Deutsche.Welle.cl": 3,
+    "hgtv.ar": 3
   },
   "ecuador_tv": {
     "source": "epgshare_fallback",
@@ -58,7 +60,8 @@
       "Canal.History.2.co": "https://mi.tv/co/canales/h2",
       "TV.Publica.canal.7.ar": "https://mi.tv/ar/canales/canal-7-capital",
       "Telefe.ar": "https://mi.tv/ar/canales/telefe",
-      "Deutsche.Welle.cl": "https://mi.tv/cl/canales/deutsche-welle-espanol"
+      "Deutsche.Welle.cl": "https://mi.tv/cl/canales/deutsche-welle-espanol",
+      "hgtv.ar": "https://mi.tv/ar/canales/hgtv"
     }
   }
 }
