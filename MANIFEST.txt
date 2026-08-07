@@ -1,0 +1,50 @@
+EPG MrG — REPOSITORIO COMPLETO CON SEGUNDA GUÍA LATAM
+
+TIPO DE PAQUETE:
+- Reemplazo total de la rama main del repositorio MrGmaw/epg.
+- Mantiene ec.xml/ec.xml.gz sin cambiar sus enlaces.
+- Añade latam.xml/latam.xml.gz con exactamente 21 canales.
+- Compatible con acciones GitHub basadas en Node 24.
+
+ESTRUCTURA:
+- .github/workflows/actualizar-epg.yml
+- scripts/build_epg.py
+- scripts/mitv_utc.py
+- scripts/build_latam_epg.py
+- scripts/validate_outputs.py
+- .gitignore
+- requirements.txt
+- README.md
+- MANIFEST.txt
+- IMPORTANTE-ANDROID.txt
+- INSTRUCCIONES-REEMPLAZO-TOTAL.txt
+
+GENERADOR BASE:
+- Se recupera durante el workflow desde el commit inmutable:
+  5a0e7c59d94e8fc20ad83237727b1a49a6246248
+- Archivo temporal: scripts/build_epg_base.py
+- Está excluido mediante .gitignore.
+
+SALIDAS:
+- ec.xml
+- ec.xml.gz
+- status.json
+- latam.xml
+- latam.xml.gz
+- latam-status.json
+- xmltv.dtd
+- index.html
+
+NUEVA GUÍA:
+- 4 canales seleccionados de EPGShare.
+- 7 canales conservados desde las integraciones vigentes.
+- 9 canales nuevos desde mi.tv (incluido HGTV Argentina).
+- Ecuador TV desde su web oficial con respaldo por fecha desde EPGShare.
+
+ZONA HORARIA MI.TV:
+- Se interpreta UTC.
+- Se convierte a America/Guayaquil.
+- Se solicita un día UTC adicional para completar la noche local.
+- La salida se recorta a la ventana local.
+
+No requiere Playwright, Chromium ni Selenium.
