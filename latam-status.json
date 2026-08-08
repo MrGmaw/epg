@@ -1,32 +1,32 @@
 {
-  "generated_at": "2026-08-07T16:58:11.510876-05:00",
-  "base_date": "2026-08-07",
+  "generated_at": "2026-08-08T16:48:43.059476-05:00",
+  "base_date": "2026-08-08",
   "window_days": 7,
   "mitv_local_days": 2,
   "channels": 21,
-  "programmes": 1650,
+  "programmes": 1647,
   "programme_counts": {
-    "Canal.TC.Televisión.ec": 74,
+    "Canal.TC.Televisión.ec": 78,
     "Canal.Gamavisión.ec": 54,
-    "Canal.RTS.ec": 63,
-    "Canal.TVE.Internacional.(Televisión.Española).ec": 66,
+    "Canal.RTS.ec": 62,
+    "Canal.TVE.Internacional.(Televisión.Española).ec": 42,
     "TeleamazonasQuito.ec": 209,
     "TeleamazonasGuayaquil.ec": 208,
     "Ecuavisa.ec": 45,
-    "EcuavisaInternacional.ec": 86,
+    "EcuavisaInternacional.ec": 88,
     "TVC.ec": 154,
-    "Canal.CNN.en.Español.ec": 55,
-    "NTN24.co": 46,
-    "CanalRCN.co": 32,
+    "Canal.CNN.en.Español.ec": 63,
+    "NTN24.co": 49,
+    "CanalRCN.co": 35,
     "CaracolTV.co": 29,
-    "Canal.Elgourmet.ec": 90,
-    "Canal.History.co": 56,
-    "Canal.History.2.co": 63,
-    "TV.Publica.canal.7.ar": 37,
-    "Telefe.ar": 36,
-    "Deutsche.Welle.cl": 99,
+    "Canal.Elgourmet.ec": 88,
+    "Canal.History.co": 58,
+    "Canal.History.2.co": 58,
+    "TV.Publica.canal.7.ar": 39,
+    "Telefe.ar": 30,
+    "Deutsche.Welle.cl": 108,
     "hgtv.ar": 85,
-    "Canal.Ecuador.TV.ec": 63
+    "Canal.Ecuador.TV.ec": 65
   },
   "mitv_source_days": {
     "CanalRCN.co": 3,
@@ -57,9 +57,9 @@
     "source": "epgshare_fallback",
     "official_dates": [],
     "fallback_dates": [
-      "2026-08-07",
       "2026-08-08",
-      "2026-08-09"
+      "2026-08-09",
+      "2026-08-10"
     ]
   },
   "sources": {
