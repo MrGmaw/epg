@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-08-09T04:59:34.041579-05:00",
+  "generated_at": "2026-08-09T16:50:52.371707-05:00",
   "base_date": "2026-08-09",
   "window_days": 7,
   "mitv_local_days": 2,
   "channels": 21,
-  "programmes": 1607,
+  "programmes": 1606,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 70,
     "Canal.Gamavisión.ec": 64,
@@ -13,7 +13,7 @@
     "TeleamazonasQuito.ec": 210,
     "TeleamazonasGuayaquil.ec": 209,
     "Ecuavisa.ec": 42,
-    "EcuavisaInternacional.ec": 82,
+    "EcuavisaInternacional.ec": 81,
     "TVC.ec": 154,
     "Canal.CNN.en.Español.ec": 60,
     "NTN24.co": 46,
