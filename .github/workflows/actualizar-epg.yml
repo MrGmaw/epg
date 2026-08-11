@@ -75,6 +75,7 @@ jobs:
             scripts/build_epg_base.py \
             scripts/mitv_utc.py \
             scripts/build_epg.py \
+            scripts/tvc_resilient.py \
             scripts/build_latam_epg.py \
             scripts/mitv_logos.py \
             scripts/apply_local_logos.py \
@@ -91,7 +92,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p public/logos
+          mkdir -p public/logos .cache
+          rm -f .cache/previous-ec.xml
 
           if ! git show-ref --verify --quiet refs/remotes/origin/epg-data; then
             git fetch --no-tags origin epg-data:refs/remotes/origin/epg-data || true
@@ -102,6 +104,14 @@ jobs:
             echo "Caché de logos restaurada desde epg-data."
           else
             echo "No existe caché previa de logos; se realizará descubrimiento inicial."
+          fi
+
+          if git cat-file -e origin/epg-data:ec.xml 2>/dev/null; then
+            git show origin/epg-data:ec.xml > .cache/previous-ec.xml
+            test -s .cache/previous-ec.xml
+            echo "Caché de parrilla TVC restaurada desde epg-data/ec.xml."
+          else
+            echo "No existe ec.xml previa para respaldo de TVC."
           fi
 
       - name: Descargar XMLTV DTD
