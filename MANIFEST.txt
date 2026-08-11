@@ -1,0 +1,61 @@
+EPG MrG — REPOSITORIO COMPLETO LATAM 21 CANALES + TVE SOLO MI.TV + LOGOS LOCALES
+
+TIPO DE PAQUETE:
+- Reemplazo total de la rama main del repositorio MrGmaw/epg.
+- Mantiene ec.xml/ec.xml.gz.
+- Mantiene latam.xml/latam.xml.gz con 21 canales, incluido HGTV.
+- TVE Internacional usa exclusivamente https://mi.tv/co/canales/tve en latam.xml.
+- Añade TVE al descubrimiento, conversión, caché y publicación local de logos mi.tv.
+- Compatible con acciones GitHub basadas en Node 24.
+
+ESTRUCTURA:
+- .github/workflows/actualizar-epg.yml
+- scripts/build_epg.py
+- scripts/mitv_utc.py
+- scripts/build_latam_epg.py
+- scripts/mitv_logos.py
+- scripts/apply_local_logos.py
+- scripts/validate_outputs.py
+- .gitignore
+- requirements.txt
+- README.md
+- MANIFEST.txt
+- IMPORTANTE-ANDROID.txt
+- INSTRUCCIONES-REEMPLAZO-TOTAL.txt
+- PRUEBAS-REALIZADAS.txt
+
+GENERADOR BASE:
+- Se recupera durante el workflow desde:
+  5a0e7c59d94e8fc20ad83237727b1a49a6246248
+- Archivo temporal: scripts/build_epg_base.py
+- Excluido mediante .gitignore.
+
+SALIDAS:
+- ec.xml / ec.xml.gz / status.json
+- latam.xml / latam.xml.gz / latam-status.json
+- logos/<tvg-id>.png
+- logos/manifest.json
+- xmltv.dtd
+- index.html
+
+LOGOS MI.TV:
+- 12 objetivos: CNN, TVE Internacional, NTN24, RCN, Caracol, El Gourmet,
+  History, History 2, TV Pública, Telefe, DW Español y HGTV.
+- Se restauran primero los PNG de epg-data.
+- Se redescubre la imagen actual desde la página de mi.tv.
+- Se validan patrones históricos de mitvstatic.com/images.mi.tv como respaldo.
+- Todo recurso válido se convierte a PNG real con Pillow 12.3.0.
+- La URL XMLTV siempre apunta a https://mrgmaw.github.io/epg/logos/<tvg-id>.png
+- Si mi.tv falla, el logo cacheado se conserva.
+
+ZONA HORARIA MI.TV:
+- UTC → America/Guayaquil.
+- Se solicita un día UTC adicional y se recorta a la ventana local.
+
+
+TVE INTERNACIONAL:
+- tvg-id conservado: Canal.TVE.Internacional.(Televisión.Española).ec
+- Programación LATAM: exclusivamente mi.tv Colombia, slug co/canales/tve.
+- No usa EPGShare como fallback dentro de latam.xml.
+- Conserva la posición 4 dentro de los 21 canales.
+- Logo local esperado: https://mrgmaw.github.io/epg/logos/Canal.TVE.Internacional.(Televisión.Española).ec.png
