@@ -33,12 +33,16 @@ from mitv_logos import load_logo_urls
 
 ECUADOR_TV_URL = "https://www.ecuadortv.ec/programas"
 ECUADOR_TV_ID = "Canal.Ecuador.TV.ec"
+TVE_ID = "Canal.TVE.Internacional.(Televisión.Española).ec"
+TVE_MITV_COUNTRY = "co"
+TVE_MITV_SLUG = "tve"
+TVE_MITV_URL = "https://mi.tv/co/canales/tve"
 
 BASE_CHANNEL_IDS: tuple[str, ...] = (
     "Canal.TC.Televisión.ec",
     "Canal.Gamavisión.ec",
     "Canal.RTS.ec",
-    "Canal.TVE.Internacional.(Televisión.Española).ec",
+    TVE_ID,
     "TeleamazonasQuito.ec",
     "TeleamazonasGuayaquil.ec",
     "Ecuavisa.ec",
