@@ -1,19 +1,21 @@
 {
-  "generated_at": "2026-08-11T05:10:19.772640-05:00",
+  "version": "0.2.0",
+  "generated_at": "2026-08-11T14:52:57.552567-05:00",
   "base_date": "2026-08-11",
   "window_days": 7,
   "mitv_local_days": 2,
-  "channels": 21,
-  "programmes": 1622,
+  "gatotv_requested_days": 7,
+  "channels": 25,
+  "programmes": 2466,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 69,
     "Canal.Gamavisión.ec": 78,
     "Canal.RTS.ec": 61,
     "Canal.TVE.Internacional.(Televisión.Española).ec": 49,
-    "TeleamazonasQuito.ec": 209,
-    "TeleamazonasGuayaquil.ec": 208,
+    "TeleamazonasQuito.ec": 204,
+    "TeleamazonasGuayaquil.ec": 204,
     "Ecuavisa.ec": 39,
-    "EcuavisaInternacional.ec": 66,
+    "EcuavisaInternacional.ec": 67,
     "TVC.ec": 154,
     "Canal.CNN.en.Español.ec": 49,
     "NTN24.co": 38,
@@ -26,6 +28,10 @@
     "Telefe.ar": 41,
     "Deutsche.Welle.cl": 92,
     "hgtv.ar": 85,
+    "Canal24Horas.es": 200,
+    "La1.es": 100,
+    "TVEStarHD.es": 84,
+    "Clan.es": 468,
     "Canal.Ecuador.TV.ec": 64
   },
   "mitv_source_days": {
@@ -39,6 +45,43 @@
     "Telefe.ar": 3,
     "Deutsche.Welle.cl": 3,
     "hgtv.ar": 3
+  },
+  "gatotv_source_days": {
+    "Canal24Horas.es": 6,
+    "La1.es": 6,
+    "TVEStarHD.es": 3,
+    "Clan.es": 6
+  },
+  "gatotv_daily_counts": {
+    "Canal24Horas.es": {
+      "2026-08-11": 26,
+      "2026-08-12": 28,
+      "2026-08-13": 27,
+      "2026-08-14": 31,
+      "2026-08-15": 47,
+      "2026-08-16": 41
+    },
+    "La1.es": {
+      "2026-08-11": 19,
+      "2026-08-12": 19,
+      "2026-08-13": 19,
+      "2026-08-14": 17,
+      "2026-08-15": 13,
+      "2026-08-16": 13
+    },
+    "TVEStarHD.es": {
+      "2026-08-11": 31,
+      "2026-08-12": 28,
+      "2026-08-13": 27
+    },
+    "Clan.es": {
+      "2026-08-11": 78,
+      "2026-08-12": 77,
+      "2026-08-13": 77,
+      "2026-08-14": 78,
+      "2026-08-15": 83,
+      "2026-08-16": 75
+    }
   },
   "logos_manifest": "manifest.json",
   "logos_available": [
@@ -79,6 +122,12 @@
       "Telefe.ar": "https://mi.tv/ar/canales/telefe",
       "Deutsche.Welle.cl": "https://mi.tv/cl/canales/deutsche-welle-espanol",
       "hgtv.ar": "https://mi.tv/ar/canales/hgtv"
+    },
+    "gato_tv": {
+      "Canal24Horas.es": "https://www.gatotv.com/canal/24_horas_tve",
+      "La1.es": "https://www.gatotv.com/canal/la_1",
+      "TVEStarHD.es": "https://www.gatotv.com/canal/star_tve",
+      "Clan.es": "https://www.gatotv.com/canal/clan_tve"
     }
   }
 }
