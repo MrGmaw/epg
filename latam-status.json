@@ -1,12 +1,12 @@
 {
   "version": "0.2.0",
-  "generated_at": "2026-08-11T14:52:57.552567-05:00",
+  "generated_at": "2026-08-11T17:03:43.171990-05:00",
   "base_date": "2026-08-11",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 25,
-  "programmes": 2466,
+  "programmes": 2468,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 69,
     "Canal.Gamavisión.ec": 78,
@@ -16,7 +16,7 @@
     "TeleamazonasGuayaquil.ec": 204,
     "Ecuavisa.ec": 39,
     "EcuavisaInternacional.ec": 67,
-    "TVC.ec": 154,
+    "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 49,
     "NTN24.co": 38,
     "CanalRCN.co": 35,
