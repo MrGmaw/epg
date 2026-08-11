@@ -185,3 +185,13 @@ Antes de publicar, el workflow verifica:
 - PNG real para cada logo declarado como disponible;
 - coincidencia entre `<icon src>` y el PNG local publicado;
 - conservación de la caché de logos entre ejecuciones.
+
+
+## Respaldo resiliente de TVC
+
+TVC se intenta obtener primero desde su parrilla oficial en
+`https://www.tvc.com.ec/programacion/`. Si la página cambia, deja de publicar
+una parrilla parseable o falla temporalmente, `scripts/tvc_resilient.py` usa
+la última programación válida de `TVC.ec` almacenada en la rama `epg-data` y
+la traslada por día de la semana a la nueva ventana. No se inventan títulos ni
+horarios. Si tampoco existe una caché válida, la generación falla.

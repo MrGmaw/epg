@@ -11,6 +11,7 @@ TIPO DE PAQUETE:
 ESTRUCTURA:
 - .github/workflows/actualizar-epg.yml
 - scripts/build_epg.py
+- scripts/tvc_resilient.py
 - scripts/mitv_utc.py
 - scripts/build_latam_epg.py
 - scripts/mitv_logos.py
