@@ -40,8 +40,13 @@ LATAM_REQUIRED = (
     "Telefe.ar",
     "Deutsche.Welle.cl",
     "hgtv.ar",
+    "Canal24Horas.es",
+    "La1.es",
+    "TVEStarHD.es",
+    "Clan.es",
     "Canal.Ecuador.TV.ec",
 )
+EXPECTED_VERSION = "0.2.0"
 LOCAL_LOGO_BASE = "https://mrgmaw.github.io/epg/logos/"
 MITV_LOGO_IDS = {
     "Canal.CNN.en.Español.ec",
@@ -189,6 +194,10 @@ def main() -> int:
     latam_status = json.loads(
         (public / "latam-status.json").read_text(encoding="utf-8")
     )
+    if latam_status.get("version") != EXPECTED_VERSION:
+        raise RuntimeError(
+            f"latam-status.json no informa la versión {EXPECTED_VERSION}."
+        )
     expected_latam_channels = len(LATAM_REQUIRED)
     if int(latam_status.get("channels", 0)) != expected_latam_channels:
         raise RuntimeError(

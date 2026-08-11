@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Construye ``latam.xml`` con los 21 canales seleccionados.
+"""Construye ``latam.xml`` con los 25 canales seleccionados.
 
 La guía principal ``ec.xml`` se genera primero y actúa como fuente estable
 para los canales base, excepto TVE Internacional. TVE Internacional toma su
 programación exclusivamente de mi.tv Colombia. Después se añaden los otros
-canales de mi.tv y la parrilla oficial de Ecuador TV cuando está disponible.
+canales de mi.tv, cuatro parrillas de GatoTV y la parrilla oficial de Ecuador TV
+cuando está disponible.
 """
 
 from __future__ import annotations
@@ -31,6 +32,7 @@ import build_epg_base as epg
 from mitv_utc import scrape_mitv_channel
 from mitv_logos import load_logo_urls
 
+EPG_VERSION = "0.2.0"
 ECUADOR_TV_URL = "https://www.ecuadortv.ec/programas"
 ECUADOR_TV_ID = "Canal.Ecuador.TV.ec"
 TVE_ID = "Canal.TVE.Internacional.(Televisión.Española).ec"
@@ -60,6 +62,18 @@ class MitvChannel:
     channel_id: str
     names: tuple[str, ...]
     website: str
+
+
+@dataclass(frozen=True)
+class GatoTvChannel:
+    slug: str
+    channel_id: str
+    names: tuple[str, ...]
+    website: str
+
+    @property
+    def base_url(self) -> str:
+        return f"https://www.gatotv.com/canal/{self.slug}"
 
 
 TVE_MITV_CHANNEL = MitvChannel(
@@ -137,9 +151,38 @@ MITV_CHANNELS: tuple[MitvChannel, ...] = (
     ),
 )
 
+GATOTV_CHANNELS: tuple[GatoTvChannel, ...] = (
+    GatoTvChannel(
+        "24_horas_tve",
+        "Canal24Horas.es",
+        ("Canal 24 Horas (TVE)", "24 Horas TVE"),
+        "https://www.rtve.es/play/24-horas/",
+    ),
+    GatoTvChannel(
+        "la_1",
+        "La1.es",
+        ("La 1", "TVE La 1"),
+        "https://www.rtve.es/television/",
+    ),
+    GatoTvChannel(
+        "star_tve",
+        "TVEStarHD.es",
+        ("STAR TVE", "Star TVE"),
+        "https://www.gatotv.com/canal/star_tve",
+    ),
+    GatoTvChannel(
+        "clan_tve",
+        "Clan.es",
+        ("Clan TVE", "Clan"),
+        "https://www.rtve.es/infantil/",
+    ),
+)
+
+
 LATAM_CHANNEL_IDS: tuple[str, ...] = (
     *BASE_CHANNEL_IDS,
     *(channel.channel_id for channel in MITV_CHANNELS),
+    *(channel.channel_id for channel in GATOTV_CHANNELS),
     ECUADOR_TV_ID,
 )
 
@@ -486,6 +529,188 @@ def parse_ecuador_tv_page(
     return programmes, accepted_dates
 
 
+def parse_gatotv_page(
+    page: str,
+    guide_date: date,
+    channel_id: str,
+) -> list[epg.Programme]:
+    """Lee una fecha de GatoTV conservando correctamente el cruce de medianoche.
+
+    Algunas parrillas comienzan mostrando el programa que empezó la noche
+    anterior y termina después de las 00:00. En ese caso la primera fila se
+    fecha en ``guide_date - 1``; el resto pertenece a ``guide_date``.
+    """
+
+    soup = BeautifulSoup(page, "lxml")
+    rows: list[tuple[time, time, str, str | None]] = []
+    for row in soup.find_all("tr"):
+        parts = [epg.normalize_text(value) for value in row.stripped_strings]
+        parts = [value for value in parts if value]
+        if not parts:
+            continue
+
+        start_result = None
+        start_index = 0
+        for index in range(min(len(parts), 5)):
+            start_result = epg.parse_clock(parts, index)
+            if start_result is not None:
+                start_index = index
+                break
+        if start_result is None or start_index > 4:
+            continue
+        start_clock, after_start = start_result
+
+        stop_result = None
+        for index in range(after_start, len(parts)):
+            stop_result = epg.parse_clock(parts, index)
+            if stop_result is not None:
+                break
+        if stop_result is None:
+            continue
+        stop_clock, after_stop = stop_result
+
+        title_parts = epg.clean_title_parts(parts[after_stop:])
+        if not title_parts:
+            continue
+        title = title_parts[0]
+        description = " — ".join(title_parts[1:]) or None
+        rows.append((start_clock, stop_clock, title, description))
+
+    if len(rows) < 5:
+        # Conserva el respaldo del generador base para un eventual cambio de
+        # maquetación en GatoTV. La estructura tabular es la vía preferida.
+        return epg.parse_gatotv_page(page, guide_date, channel_id)
+
+    programmes: list[epg.Programme] = []
+    first_start, first_stop, _, _ = rows[0]
+    first_is_carryover = (
+        first_stop <= first_start
+        and any(start_clock < first_start for start_clock, _, _, _ in rows[1:])
+    )
+
+    for index, (start_clock, stop_clock, title, description) in enumerate(rows):
+        start_day = guide_date
+        if index == 0 and first_is_carryover:
+            start_day -= timedelta(days=1)
+        stop_day = start_day if stop_clock > start_clock else start_day + timedelta(days=1)
+        start = datetime.combine(start_day, start_clock, tzinfo=epg.TZ)
+        stop = datetime.combine(stop_day, stop_clock, tzinfo=epg.TZ)
+        if stop <= start:
+            continue
+        programmes.append(
+            epg.Programme(
+                channel_id=channel_id,
+                start=start,
+                stop=stop,
+                title=title,
+                description=description,
+            )
+        )
+
+    deduplicated: dict[tuple[str, str, str], epg.Programme] = {}
+    for programme in programmes:
+        key = (
+            programme.start.isoformat(),
+            programme.stop.isoformat(),
+            normalized(programme.title),
+        )
+        deduplicated.setdefault(key, programme)
+    result = sorted(
+        deduplicated.values(),
+        key=lambda item: (item.start, item.stop, item.title),
+    )
+    if len(result) < 5:
+        raise RuntimeError(
+            f"GatoTV: solo se encontraron {len(result)} emisiones "
+            f"para {guide_date.isoformat()}."
+        )
+    return result
+
+
+def scrape_gatotv_channel(
+    config: GatoTvChannel,
+    start_date: date,
+    days: int,
+) -> tuple[list[epg.Programme], int, dict[str, int]]:
+    """Descarga GatoTV tolerando días futuros aún no publicados.
+
+    GatoTV puede tener la parrilla de hoy completa y días posteriores vacíos o
+    parciales. Cada fecha se valida de forma independiente; una fecha futura
+    fallida genera solo una advertencia. El canal completo falla únicamente si
+    no se consigue ninguna fecha utilizable.
+    """
+
+    all_programmes: list[epg.Programme] = []
+    loaded_days = 0
+    daily_counts: dict[str, int] = {}
+    for offset in range(days):
+        guide_date = start_date + timedelta(days=offset)
+        dated_url = f"{config.base_url}/{guide_date.isoformat()}"
+        try:
+            page = epg.fetch_text(
+                dated_url,
+                headers={"Referer": f"{config.base_url}/"},
+            )
+            day_programmes = parse_gatotv_page(
+                page,
+                guide_date,
+                config.channel_id,
+            )
+        except (requests.RequestException, RuntimeError) as exc:
+            if offset == 0:
+                epg.warn(
+                    f"GatoTV {config.channel_id} {guide_date.isoformat()}: "
+                    f"falló la URL fechada ({exc}). Se probará la página principal."
+                )
+                try:
+                    page = epg.fetch_text(
+                        config.base_url,
+                        headers={"Referer": "https://www.gatotv.com/"},
+                    )
+                    day_programmes = parse_gatotv_page(
+                        page,
+                        guide_date,
+                        config.channel_id,
+                    )
+                except (requests.RequestException, RuntimeError) as fallback_exc:
+                    epg.warn(
+                        f"GatoTV {config.channel_id} {guide_date.isoformat()}: "
+                        f"también falló la página principal: {fallback_exc}"
+                    )
+                    continue
+            else:
+                epg.warn(
+                    f"GatoTV {config.channel_id} {guide_date.isoformat()}: {exc}"
+                )
+                continue
+
+        all_programmes.extend(day_programmes)
+        loaded_days += 1
+        daily_counts[guide_date.isoformat()] = len(day_programmes)
+        epg.log(
+            f"GatoTV {config.channel_id}: {guide_date.isoformat()}="
+            f"{len(day_programmes)} emisiones."
+        )
+
+    deduplicated: dict[tuple[str, str, str], epg.Programme] = {}
+    for programme in all_programmes:
+        key = (
+            programme.start.isoformat(),
+            programme.stop.isoformat(),
+            normalized(programme.title),
+        )
+        deduplicated.setdefault(key, programme)
+    result = sorted(
+        deduplicated.values(),
+        key=lambda item: (item.start, item.stop, item.title),
+    )
+    if loaded_days == 0 or len(result) < 5:
+        raise RuntimeError(
+            f"GatoTV {config.channel_id}: no se obtuvo programación suficiente."
+        )
+    return result, loaded_days, daily_counts
+
+
 def combine_ecuador_tv(
     *,
     source_root: etree._Element,
@@ -649,10 +874,10 @@ def write_index(output_dir: Path) -> None:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EPG MrG</title>
+  <title>EPG MrG v{EPG_VERSION}</title>
 </head>
 <body>
-  <h1>EPG MrG</h1>
+  <h1>EPG MrG v{EPG_VERSION}</h1>
   <h2>Guía principal Ecuador</h2>
   <ul>
     <li><a href="./ec.xml">ec.xml</a></li>
@@ -687,6 +912,7 @@ def build_latam(
     dtd_path: Path | None,
     days: int,
     mitv_days: int,
+    gatotv_days: int,
     logos_manifest: Path | None = None,
 ) -> dict[str, object]:
     start_date = datetime.now(epg.TZ).date()
@@ -707,6 +933,8 @@ def build_latam(
     channel_elements: list[etree._Element] = []
     programme_elements: list[etree._Element] = []
     mitv_source_days: dict[str, int] = {}
+    gatotv_source_days: dict[str, int] = {}
+    gatotv_daily_counts: dict[str, dict[str, int]] = {}
 
     for channel_id in BASE_CHANNEL_IDS:
         if channel_id == TVE_ID:
@@ -761,6 +989,24 @@ def build_latam(
         mitv_source_days[config.channel_id] = loaded_days
         programme_elements.extend(epg.make_programme(item) for item in programmes)
 
+    for config in GATOTV_CHANNELS:
+        channel_elements.append(
+            make_channel(
+                config.channel_id,
+                config.names,
+                config.website,
+                icon_url=logo_urls.get(config.channel_id),
+            )
+        )
+        programmes, loaded_days, daily_counts = scrape_gatotv_channel(
+            config,
+            start_date,
+            gatotv_days,
+        )
+        gatotv_source_days[config.channel_id] = loaded_days
+        gatotv_daily_counts[config.channel_id] = daily_counts
+        programme_elements.extend(epg.make_programme(item) for item in programmes)
+
     ecuador_channel, ecuador_programmes, ecuador_status = combine_ecuador_tv(
         source_root=source_root,
         start_date=start_date,
@@ -793,14 +1039,18 @@ def build_latam(
 
     now = datetime.now(epg.TZ)
     status: dict[str, object] = {
+        "version": EPG_VERSION,
         "generated_at": now.isoformat(),
         "base_date": start_date.isoformat(),
         "window_days": days,
         "mitv_local_days": mitv_days,
+        "gatotv_requested_days": gatotv_days,
         "channels": len(LATAM_CHANNEL_IDS),
         "programmes": sum(programme_counts.values()),
         "programme_counts": programme_counts,
         "mitv_source_days": mitv_source_days,
+        "gatotv_source_days": gatotv_source_days,
+        "gatotv_daily_counts": gatotv_daily_counts,
         "logos_manifest": logos_manifest.name if logos_manifest is not None else None,
         "logos_available": sorted(logo_urls),
         "ecuador_tv": ecuador_status,
@@ -817,6 +1067,10 @@ def build_latam(
                     for config in MITV_CHANNELS
                 },
             },
+            "gato_tv": {
+                config.channel_id: config.base_url
+                for config in GATOTV_CHANNELS
+            },
         },
     }
     (output_dir / "latam-status.json").write_text(
@@ -829,7 +1083,7 @@ def build_latam(
 
 
 def self_test() -> None:
-    assert len(LATAM_CHANNEL_IDS) == 21
+    assert len(LATAM_CHANNEL_IDS) == 25
     assert LATAM_CHANNEL_IDS[3] == TVE_ID
     assert TVE_MITV_CHANNEL.country == "co"
     assert TVE_MITV_CHANNEL.slug == "tve"
@@ -865,12 +1119,35 @@ def self_test() -> None:
     assert combined is not None
     assert combined.title == "Estas Secretarias"
 
-    assert len(LATAM_CHANNEL_IDS) == 21
-    assert len(set(LATAM_CHANNEL_IDS)) == 21
+    assert len(LATAM_CHANNEL_IDS) == 25
+    assert len(set(LATAM_CHANNEL_IDS)) == 25
     assert "hgtv.ar" in LATAM_CHANNEL_IDS
+    assert "Canal24Horas.es" in LATAM_CHANNEL_IDS
+    assert "La1.es" in LATAM_CHANNEL_IDS
+    assert "TVEStarHD.es" in LATAM_CHANNEL_IDS
+    assert "Clan.es" in LATAM_CHANNEL_IDS
     assert LATAM_CHANNEL_IDS[-1] == ECUADOR_TV_ID
+
+    gatotv_sample = """
+    <html><body><table>
+      <tr><th>Hora Inicio</th><th>Hora Fin</th><th>Programa</th></tr>
+      <tr><td>23:20</td><td>00:10</td><td>Víctimas del misterio</td></tr>
+      <tr><td>00:10</td><td>01:10</td><td>Salón de té La Moderna</td></tr>
+      <tr><td>01:10</td><td>02:10</td><td>Seis hermanas</td></tr>
+      <tr><td>02:10</td><td>02:35</td><td>Flash moda</td></tr>
+      <tr><td>02:35</td><td>03:05</td><td>Centenario Tous</td></tr>
+    </table></body></html>
+    """
+    gatotv_programmes = parse_gatotv_page(
+        gatotv_sample,
+        date(2026, 8, 11),
+        "TVEStarHD.es",
+    )
+    assert len(gatotv_programmes) == 5
+    assert gatotv_programmes[0].start.isoformat() == "2026-08-10T23:20:00-05:00"
+    assert gatotv_programmes[0].stop.isoformat() == "2026-08-11T00:10:00-05:00"
     print(
-        "Prueba latam correcta: 21 IDs únicos, HGTV incluido y parser de Ecuador TV validado."
+        "Prueba latam correcta: 25 IDs únicos, 4 canales GatoTV incluidos y parsers validados."
     )
 
 
@@ -894,6 +1171,11 @@ def main() -> int:
         type=int,
         default=int(os.environ.get("MITV_LOCAL_DAYS", "2")),
     )
+    parser.add_argument(
+        "--gatotv-days",
+        type=int,
+        default=int(os.environ.get("GATOTV_DAYS", os.environ.get("GUIDE_DAYS", "7"))),
+    )
     args = parser.parse_args()
 
     if not args.source_xml.is_file():
@@ -902,6 +1184,8 @@ def main() -> int:
         parser.error("--days debe estar entre 1 y 7.")
     if not 1 <= args.mitv_days <= 2:
         parser.error("--mitv-days debe estar entre 1 y 2.")
+    if not 1 <= args.gatotv_days <= 7:
+        parser.error("--gatotv-days debe estar entre 1 y 7.")
     if args.dtd is not None and not args.dtd.is_file():
         parser.error(f"No existe el DTD: {args.dtd}")
     if args.logos_manifest is not None and not args.logos_manifest.is_file():
@@ -917,6 +1201,7 @@ def main() -> int:
         dtd_path=args.dtd,
         days=args.days,
         mitv_days=args.mitv_days,
+        gatotv_days=args.gatotv_days,
         logos_manifest=args.logos_manifest,
     )
     epg.log(json.dumps(status, ensure_ascii=False, indent=2))
