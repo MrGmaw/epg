@@ -1,4 +1,4 @@
-# EPG MrG para GitHub Pages
+# EPG MrG v0.2.0 para GitHub Pages
 
 Este repositorio genera y publica dos guías XMLTV en un mismo workflow y,
 además, conserva localmente los logos de los canales obtenidos desde mi.tv.
@@ -13,7 +13,7 @@ ec.xml.gz
 status.json
 ```
 
-Guía seleccionada de 21 canales:
+Guía seleccionada de 25 canales:
 
 ```text
 latam.xml
@@ -59,6 +59,10 @@ TV.Publica.canal.7.ar
 Telefe.ar
 Deutsche.Welle.cl
 hgtv.ar
+Canal24Horas.es
+La1.es
+TVEStarHD.es
+Clan.es
 Canal.Ecuador.TV.ec
 ```
 
@@ -88,6 +92,28 @@ Telefe.ar                           ar/canales/telefe
 Deutsche.Welle.cl                   cl/canales/deutsche-welle-espanol
 hgtv.ar                             ar/canales/hgtv
 ```
+
+
+## GatoTV: cuatro canales RTVE adicionales
+
+`latam.xml` incorpora cuatro parrillas adicionales desde GatoTV:
+
+```text
+Canal24Horas.es   https://www.gatotv.com/canal/24_horas_tve
+La1.es            https://www.gatotv.com/canal/la_1
+TVEStarHD.es      https://www.gatotv.com/canal/star_tve
+Clan.es           https://www.gatotv.com/canal/clan_tve
+```
+
+El primer enlace originalmente propuesto como `24_horas_tv` no existe; se usa
+el slug vigente `24_horas_tve`. GatoTV se consulta por fecha durante hasta siete
+días. Si una fecha futura todavía está vacía o incompleta, se registra una
+advertencia y se conservan los días válidos del canal, sin abortar por ese día.
+
+El parser interpreta las horas de GatoTV en `America/Guayaquil`, igual que la
+integración GatoTV ya utilizada para Ecuavisa Internacional. También corrige
+el caso en que la primera fila de una fecha corresponde a un programa iniciado
+la noche anterior y terminado después de medianoche.
 
 ## Logos de mi.tv almacenados en GitHub Pages
 
@@ -177,8 +203,10 @@ Antes de publicar, el workflow verifica:
 
 - compilación Python;
 - UTC → Ecuador y cambio de fecha;
-- exactamente 21 canales en `latam.xml`;
-- programación no vacía para los 21 canales;
+- parser GatoTV, incluido cruce correcto de medianoche;
+- tolerancia a días futuros de GatoTV todavía no publicados;
+- exactamente 25 canales en `latam.xml`;
+- programación no vacía para los 25 canales;
 - XML válido contra `xmltv.dtd`;
 - identidad XML/XML.GZ;
 - `logos/manifest.json` con los 12 objetivos de mi.tv;

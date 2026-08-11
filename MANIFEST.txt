@@ -1,11 +1,14 @@
-EPG MrG — REPOSITORIO COMPLETO LATAM 21 CANALES + TVE SOLO MI.TV + LOGOS LOCALES
+EPG MrG v0.2.0 — REPOSITORIO COMPLETO LATAM 25 CANALES
 
 TIPO DE PAQUETE:
 - Reemplazo total de la rama main del repositorio MrGmaw/epg.
 - Mantiene ec.xml/ec.xml.gz.
-- Mantiene latam.xml/latam.xml.gz con 21 canales, incluido HGTV.
+- Amplía latam.xml/latam.xml.gz de 21 a 25 canales.
 - TVE Internacional usa exclusivamente https://mi.tv/co/canales/tve en latam.xml.
 - Añade TVE al descubrimiento, conversión, caché y publicación local de logos mi.tv.
+- Añade desde GatoTV: Canal 24 Horas (TVE), La 1, STAR TVE y Clan TVE.
+- Corrige el slug de Canal 24 Horas a `24_horas_tve`.
+- Los días futuros vacíos de GatoTV no bloquean la guía si existe al menos un día válido.
 - Compatible con acciones GitHub basadas en Node 24.
 
 ESTRUCTURA:
@@ -24,6 +27,8 @@ ESTRUCTURA:
 - IMPORTANTE-ANDROID.txt
 - INSTRUCCIONES-REEMPLAZO-TOTAL.txt
 - PRUEBAS-REALIZADAS.txt
+- VERSION
+- CHANGELOG.md
 
 GENERADOR BASE:
 - Se recupera durante el workflow desde:
@@ -58,5 +63,15 @@ TVE INTERNACIONAL:
 - tvg-id conservado: Canal.TVE.Internacional.(Televisión.Española).ec
 - Programación LATAM: exclusivamente mi.tv Colombia, slug co/canales/tve.
 - No usa EPGShare como fallback dentro de latam.xml.
-- Conserva la posición 4 dentro de los 21 canales.
+- Conserva la posición 4 dentro de los 25 canales.
 - Logo local esperado: https://mrgmaw.github.io/epg/logos/Canal.TVE.Internacional.(Televisión.Española).ec.png
+
+
+GATOTV v0.2.0:
+- Canal24Horas.es -> https://www.gatotv.com/canal/24_horas_tve
+- La1.es -> https://www.gatotv.com/canal/la_1
+- TVEStarHD.es -> https://www.gatotv.com/canal/star_tve
+- Clan.es -> https://www.gatotv.com/canal/clan_tve
+- Horizonte solicitado: hasta 7 días.
+- Cada fecha se valida de forma independiente; los días futuros no publicados generan advertencia.
+- Se corrige el programa de arrastre que cruza desde la noche anterior a las 00:00.
