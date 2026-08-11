@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-09T16:50:29.660181-05:00",
+  "generated_at": "2026-08-10T22:49:48.757192-05:00",
   "public_base_url": "https://mrgmaw.github.io/epg/logos",
-  "targets": 11,
-  "available": 11,
+  "targets": 12,
+  "available": 12,
   "missing": [],
   "channels": {
     "Canal.CNN.en.Español.ec": {
@@ -14,6 +14,16 @@
       "width": 250,
       "height": 250,
       "sha256": "a4ada21e91d43000f2925b5be76266c7a6d6712340e11f450ab77e72bd6c650f"
+    },
+    "Canal.TVE.Internacional.(Televisión.Española).ec": {
+      "page_url": "https://mi.tv/co/canales/tve",
+      "local_url": "https://mrgmaw.github.io/epg/logos/Canal.TVE.Internacional.(Televisión.Española).ec.png",
+      "available": true,
+      "source": "discovered",
+      "source_url": "https://cdn.mitvstatic.com/channels/d2071680-9d77-46c2-a601-92faccfd9b82_m.jpg",
+      "width": 250,
+      "height": 250,
+      "sha256": "275e3e78e8109fe0f8f7c714a2600a25604eec59a1c0b6cac40b4066a41acaa8"
     },
     "NTN24.co": {
       "page_url": "https://mi.tv/co/canales/nuestra-tele-noticias-24hs",
