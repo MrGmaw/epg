@@ -23,6 +23,7 @@ env:
   BASE_GENERATOR_COMMIT: "5a0e7c59d94e8fc20ad83237727b1a49a6246248"
   GUIDE_DAYS: "7"
   MITV_LOCAL_DAYS: "2"
+  GATOTV_DAYS: "7"
 
 jobs:
   build:
@@ -69,6 +70,7 @@ jobs:
           test -s scripts/build_epg_base.py
           grep -q 'def parse_mitv_page' scripts/build_epg_base.py
           grep -q 'def scrape_mitv_range' scripts/build_epg_base.py
+          grep -q 'def parse_gatotv_page' scripts/build_epg_base.py
           grep -q 'Canal.CNN.en.Español.ec' scripts/build_epg_base.py
           grep -q 'NTN24.co' scripts/build_epg_base.py
           python -m py_compile \
@@ -182,6 +184,7 @@ jobs:
             --dtd public/xmltv.dtd \
             --days "${GUIDE_DAYS}" \
             --mitv-days "${MITV_LOCAL_DAYS}" \
+            --gatotv-days "${GATOTV_DAYS}" \
             --logos-manifest public/logos/manifest.json
 
       - name: Validar archivos finales
@@ -262,7 +265,7 @@ jobs:
           - `ec.xml.gz`
           - `status.json`
 
-          Guía seleccionada de 21 canales:
+          Guía seleccionada de 25 canales:
           - `latam.xml`
           - `latam.xml.gz`
           - `latam-status.json`
