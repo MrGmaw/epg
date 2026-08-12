@@ -32,7 +32,7 @@ import build_epg_base as epg
 from mitv_utc import scrape_mitv_channel
 from mitv_logos import load_logo_urls
 
-EPG_VERSION = "0.2.0"
+EPG_VERSION = "0.2.1"
 ECUADOR_TV_URL = "https://www.ecuadortv.ec/programas"
 ECUADOR_TV_ID = "Canal.Ecuador.TV.ec"
 TVE_ID = "Canal.TVE.Internacional.(Televisión.Española).ec"
@@ -70,6 +70,7 @@ class GatoTvChannel:
     channel_id: str
     names: tuple[str, ...]
     website: str
+    time_offset_minutes: int = 0
 
     @property
     def base_url(self) -> str:
@@ -169,6 +170,7 @@ GATOTV_CHANNELS: tuple[GatoTvChannel, ...] = (
         "TVEStarHD.es",
         ("STAR TVE", "Star TVE"),
         "https://www.gatotv.com/canal/star_tve",
+        -60,
     ),
     GatoTvChannel(
         "clan_tve",
@@ -627,6 +629,27 @@ def parse_gatotv_page(
     return result
 
 
+def shift_programmes(
+    programmes: list[epg.Programme],
+    minutes: int,
+) -> list[epg.Programme]:
+    """Desplaza una parrilla completa sin alterar duraciones ni contenidos."""
+
+    if minutes == 0:
+        return programmes
+    delta = timedelta(minutes=minutes)
+    return [
+        epg.Programme(
+            channel_id=item.channel_id,
+            start=item.start + delta,
+            stop=item.stop + delta,
+            title=item.title,
+            description=item.description,
+        )
+        for item in programmes
+    ]
+
+
 def scrape_gatotv_channel(
     config: GatoTvChannel,
     start_date: date,
@@ -684,6 +707,10 @@ def scrape_gatotv_channel(
                 )
                 continue
 
+        day_programmes = shift_programmes(
+            day_programmes,
+            config.time_offset_minutes,
+        )
         all_programmes.extend(day_programmes)
         loaded_days += 1
         daily_counts[guide_date.isoformat()] = len(day_programmes)
@@ -1051,6 +1078,10 @@ def build_latam(
         "mitv_source_days": mitv_source_days,
         "gatotv_source_days": gatotv_source_days,
         "gatotv_daily_counts": gatotv_daily_counts,
+        "gatotv_time_offsets_minutes": {
+            config.channel_id: config.time_offset_minutes
+            for config in GATOTV_CHANNELS
+        },
         "logos_manifest": logos_manifest.name if logos_manifest is not None else None,
         "logos_available": sorted(logo_urls),
         "ecuador_tv": ecuador_status,
@@ -1146,8 +1177,35 @@ def self_test() -> None:
     assert len(gatotv_programmes) == 5
     assert gatotv_programmes[0].start.isoformat() == "2026-08-10T23:20:00-05:00"
     assert gatotv_programmes[0].stop.isoformat() == "2026-08-11T00:10:00-05:00"
+
+    # STAR TVE: corrección observada en la señal real de Ecuador el 11-08-2026.
+    star_config = next(
+        config for config in GATOTV_CHANNELS if config.channel_id == "TVEStarHD.es"
+    )
+    assert star_config.time_offset_minutes == -60
+    star_sample = [
+        epg.Programme(
+            channel_id="TVEStarHD.es",
+            start=datetime(2026, 8, 11, 20, 15, tzinfo=epg.TZ),
+            stop=datetime(2026, 8, 11, 21, 10, tzinfo=epg.TZ),
+            title="La promesa",
+            description=None,
+        ),
+        epg.Programme(
+            channel_id="TVEStarHD.es",
+            start=datetime(2026, 8, 11, 21, 10, tzinfo=epg.TZ),
+            stop=datetime(2026, 8, 11, 22, 15, tzinfo=epg.TZ),
+            title="Los misterios de Laura",
+            description=None,
+        ),
+    ]
+    shifted = shift_programmes(star_sample, star_config.time_offset_minutes)
+    assert shifted[0].start.isoformat() == "2026-08-11T19:15:00-05:00"
+    assert shifted[0].stop.isoformat() == "2026-08-11T20:10:00-05:00"
+    assert shifted[1].start.isoformat() == "2026-08-11T20:10:00-05:00"
+    assert shifted[1].stop.isoformat() == "2026-08-11T21:15:00-05:00"
     print(
-        "Prueba latam correcta: 25 IDs únicos, 4 canales GatoTV incluidos y parsers validados."
+        "Prueba latam correcta: 25 IDs únicos, 4 canales GatoTV incluidos; STAR TVE -60 min validado."
     )
 
 
