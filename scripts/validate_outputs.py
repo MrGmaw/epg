@@ -46,7 +46,8 @@ LATAM_REQUIRED = (
     "Clan.es",
     "Canal.Ecuador.TV.ec",
 )
-EXPECTED_VERSION = "0.2.0"
+VERSION_FILE = Path(__file__).resolve().parents[1] / "VERSION"
+EXPECTED_VERSION = VERSION_FILE.read_text(encoding="utf-8").strip()
 LOCAL_LOGO_BASE = "https://mrgmaw.github.io/epg/logos/"
 MITV_LOGO_IDS = {
     "Canal.CNN.en.Español.ec",

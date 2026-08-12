@@ -32,7 +32,8 @@ import build_epg_base as epg
 from mitv_utc import scrape_mitv_channel
 from mitv_logos import load_logo_urls
 
-EPG_VERSION = "0.2.1"
+VERSION_FILE = Path(__file__).resolve().parents[1] / "VERSION"
+EPG_VERSION = VERSION_FILE.read_text(encoding="utf-8").strip()
 ECUADOR_TV_URL = "https://www.ecuadortv.ec/programas"
 ECUADOR_TV_ID = "Canal.Ecuador.TV.ec"
 TVE_ID = "Canal.TVE.Internacional.(Televisión.Española).ec"
