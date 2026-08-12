@@ -1,4 +1,4 @@
-EPG MrG v0.2.0 — REPOSITORIO COMPLETO LATAM 25 CANALES
+EPG MrG v0.2.1 — REPOSITORIO COMPLETO LATAM 25 CANALES
 
 TIPO DE PAQUETE:
 - Reemplazo total de la rama main del repositorio MrGmaw/epg.
@@ -67,7 +67,7 @@ TVE INTERNACIONAL:
 - Logo local esperado: https://mrgmaw.github.io/epg/logos/Canal.TVE.Internacional.(Televisión.Española).ec.png
 
 
-GATOTV v0.2.0:
+GATOTV v0.2.1:
 - Canal24Horas.es -> https://www.gatotv.com/canal/24_horas_tve
 - La1.es -> https://www.gatotv.com/canal/la_1
 - TVEStarHD.es -> https://www.gatotv.com/canal/star_tve
@@ -75,3 +75,7 @@ GATOTV v0.2.0:
 - Horizonte solicitado: hasta 7 días.
 - Cada fecha se valida de forma independiente; los días futuros no publicados generan advertencia.
 - Se corrige el programa de arrastre que cruza desde la noche anterior a las 00:00.
+
+CORRECCIÓN v0.2.1:
+- TVEStarHD.es (STAR TVE): offset horario -60 min, validado contra señal real en Ecuador el 11-08-2026.
+- Canal24Horas.es, La1.es y Clan.es: offset 0.

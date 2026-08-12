@@ -1,4 +1,4 @@
-# EPG MrG v0.2.0 para GitHub Pages
+# EPG MrG v0.2.1 para GitHub Pages
 
 Este repositorio genera y publica dos guías XMLTV en un mismo workflow y,
 además, conserva localmente los logos de los canales obtenidos desde mi.tv.
@@ -111,7 +111,10 @@ días. Si una fecha futura todavía está vacía o incompleta, se registra una
 advertencia y se conservan los días válidos del canal, sin abortar por ese día.
 
 El parser interpreta las horas de GatoTV en `America/Guayaquil`, igual que la
-integración GatoTV ya utilizada para Ecuavisa Internacional. También corrige
+integración GatoTV ya utilizada para Ecuavisa Internacional. **STAR TVE aplica
+un ajuste específico de -60 minutos**, validado el 11-08-2026 contra la señal
+real recibida en Ecuador; los otros tres canales GatoTV permanecen sin ajuste.
+También corrige
 el caso en que la primera fila de una fecha corresponde a un programa iniciado
 la noche anterior y terminado después de medianoche.
 
