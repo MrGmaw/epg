@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.2.2 — 2026-08-11
+
+- Corregida la validación de versión de `scripts/validate_outputs.py`.
+- El validador ya no contiene una versión fija `0.2.0`: ahora lee automáticamente
+  el archivo raíz `VERSION`, evitando fallos al cambiar de versión.
+- `build_latam_epg.py` también obtiene `EPG_VERSION` desde `VERSION`, por lo que
+  generador y validador comparten una única fuente de verdad.
+- Se conserva íntegramente la corrección horaria de STAR TVE de v0.2.1
+  (offset exclusivo de -60 minutos).
+
 ## v0.2.1 — 2026-08-11
 
 - Corregido un desfase de **+1 hora** en la EPG de `TVEStarHD.es` (STAR TVE).

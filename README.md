@@ -1,4 +1,4 @@
-# EPG MrG v0.2.1 para GitHub Pages
+# EPG MrG v0.2.2 para GitHub Pages
 
 Este repositorio genera y publica dos guías XMLTV en un mismo workflow y,
 además, conserva localmente los logos de los canales obtenidos desde mi.tv.

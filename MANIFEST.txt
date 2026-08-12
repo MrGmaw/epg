@@ -1,4 +1,4 @@
-EPG MrG v0.2.1 — REPOSITORIO COMPLETO LATAM 25 CANALES
+EPG MrG v0.2.2 — REPOSITORIO COMPLETO LATAM 25 CANALES
 
 TIPO DE PAQUETE:
 - Reemplazo total de la rama main del repositorio MrGmaw/epg.
