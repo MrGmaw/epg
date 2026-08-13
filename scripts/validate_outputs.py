@@ -45,6 +45,7 @@ LATAM_REQUIRED = (
     "La1.es",
     "TVEStarHD.es",
     "Clan.es",
+    "MakroDigitalTV.ec",
     "Canal.Ecuador.TV.ec",
 )
 VERSION_FILE = Path(__file__).resolve().parents[1] / "VERSION"

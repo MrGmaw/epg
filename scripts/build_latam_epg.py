@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Construye ``latam.xml`` con los 26 canales seleccionados.
+"""Construye ``latam.xml`` con los 27 canales seleccionados.
 
 La guía principal ``ec.xml`` se genera primero y actúa como fuente estable
 para los canales base, excepto TVE Internacional. TVE Internacional toma su
 programación exclusivamente de mi.tv Colombia. Después se añaden los otros
-canales de mi.tv, cuatro parrillas de GatoTV y la parrilla oficial de Ecuador TV
-cuando está disponible.
+canales de mi.tv, cuatro parrillas de GatoTV, MakroDigital TV desde su parrilla
+oficial semanal y la parrilla oficial de Ecuador TV cuando está disponible.
 """
 
 from __future__ import annotations
@@ -21,6 +21,7 @@ import unicodedata
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from typing import Iterable, Sequence
 
@@ -43,6 +44,15 @@ ECUADOR_TV_SCHEDULE_URLS = (
     ECUADOR_TV_HOME_URL,
 )
 ECUADOR_TV_ID = "Canal.Ecuador.TV.ec"
+MAKRODIGITAL_URL = "https://makrodigitaltelevision.com/programacion/"
+MAKRODIGITAL_WEBSITE = "https://makrodigitaltelevision.com/"
+MAKRODIGITAL_ID = "MakroDigitalTV.ec"
+MAKRODIGITAL_SOURCE_TIMEZONE = "America/New_York"
+# GatoTV expone para STAR TVE una representación 24 h que, el 13-08-2026,
+# mostraba 16:00 para una emisión comprobada en Ecuador a las 10:00.
+# Interpretamos ese reloj de origen con una zona IANA (sin offset manual) y
+# convertimos siempre el resultado a America/Guayaquil.
+STAR_GATOTV_SOURCE_TIMEZONE = "Atlantic/Canary"
 TVE_ID = "Canal.TVE.Internacional.(Televisión.Española).ec"
 TVE_MITV_COUNTRY = "co"
 TVE_MITV_SLUG = "tve"
@@ -78,11 +88,19 @@ class GatoTvChannel:
     channel_id: str
     names: tuple[str, ...]
     website: str
-    time_offset_minutes: int = 0
+    source_timezone: str | None = None
+    prefer_ampm_local: bool = False
 
     @property
     def base_url(self) -> str:
         return f"https://www.gatotv.com/canal/{self.slug}"
+
+
+@dataclass(frozen=True)
+class MakroWeeklyItem:
+    title: str
+    start: time
+    stop: time
 
 
 TVE_MITV_CHANNEL = MitvChannel(
@@ -185,7 +203,8 @@ GATOTV_CHANNELS: tuple[GatoTvChannel, ...] = (
         "TVEStarHD.es",
         ("STAR TVE", "Star TVE"),
         "https://www.gatotv.com/canal/star_tve",
-        -60,
+        source_timezone=STAR_GATOTV_SOURCE_TIMEZONE,
+        prefer_ampm_local=True,
     ),
     GatoTvChannel(
         "clan_tve",
@@ -200,6 +219,7 @@ LATAM_CHANNEL_IDS: tuple[str, ...] = (
     *BASE_CHANNEL_IDS,
     *(channel.channel_id for channel in MITV_CHANNELS),
     *(channel.channel_id for channel in GATOTV_CHANNELS),
+    MAKRODIGITAL_ID,
     ECUADOR_TV_ID,
 )
 
@@ -227,6 +247,17 @@ WEEKDAYS = {
     "sabado": 5,
     "domingo": 6,
 }
+MAKRO_WEEKDAYS = {
+    **WEEKDAYS,
+    "sabados": 5,
+    "domingos": 6,
+}
+MAKRO_TIME_RANGE_RE = re.compile(
+    r"(?P<start>\d{1,2}(?::\d{2})?\s*(?:AM|PM))\s*"
+    r"(?:-|–|—|\ba\b)\s*"
+    r"(?P<stop>\d{1,2}(?::\d{2})?\s*(?:AM|PM))",
+    re.I,
+)
 ECUADOR_TV_CATEGORIES = (
     "Educación, Cultura y Medio Ambiente",
     "Hogar y Estilo de vida",
@@ -651,21 +682,12 @@ def parse_ecuador_tv_page(
     return programmes, accepted_dates
 
 
-def parse_gatotv_page(
-    page: str,
-    guide_date: date,
-    channel_id: str,
-) -> list[epg.Programme]:
-    """Lee una fecha de GatoTV conservando correctamente el cruce de medianoche.
+def _gatotv_rows(container: Tag | BeautifulSoup) -> tuple[list[tuple[time, time, str, str | None]], int]:
+    """Extrae filas horarias y cuenta cuántas usan AM/PM explícito."""
 
-    Algunas parrillas comienzan mostrando el programa que empezó la noche
-    anterior y termina después de las 00:00. En ese caso la primera fila se
-    fecha en ``guide_date - 1``; el resto pertenece a ``guide_date``.
-    """
-
-    soup = BeautifulSoup(page, "lxml")
     rows: list[tuple[time, time, str, str | None]] = []
-    for row in soup.find_all("tr"):
+    meridiem_rows = 0
+    for row in container.find_all("tr"):
         parts = [epg.normalize_text(value) for value in row.stripped_strings]
         parts = [value for value in parts if value]
         if not parts:
@@ -696,12 +718,19 @@ def parse_gatotv_page(
             continue
         title = title_parts[0]
         description = " — ".join(title_parts[1:]) or None
+        if any(re.search(r"\b(?:AM|PM)\b", value, re.I) for value in parts[:after_stop]):
+            meridiem_rows += 1
         rows.append((start_clock, stop_clock, title, description))
+    return rows, meridiem_rows
 
-    if len(rows) < 5:
-        # Conserva el respaldo del generador base para un eventual cambio de
-        # maquetación en GatoTV. La estructura tabular es la vía preferida.
-        return epg.parse_gatotv_page(page, guide_date, channel_id)
+
+def _convert_gatotv_rows(
+    rows: list[tuple[time, time, str, str | None]],
+    guide_date: date,
+    channel_id: str,
+    clock_timezone: ZoneInfo,
+) -> list[epg.Programme]:
+    """Convierte el reloj de una tabla GatoTV a ``America/Guayaquil``."""
 
     programmes: list[epg.Programme] = []
     first_start, first_stop, _, _ = rows[0]
@@ -715,8 +744,10 @@ def parse_gatotv_page(
         if index == 0 and first_is_carryover:
             start_day -= timedelta(days=1)
         stop_day = start_day if stop_clock > start_clock else start_day + timedelta(days=1)
-        start = datetime.combine(start_day, start_clock, tzinfo=epg.TZ)
-        stop = datetime.combine(stop_day, stop_clock, tzinfo=epg.TZ)
+        source_start = datetime.combine(start_day, start_clock, tzinfo=clock_timezone)
+        source_stop = datetime.combine(stop_day, stop_clock, tzinfo=clock_timezone)
+        start = source_start.astimezone(epg.TZ)
+        stop = source_stop.astimezone(epg.TZ)
         if stop <= start:
             continue
         programmes.append(
@@ -737,9 +768,71 @@ def parse_gatotv_page(
             normalized(programme.title),
         )
         deduplicated.setdefault(key, programme)
-    result = sorted(
+    return sorted(
         deduplicated.values(),
         key=lambda item: (item.start, item.stop, item.title),
+    )
+
+
+def parse_gatotv_page(
+    page: str,
+    guide_date: date,
+    channel_id: str,
+    *,
+    source_timezone: str | None = None,
+    prefer_ampm_local: bool = False,
+) -> list[epg.Programme]:
+    """Lee una fecha de GatoTV y normaliza el resultado a Guayaquil.
+
+    Para STAR TVE se observan dos representaciones del mismo contenido en
+    GatoTV: una vista AM/PM que coincide con Ecuador y una tabla 24 h cuyo reloj
+    aparece adelantado. Si existe una tabla AM/PM se interpreta directamente
+    como ``America/Guayaquil``. Si el runner recibe solo la tabla 24 h, su reloj
+    se interpreta mediante ``source_timezone`` y se convierte con ``ZoneInfo``;
+    no se aplica ningún desplazamiento fijo en minutos.
+    """
+
+    soup = BeautifulSoup(page, "lxml")
+    candidates: list[
+        tuple[list[tuple[time, time, str, str | None]], int]
+    ] = []
+    for table in soup.find_all("table"):
+        rows, meridiem_rows = _gatotv_rows(table)
+        if len(rows) >= 5:
+            candidates.append((rows, meridiem_rows))
+
+    if not candidates:
+        rows, meridiem_rows = _gatotv_rows(soup)
+        if len(rows) >= 5:
+            candidates.append((rows, meridiem_rows))
+
+    if not candidates:
+        if source_timezone is not None:
+            raise RuntimeError(
+                "GatoTV: no se encontró una tabla horaria suficientemente "
+                "estructurada para convertir la zona de origen con seguridad."
+            )
+        return epg.parse_gatotv_page(page, guide_date, channel_id)
+
+    if prefer_ampm_local:
+        ampm_candidates = [item for item in candidates if item[1] >= 5]
+        selected = max(ampm_candidates or candidates, key=lambda item: len(item[0]))
+    else:
+        selected = max(candidates, key=lambda item: len(item[0]))
+    rows, meridiem_rows = selected
+
+    if prefer_ampm_local and meridiem_rows >= 5:
+        clock_timezone = epg.TZ
+    elif source_timezone is not None:
+        clock_timezone = ZoneInfo(source_timezone)
+    else:
+        clock_timezone = epg.TZ
+
+    result = _convert_gatotv_rows(
+        rows,
+        guide_date,
+        channel_id,
+        clock_timezone,
     )
     if len(result) < 5:
         raise RuntimeError(
@@ -749,27 +842,6 @@ def parse_gatotv_page(
     return result
 
 
-def shift_programmes(
-    programmes: list[epg.Programme],
-    minutes: int,
-) -> list[epg.Programme]:
-    """Desplaza una parrilla completa sin alterar duraciones ni contenidos."""
-
-    if minutes == 0:
-        return programmes
-    delta = timedelta(minutes=minutes)
-    return [
-        epg.Programme(
-            channel_id=item.channel_id,
-            start=item.start + delta,
-            stop=item.stop + delta,
-            title=item.title,
-            description=item.description,
-        )
-        for item in programmes
-    ]
-
-
 def scrape_gatotv_channel(
     config: GatoTvChannel,
     start_date: date,
@@ -777,16 +849,17 @@ def scrape_gatotv_channel(
 ) -> tuple[list[epg.Programme], int, dict[str, int]]:
     """Descarga GatoTV tolerando días futuros aún no publicados.
 
-    GatoTV puede tener la parrilla de hoy completa y días posteriores vacíos o
-    parciales. Cada fecha se valida de forma independiente; una fecha futura
-    fallida genera solo una advertencia. El canal completo falla únicamente si
-    no se consigue ninguna fecha utilizable.
+    Un canal con ``source_timezone`` consulta un día fuente adicional para que
+    la conversión a Guayaquil no deje sin cubrir las últimas horas del último
+    día local solicitado. El resultado final siempre se recorta a la ventana
+    local solicitada.
     """
 
     all_programmes: list[epg.Programme] = []
     loaded_days = 0
     daily_counts: dict[str, int] = {}
-    for offset in range(days):
+    fetch_days = days + (1 if config.source_timezone is not None else 0)
+    for offset in range(fetch_days):
         guide_date = start_date + timedelta(days=offset)
         dated_url = f"{config.base_url}/{guide_date.isoformat()}"
         try:
@@ -798,6 +871,8 @@ def scrape_gatotv_channel(
                 page,
                 guide_date,
                 config.channel_id,
+                source_timezone=config.source_timezone,
+                prefer_ampm_local=config.prefer_ampm_local,
             )
         except (requests.RequestException, RuntimeError) as exc:
             if offset == 0:
@@ -814,6 +889,8 @@ def scrape_gatotv_channel(
                         page,
                         guide_date,
                         config.channel_id,
+                        source_timezone=config.source_timezone,
+                        prefer_ampm_local=config.prefer_ampm_local,
                     )
                 except (requests.RequestException, RuntimeError) as fallback_exc:
                     epg.warn(
@@ -827,10 +904,6 @@ def scrape_gatotv_channel(
                 )
                 continue
 
-        day_programmes = shift_programmes(
-            day_programmes,
-            config.time_offset_minutes,
-        )
         all_programmes.extend(day_programmes)
         loaded_days += 1
         daily_counts[guide_date.isoformat()] = len(day_programmes)
@@ -839,8 +912,12 @@ def scrape_gatotv_channel(
             f"{len(day_programmes)} emisiones."
         )
 
+    window_start = datetime.combine(start_date, time.min, tzinfo=epg.TZ)
+    window_end = window_start + timedelta(days=days)
     deduplicated: dict[tuple[str, str, str], epg.Programme] = {}
     for programme in all_programmes:
+        if not (programme.start < window_end and programme.stop > window_start):
+            continue
         key = (
             programme.start.isoformat(),
             programme.stop.isoformat(),
@@ -856,6 +933,229 @@ def scrape_gatotv_channel(
             f"GatoTV {config.channel_id}: no se obtuvo programación suficiente."
         )
     return result, loaded_days, daily_counts
+
+
+def parse_makro_clock(value: str) -> time:
+    text = re.sub(r"\s+", " ", epg.normalize_text(value)).upper()
+    for pattern in ("%I:%M %p", "%I %p"):
+        try:
+            return datetime.strptime(text, pattern).time()
+        except ValueError:
+            continue
+    raise ValueError(f"Hora MakroDigital no reconocida: {value!r}")
+
+
+def _makro_day_headings(soup: BeautifulSoup) -> list[tuple[Tag, int]]:
+    headings: list[tuple[Tag, int]] = []
+    for tag in soup.find_all(["h2", "h3", "h4", "h5", "h6"]):
+        key = normalized(tag.get_text(" ", strip=True))
+        if key in MAKRO_WEEKDAYS:
+            headings.append((tag, MAKRO_WEEKDAYS[key]))
+    return headings
+
+
+def _makro_section_lines(heading: Tag) -> list[str]:
+    lines: list[str] = []
+    for element in heading.next_elements:
+        if element is heading:
+            continue
+        if isinstance(element, Tag):
+            if element.name in {"h2", "h3", "h4", "h5", "h6"}:
+                key = normalized(element.get_text(" ", strip=True))
+                if key in MAKRO_WEEKDAYS:
+                    break
+            continue
+        if not isinstance(element, str):
+            continue
+        value = epg.normalize_text(element)
+        if value:
+            lines.append(value)
+    return lines
+
+
+def parse_makro_weekly(page: str) -> dict[int, list[MakroWeeklyItem]]:
+    """Extrae la parrilla semanal oficial de MakroDigital Televisión."""
+
+    soup = BeautifulSoup(page, "lxml")
+    headings = _makro_day_headings(soup)
+    weekly: dict[int, list[MakroWeeklyItem]] = defaultdict(list)
+    clock_only_re = re.compile(r"^\d{1,2}(?::\d{2})?\s*(?:AM|PM)$", re.I)
+
+    for heading, weekday in headings:
+        recent_title: str | None = None
+        pending_start: str | None = None
+        for line in _makro_section_lines(heading):
+            matches = list(MAKRO_TIME_RANGE_RE.finditer(line))
+            if matches:
+                for match in matches:
+                    prefix = epg.normalize_text(line[: match.start()]).strip(" :-–—|")
+                    title = prefix or recent_title
+                    if not title:
+                        continue
+                    try:
+                        start_clock = parse_makro_clock(match.group("start"))
+                        stop_clock = parse_makro_clock(match.group("stop"))
+                    except ValueError:
+                        continue
+                    weekly[weekday].append(
+                        MakroWeeklyItem(
+                            title=epg.normalize_text(title),
+                            start=start_clock,
+                            stop=stop_clock,
+                        )
+                    )
+                recent_title = None
+                pending_start = None
+                continue
+
+            if clock_only_re.fullmatch(line):
+                if pending_start is None:
+                    pending_start = line
+                    continue
+                if recent_title:
+                    try:
+                        weekly[weekday].append(
+                            MakroWeeklyItem(
+                                title=epg.normalize_text(recent_title),
+                                start=parse_makro_clock(pending_start),
+                                stop=parse_makro_clock(line),
+                            )
+                        )
+                    except ValueError:
+                        pass
+                pending_start = None
+                recent_title = None
+                continue
+
+            key = normalized(line).strip(" :-–—|")
+            if key in MAKRO_WEEKDAYS or key in {
+                "programacion",
+                "read more",
+                "hora inicio",
+                "hora fin",
+                "programa",
+            }:
+                continue
+            if not re.search(r"\d{1,2}(?::\d{2})?\s*(?:AM|PM)", line, re.I):
+                recent_title = line
+
+    result: dict[int, list[MakroWeeklyItem]] = {}
+    for weekday in range(7):
+        deduplicated: dict[tuple[str, str], MakroWeeklyItem] = {}
+        for item in weekly.get(weekday, []):
+            key = (item.start.isoformat(), normalized(item.title))
+            deduplicated.setdefault(key, item)
+        items = sorted(deduplicated.values(), key=lambda item: (item.start, item.title))
+        if len(items) < 5:
+            raise RuntimeError(
+                "MakroDigital: la parrilla oficial no contiene suficientes "
+                f"emisiones para el día semanal {weekday}."
+            )
+        result[weekday] = items
+    return result
+
+
+def makro_programmes_for_window(
+    weekly: dict[int, list[MakroWeeklyItem]],
+    start_date: date,
+    days: int,
+) -> tuple[list[epg.Programme], int]:
+    """Instancia la parrilla NEW YORK y la convierte a Guayaquil con DST."""
+
+    source_tz = ZoneInfo(MAKRODIGITAL_SOURCE_TIMEZONE)
+    window_start = datetime.combine(start_date, time.min, tzinfo=epg.TZ)
+    window_end = window_start + timedelta(days=days)
+    programmes: list[epg.Programme] = []
+    repaired_ranges = 0
+
+    for source_offset in range(-1, days + 2):
+        source_date = start_date + timedelta(days=source_offset)
+        items = weekly[source_date.weekday()]
+        next_date = source_date + timedelta(days=1)
+        next_day_items = weekly[next_date.weekday()]
+
+        for index, item in enumerate(items):
+            source_start = datetime.combine(source_date, item.start, tzinfo=source_tz)
+            stop_date = source_date if item.stop > item.start else source_date + timedelta(days=1)
+            source_stop = datetime.combine(stop_date, item.stop, tzinfo=source_tz)
+
+            if index + 1 < len(items):
+                next_item = items[index + 1]
+                next_start = datetime.combine(source_date, next_item.start, tzinfo=source_tz)
+                if next_start <= source_start:
+                    next_start += timedelta(days=1)
+            elif next_day_items:
+                next_start = datetime.combine(next_date, next_day_items[0].start, tzinfo=source_tz)
+            else:
+                next_start = None
+
+            # La web contiene al menos un rango histórico mal formado
+            # (5:30 AM - 5:00 AM). Si el fin cruza por encima del siguiente
+            # inicio o produce una duración absurda, el siguiente inicio es la
+            # frontera más segura del bloque.
+            if next_start is not None and (
+                source_stop > next_start
+                or source_stop - source_start > timedelta(hours=8)
+            ):
+                source_stop = next_start
+                repaired_ranges += 1
+
+            if source_stop <= source_start:
+                continue
+            local_start = source_start.astimezone(epg.TZ)
+            local_stop = source_stop.astimezone(epg.TZ)
+            if not (local_start < window_end and local_stop > window_start):
+                continue
+            programmes.append(
+                epg.Programme(
+                    channel_id=MAKRODIGITAL_ID,
+                    start=local_start,
+                    stop=local_stop,
+                    title=item.title,
+                    description=None,
+                )
+            )
+
+    deduplicated: dict[tuple[str, str, str], epg.Programme] = {}
+    for programme in programmes:
+        key = (
+            programme.start.isoformat(),
+            programme.stop.isoformat(),
+            normalized(programme.title),
+        )
+        deduplicated.setdefault(key, programme)
+    result = sorted(
+        deduplicated.values(),
+        key=lambda item: (item.start, item.stop, item.title),
+    )
+    if len(result) < 5:
+        raise RuntimeError("MakroDigital: no se obtuvo programación suficiente.")
+    return result, repaired_ranges
+
+
+def scrape_makrodigital(
+    start_date: date,
+    days: int,
+) -> tuple[list[epg.Programme], dict[str, int], int]:
+    page = epg.fetch_text(
+        MAKRODIGITAL_URL,
+        headers={"Referer": MAKRODIGITAL_WEBSITE},
+    )
+    weekly = parse_makro_weekly(page)
+    programmes, repaired_ranges = makro_programmes_for_window(
+        weekly,
+        start_date,
+        days,
+    )
+    weekly_counts = {
+        str(weekday): len(items)
+        for weekday, items in sorted(weekly.items())
+    }
+    epg.log(
+        f"MakroDigital TV: {len(programmes)} emisiones locales; "
+        f"rangos reparados={repaired_ranges}."
+    )
+    return programmes, weekly_counts, repaired_ranges
 
 
 def _xml_programme_interval(programme: etree._Element) -> tuple[datetime, datetime]:
@@ -1217,6 +1517,19 @@ def build_latam(
         gatotv_daily_counts[config.channel_id] = daily_counts
         programme_elements.extend(epg.make_programme(item) for item in programmes)
 
+    channel_elements.append(
+        make_channel(
+            MAKRODIGITAL_ID,
+            ("MakroDigital TV", "MakroDigital Televisión"),
+            MAKRODIGITAL_WEBSITE,
+        )
+    )
+    makro_programmes, makro_weekly_counts, makro_repaired_ranges = scrape_makrodigital(
+        start_date,
+        days,
+    )
+    programme_elements.extend(epg.make_programme(item) for item in makro_programmes)
+
     ecuador_channel, ecuador_programmes, ecuador_status = combine_ecuador_tv(
         source_root=source_root,
         start_date=start_date,
@@ -1261,9 +1574,21 @@ def build_latam(
         "mitv_source_days": mitv_source_days,
         "gatotv_source_days": gatotv_source_days,
         "gatotv_daily_counts": gatotv_daily_counts,
-        "gatotv_time_offsets_minutes": {
-            config.channel_id: config.time_offset_minutes
+        "gatotv_source_timezones": {
+            config.channel_id: (config.source_timezone or "America/Guayaquil")
             for config in GATOTV_CHANNELS
+        },
+        "gatotv_ampm_local_preferred": {
+            config.channel_id: config.prefer_ampm_local
+            for config in GATOTV_CHANNELS
+        },
+        "makrodigital": {
+            "source": MAKRODIGITAL_URL,
+            "source_timezone": MAKRODIGITAL_SOURCE_TIMEZONE,
+            "target_timezone": "America/Guayaquil",
+            "weekly_counts": makro_weekly_counts,
+            "programmes": len(makro_programmes),
+            "repaired_ranges": makro_repaired_ranges,
         },
         "logos_manifest": logos_manifest.name if logos_manifest is not None else None,
         "logos_available": sorted(logo_urls),
@@ -1287,6 +1612,7 @@ def build_latam(
                 config.channel_id: config.base_url
                 for config in GATOTV_CHANNELS
             },
+            "makrodigital_official": MAKRODIGITAL_URL,
         },
     }
     (output_dir / "latam-status.json").write_text(
@@ -1299,7 +1625,7 @@ def build_latam(
 
 
 def self_test() -> None:
-    assert len(LATAM_CHANNEL_IDS) == 26
+    assert len(LATAM_CHANNEL_IDS) == 27
     assert LATAM_CHANNEL_IDS[3] == TVE_ID
     assert TVE_MITV_CHANNEL.country == "co"
     assert TVE_MITV_CHANNEL.slug == "tve"
@@ -1391,14 +1717,16 @@ def self_test() -> None:
     assert combined is not None
     assert combined.title == "Estas Secretarias"
 
-    assert len(LATAM_CHANNEL_IDS) == 26
-    assert len(set(LATAM_CHANNEL_IDS)) == 26
+    assert len(LATAM_CHANNEL_IDS) == 27
+    assert len(set(LATAM_CHANNEL_IDS)) == 27
     assert "hgtv.ar" in LATAM_CHANNEL_IDS
     assert "France24Espanol.fr" in LATAM_CHANNEL_IDS
     assert "Canal24Horas.es" in LATAM_CHANNEL_IDS
     assert "La1.es" in LATAM_CHANNEL_IDS
     assert "TVEStarHD.es" in LATAM_CHANNEL_IDS
     assert "Clan.es" in LATAM_CHANNEL_IDS
+    assert MAKRODIGITAL_ID in LATAM_CHANNEL_IDS
+    assert LATAM_CHANNEL_IDS[-2] == MAKRODIGITAL_ID
     assert LATAM_CHANNEL_IDS[-1] == ECUADOR_TV_ID
 
     gatotv_sample = """
@@ -1420,34 +1748,103 @@ def self_test() -> None:
     assert gatotv_programmes[0].start.isoformat() == "2026-08-10T23:20:00-05:00"
     assert gatotv_programmes[0].stop.isoformat() == "2026-08-11T00:10:00-05:00"
 
-    # STAR TVE: corrección observada en la señal real de Ecuador el 11-08-2026.
+    # STAR TVE se reconstruye sin offsets manuales. La representación 24 h
+    # observada en GatoTV el 13-08-2026 sitúa Salón de té La Moderna a las
+    # 16:00; interpretada con la zona fuente inferida y convertida a Guayaquil
+    # debe quedar exactamente 10:00-11:00, como en la señal real.
     star_config = next(
         config for config in GATOTV_CHANNELS if config.channel_id == "TVEStarHD.es"
     )
-    assert star_config.time_offset_minutes == -60
-    star_sample = [
-        epg.Programme(
-            channel_id="TVEStarHD.es",
-            start=datetime(2026, 8, 11, 20, 15, tzinfo=epg.TZ),
-            stop=datetime(2026, 8, 11, 21, 10, tzinfo=epg.TZ),
-            title="La promesa",
-            description=None,
-        ),
-        epg.Programme(
-            channel_id="TVEStarHD.es",
-            start=datetime(2026, 8, 11, 21, 10, tzinfo=epg.TZ),
-            stop=datetime(2026, 8, 11, 22, 15, tzinfo=epg.TZ),
-            title="Los misterios de Laura",
-            description=None,
-        ),
-    ]
-    shifted = shift_programmes(star_sample, star_config.time_offset_minutes)
-    assert shifted[0].start.isoformat() == "2026-08-11T19:15:00-05:00"
-    assert shifted[0].stop.isoformat() == "2026-08-11T20:10:00-05:00"
-    assert shifted[1].start.isoformat() == "2026-08-11T20:10:00-05:00"
-    assert shifted[1].stop.isoformat() == "2026-08-11T21:15:00-05:00"
+    assert star_config.source_timezone == STAR_GATOTV_SOURCE_TIMEZONE
+    assert star_config.prefer_ampm_local is True
+    assert not hasattr(star_config, "time_offset_minutes")
+    star_24h_sample = """
+    <html><body><table>
+      <tr><th>Hora Inicio</th><th>Hora Fin</th><th>Programa</th></tr>
+      <tr><td>14:30</td><td>15:30</td><td>El condensador de Fluzo</td></tr>
+      <tr><td>15:30</td><td>16:00</td><td>Viaje al centro de la tele</td></tr>
+      <tr><td>16:00</td><td>17:00</td><td>Salón de té La Moderna</td></tr>
+      <tr><td>17:00</td><td>17:50</td><td>La promesa</td></tr>
+      <tr><td>17:50</td><td>18:50</td><td>La promesa</td></tr>
+    </table></body></html>
+    """
+    star_programmes = parse_gatotv_page(
+        star_24h_sample,
+        date(2026, 8, 13),
+        "TVEStarHD.es",
+        source_timezone=star_config.source_timezone,
+        prefer_ampm_local=star_config.prefer_ampm_local,
+    )
+    salon = next(item for item in star_programmes if item.title == "Salón de té La Moderna")
+    assert salon.start.isoformat() == "2026-08-13T10:00:00-05:00"
+    assert salon.stop.isoformat() == "2026-08-13T11:00:00-05:00"
+
+    # Si GatoTV entrega directamente su variante AM/PM local, se toma como
+    # hora de Guayaquil y no se vuelve a convertir.
+    star_ampm_sample = """
+    <html><body><table>
+      <tr><th>Hora Inicio</th><th>Hora Fin</th><th>Programa</th></tr>
+      <tr><td>8:30 AM</td><td>9:25 AM</td><td>Acacias 38</td></tr>
+      <tr><td>9:25 AM</td><td>9:30 AM</td><td>La promesa</td></tr>
+      <tr><td>9:30 AM</td><td>10:00 AM</td><td>Viaje al centro de la tele</td></tr>
+      <tr><td>10:00 AM</td><td>11:00 AM</td><td>Salón de té La Moderna</td></tr>
+      <tr><td>11:00 AM</td><td>11:50 AM</td><td>La promesa</td></tr>
+    </table></body></html>
+    """
+    star_ampm = parse_gatotv_page(
+        star_ampm_sample,
+        date(2026, 8, 13),
+        "TVEStarHD.es",
+        source_timezone=star_config.source_timezone,
+        prefer_ampm_local=star_config.prefer_ampm_local,
+    )
+    salon_ampm = next(item for item in star_ampm if item.title == "Salón de té La Moderna")
+    assert salon_ampm.start.isoformat() == "2026-08-13T10:00:00-05:00"
+    assert salon_ampm.stop.isoformat() == "2026-08-13T11:00:00-05:00"
+
+    # MakroDigital publica una parrilla semanal en horario NEW YORK. Se prueba
+    # la conversión DST-aware a Guayaquil y la reparación del rango anómalo
+    # 5:30 AM - 5:00 AM usando el siguiente inicio (6:00 AM).
+    regular = """
+      <p>MakroNoticias</p><p>12:00 AM - 12:30 AM</p>
+      <p>STV Noticias</p><p>12:30 AM - 1:00 AM</p>
+      <p>Vis a Vis con Janet Hinostroza</p><p>1:00 AM - 3:00 AM</p>
+      <p>Vis a Vis con Janet Hinostroza</p><p>9:00 AM - 11:00 AM</p>
+      <p>MakroNoticias</p><p>11:00 AM - 11:30 AM</p>
+    """
+    wednesday = """
+      <p>MakroNoticias</p><p>12:00 AM - 12:30 AM</p>
+      <p>Explorando Ecuador</p><p>4:30 AM - 5:00 AM</p>
+      <p>Migración al Día</p><p>5:00 AM - 5:30 AM</p>
+      <p>Parada Juvenil</p><p>5:30 AM - 5:00 AM</p>
+      <p>Nuestras Riquezas</p><p>6:00 AM - 7:00 AM</p>
+      <p>Super Libro Clásico</p><p>7:00 AM - 8:00 AM</p>
+    """
+    makro_sample = "<html><body>" + "".join(
+        f"<h3>{day_name}</h3>" + (wednesday if day_name == "Miércoles" else regular)
+        for day_name in (
+            "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábados", "Domingos"
+        )
+    ) + "</body></html>"
+    weekly = parse_makro_weekly(makro_sample)
+    makro_thursday, _ = makro_programmes_for_window(
+        weekly, date(2026, 8, 13), 1
+    )
+    makro_news = next(
+        item for item in makro_thursday
+        if item.title == "MakroNoticias" and item.start.hour == 10
+    )
+    assert makro_news.start.isoformat() == "2026-08-13T10:00:00-05:00"
+    assert makro_news.stop.isoformat() == "2026-08-13T10:30:00-05:00"
+    makro_wednesday, repairs = makro_programmes_for_window(
+        weekly, date(2026, 8, 12), 1
+    )
+    parada = next(item for item in makro_wednesday if item.title == "Parada Juvenil")
+    assert parada.start.isoformat() == "2026-08-12T04:30:00-05:00"
+    assert parada.stop.isoformat() == "2026-08-12T05:00:00-05:00"
+    assert repairs >= 1
     print(
-        "Prueba latam correcta: 26 IDs únicos, France 24 Español y 4 canales GatoTV incluidos; STAR TVE -60 min y parser por tarjeta/overlay Ecuador TV validados."
+        "Prueba latam correcta: 27 IDs únicos; STAR TVE sin offset manual, MakroDigital NEW YORK→Guayaquil y parser/overlay Ecuador TV validados."
     )
 
 
