@@ -1,13 +1,14 @@
-EPG MrG v0.2.4 — REPOSITORIO COMPLETO LATAM 26 CANALES
+EPG MrG v0.2.5 — REPOSITORIO COMPLETO LATAM 27 CANALES
 
 TIPO DE PAQUETE:
 - Reemplazo total de la rama main del repositorio MrGmaw/epg.
 - Mantiene ec.xml/ec.xml.gz.
-- Amplía latam.xml/latam.xml.gz de 21 a 26 canales.
+- Amplía latam.xml/latam.xml.gz de 21 a 27 canales.
 - TVE Internacional usa exclusivamente https://mi.tv/co/canales/tve en latam.xml.
 - Añade TVE al descubrimiento, conversión, caché y publicación local de logos mi.tv.
 - Añade France 24 Español desde mi.tv Argentina (`ar/canales/france-24-espanol`) con tvg-id `France24Espanol.fr`.
 - Añade desde GatoTV: Canal 24 Horas (TVE), La 1, STAR TVE y Clan TVE.
+- Añade MakroDigital TV desde su programación oficial semanal (NEW YORK), convertida a America/Guayaquil.
 - Corrige el slug de Canal 24 Horas a `24_horas_tve`.
 - Los días futuros vacíos de GatoTV no bloquean la guía si existe al menos un día válido.
 - Compatible con acciones GitHub basadas en Node 24.
@@ -64,7 +65,7 @@ TVE INTERNACIONAL:
 - tvg-id conservado: Canal.TVE.Internacional.(Televisión.Española).ec
 - Programación LATAM: exclusivamente mi.tv Colombia, slug co/canales/tve.
 - No usa EPGShare como fallback dentro de latam.xml.
-- Conserva la posición 4 dentro de los 26 canales.
+- Conserva la posición 4 dentro de los 27 canales.
 - Logo local esperado: https://mrgmaw.github.io/epg/logos/Canal.TVE.Internacional.(Televisión.Española).ec.png
 
 
@@ -77,9 +78,21 @@ GATOTV v0.2.1:
 - Cada fecha se valida de forma independiente; los días futuros no publicados generan advertencia.
 - Se corrige el programa de arrastre que cruza desde la noche anterior a las 00:00.
 
-CORRECCIÓN v0.2.1:
-- TVEStarHD.es (STAR TVE): offset horario -60 min, validado contra señal real en Ecuador el 11-08-2026.
-- Canal24Horas.es, La1.es y Clan.es: offset 0.
+STAR TVE v0.2.5:
+- Fuente exclusiva: https://www.gatotv.com/canal/star_tve
+- Se elimina el offset manual -60 min de v0.2.1.
+- Variante AM/PM de GatoTV: se toma directamente como America/Guayaquil.
+- Si el runner recibe la tabla 24 h: se interpreta con Atlantic/Canary y se convierte con ZoneInfo a America/Guayaquil.
+- Atlantic/Canary es una inferencia del reloj de la representación 24 h de GatoTV, no la zona de emisión del canal.
+- Referencia validada 13-08-2026: Salón de té La Moderna = 10:00–11:00 Guayaquil.
+- Canal24Horas.es, La1.es y Clan.es siguen interpretándose directamente en America/Guayaquil.
+
+MAKRODIGITAL v0.2.5:
+- tvg-id: MakroDigitalTV.ec
+- Fuente: https://makrodigitaltelevision.com/programacion/
+- Zona fuente publicada por la web: NEW YORK -> America/New_York.
+- Conversión dinámica con ZoneInfo a America/Guayaquil (incluye DST).
+- Rango defectuoso que invade el siguiente bloque se repara usando el siguiente inicio como frontera segura.
 
 
 CORRECCIÓN v0.2.4 — ECUADOR TV:

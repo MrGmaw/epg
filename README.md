@@ -1,4 +1,4 @@
-# EPG MrG v0.2.3 para GitHub Pages
+# EPG MrG v0.2.5 para GitHub Pages
 
 Este repositorio genera y publica dos guías XMLTV en un mismo workflow y,
 además, conserva localmente los logos de los canales obtenidos desde mi.tv.
@@ -13,7 +13,7 @@ ec.xml.gz
 status.json
 ```
 
-Guía seleccionada de 26 canales:
+Guía seleccionada de 27 canales:
 
 ```text
 latam.xml
@@ -64,6 +64,7 @@ Canal24Horas.es
 La1.es
 TVEStarHD.es
 Clan.es
+MakroDigitalTV.ec
 Canal.Ecuador.TV.ec
 ```
 
@@ -129,13 +130,37 @@ el slug vigente `24_horas_tve`. GatoTV se consulta por fecha durante hasta siete
 días. Si una fecha futura todavía está vacía o incompleta, se registra una
 advertencia y se conservan los días válidos del canal, sin abortar por ese día.
 
-El parser interpreta las horas de GatoTV en `America/Guayaquil`, igual que la
-integración GatoTV ya utilizada para Ecuavisa Internacional. **STAR TVE aplica
-un ajuste específico de -60 minutos**, validado el 11-08-2026 contra la señal
-real recibida en Ecuador; los otros tres canales GatoTV permanecen sin ajuste.
-También corrige
-el caso en que la primera fila de una fecha corresponde a un programa iniciado
-la noche anterior y terminado después de medianoche.
+Los canales 24 Horas, La 1 y Clan se interpretan directamente en
+`America/Guayaquil`. **STAR TVE se reconstruyó desde cero en v0.2.5 y ya no usa
+ningún offset manual.** GatoTV muestra para ese canal dos representaciones del
+mismo horario: cuando aparece la tabla AM/PM local se toma directamente como
+hora de Guayaquil; cuando el runner recibe la tabla 24 h, el reloj se interpreta
+con la zona IANA `Atlantic/Canary` (inferencia validada el 13-08-2026) y se
+convierte mediante `ZoneInfo` a `America/Guayaquil`. La prueba de referencia es
+`Salón de té La Moderna`: 16:00–17:00 en la representación 24 h equivale a
+10:00–11:00 en Guayaquil. No existe suma/resta fija de minutos.
+
+El parser también corrige el caso en que la primera fila de una fecha corresponde
+a un programa iniciado la noche anterior y terminado después de medianoche.
+
+
+## MakroDigital TV
+
+`MakroDigitalTV.ec` se obtiene de la parrilla oficial semanal:
+
+```text
+https://makrodigitaltelevision.com/programacion/
+```
+
+La propia página identifica la programación como **NEW YORK**. Por eso los
+horarios se interpretan con `America/New_York` y se convierten mediante
+`ZoneInfo` a `America/Guayaquil`; no se usa un desplazamiento fijo, de modo que
+el cambio estacional de Nueva York se resuelve automáticamente.
+
+El parser reconstruye los siete días de la semana y valida cada rango. Si la
+web publica un fin evidentemente defectuoso que invade el siguiente programa
+(como `Parada Juvenil 5:30 AM - 5:00 AM`), utiliza el inicio del siguiente
+bloque como frontera segura en vez de crear una emisión de casi 24 horas.
 
 ## Logos de mi.tv almacenados en GitHub Pages
 
@@ -247,10 +272,11 @@ Antes de publicar, el workflow verifica:
 
 - compilación Python;
 - UTC → Ecuador y cambio de fecha;
-- parser GatoTV, incluido cruce correcto de medianoche;
+- parser GatoTV, incluido STAR TVE sin offset manual y cruce correcto de medianoche;
 - tolerancia a días futuros de GatoTV todavía no publicados;
-- exactamente 26 canales en `latam.xml`;
-- programación no vacía para los 26 canales;
+- parser semanal MakroDigital y conversión `America/New_York` → `America/Guayaquil`;
+- exactamente 27 canales en `latam.xml`;
+- programación no vacía para los 27 canales;
 - XML válido contra `xmltv.dtd`;
 - identidad XML/XML.GZ;
 - `logos/manifest.json` con los 13 objetivos de mi.tv;

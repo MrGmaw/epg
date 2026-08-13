@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.2.5 — 2026-08-13
+
+- STAR TVE (`TVEStarHD.es`) se reconstruye desde cero tomando exclusivamente `https://www.gatotv.com/canal/star_tve`.
+- Se elimina el offset manual de -60 minutos introducido en v0.2.1.
+- Para STAR TVE se prioriza la representación AM/PM local de GatoTV como hora de `America/Guayaquil`; si el runner recibe la tabla 24 h, el reloj se interpreta con `Atlantic/Canary` y se convierte con `ZoneInfo` a Guayaquil. Esta zona es una inferencia técnica de la representación de GatoTV, no una afirmación sobre la zona de emisión de TVE.
+- Prueba de referencia 13-08-2026: `Salón de té La Moderna` queda 10:00–11:00 en Guayaquil; la representación 24 h observada en GatoTV la muestra 16:00–17:00.
+- Se incorpora `MakroDigitalTV.ec` desde la parrilla oficial `https://makrodigitaltelevision.com/programacion/`.
+- MakroDigital publica la parrilla como `NEW YORK`; se interpreta con `America/New_York` y se convierte dinámicamente a `America/Guayaquil`, respetando DST sin offsets fijos.
+- Se reparan rangos manifiestamente erróneos de MakroDigital usando el inicio del siguiente programa cuando el fin publicado invade ese bloque.
+- `latam.xml` pasa de 26 a 27 canales.
+- `latam-status.json` sustituye `gatotv_time_offsets_minutes` por `gatotv_source_timezones` y registra el estado de MakroDigital.
+
 ## v0.2.4 — 2026-08-12
 
 - Corregido nuevamente el parser oficial de `Canal.Ecuador.TV.ec` a partir de la estructura real de tarjetas observada en `https://www.ecuadortv.ec/programas`.

@@ -3,7 +3,7 @@ ENLACES RECOMENDADOS PARA APLICACIONES IPTV
 GUÍA PRINCIPAL:
 https://mrgmaw.github.io/epg/ec.xml.gz
 
-NUEVA GUÍA SELECCIONADA DE 26 CANALES:
+NUEVA GUÍA SELECCIONADA DE 27 CANALES:
 https://mrgmaw.github.io/epg/latam.xml.gz
 
 ALTERNATIVAS MEDIANTE JSDELIVR:
@@ -24,3 +24,6 @@ Canal24Horas.es
 La1.es
 TVEStarHD.es
 Clan.es
+
+NUEVO TVG-ID EN v0.2.5:
+MakroDigitalTV.ec
