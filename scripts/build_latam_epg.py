@@ -36,7 +36,12 @@ VERSION_FILE = Path(__file__).resolve().parents[1] / "VERSION"
 EPG_VERSION = VERSION_FILE.read_text(encoding="utf-8").strip()
 ECUADOR_TV_URL = "https://www.ecuadortv.ec/programas"
 ECUADOR_TV_HOME_URL = "https://www.ecuadortv.ec/"
-ECUADOR_TV_SCHEDULE_URLS = (ECUADOR_TV_URL, ECUADOR_TV_HOME_URL)
+ECUADOR_TV_NEWS_URL = "https://www.ecuadortv.ec/noticias"
+ECUADOR_TV_SCHEDULE_URLS = (
+    ECUADOR_TV_URL,
+    ECUADOR_TV_NEWS_URL,
+    ECUADOR_TV_HOME_URL,
+)
 ECUADOR_TV_ID = "Canal.Ecuador.TV.ec"
 TVE_ID = "Canal.TVE.Internacional.(Televisión.Española).ec"
 TVE_MITV_COUNTRY = "co"
@@ -459,6 +464,74 @@ def programme_from_schedule_text(
     return programmes[0] if programmes else None
 
 
+def _is_ecuador_tv_metadata(value: str) -> bool:
+    """Indica si un fragmento cercano a un horario no puede ser un título."""
+
+    raw = epg.normalize_text(value).strip()
+    if raw.startswith("(") and raw.endswith(")"):
+        return True
+    text = raw.strip(" ·|:-–—()[]")
+    if not text:
+        return True
+    key = normalized(text)
+    if key in {
+        "categoria programa",
+        "programacion",
+        "programación",
+        "onair",
+        "on air",
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+    }:
+        return True
+    if any(key == normalized(category) for category in ECUADOR_TV_CATEGORIES):
+        return True
+    if key in {
+        "entretenimiento",
+        "opinion",
+        "informativo",
+        "deportivo",
+        "formativo",
+        "infantil",
+    }:
+        return True
+    if key.startswith("clasificacion") or key.startswith("clasificación"):
+        return True
+    if key.startswith("apto para"):
+        return True
+    return False
+
+
+def _recent_ecuador_tv_title(recent_lines: Sequence[str]) -> str | None:
+    """Busca hacia atrás el título real de la tarjeta de programación.
+
+    En la web oficial el DOM puede separar ``título``, clasificación, categoría
+    y rango horario en nodos distintos. v0.2.3 solo miraba el nodo anterior;
+    v0.2.4 salta esos metadatos y recupera el título de la misma tarjeta.
+    """
+
+    for candidate in reversed(recent_lines[-8:]):
+        if TIME_RANGE_RE.search(candidate) is not None:
+            break
+        if parse_spanish_date(candidate) is not None:
+            continue
+        if RECURRENCE_RE.search(normalized(candidate)) is not None:
+            continue
+        if _is_ecuador_tv_metadata(candidate):
+            continue
+        title = clean_ecuador_tv_title(candidate)
+        if not title or _is_ecuador_tv_metadata(title):
+            continue
+        if len(title) > 140:
+            continue
+        return title
+    return None
+
+
 def parse_ecuador_tv_page(
     page: str,
     start_date: date,
@@ -467,74 +540,81 @@ def parse_ecuador_tv_page(
 ) -> tuple[list[epg.Programme], set[date]]:
     """Extrae emisiones válidas de la parrilla oficial de Ecuador TV.
 
-    La página ha usado estructuras dinámicas distintas. El parser trabaja con
-    el texto visible del HTML y reconoce fechas españolas, pestañas por día y
-    rangos ``HH:MM - HH:MM``. Desde v0.2.3 también acepta una parrilla oficial
-    parcial: esos bloques se superponen sobre EPGShare sin descartar el resto
-    del día. Esto evita que un único bloque oficial correcto (por ejemplo el
-    programa actualmente al aire) se pierda por no alcanzar un mínimo diario.
+    La parrilla puede separar título, clasificación, categoría y horario en
+    nodos HTML distintos. Además, la misma página contiene fechas históricas de
+    noticias o vídeos que no deben cambiar la fecha de la parrilla vigente.
+    Desde v0.2.4 se mantiene una ventana de contexto por tarjeta, se ignoran
+    fechas ajenas a la ventana solicitada y se deduplican las versiones
+    desktop/móvil por hora de inicio.
     """
 
     soup = BeautifulSoup(page, "lxml")
+    for unwanted in soup.find_all(("script", "style", "noscript", "svg")):
+        unwanted.decompose()
     lines = [epg.normalize_text(value) for value in soup.stripped_strings]
     lines = [value for value in lines if value]
 
     window_end_date = start_date + timedelta(days=days)
-    current_date: date | None = None
-    previous_line: str | None = None
+    # La cabecera de programación de Ecuador TV corresponde al día local actual.
+    # Solo una fecha explícita DENTRO de la ventana puede cambiar esta fecha.
+    current_date = start_date
+    recent_lines: list[str] = []
     by_date: dict[date, list[epg.Programme]] = defaultdict(list)
 
-    for line in lines:
+    for raw_line in lines:
+        line = raw_line
         explicit_date = parse_spanish_date(line)
         if explicit_date is not None:
-            current_date = explicit_date
+            if start_date <= explicit_date < window_end_date:
+                current_date = explicit_date
+            # Fechas históricas de artículos/vídeos no contaminan la parrilla.
             if TIME_RANGE_RE.search(line) is None:
-                previous_line = line
+                recent_lines.append(line)
+                recent_lines = recent_lines[-12:]
                 continue
             line = DATE_RE.sub("", line).strip(" ,:-–—|")
 
         weekday_line = normalized(line).strip(" ,:")
         if weekday_line in WEEKDAYS and TIME_RANGE_RE.search(line) is None:
-            current_date = date_for_weekday(start_date, weekday_line)
-            previous_line = line
+            weekday_date = date_for_weekday(start_date, weekday_line)
+            if weekday_date is not None and start_date <= weekday_date < window_end_date:
+                current_date = weekday_date
+            recent_lines.append(line)
+            recent_lines = recent_lines[-12:]
             continue
 
         if TIME_RANGE_RE.search(line) is None:
-            previous_line = line
+            recent_lines.append(line)
+            recent_lines = recent_lines[-12:]
             continue
         if RECURRENCE_RE.search(normalized(line)) is not None:
             # Horarios generales de fichas de programas, no la parrilla diaria.
-            previous_line = line
+            recent_lines.append(line)
+            recent_lines = recent_lines[-12:]
             continue
 
-        if current_date is None:
-            # La vista principal suele corresponder al día local actual.
-            current_date = start_date
-
-        if not start_date <= current_date < window_end_date:
-            previous_line = line
-            continue
-
+        previous_title = _recent_ecuador_tv_title(recent_lines)
         line_programmes = programmes_from_schedule_text(
             line,
             current_date,
             channel_id,
-            previous_text=previous_line,
+            previous_text=previous_title,
         )
         by_date[current_date].extend(line_programmes)
-        previous_line = line
+        recent_lines.append(line)
+        recent_lines = recent_lines[-12:]
 
     accepted_dates: set[date] = set()
     programmes: list[epg.Programme] = []
     for guide_date, entries in sorted(by_date.items()):
-        deduplicated: dict[tuple[str, str, str], epg.Programme] = {}
-        for programme in entries:
-            key = (
-                programme.start.isoformat(),
-                programme.stop.isoformat(),
-                normalized(programme.title),
-            )
-            deduplicated.setdefault(key, programme)
+        # La página puede repetir la parrilla para escritorio/móvil o en varias
+        # zonas del DOM. Una sola emisión puede comenzar a una hora determinada;
+        # conservamos la primera aparición, que corresponde a la fuente prioritaria.
+        deduplicated: dict[str, epg.Programme] = {}
+        for programme in sorted(entries, key=lambda item: (item.start, item.stop)):
+            if not programme.title or _is_ecuador_tv_metadata(programme.title):
+                continue
+            deduplicated.setdefault(programme.start.isoformat(), programme)
         day_programmes = sorted(
             deduplicated.values(),
             key=lambda item: (item.start, item.stop, item.title),
@@ -827,7 +907,7 @@ def combine_ecuador_tv(
         window_end,
     )
 
-    official_by_key: dict[tuple[str, str], epg.Programme] = {}
+    official_by_key: dict[str, epg.Programme] = {}
     official_sources: list[str] = []
     for schedule_url in ECUADOR_TV_SCHEDULE_URLS:
         try:
@@ -843,11 +923,9 @@ def combine_ecuador_tv(
             if page_programmes:
                 official_sources.append(schedule_url)
             for item in page_programmes:
-                key = (
-                    item.start.isoformat(),
-                    item.stop.isoformat(),
-                )
-                official_by_key.setdefault(key, item)
+                # Una sola emisión por hora de inicio. El orden de
+                # ECUADOR_TV_SCHEDULE_URLS define la prioridad entre vistas.
+                official_by_key.setdefault(item.start.isoformat(), item)
         except (requests.RequestException, RuntimeError) as exc:
             epg.warn(f"Ecuador TV oficial {schedule_url}: {exc}")
 
@@ -1194,6 +1272,7 @@ def build_latam(
             "base_guide": source_xml.name,
             "epgshare": epg.EPGSHARE_URL,
             "ecuador_tv_official": ECUADOR_TV_URL,
+            "ecuador_tv_official_news": ECUADOR_TV_NEWS_URL,
             "ecuador_tv_official_home": ECUADOR_TV_HOME_URL,
             "mi_tv": {
                 TVE_ID: TVE_MITV_URL,
@@ -1263,6 +1342,33 @@ def self_test() -> None:
     assert len(partial_programmes) == 2
     assert partial_programmes[0].title == "Honores Policiales"
     assert partial_programmes[0].start.isoformat() == "2026-08-12T20:00:00-05:00"
+
+    # Estructura observada en la web oficial el 12-08-2026: el título puede
+    # quedar separado de la hora por clasificación/categoría. También hay
+    # fechas históricas de contenido que no deben mover la parrilla vigente.
+    card_sample = """
+    <html><body>
+      <div>martes, 04 de agosto de 2026</div>
+      <article><h3>Honores Policiales</h3><span>A</span><span>(Entretenimiento)</span><time>20:00 - 20:30</time></article>
+      <article><h3>Fanático</h3><span>A</span><span>(Deportivo)</span><time>21:00 - 22:00</time></article>
+      <article><h3>Un Café con JJ</h3><span>A</span><span>(Opinión)</span><time>22:00 - 22:30</time></article>
+      <article><h3>Estas Secretarias</h3><span>B</span><span>(Entretenimiento)</span><time>22:30 - 23:30</time></article>
+      <article><h3>Noticiero NCC Climático</h3><span>A</span><span>(Informativo)</span><time>23:30 - 00:00</time></article>
+    </body></html>
+    """
+    card_programmes, card_dates = parse_ecuador_tv_page(
+        card_sample,
+        date(2026, 8, 12),
+        1,
+    )
+    assert card_dates == {date(2026, 8, 12)}
+    assert [(item.title, item.start.strftime("%H:%M"), item.stop.strftime("%H:%M")) for item in card_programmes] == [
+        ("Honores Policiales", "20:00", "20:30"),
+        ("Fanático", "21:00", "22:00"),
+        ("Un Café con JJ", "22:00", "22:30"),
+        ("Estas Secretarias", "22:30", "23:30"),
+        ("Noticiero NCC Climático", "23:30", "00:00"),
+    ]
 
     packed_sample = """
     <html><body>
@@ -1341,7 +1447,7 @@ def self_test() -> None:
     assert shifted[1].start.isoformat() == "2026-08-11T20:10:00-05:00"
     assert shifted[1].stop.isoformat() == "2026-08-11T21:15:00-05:00"
     print(
-        "Prueba latam correcta: 26 IDs únicos, France 24 Español y 4 canales GatoTV incluidos; STAR TVE -60 min y overlay parcial Ecuador TV validados."
+        "Prueba latam correcta: 26 IDs únicos, France 24 Español y 4 canales GatoTV incluidos; STAR TVE -60 min y parser por tarjeta/overlay Ecuador TV validados."
     )
 
 
