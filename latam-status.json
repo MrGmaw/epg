@@ -1,12 +1,12 @@
 {
-  "version": "0.2.3",
-  "generated_at": "2026-08-12T20:48:05.373401-05:00",
+  "version": "0.2.4",
+  "generated_at": "2026-08-12T22:20:49.551561-05:00",
   "base_date": "2026-08-12",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 26,
-  "programmes": 2714,
+  "programmes": 2743,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 70,
     "Canal.Gamavisión.ec": 78,
@@ -15,7 +15,7 @@
     "TeleamazonasQuito.ec": 204,
     "TeleamazonasGuayaquil.ec": 204,
     "Ecuavisa.ec": 38,
-    "EcuavisaInternacional.ec": 95,
+    "EcuavisaInternacional.ec": 97,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 48,
     "NTN24.co": 38,
@@ -29,10 +29,10 @@
     "Deutsche.Welle.cl": 91,
     "hgtv.ar": 85,
     "France24Espanol.fr": 227,
-    "Canal24Horas.es": 201,
-    "La1.es": 97,
-    "TVEStarHD.es": 78,
-    "Clan.es": 458,
+    "Canal24Horas.es": 203,
+    "La1.es": 99,
+    "TVEStarHD.es": 82,
+    "Clan.es": 477,
     "Canal.Ecuador.TV.ec": 64
   },
   "mitv_source_days": {
@@ -57,32 +57,32 @@
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
       "2026-08-12": 28,
-      "2026-08-13": 28,
-      "2026-08-14": 37,
-      "2026-08-15": 46,
-      "2026-08-16": 46,
-      "2026-08-17": 19
+      "2026-08-13": 27,
+      "2026-08-14": 31,
+      "2026-08-15": 47,
+      "2026-08-16": 50,
+      "2026-08-17": 20
     },
     "La1.es": {
-      "2026-08-12": 15,
+      "2026-08-12": 14,
       "2026-08-13": 21,
-      "2026-08-14": 18,
+      "2026-08-14": 17,
       "2026-08-15": 17,
-      "2026-08-16": 16,
-      "2026-08-17": 15
+      "2026-08-16": 14,
+      "2026-08-17": 16
     },
     "TVEStarHD.es": {
-      "2026-08-12": 29,
+      "2026-08-12": 28,
       "2026-08-13": 31,
-      "2026-08-14": 20
+      "2026-08-14": 25
     },
     "Clan.es": {
-      "2026-08-12": 78,
-      "2026-08-13": 78,
-      "2026-08-14": 75,
+      "2026-08-12": 77,
+      "2026-08-13": 77,
+      "2026-08-14": 78,
       "2026-08-15": 83,
-      "2026-08-16": 80,
-      "2026-08-17": 67
+      "2026-08-16": 81,
+      "2026-08-17": 82
     }
   },
   "gatotv_time_offsets_minutes": {
@@ -124,6 +124,7 @@
     "base_guide": "ec.xml",
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
     "ecuador_tv_official": "https://www.ecuadortv.ec/programas",
+    "ecuador_tv_official_news": "https://www.ecuadortv.ec/noticias",
     "ecuador_tv_official_home": "https://www.ecuadortv.ec/",
     "mi_tv": {
       "Canal.TVE.Internacional.(Televisión.Española).ec": "https://mi.tv/co/canales/tve",
