@@ -70,6 +70,12 @@ LOGO_TARGETS: tuple[LogoTarget, ...] = (
     LogoTarget("ar", "telefe", "Telefe.ar", ("ar_telefe",)),
     LogoTarget("cl", "deutsche-welle-espanol", "Deutsche.Welle.cl", ("cl_deutsche-welle-espanol", "cl_deutsche-welle")),
     LogoTarget("ar", "hgtv", "hgtv.ar", ("ar_hgtv",)),
+    LogoTarget(
+        "ar",
+        "france-24-espanol",
+        "France24Espanol.fr",
+        ("ar_france-24-espanol", "ar_france24-espanol"),
+    ),
 )
 
 
@@ -344,10 +350,11 @@ def self_test() -> None:
     png, width, height = image_to_png(source.getvalue())
     assert png.startswith(b"\x89PNG\r\n\x1a\n")
     assert (width, height) == (160, 90)
-    assert len(LOGO_TARGETS) == 12
+    assert len(LOGO_TARGETS) == 13
     assert {item.channel_id for item in LOGO_TARGETS} >= {
         "Canal.History.co",
         "hgtv.ar",
+        "France24Espanol.fr",
         "NTN24.co",
         "Canal.TVE.Internacional.(Televisión.Española).ec",
     }

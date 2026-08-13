@@ -40,6 +40,7 @@ LATAM_REQUIRED = (
     "Telefe.ar",
     "Deutsche.Welle.cl",
     "hgtv.ar",
+    "France24Espanol.fr",
     "Canal24Horas.es",
     "La1.es",
     "TVEStarHD.es",
@@ -62,6 +63,7 @@ MITV_LOGO_IDS = {
     "Telefe.ar",
     "Deutsche.Welle.cl",
     "hgtv.ar",
+    "France24Espanol.fr",
 }
 EXPECTED_HEADER = (
     b'<?xml version="1.0" encoding="UTF-8"?>\n'
