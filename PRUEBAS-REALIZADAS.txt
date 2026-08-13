@@ -36,3 +36,8 @@ no puede validarse; conserva el PNG de epg-data cuando existe una copia previa.
 - v0.2.3: compilación Python correcta de todos los scripts operativos.
 
 - France 24 Español añadido como `France24Espanol.fr` desde mi.tv Argentina; se reutiliza la conversión UTC -> America/Guayaquil y se valida su presencia en la lista de IDs.
+
+- v0.2.4: prueba determinista con tarjetas de Ecuador TV donde título, clasificación, género y horario están en nodos HTML separados.
+- v0.2.4: una fecha histórica `04-08-2026` situada antes de la parrilla no modifica la fecha local `12-08-2026`.
+- v0.2.4: secuencia validada: Honores Policiales 20:00–20:30; Fanático 21:00–22:00; Un Café con JJ 22:00–22:30; Estas Secretarias 22:30–23:30; Noticiero NCC Climático 23:30–00:00.
+- v0.2.4: `/noticias` añadido como tercera vista oficial de Ecuador TV.

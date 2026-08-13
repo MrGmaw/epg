@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.2.4 — 2026-08-12
+
+- Corregido nuevamente el parser oficial de `Canal.Ecuador.TV.ec` a partir de la estructura real de tarjetas observada en `https://www.ecuadortv.ec/programas`.
+- El parser ya no depende del texto inmediatamente anterior al horario: salta clasificación (`A`, `B`, etc.) y etiquetas de género/categoría para recuperar el título real de la misma tarjeta.
+- Las fechas históricas de noticias o vídeos embebidas en la página ya no pueden desplazar la parrilla vigente fuera del día local solicitado.
+- Se deduplican variantes desktop/móvil por hora de inicio, evitando solapamientos falsos cuando el sitio repite la misma parrilla en el DOM.
+- Se añade `https://www.ecuadortv.ec/noticias` como tercera vista oficial, después de `/programas` y antes de la portada.
+- Validación de la secuencia mostrada el 12-08-2026: `Honores Policiales` 20:00–20:30, `Fanático` 21:00–22:00, `Un Café con JJ` 22:00–22:30, `Estas Secretarias` 22:30–23:30 y `Noticiero NCC Climático` 23:30–00:00.
+- Se conservan France 24 Español desde mi.tv y el offset exclusivo de -60 min de STAR TVE.
+
 ## v0.2.3 — 2026-08-12
 
 - Añadido `France24Espanol.fr` — France 24 Español desde `https://mi.tv/ar/canales/france-24-espanol`.

@@ -204,9 +204,10 @@ La fuente prioritaria es la programación oficial:
 https://www.ecuadortv.ec/programas
 ```
 
-Como segunda vista oficial se consulta también la portada:
+Como vistas oficiales adicionales se consultan también:
 
 ```text
+https://www.ecuadortv.ec/noticias
 https://www.ecuadortv.ec/
 ```
 
@@ -219,6 +220,13 @@ descarta por no alcanzar un mínimo arbitrario de emisiones.
 El cambio se introdujo tras comprobar el 12-08-2026 que la señal real emitía
 `Honores Policiales` a las 20:29 y la web oficial lo situaba 20:00–20:30,
 mientras la EPG de respaldo mostraba incorrectamente `Telediario`.
+
+Desde v0.2.4 el parser reconstruye cada tarjeta aunque el DOM separe el título,
+la clasificación (`A`, `B`, etc.), el género y el rango horario en nodos
+distintos. También ignora fechas históricas de noticias/vídeos que aparezcan en
+la misma página y deduplica las versiones desktop/móvil por hora de inicio. La
+secuencia comprobada el 12-08-2026 incluye `Un Café con JJ` 22:00–22:30 y
+`Estas Secretarias` 22:30–23:30.
 
 ## Un solo repositorio y un solo workflow
 

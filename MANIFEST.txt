@@ -1,4 +1,4 @@
-EPG MrG v0.2.3 — REPOSITORIO COMPLETO LATAM 26 CANALES
+EPG MrG v0.2.4 — REPOSITORIO COMPLETO LATAM 26 CANALES
 
 TIPO DE PAQUETE:
 - Reemplazo total de la rama main del repositorio MrGmaw/epg.
@@ -80,3 +80,12 @@ GATOTV v0.2.1:
 CORRECCIÓN v0.2.1:
 - TVEStarHD.es (STAR TVE): offset horario -60 min, validado contra señal real en Ecuador el 11-08-2026.
 - Canal24Horas.es, La1.es y Clan.es: offset 0.
+
+
+CORRECCIÓN v0.2.4 — ECUADOR TV:
+- Fuente prioritaria: https://www.ecuadortv.ec/programas
+- Vistas oficiales de respaldo: https://www.ecuadortv.ec/noticias y https://www.ecuadortv.ec/
+- Recupera el título aunque clasificación/categoría estén entre el título y el horario en el DOM.
+- Ignora fechas históricas ajenas a la ventana local solicitada.
+- Deduplica duplicados desktop/móvil por hora de inicio.
+- Secuencia validada 12-08-2026: Honores Policiales 20:00–20:30; Fanático 21:00–22:00; Un Café con JJ 22:00–22:30; Estas Secretarias 22:30–23:30; Noticiero NCC Climático 23:30–00:00.
