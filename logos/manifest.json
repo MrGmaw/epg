@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-12T17:01:57.668398-05:00",
+  "generated_at": "2026-08-12T20:47:30.859961-05:00",
   "public_base_url": "https://mrgmaw.github.io/epg/logos",
-  "targets": 12,
-  "available": 12,
+  "targets": 13,
+  "available": 13,
   "missing": [],
   "channels": {
     "Canal.CNN.en.Español.ec": {
@@ -124,6 +124,16 @@
       "width": 200,
       "height": 200,
       "sha256": "7c632826a71930cc67a1c7ae1fed020012d743e9d1ff57ae7a234e2a9c75a5ab"
+    },
+    "France24Espanol.fr": {
+      "page_url": "https://mi.tv/ar/canales/france-24-espanol",
+      "local_url": "https://mrgmaw.github.io/epg/logos/France24Espanol.fr.png",
+      "available": true,
+      "source": "discovered",
+      "source_url": "https://cdn.mitvstatic.com/channels/ar_france-24-espanol_m.png",
+      "width": 200,
+      "height": 200,
+      "sha256": "377bb59a3e6722b7b76fbb2f051fac608ed8cbe15b143c11a8d48d6afdc5ac47"
     }
   }
 }

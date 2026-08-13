@@ -1,12 +1,12 @@
 {
-  "version": "0.2.2",
-  "generated_at": "2026-08-12T17:02:25.867552-05:00",
+  "version": "0.2.3",
+  "generated_at": "2026-08-12T20:48:05.373401-05:00",
   "base_date": "2026-08-12",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
-  "channels": 25,
-  "programmes": 2318,
+  "channels": 26,
+  "programmes": 2714,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 70,
     "Canal.Gamavisión.ec": 78,
@@ -15,7 +15,7 @@
     "TeleamazonasQuito.ec": 204,
     "TeleamazonasGuayaquil.ec": 204,
     "Ecuavisa.ec": 38,
-    "EcuavisaInternacional.ec": 72,
+    "EcuavisaInternacional.ec": 95,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 48,
     "NTN24.co": 38,
@@ -28,10 +28,11 @@
     "Telefe.ar": 42,
     "Deutsche.Welle.cl": 91,
     "hgtv.ar": 85,
-    "Canal24Horas.es": 174,
-    "La1.es": 75,
-    "TVEStarHD.es": 53,
-    "Clan.es": 386,
+    "France24Espanol.fr": 227,
+    "Canal24Horas.es": 201,
+    "La1.es": 97,
+    "TVEStarHD.es": 78,
+    "Clan.es": 458,
     "Canal.Ecuador.TV.ec": 64
   },
   "mitv_source_days": {
@@ -44,39 +45,44 @@
     "TV.Publica.canal.7.ar": 3,
     "Telefe.ar": 3,
     "Deutsche.Welle.cl": 3,
-    "hgtv.ar": 3
+    "hgtv.ar": 3,
+    "France24Espanol.fr": 3
   },
   "gatotv_source_days": {
-    "Canal24Horas.es": 5,
-    "La1.es": 5,
-    "TVEStarHD.es": 2,
-    "Clan.es": 5
+    "Canal24Horas.es": 6,
+    "La1.es": 6,
+    "TVEStarHD.es": 3,
+    "Clan.es": 6
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-08-12": 29,
+      "2026-08-12": 28,
       "2026-08-13": 28,
-      "2026-08-14": 33,
-      "2026-08-15": 47,
-      "2026-08-16": 39
+      "2026-08-14": 37,
+      "2026-08-15": 46,
+      "2026-08-16": 46,
+      "2026-08-17": 19
     },
     "La1.es": {
-      "2026-08-12": 14,
-      "2026-08-13": 20,
+      "2026-08-12": 15,
+      "2026-08-13": 21,
       "2026-08-14": 18,
-      "2026-08-15": 14,
-      "2026-08-16": 13
+      "2026-08-15": 17,
+      "2026-08-16": 16,
+      "2026-08-17": 15
     },
     "TVEStarHD.es": {
-      "2026-08-12": 28,
-      "2026-08-13": 26
+      "2026-08-12": 29,
+      "2026-08-13": 31,
+      "2026-08-14": 20
     },
     "Clan.es": {
       "2026-08-12": 78,
       "2026-08-13": 78,
-      "2026-08-14": 80,
-      "2026-08-15": 84,
-      "2026-08-16": 70
+      "2026-08-14": 75,
+      "2026-08-15": 83,
+      "2026-08-16": 80,
+      "2026-08-17": 67
     }
   },
   "gatotv_time_offsets_minutes": {
@@ -95,6 +101,7 @@
     "CanalRCN.co",
     "CaracolTV.co",
     "Deutsche.Welle.cl",
+    "France24Espanol.fr",
     "NTN24.co",
     "TV.Publica.canal.7.ar",
     "Telefe.ar",
@@ -107,12 +114,17 @@
       "2026-08-12",
       "2026-08-13",
       "2026-08-14"
-    ]
+    ],
+    "official_programmes": 0,
+    "fallback_programmes_kept": 64,
+    "fallback_programmes_replaced": 0,
+    "official_sources": []
   },
   "sources": {
     "base_guide": "ec.xml",
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
     "ecuador_tv_official": "https://www.ecuadortv.ec/programas",
+    "ecuador_tv_official_home": "https://www.ecuadortv.ec/",
     "mi_tv": {
       "Canal.TVE.Internacional.(Televisión.Española).ec": "https://mi.tv/co/canales/tve",
       "CanalRCN.co": "https://mi.tv/co/canales/rcn",
@@ -123,7 +135,8 @@
       "TV.Publica.canal.7.ar": "https://mi.tv/ar/canales/canal-7-capital",
       "Telefe.ar": "https://mi.tv/ar/canales/telefe",
       "Deutsche.Welle.cl": "https://mi.tv/cl/canales/deutsche-welle-espanol",
-      "hgtv.ar": "https://mi.tv/ar/canales/hgtv"
+      "hgtv.ar": "https://mi.tv/ar/canales/hgtv",
+      "France24Espanol.fr": "https://mi.tv/ar/canales/france-24-espanol"
     },
     "gato_tv": {
       "Canal24Horas.es": "https://www.gatotv.com/canal/24_horas_tve",
