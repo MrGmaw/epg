@@ -1,11 +1,12 @@
-EPG MrG v0.2.2 — REPOSITORIO COMPLETO LATAM 25 CANALES
+EPG MrG v0.2.3 — REPOSITORIO COMPLETO LATAM 26 CANALES
 
 TIPO DE PAQUETE:
 - Reemplazo total de la rama main del repositorio MrGmaw/epg.
 - Mantiene ec.xml/ec.xml.gz.
-- Amplía latam.xml/latam.xml.gz de 21 a 25 canales.
+- Amplía latam.xml/latam.xml.gz de 21 a 26 canales.
 - TVE Internacional usa exclusivamente https://mi.tv/co/canales/tve en latam.xml.
 - Añade TVE al descubrimiento, conversión, caché y publicación local de logos mi.tv.
+- Añade France 24 Español desde mi.tv Argentina (`ar/canales/france-24-espanol`) con tvg-id `France24Espanol.fr`.
 - Añade desde GatoTV: Canal 24 Horas (TVE), La 1, STAR TVE y Clan TVE.
 - Corrige el slug de Canal 24 Horas a `24_horas_tve`.
 - Los días futuros vacíos de GatoTV no bloquean la guía si existe al menos un día válido.
@@ -45,8 +46,8 @@ SALIDAS:
 - index.html
 
 LOGOS MI.TV:
-- 12 objetivos: CNN, TVE Internacional, NTN24, RCN, Caracol, El Gourmet,
-  History, History 2, TV Pública, Telefe, DW Español y HGTV.
+- 13 objetivos: CNN, TVE Internacional, NTN24, RCN, Caracol, El Gourmet,
+  History, History 2, TV Pública, Telefe, DW Español, HGTV y France 24 Español.
 - Se restauran primero los PNG de epg-data.
 - Se redescubre la imagen actual desde la página de mi.tv.
 - Se validan patrones históricos de mitvstatic.com/images.mi.tv como respaldo.
@@ -63,7 +64,7 @@ TVE INTERNACIONAL:
 - tvg-id conservado: Canal.TVE.Internacional.(Televisión.Española).ec
 - Programación LATAM: exclusivamente mi.tv Colombia, slug co/canales/tve.
 - No usa EPGShare como fallback dentro de latam.xml.
-- Conserva la posición 4 dentro de los 25 canales.
+- Conserva la posición 4 dentro de los 26 canales.
 - Logo local esperado: https://mrgmaw.github.io/epg/logos/Canal.TVE.Internacional.(Televisión.Española).ec.png
 
 

@@ -3,7 +3,7 @@ PRUEBAS REALIZADAS ANTES DE EMPAQUETAR
 - Compilación Python de todos los scripts incluidos.
 - Lectura estructural del workflow YAML.
 - Pruebas UTC → America/Guayaquil ya existentes.
-- Verificación de 25 tvg-id únicos, incluidos los 4 nuevos canales GatoTV.
+- Verificación de 26 tvg-id únicos, incluidos los 4 nuevos canales GatoTV.
 - Verificación de que TVE conserva la posición 4 y usa el slug mi.tv co/canales/tve.
 - Prueba de integración: ec.xml con TVE declarado pero sin programación; latam.xml se construye usando TVE desde mi.tv sin consultar sus programmes de ec.xml.
 - Prueba del extractor de logos con HTML simulado.
@@ -12,11 +12,11 @@ PRUEBAS REALIZADAS ANTES DE EMPAQUETAR
 - Validación de firma PNG y dimensiones mínimas.
 - Prueba de aplicación de <icon src> local sobre XMLTV simulado.
 - Regeneración coherente del archivo XML.GZ tras sustituir iconos.
-- Verificación de los 12 IDs objetivo del sistema de logos, incluido TVE Internacional.
+- Verificación de los 13 IDs objetivo del sistema de logos, incluido TVE Internacional.
 - Prueba determinista del parser GatoTV con cruce 23:20 -> 00:10 y ajuste al día anterior.
 - Verificación de los slugs 24_horas_tve, la_1, star_tve y clan_tve.
 - Verificación de tolerancia de diseño a días futuros de GatoTV no publicados.
-- Prueba de integración sintética completa: generación de latam.xml/latam.xml.gz con 25 canales y estado v0.2.0.
+- Prueba de integración sintética completa: generación de latam.xml/latam.xml.gz con 26 canales y estado v0.2.3.
 - Verificación de estructura del ZIP, incluida la carpeta oculta .github.
 
 Las URLs reales de los logos se descubren en GitHub Actions, que dispone de
@@ -30,3 +30,9 @@ no puede validarse; conserva el PNG de epg-data cuando existe una copia previa.
 - v0.2.2: validado que `scripts/validate_outputs.py` obtiene EXPECTED_VERSION desde `VERSION`; con VERSION=0.2.2 devuelve 0.2.2.
 - v0.2.2: compilación Python correcta de todos los scripts operativos.
 - v0.2.2: `build_latam_epg.py` y `validate_outputs.py` comparten el archivo `VERSION` como única fuente de versión.
+- v0.2.3: el parser de Ecuador TV acepta 1–2 bloques oficiales válidos sin exigir 5 emisiones.
+- v0.2.3: prueba de línea compacta con `Honores Policiales 20:00–20:30` y `Fanático 21:00–22:00`.
+- v0.2.3: prueba de overlay: un bloque oficial 20:00–20:30 elimina `Telediario` 20:00–21:00 de EPGShare y conserva los bloques de respaldo 19:00–20:00 y 21:00–22:00.
+- v0.2.3: compilación Python correcta de todos los scripts operativos.
+
+- France 24 Español añadido como `France24Espanol.fr` desde mi.tv Argentina; se reutiliza la conversión UTC -> America/Guayaquil y se valida su presencia en la lista de IDs.

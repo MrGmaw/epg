@@ -1,4 +1,4 @@
-# EPG MrG v0.2.2 para GitHub Pages
+# EPG MrG v0.2.3 para GitHub Pages
 
 Este repositorio genera y publica dos guías XMLTV en un mismo workflow y,
 además, conserva localmente los logos de los canales obtenidos desde mi.tv.
@@ -13,7 +13,7 @@ ec.xml.gz
 status.json
 ```
 
-Guía seleccionada de 25 canales:
+Guía seleccionada de 26 canales:
 
 ```text
 latam.xml
@@ -59,6 +59,7 @@ TV.Publica.canal.7.ar
 Telefe.ar
 Deutsche.Welle.cl
 hgtv.ar
+France24Espanol.fr
 Canal24Horas.es
 La1.es
 TVEStarHD.es
@@ -68,7 +69,7 @@ Canal.Ecuador.TV.ec
 
 ## mi.tv y zona horaria
 
-CNN en Español, NTN24, TVE Internacional y los nueve canales añadidos desde
+CNN en Español, NTN24, TVE Internacional y los diez canales añadidos desde
 mi.tv se procesan interpretando las horas del endpoint asíncrono como UTC y
 convirtiéndolas a `America/Guayaquil`.
 
@@ -79,7 +80,7 @@ usa la programación de EPGShare dentro de `latam.xml`:
 Canal.TVE.Internacional.(Televisión.Española).ec  co/canales/tve
 ```
 
-Los otros nueve canales añadidos directamente a `latam.xml` son:
+Los otros diez canales añadidos directamente a `latam.xml` son:
 
 ```text
 CanalRCN.co                         co/canales/rcn
@@ -91,7 +92,25 @@ TV.Publica.canal.7.ar               ar/canales/canal-7-capital
 Telefe.ar                           ar/canales/telefe
 Deutsche.Welle.cl                   cl/canales/deutsche-welle-espanol
 hgtv.ar                             ar/canales/hgtv
+France24Espanol.fr                  ar/canales/france-24-espanol
 ```
+
+
+### France 24 Español
+
+La programación de `France24Espanol.fr` se obtiene de mi.tv Argentina:
+
+```text
+https://mi.tv/ar/canales/france-24-espanol
+```
+
+Se eligió mi.tv como fuente operativa porque utiliza el mismo endpoint diario
+ya soportado por el generador. La página oficial
+`https://www.france24.com/es/programaci%C3%B3n` se mantiene como referencia de
+contraste, pero puede aplicar restricciones a accesos automatizados. Las horas
+de mi.tv se interpretan con la misma conversión UTC → `America/Guayaquil` que
+el resto de canales mi.tv y deberán contrastarse con la señal real tras la
+primera publicación.
 
 
 ## GatoTV: cuatro canales RTVE adicionales
@@ -120,7 +139,7 @@ la noche anterior y terminado después de medianoche.
 
 ## Logos de mi.tv almacenados en GitHub Pages
 
-El workflow intenta obtener logos para estos 12 canales:
+El workflow intenta obtener logos para estos 13 canales:
 
 ```text
 Canal.CNN.en.Español.ec
@@ -135,6 +154,7 @@ TV.Publica.canal.7.ar
 Telefe.ar
 Deutsche.Welle.cl
 hgtv.ar
+France24Espanol.fr
 ```
 
 La estrategia es deliberadamente conservadora:
@@ -168,7 +188,7 @@ GitHub Pages:
 ```
 
 `ec.xml` recibe esta sustitución para CNN en Español, TVE Internacional y
-NTN24 cuando existe un PNG local validado. `latam.xml` la aplica a los doce
+NTN24 cuando existe un PNG local validado. `latam.xml` la aplica a los trece
 canales gestionados por el sistema de logos de mi.tv. Si todavía no existe logo
 para un canal, la guía se publica sin inventar un `<icon>` roto.
 
@@ -178,14 +198,27 @@ las dimensiones, SHA-256 y la URL pública local.
 
 ## Ecuador TV
 
-La fuente principal sigue siendo:
+La fuente prioritaria es la programación oficial:
 
 ```text
 https://www.ecuadortv.ec/programas
 ```
 
-Si un día oficial no puede extraerse de forma fiable, se conserva para esa
-fecha la programación de `Canal.Ecuador.TV.ec` disponible desde EPGShare.
+Como segunda vista oficial se consulta también la portada:
+
+```text
+https://www.ecuadortv.ec/
+```
+
+Desde v0.2.3 la programación oficial se aplica **por intervalo horario**. Si la
+web solo entrega una parte del día, cada bloque oficial válido reemplaza los
+programas de EPGShare que se solapen con ese horario y EPGShare conserva
+únicamente los huecos restantes. Así, una parrilla oficial parcial ya no se
+descarta por no alcanzar un mínimo arbitrario de emisiones.
+
+El cambio se introdujo tras comprobar el 12-08-2026 que la señal real emitía
+`Honores Policiales` a las 20:29 y la web oficial lo situaba 20:00–20:30,
+mientras la EPG de respaldo mostraba incorrectamente `Telediario`.
 
 ## Un solo repositorio y un solo workflow
 
@@ -208,11 +241,11 @@ Antes de publicar, el workflow verifica:
 - UTC → Ecuador y cambio de fecha;
 - parser GatoTV, incluido cruce correcto de medianoche;
 - tolerancia a días futuros de GatoTV todavía no publicados;
-- exactamente 25 canales en `latam.xml`;
-- programación no vacía para los 25 canales;
+- exactamente 26 canales en `latam.xml`;
+- programación no vacía para los 26 canales;
 - XML válido contra `xmltv.dtd`;
 - identidad XML/XML.GZ;
-- `logos/manifest.json` con los 12 objetivos de mi.tv;
+- `logos/manifest.json` con los 13 objetivos de mi.tv;
 - PNG real para cada logo declarado como disponible;
 - coincidencia entre `<icon src>` y el PNG local publicado;
 - conservación de la caché de logos entre ejecuciones.

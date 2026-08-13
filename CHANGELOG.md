@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.2.3 — 2026-08-12
+
+- Añadido `France24Espanol.fr` — France 24 Español desde `https://mi.tv/ar/canales/france-24-espanol`.
+- `latam.xml` pasa a 26 canales y el sistema de logos mi.tv pasa a 13 objetivos.
+- La web oficial de France 24 se conserva como referencia de contraste; la fuente operativa es mi.tv por compatibilidad con el endpoint automatizado ya utilizado.
+- Corregida la prioridad de programación de `Canal.Ecuador.TV.ec`.
+- Validación en vivo: el 12-08-2026 a las 20:29 Ecuador TV emitía `Honores Policiales`; la web oficial lo publicaba 20:00–20:30, mientras EPGShare mostraba `Telediario`.
+- La parrilla oficial ya no necesita un mínimo de cinco emisiones para ser utilizada.
+- Los bloques oficiales válidos se superponen por intervalo sobre EPGShare; solo los huecos no cubiertos conservan el respaldo.
+- Se consulta también la portada oficial de Ecuador TV como segunda vista de la parrilla cuando `/programas` entrega HTML parcial.
+- `latam-status.json` registra bloques oficiales, bloques de fallback conservados/reemplazados y URLs oficiales que aportaron programación.
+
 ## v0.2.2 — 2026-08-11
 
 - Corregida la validación de versión de `scripts/validate_outputs.py`.

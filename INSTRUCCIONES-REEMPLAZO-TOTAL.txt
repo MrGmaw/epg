@@ -18,7 +18,7 @@ https://mrgmaw.github.io/epg/latam.xml.gz
 https://mrgmaw.github.io/epg/latam-status.json
 https://mrgmaw.github.io/epg/logos/manifest.json
 
-El manifiesto indicará cuántos de los 12 logos de mi.tv fueron encontrados.
+El manifiesto indicará cuántos de los 13 logos de mi.tv fueron encontrados.
 Para cada logo disponible, compruebe por ejemplo:
 
 https://mrgmaw.github.io/epg/logos/Canal.TVE.Internacional.(Televisión.Española).ec.png
@@ -28,7 +28,7 @@ https://mrgmaw.github.io/epg/logos/hgtv.ar.png
 
 IMPORTANTE:
 - Los enlaces ec.xml/ec.xml.gz no cambian.
-- latam.xml contiene 25 canales.
+- latam.xml contiene 26 canales.
 - TVE Internacional conserva el mismo tvg-id y la posición 4.
 - v0.2.0 añadió Canal 24 Horas (TVE), La 1, STAR TVE y Clan TVE desde GatoTV.
 - v0.2.1 corrige STAR TVE con offset -60 min validado contra la señal real en Ecuador.
