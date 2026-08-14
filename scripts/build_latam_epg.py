@@ -71,6 +71,7 @@ MAKRODIGITAL_SOURCE_TIMEZONE = "America/New_York"
 # emisión comprobada en Ecuador a las 10:00. Ambas notaciones se interpretan
 # con esta zona IANA y se convierten a America/Guayaquil, sin offset manual.
 STAR_GATOTV_SOURCE_TIMEZONE = "Atlantic/Canary"
+STAR_TVE_PARSER_REVISION = "canonical-24h-primary-r2"
 TVE_ID = "Canal.TVE.Internacional.(Televisión.Española).ec"
 TVE_MITV_COUNTRY = "co"
 TVE_MITV_SLUG = "tve"
@@ -1094,6 +1095,7 @@ def parse_gatotv_page(
 
         epg.log(
             f"GatoTV {channel_id} {guide_date.isoformat()}: "
+            f"parser={STAR_TVE_PARSER_REVISION}; "
             f"canónica 24h={len(rows_24h)}; AM/PM={len(rows_ampm)}; "
             f"seleccion={clock_format}; zona={selected_zone}."
         )
@@ -1966,6 +1968,7 @@ def build_latam(
             config.channel_id: config.prefer_ampm_local
             for config in GATOTV_CHANNELS
         },
+        "star_tve_parser_revision": STAR_TVE_PARSER_REVISION,
         "makrodigital": {
             "source": MAKRODIGITAL_URL,
             "source_timezone": MAKRODIGITAL_SOURCE_TIMEZONE,
