@@ -43,6 +43,15 @@ jobs:
           python-version: "3.13"
           cache: pip
 
+      - name: Mostrar versión y huella del generador LATAM
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "VERSION=$(cat VERSION)"
+          echo "build_latam_epg.py:"
+          sha256sum scripts/build_latam_epg.py
+
+
       - name: Instalar dependencias
         shell: bash
         run: |
