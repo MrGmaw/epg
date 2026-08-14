@@ -1,6 +1,9 @@
-EPG MrG v0.2.7 — pruebas adicionales
-- STAR TVE: parser 24 h sin filas <tr> validado con HTML basado en div/span.
-- STAR TVE: 16:00–17:00 Atlantic/Canary -> 10:00–11:00 America/Guayaquil sin offset manual.
+EPG MrG v0.2.8 — pruebas adicionales
+- STAR TVE: parser 24 h validado cuando `Horarios de Programación` aparece primero en un menú y existe navegación `‹ ... ›` antes de la tabla real.
+- STAR TVE: se prioriza `Hora Inicio Hora Fin Programa` y ya no se recorta toda la parrilla en el primer `‹`.
+- STAR TVE: HTML sin `<tr>` reconstruido correctamente desde nodos `div/span`.
+- STAR TVE: conversión `Atlantic/Canary` -> `America/Guayaquil` sin offset manual.
+- Prueba focal: `Estoy vivo` 03:00–04:05 del 14-08 fuente -> 21:00–22:05 del 13-08 Guayaquil.
 - Python: build_latam_epg.py compila correctamente.
 
 PRUEBAS REALIZADAS ANTES DE EMPAQUETAR

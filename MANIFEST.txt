@@ -1,4 +1,4 @@
-EPG MrG v0.2.7 — REPOSITORIO COMPLETO LATAM 27 CANALES
+EPG MrG v0.2.8 — REPOSITORIO COMPLETO LATAM 27 CANALES
 
 TIPO DE PAQUETE:
 - Reemplazo total de la rama main del repositorio MrGmaw/epg.
@@ -79,8 +79,10 @@ GATOTV v0.2.1:
 - Se corrige el programa de arrastre que cruza desde la noche anterior a las 00:00.
 
 
-STAR TVE v0.2.7:
+STAR TVE v0.2.8:
 - Además de tablas <tr>, acepta la representación 24 h cuando GatoTV la entrega como texto estructurado en otros nodos HTML.
+- Prioriza el encabezado `Hora Inicio Hora Fin Programa`; no se deja engañar por `Horarios de Programación` repetido en menús.
+- La navegación `‹ día anterior / día siguiente ›` anterior a la tabla ya no trunca la parrilla completa.
 - La representación AM/PM sigue prohibida para STAR TVE.
 - No hay offset manual; Atlantic/Canary -> America/Guayaquil se resuelve con ZoneInfo.
 
