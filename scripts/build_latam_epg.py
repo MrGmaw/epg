@@ -66,10 +66,10 @@ MAKRODIGITAL_URL = "https://makrodigitaltelevision.com/programacion/"
 MAKRODIGITAL_WEBSITE = "https://makrodigitaltelevision.com/"
 MAKRODIGITAL_ID = "MakroDigitalTV.ec"
 MAKRODIGITAL_SOURCE_TIMEZONE = "America/New_York"
-# GatoTV expone para STAR TVE una representación 24 h que, el 13-08-2026,
-# mostraba 16:00 para una emisión comprobada en Ecuador a las 10:00.
-# Interpretamos ese reloj de origen con una zona IANA (sin offset manual) y
-# convertimos siempre el resultado a America/Guayaquil.
+# GatoTV entrega para STAR TVE el reloj de origen en notación 24 h o AM/PM
+# según la respuesta. El 13-08-2026, 16:00 de ese reloj correspondió a una
+# emisión comprobada en Ecuador a las 10:00. Ambas notaciones se interpretan
+# con esta zona IANA y se convierten a America/Guayaquil, sin offset manual.
 STAR_GATOTV_SOURCE_TIMEZONE = "Atlantic/Canary"
 TVE_ID = "Canal.TVE.Internacional.(Televisión.Española).ec"
 TVE_MITV_COUNTRY = "co"
@@ -820,6 +820,80 @@ def _gatotv_24h_rows_from_flat_text(
     return rows
 
 
+def _gatotv_rows_from_flat_text_any_clock(
+    container: Tag | BeautifulSoup,
+) -> tuple[list[tuple[time, time, str, str | None]], int]:
+    """Recupera la parrilla aplanada en 24 h o AM/PM.
+
+    GitHub Actions puede recibir GatoTV sin filas ``<tr>`` y, además, con la
+    notación AM/PM. Para STAR TVE la notación no determina la zona: tanto 24 h
+    como AM/PM representan el reloj de origen y después se convierten mediante
+    ``source_timezone``. Se devuelve también el número de filas AM/PM para
+    diagnóstico/selección.
+    """
+
+    text = epg.normalize_text(container.get_text(" ", strip=True))
+    if not text:
+        return [], 0
+
+    columns_header = "Hora Inicio Hora Fin Programa"
+    columns_index = text.find(columns_header)
+    if columns_index >= 0:
+        text = text[columns_index:]
+    else:
+        schedule_index = text.rfind("Horarios de Programación")
+        if schedule_index >= 0:
+            text = text[schedule_index:]
+
+    for marker_text in ("Etiquetas:", "Disponibilidad", "La guía de Televisión"):
+        index = text.find(marker_text)
+        if index >= 0:
+            text = text[:index]
+
+    text = re.sub(r"\b(?:Madrugada|Mañana|Tarde|Noche)\b", " ", text, flags=re.I)
+    text = re.sub(r"\s+", " ", text).strip()
+
+    # Acepta 16:00 o 4:00 PM / 04:00 P.M. El segundo reloj debe usar la misma
+    # sintaxis general, no necesariamente el mismo meridiem.
+    clock = r"(?:[01]?\d|2[0-3]):[0-5]\d(?:\s*(?:A\.?M\.?|P\.?M\.?))?"
+    row_pattern = re.compile(
+        rf"(?<![\d:])(?P<start>{clock})\s*(?:[-–—]\s*)?"
+        rf"(?P<stop>{clock})\s+"
+        rf"(?P<body>.*?)"
+        rf"(?=(?:{clock})\s*(?:[-–—]\s*)?(?:{clock})\s+|$)",
+        re.I | re.S,
+    )
+
+    def parse_clock_token(value: str) -> time | None:
+        token = re.sub(r"\.", "", epg.normalize_text(value)).upper()
+        token = re.sub(r"\s+", " ", token).strip()
+        for pattern in ("%H:%M", "%I:%M %p"):
+            try:
+                return datetime.strptime(token, pattern).time()
+            except ValueError:
+                continue
+        return None
+
+    rows: list[tuple[time, time, str, str | None]] = []
+    meridiem_rows = 0
+    for match in row_pattern.finditer(text):
+        body = epg.normalize_text(match.group("body")).strip(" :-–—|")
+        body = re.split(r"\s+[‹›]\s*", body, maxsplit=1)[0].strip()
+        if not body:
+            continue
+        start_text = match.group("start")
+        stop_text = match.group("stop")
+        start_clock = parse_clock_token(start_text)
+        stop_clock = parse_clock_token(stop_text)
+        if start_clock is None or stop_clock is None:
+            continue
+        if re.search(r"\b(?:A\.?M\.?|P\.?M\.?)\b", start_text + " " + stop_text, re.I):
+            meridiem_rows += 1
+        rows.append((start_clock, stop_clock, body, None))
+
+    return rows, meridiem_rows
+
+
 def _convert_gatotv_rows(
     rows: list[tuple[time, time, str, str | None]],
     guide_date: date,
@@ -881,10 +955,10 @@ def parse_gatotv_page(
     """Lee una fecha de GatoTV y normaliza el resultado a Guayaquil.
 
     Cuando ``source_timezone`` está definido, esa zona es la única referencia
-    horaria aceptada: se elige la representación 24 h, se fecha en la zona
-    fuente y se convierte con ``ZoneInfo`` a ``America/Guayaquil``. Esto evita
-    confundir una representación AM/PM alternativa con hora local. No se aplica
-    ningún desplazamiento fijo en minutos.
+    horaria aceptada. GatoTV puede servir la misma parrilla en notación 24 h o
+    AM/PM; ambas se fechan en la zona fuente y se convierten con ``ZoneInfo`` a
+    ``America/Guayaquil``. La notación AM/PM nunca se interpreta directamente
+    como hora local de Ecuador. No se aplica ningún desplazamiento fijo.
     """
 
     soup = BeautifulSoup(page, "lxml")
@@ -901,33 +975,37 @@ def parse_gatotv_page(
         if len(rows) >= 5:
             candidates.append((rows, meridiem_rows))
 
-    # STAR TVE necesita exclusivamente la representación 24 h. GatoTV puede
-    # entregarla al runner fuera de una tabla <tr>; en ese caso recuperamos
-    # las filas del texto aplanado de la parrilla.
+    # STAR TVE puede llegar al runner en dos notaciones del MISMO reloj de
+    # origen: 24 h o AM/PM. Lo importante no es la notación, sino la zona que
+    # representa ese reloj. En ambos casos se interpreta con ``source_timezone``
+    # y después se convierte con ZoneInfo a America/Guayaquil. Así evitamos
+    # depender del formato que GatoTV decida servir a GitHub Actions.
+    #
+    # Si no hay tabla/fila estructurada, conservamos además el fallback 24 h
+    # desde texto aplanado.
     if source_timezone is not None:
-        flat_24h_rows = _gatotv_24h_rows_from_flat_text(soup)
-        if len(flat_24h_rows) >= 5:
-            candidates.append((flat_24h_rows, 0))
+        flat_rows, flat_meridiem_rows = _gatotv_rows_from_flat_text_any_clock(soup)
+        if len(flat_rows) >= 5:
+            candidates.append((flat_rows, flat_meridiem_rows))
+        else:
+            # Conservamos el parser 24 h específico como segunda defensa ante
+            # cambios menores de espaciado/markup.
+            flat_24h_rows = _gatotv_24h_rows_from_flat_text(soup)
+            if len(flat_24h_rows) >= 5:
+                candidates.append((flat_24h_rows, 0))
 
     if not candidates:
         if source_timezone is not None:
             raise RuntimeError(
-                "GatoTV: no se encontró programación 24 h suficiente en tabla "
+                "GatoTV: no se encontró programación suficiente en tabla "
                 "ni en el texto estructurado de la página."
             )
         return epg.parse_gatotv_page(page, guide_date, channel_id)
 
     if source_timezone is not None:
-        # Para una fuente con zona explícita/inferida no debemos escoger una
-        # tabla AM/PM alternativa que represente otro reloj. STAR TVE usa este
-        # camino: tabla 24 h Atlantic/Canary -> America/Guayaquil.
-        source_candidates = [item for item in candidates if item[1] == 0]
-        if not source_candidates:
-            raise RuntimeError(
-                "GatoTV: la zona de origen requiere una tabla 24 h; "
-                "solo se encontró una representación AM/PM ambigua."
-            )
-        selected = max(source_candidates, key=lambda item: len(item[0]))
+        # Tanto 24 h como AM/PM son solo formas de escribir el mismo reloj de
+        # origen. Nunca se interpreta AM/PM directamente como Guayaquil.
+        selected = max(candidates, key=lambda item: len(item[0]))
         clock_timezone = ZoneInfo(source_timezone)
     elif prefer_ampm_local:
         ampm_candidates = [item for item in candidates if item[1] >= 5]
@@ -1978,6 +2056,82 @@ def self_test() -> None:
     salon = next(item for item in star_programmes if item.title == "Salón de té La Moderna")
     assert salon.start.isoformat() == "2026-08-13T10:00:00-05:00"
     assert salon.stop.isoformat() == "2026-08-13T11:00:00-05:00"
+
+    # Regresión v0.2.9: GitHub Actions puede recibir la misma parrilla en
+    # notación AM/PM. Esa notación NO es hora de Guayaquil: sigue siendo el
+    # reloj Atlantic/Canary y debe pasar por la misma conversión ZoneInfo.
+    star_ampm_source_sample = """
+    <html><body><table>
+      <tr><th>Hora Inicio</th><th>Hora Fin</th><th>Programa</th></tr>
+      <tr><td>2:30 PM</td><td>3:30 PM</td><td>El condensador de Fluzo</td></tr>
+      <tr><td>3:30 PM</td><td>4:00 PM</td><td>Viaje al centro de la tele</td></tr>
+      <tr><td>4:00 PM</td><td>5:00 PM</td><td>Salón de té La Moderna</td></tr>
+      <tr><td>5:00 PM</td><td>5:50 PM</td><td>La promesa</td></tr>
+      <tr><td>5:50 PM</td><td>6:50 PM</td><td>La promesa</td></tr>
+    </table></body></html>
+    """
+    star_ampm_source = parse_gatotv_page(
+        star_ampm_source_sample,
+        date(2026, 8, 13),
+        "TVEStarHD.es",
+        source_timezone=star_config.source_timezone,
+        prefer_ampm_local=star_config.prefer_ampm_local,
+    )
+    ampm_salon = next(
+        item for item in star_ampm_source if item.title == "Salón de té La Moderna"
+    )
+    assert ampm_salon.start.isoformat() == "2026-08-13T10:00:00-05:00"
+    assert ampm_salon.stop.isoformat() == "2026-08-13T11:00:00-05:00"
+
+    star_ampm_evening_sample = """
+    <html><body><table>
+      <tr><th>Hora Inicio</th><th>Hora Fin</th><th>Programa</th></tr>
+      <tr><td>12:10 AM</td><td>1:00 AM</td><td>Acacias 38</td></tr>
+      <tr><td>1:00 AM</td><td>2:00 AM</td><td>La promesa</td></tr>
+      <tr><td>2:00 AM</td><td>3:05 AM</td><td>Estoy vivo</td></tr>
+      <tr><td>3:05 AM</td><td>4:00 AM</td><td>Seis hermanas</td></tr>
+      <tr><td>4:00 AM</td><td>5:00 AM</td><td>La Moderna</td></tr>
+    </table></body></html>
+    """
+    star_ampm_evening = parse_gatotv_page(
+        star_ampm_evening_sample,
+        date(2026, 8, 14),
+        "TVEStarHD.es",
+        source_timezone=star_config.source_timezone,
+        prefer_ampm_local=star_config.prefer_ampm_local,
+    )
+    ampm_estoy_vivo = next(
+        item for item in star_ampm_evening if item.title == "Estoy vivo"
+    )
+    assert ampm_estoy_vivo.start.isoformat() == "2026-08-13T20:00:00-05:00"
+    assert ampm_estoy_vivo.stop.isoformat() == "2026-08-13T21:05:00-05:00"
+
+    star_flat_ampm_sample = """
+    <html><body>
+      <section>
+        <h2>Horarios de Programación</h2>
+        <div>Hora Inicio Hora Fin Programa</div>
+        <div>2:30 PM</div><div>3:30 PM</div><div>El condensador de Fluzo</div>
+        <div>3:30 PM</div><div>4:00 PM</div><div>Viaje al centro de la tele</div>
+        <div>4:00 PM</div><div>5:00 PM</div><div>Salón de té La Moderna</div>
+        <div>5:00 PM</div><div>5:50 PM</div><div>La promesa</div>
+        <div>5:50 PM</div><div>6:50 PM</div><div>La promesa</div>
+        <div>Etiquetas:</div>
+      </section>
+    </body></html>
+    """
+    star_flat_ampm = parse_gatotv_page(
+        star_flat_ampm_sample,
+        date(2026, 8, 13),
+        "TVEStarHD.es",
+        source_timezone=star_config.source_timezone,
+        prefer_ampm_local=star_config.prefer_ampm_local,
+    )
+    flat_ampm_salon = next(
+        item for item in star_flat_ampm if item.title == "Salón de té La Moderna"
+    )
+    assert flat_ampm_salon.start.isoformat() == "2026-08-13T10:00:00-05:00"
+    assert flat_ampm_salon.stop.isoformat() == "2026-08-13T11:00:00-05:00"
 
     # Regresión v0.2.8: GatoTV puede entregar la misma parrilla 24 h sin
     # filas <tr>. Debe recuperarse desde el texto sin aceptar la variante
