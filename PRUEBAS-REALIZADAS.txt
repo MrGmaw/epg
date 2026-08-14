@@ -1,3 +1,8 @@
+EPG MrG v0.2.7 — pruebas adicionales
+- STAR TVE: parser 24 h sin filas <tr> validado con HTML basado en div/span.
+- STAR TVE: 16:00–17:00 Atlantic/Canary -> 10:00–11:00 America/Guayaquil sin offset manual.
+- Python: build_latam_epg.py compila correctamente.
+
 PRUEBAS REALIZADAS ANTES DE EMPAQUETAR
 
 - Compilación Python de todos los scripts incluidos.
