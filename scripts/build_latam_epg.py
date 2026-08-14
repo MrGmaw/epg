@@ -730,10 +730,10 @@ def _gatotv_canonical_rows(
     """Extrae y SEPARA las dos representaciones canónicas de GatoTV.
 
     GatoTV puede incluir simultáneamente dos juegos de ``tbl_EPG_row``:
-    una vista AM/PM localizada para el visitante y una vista 24 h del reloj
-    de origen. Mezclarlas produce emisiones duplicadas y, si a la vista
-    AM/PM local se le vuelve a aplicar la conversión de zona, un segundo
-    desplazamiento de seis horas.
+    una vista AM/PM y una vista 24 h del reloj de origen. Para STAR TVE no
+    deben mezclarse. La vista 24 h es la referencia horaria preferida porque
+    coincide con la señal real al convertirla a Guayaquil; AM/PM queda como
+    respaldo.
 
     Devuelve ``(rows_24h, rows_ampm)`` para que el llamador seleccione UNA
     sola representación.
@@ -1056,8 +1056,8 @@ def parse_gatotv_page(
     filas canónicas ``tbl_EPG_row`` de GatoTV. Las horas se toman de
     ``tbl_EPG_TimesColumn*`` y el título de ``div_program_title_on_channel``.
     Si GatoTV ofrece AM/PM y 24 h a la vez, se selecciona SOLO una vista:
-    AM/PM se considera ya localizada a Guayaquil; 24 h se usa únicamente de
-    respaldo y se convierte desde ``source_timezone``. No hay offset manual.
+    la canónica 24 h tiene prioridad y se convierte desde ``source_timezone``;
+    AM/PM queda únicamente como respaldo. No hay offset manual.
     """
 
     soup = BeautifulSoup(page, "lxml")
@@ -1070,20 +1070,21 @@ def parse_gatotv_page(
         rows_24h, rows_ampm = _gatotv_canonical_rows(soup)
 
         # GatoTV puede entregar simultáneamente la misma parrilla en dos
-        # relojes. La vista AM/PM está ya localizada para Ecuador; por eso se
-        # usa directamente como America/Guayaquil y NUNCA se vuelve a
-        # convertir desde Atlantic/Canary. Si no está disponible, la vista
-        # canónica 24 h sí se interpreta con la zona fuente y se convierte.
-        if len(rows_ampm) >= 5:
-            rows = rows_ampm
-            clock_timezone = epg.TZ
-            clock_format = "AM/PM local"
-            selected_zone = "America/Guayaquil"
-        elif len(rows_24h) >= 5:
+        # relojes. Para STAR TVE la vista 24 h es la fuente horaria canónica:
+        # coincide con la señal real al convertir Atlantic/Canary ->
+        # America/Guayaquil. La vista AM/PM conserva el orden de programas,
+        # pero puede quedar corrida un bloque respecto de la emisión real,
+        # por lo que se usa únicamente como último respaldo.
+        if len(rows_24h) >= 5:
             rows = rows_24h
             clock_timezone = ZoneInfo(source_timezone)
-            clock_format = "24h origen"
+            clock_format = "24h origen (preferida)"
             selected_zone = source_timezone
+        elif len(rows_ampm) >= 5:
+            rows = rows_ampm
+            clock_timezone = epg.TZ
+            clock_format = "AM/PM local (respaldo)"
+            selected_zone = "America/Guayaquil"
         else:
             raise RuntimeError(
                 "GatoTV: la tabla canónica tbl_EPG_row no contiene "
@@ -2174,14 +2175,14 @@ def self_test() -> None:
       </table>
 
       <!-- La página real puede incluir simultáneamente una segunda vista
-           CANÓNICA AM/PM ya localizada a Guayaquil. Debe elegirse esta vista
-           sin volver a convertirla desde Atlantic/Canary. -->
+           CANÓNICA AM/PM. Para STAR TVE no debe desplazar a la vista 24 h,
+           que es la referencia horaria preferida. -->
       <table id="epg-real-ampm">
-        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">1:55 PM</div></td><td><div class="tbl_EPG_TimesColumn">2:45 PM</div></td><td><div class="div_program_title_on_channel">Víctimas del misterio</div><div class="div_episode_programa_on_channel">Shaolin asesino</div></td></tr>
-        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">2:45 PM</div></td><td><div class="tbl_EPG_TimesColumn">3:45 PM</div></td><td><div class="div_program_title_on_channel">Un país para reírlo</div><div class="div_episode_programa_on_channel">Humor y cine</div></td></tr>
-        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">3:45 PM</div></td><td><div class="tbl_EPG_TimesColumn">4:20 PM</div></td><td><div class="div_program_title_on_channel">Zoom tendencias</div></td></tr>
-        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">4:20 PM</div></td><td><div class="tbl_EPG_TimesColumn">5:15 PM</div></td><td><div class="div_program_title_on_channel">Seis hermanas</div></td></tr>
-        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumnOutOfSchedule">5:15 PM</div></td><td><div class="tbl_EPG_TimesColumnOutOfSchedule">6:15 PM</div></td><td><div class="div_program_title_on_channel">Salón de té La Moderna</div></td></tr>
+        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">2:45 PM</div></td><td><div class="tbl_EPG_TimesColumn">3:45 PM</div></td><td><div class="div_program_title_on_channel">Víctimas del misterio</div><div class="div_episode_programa_on_channel">Shaolin asesino</div></td></tr>
+        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">3:45 PM</div></td><td><div class="tbl_EPG_TimesColumn">4:20 PM</div></td><td><div class="div_program_title_on_channel">Un país para reírlo</div><div class="div_episode_programa_on_channel">Humor y cine</div></td></tr>
+        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">4:20 PM</div></td><td><div class="tbl_EPG_TimesColumn">5:15 PM</div></td><td><div class="div_program_title_on_channel">Zoom tendencias</div></td></tr>
+        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">5:15 PM</div></td><td><div class="tbl_EPG_TimesColumn">6:15 PM</div></td><td><div class="div_program_title_on_channel">Seis hermanas</div></td></tr>
+        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumnOutOfSchedule">6:15 PM</div></td><td><div class="tbl_EPG_TimesColumnOutOfSchedule">7:15 PM</div></td><td><div class="div_program_title_on_channel">Salón de té La Moderna</div></td></tr>
       </table>
 
       <!-- Señuelo deliberado: v0.2.9 podía preferir una tabla no canónica
