@@ -763,24 +763,28 @@ def _gatotv_24h_rows_from_flat_text(
 
     # Acotar el análisis a la parrilla evita confundir fechas, canales y otros
     # relojes de navegación con emisiones reales.
-    header_candidates = (
-        "Hora Inicio Hora Fin Programa",
-        "Horarios de Programación",
-    )
-    starts = [text.find(value) for value in header_candidates if text.find(value) >= 0]
-    if starts:
-        text = text[min(starts):]
+    # Preferir el encabezado de columnas porque GatoTV puede repetir
+    # "Horarios de Programación" en menús y navegación antes de la parrilla.
+    # En v0.2.7 se tomaba la primera coincidencia y luego se recortaba en el
+    # primer símbolo ‹, que puede aparecer ANTES de las emisiones reales.
+    # Eso dejaba el texto vacío en GitHub Actions.
+    columns_header = "Hora Inicio Hora Fin Programa"
+    columns_index = text.find(columns_header)
+    if columns_index >= 0:
+        text = text[columns_index:]
+    else:
+        schedule_index = text.rfind("Horarios de Programación")
+        if schedule_index >= 0:
+            text = text[schedule_index:]
 
     for marker in ("Etiquetas:", "Disponibilidad", "La guía de Televisión"):
         index = text.find(marker)
         if index >= 0:
             text = text[:index]
 
-    # La navegación al día anterior/siguiente aparece justo después de la
-    # última emisión en la representación que usa GatoTV.
-    nav_index = text.find("‹")
-    if nav_index >= 0:
-        text = text[:nav_index]
+    # No recortar por los símbolos ‹/›: también se usan en la navegación que
+    # precede a la tabla. Si quedan pegados al último título, se limpian por
+    # fila más abajo.
 
     # Los rótulos de franja pueden quedar entre el título anterior y el reloj
     # siguiente al aplanar el HTML. Se eliminan antes de dividir las filas.
@@ -1975,7 +1979,7 @@ def self_test() -> None:
     assert salon.start.isoformat() == "2026-08-13T10:00:00-05:00"
     assert salon.stop.isoformat() == "2026-08-13T11:00:00-05:00"
 
-    # Regresión v0.2.7: GatoTV puede entregar la misma parrilla 24 h sin
+    # Regresión v0.2.8: GatoTV puede entregar la misma parrilla 24 h sin
     # filas <tr>. Debe recuperarse desde el texto sin aceptar la variante
     # AM/PM que también puede aparecer en la página.
     star_flat_24h_sample = """
@@ -2007,6 +2011,41 @@ def self_test() -> None:
     )
     assert flat_salon.start.isoformat() == "2026-08-13T10:00:00-05:00"
     assert flat_salon.stop.isoformat() == "2026-08-13T11:00:00-05:00"
+
+    # Regresión v0.2.8 para la estructura real observada en GitHub: GatoTV
+    # puede incluir un enlace ‹ día anterior › antes del encabezado de columnas.
+    # Ese símbolo no debe truncar la parrilla.
+    star_nav_before_rows_sample = """
+    <html><body>
+      <nav><span>Horarios de Programación</span></nav>
+      <div>‹ Jueves 13 Horarios para el viernes 14 de agosto de 2026 Sábado 15 ›</div>
+      <section>
+        <h2>Horarios de Programación</h2>
+        <div>Hora Inicio Hora Fin Programa</div>
+        <div>Madrugada</div>
+        <div>00:05</div><div>01:10</div><div>Salón de té La Moderna</div>
+        <div>01:10</div><div>02:00</div><div>Acacias 38</div>
+        <div>02:00</div><div>03:00</div><div>La promesa</div>
+        <div>03:00</div><div>04:05</div><div>Estoy vivo</div>
+        <div>04:05</div><div>05:10</div><div>Un país para reírlo</div>
+        <div>‹ Jueves 13 Sábado 15 ›</div>
+        <div>Etiquetas:</div>
+      </section>
+    </body></html>
+    """
+    star_nav_programmes = parse_gatotv_page(
+        star_nav_before_rows_sample,
+        date(2026, 8, 14),
+        "TVEStarHD.es",
+        source_timezone=star_config.source_timezone,
+        prefer_ampm_local=star_config.prefer_ampm_local,
+    )
+    assert len(star_nav_programmes) == 5
+    nav_estoy_vivo = next(
+        item for item in star_nav_programmes if item.title == "Estoy vivo"
+    )
+    assert nav_estoy_vivo.start.isoformat() == "2026-08-13T21:00:00-05:00"
+    assert nav_estoy_vivo.stop.isoformat() == "2026-08-13T22:05:00-05:00"
 
     # Prueba de regresión real del 13-08-2026 por la noche: en la tabla fuente
     # del 14-08, ``Estoy vivo`` 02:00-03:05 Atlantic/Canary debe convertirse
