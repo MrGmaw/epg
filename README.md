@@ -309,6 +309,8 @@ la traslada por día de la semana a la nueva ventana. No se inventan títulos ni
 horarios. Si tampoco existe una caché válida, la generación falla.
 
 
-## Ajuste STAR TVE v0.2.12
+## Ajuste STAR TVE v0.2.13
 
 Para `TVEStarHD.es` se prioriza la tabla canónica de 24 horas de GatoTV y se convierte `Atlantic/Canary` → `America/Guayaquil`. La vista AM/PM queda únicamente como respaldo. No se aplica offset manual.
+
+Desde v0.2.13, `latam-status.json` incluye `star_tve_parser_revision` y GitHub Actions imprime `VERSION` y el SHA-256 de `scripts/build_latam_epg.py` antes de construir la guía. Esto permite comprobar de forma inequívoca qué revisión está ejecutando el runner.

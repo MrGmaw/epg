@@ -90,3 +90,11 @@ PRUEBAS v0.2.6 — 13-08-2026
 - Ecuador TV: guardia nocturna limitada a lunes-viernes y con caducidad 31-08-2026.
 - `build_latam_epg.py --self-test`: correcto con 27 IDs únicos.
 - Compilación Python correcta de todos los scripts incluidos.
+
+PRUEBAS v0.2.13 — 14-08-2026
+- VERSION actualizado a 0.2.13.
+- STAR TVE conserva prioridad de tabla canónica 24 h y conversión Atlantic/Canary -> America/Guayaquil sin offset manual.
+- build_latam_epg.py publica star_tve_parser_revision=canonical-24h-primary-r2 en latam-status.json.
+- El log de STAR TVE incluye la revisión del parser utilizada en cada fecha.
+- GitHub Actions imprime VERSION y SHA-256 de scripts/build_latam_epg.py antes de ejecutar la generación.
+- Se verificó que v0.2.13 contiene cambios reales respecto de v0.2.12 en VERSION, build_latam_epg.py, workflow, CHANGELOG, README, MANIFEST y PRUEBAS-REALIZADAS.

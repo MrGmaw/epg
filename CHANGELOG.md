@@ -1,3 +1,11 @@
+# v0.2.13 — identidad de despliegue verificable y diagnóstico STAR TVE
+
+- `VERSION` pasa explícitamente a `0.2.13`.
+- Se añade `STAR_TVE_PARSER_REVISION = canonical-24h-primary-r2` al generador LATAM y se publica en `latam-status.json` como `star_tve_parser_revision`.
+- Los logs de STAR TVE muestran ahora la revisión del parser junto con las filas 24 h/AM-PM, la vista seleccionada y la zona utilizada.
+- GitHub Actions imprime al inicio la versión del paquete y el SHA-256 de `scripts/build_latam_epg.py`, de modo que dos despliegues distintos ya no pueden confundirse visualmente aunque el resultado XML sea parecido.
+- Se conserva la lógica funcional de v0.2.12 para STAR TVE: tabla canónica 24 h prioritaria, `Atlantic/Canary` → `America/Guayaquil`, AM/PM solo como respaldo y sin offset manual.
+
 # v0.2.12 — STAR TVE: prioridad definitiva a la tabla 24 h
 
 - Para `TVEStarHD.es`, cuando GatoTV entrega simultáneamente vistas canónicas 24 h y AM/PM, ahora se selecciona primero la vista 24 h.
