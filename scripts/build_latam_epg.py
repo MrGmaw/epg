@@ -38,10 +38,28 @@ EPG_VERSION = VERSION_FILE.read_text(encoding="utf-8").strip()
 ECUADOR_TV_URL = "https://www.ecuadortv.ec/programas"
 ECUADOR_TV_HOME_URL = "https://www.ecuadortv.ec/"
 ECUADOR_TV_NEWS_URL = "https://www.ecuadortv.ec/noticias"
+ECUADOR_TV_PROBE_URLS = (
+    "https://www.ecuadortv.ec/programas/deportivo/fanatico",
+    "https://www.ecuadortv.ec/programas/informativo-y-opinion/perspectiva-7",
+    "https://www.ecuadortv.ec/programas/hogar-y-estilo-de-vida/esto-es-ecuador",
+    "https://www.ecuadortv.ec/programas/series-y-novelas/honores-policiales",
+)
 ECUADOR_TV_SCHEDULE_URLS = (
     ECUADOR_TV_URL,
+    *ECUADOR_TV_PROBE_URLS,
     ECUADOR_TV_NEWS_URL,
     ECUADOR_TV_HOME_URL,
+)
+# Guardia temporal basada en la parrilla oficial visible y contraste de señal
+# del 13-08-2026. Solo entra cuando el HTML oficial no aporta el bloque.
+# Caduca para no convertir una parrilla verificada hoy en una verdad eterna.
+ECUADOR_TV_VERIFIED_EVENING_VALID_UNTIL = date(2026, 8, 31)
+ECUADOR_TV_VERIFIED_EVENING = (
+    (time(20, 0), time(21, 0), "Honores Policiales"),
+    (time(21, 0), time(22, 0), "Fanático"),
+    (time(22, 0), time(22, 30), "Un Café con JJ"),
+    (time(22, 30), time(23, 30), "Estas Secretarias"),
+    (time(23, 30), time(0, 0), "Noticiero NCC Climático"),
 )
 ECUADOR_TV_ID = "Canal.Ecuador.TV.ec"
 MAKRODIGITAL_URL = "https://makrodigitaltelevision.com/programacion/"
@@ -204,7 +222,7 @@ GATOTV_CHANNELS: tuple[GatoTvChannel, ...] = (
         ("STAR TVE", "Star TVE"),
         "https://www.gatotv.com/canal/star_tve",
         source_timezone=STAR_GATOTV_SOURCE_TIMEZONE,
-        prefer_ampm_local=True,
+        prefer_ampm_local=False,
     ),
     GatoTvChannel(
         "clan_tve",
@@ -784,12 +802,11 @@ def parse_gatotv_page(
 ) -> list[epg.Programme]:
     """Lee una fecha de GatoTV y normaliza el resultado a Guayaquil.
 
-    Para STAR TVE se observan dos representaciones del mismo contenido en
-    GatoTV: una vista AM/PM que coincide con Ecuador y una tabla 24 h cuyo reloj
-    aparece adelantado. Si existe una tabla AM/PM se interpreta directamente
-    como ``America/Guayaquil``. Si el runner recibe solo la tabla 24 h, su reloj
-    se interpreta mediante ``source_timezone`` y se convierte con ``ZoneInfo``;
-    no se aplica ningún desplazamiento fijo en minutos.
+    Cuando ``source_timezone`` está definido, esa zona es la única referencia
+    horaria aceptada: se elige la representación 24 h, se fecha en la zona
+    fuente y se convierte con ``ZoneInfo`` a ``America/Guayaquil``. Esto evita
+    confundir una representación AM/PM alternativa con hora local. No se aplica
+    ningún desplazamiento fijo en minutos.
     """
 
     soup = BeautifulSoup(page, "lxml")
@@ -814,19 +831,26 @@ def parse_gatotv_page(
             )
         return epg.parse_gatotv_page(page, guide_date, channel_id)
 
-    if prefer_ampm_local:
+    if source_timezone is not None:
+        # Para una fuente con zona explícita/inferida no debemos escoger una
+        # tabla AM/PM alternativa que represente otro reloj. STAR TVE usa este
+        # camino: tabla 24 h Atlantic/Canary -> America/Guayaquil.
+        source_candidates = [item for item in candidates if item[1] == 0]
+        if not source_candidates:
+            raise RuntimeError(
+                "GatoTV: la zona de origen requiere una tabla 24 h; "
+                "solo se encontró una representación AM/PM ambigua."
+            )
+        selected = max(source_candidates, key=lambda item: len(item[0]))
+        clock_timezone = ZoneInfo(source_timezone)
+    elif prefer_ampm_local:
         ampm_candidates = [item for item in candidates if item[1] >= 5]
         selected = max(ampm_candidates or candidates, key=lambda item: len(item[0]))
+        clock_timezone = epg.TZ
     else:
         selected = max(candidates, key=lambda item: len(item[0]))
-    rows, meridiem_rows = selected
-
-    if prefer_ampm_local and meridiem_rows >= 5:
         clock_timezone = epg.TZ
-    elif source_timezone is not None:
-        clock_timezone = ZoneInfo(source_timezone)
-    else:
-        clock_timezone = epg.TZ
+    rows, _meridiem_rows = selected
 
     result = _convert_gatotv_rows(
         rows,
@@ -954,6 +978,19 @@ def _makro_day_headings(soup: BeautifulSoup) -> list[tuple[Tag, int]]:
     return headings
 
 
+def _is_makro_placeholder_title(value: str | None) -> bool:
+    """Detecta separadores/decoración que nunca deben convertirse en título."""
+
+    if value is None:
+        return True
+    cleaned = epg.normalize_text(value).strip()
+    if not cleaned:
+        return True
+    # El sitio inserta guiones/separadores como nodos de texto entre el título
+    # y el rango horario. Si se aceptan, XMLTV termina con <title>-</title>.
+    return re.fullmatch(r"[-–—|•·_.:/\\]+", cleaned) is not None
+
+
 def _makro_section_lines(heading: Tag) -> list[str]:
     lines: list[str] = []
     for element in heading.next_elements:
@@ -989,8 +1026,10 @@ def parse_makro_weekly(page: str) -> dict[int, list[MakroWeeklyItem]]:
             if matches:
                 for match in matches:
                     prefix = epg.normalize_text(line[: match.start()]).strip(" :-–—|")
+                    if _is_makro_placeholder_title(prefix):
+                        prefix = ""
                     title = prefix or recent_title
-                    if not title:
+                    if _is_makro_placeholder_title(title):
                         continue
                     try:
                         start_clock = parse_makro_clock(match.group("start"))
@@ -1036,7 +1075,10 @@ def parse_makro_weekly(page: str) -> dict[int, list[MakroWeeklyItem]]:
                 "programa",
             }:
                 continue
-            if not re.search(r"\d{1,2}(?::\d{2})?\s*(?:AM|PM)", line, re.I):
+            if (
+                not re.search(r"\d{1,2}(?::\d{2})?\s*(?:AM|PM)", line, re.I)
+                and not _is_makro_placeholder_title(line)
+            ):
                 recent_title = line
 
     result: dict[int, list[MakroWeeklyItem]] = {}
@@ -1046,6 +1088,11 @@ def parse_makro_weekly(page: str) -> dict[int, list[MakroWeeklyItem]]:
             key = (item.start.isoformat(), normalized(item.title))
             deduplicated.setdefault(key, item)
         items = sorted(deduplicated.values(), key=lambda item: (item.start, item.title))
+        invalid_titles = [item.title for item in items if _is_makro_placeholder_title(item.title)]
+        if invalid_titles:
+            raise RuntimeError(
+                f"MakroDigital: títulos decorativos inválidos detectados: {invalid_titles!r}."
+            )
         if len(items) < 5:
             raise RuntimeError(
                 "MakroDigital: la parrilla oficial no contiene suficientes "
@@ -1177,6 +1224,39 @@ def _programme_overlaps_interval(
     return current_start < stop and current_stop > start
 
 
+def verified_ecuador_tv_evening_programmes(
+    start_date: date,
+    days: int,
+) -> list[epg.Programme]:
+    """Guardia de contingencia para la franja oficial verificada en vivo.
+
+    Se usa únicamente hasta la fecha de caducidad y solo de lunes a viernes.
+    La fuente oficial scrapeada siempre tiene prioridad; estos bloques evitan
+    que EPGShare vuelva a publicar ``Telediario`` cuando el sitio oficial se
+    renderiza vacío para GitHub Actions.
+    """
+
+    programmes: list[epg.Programme] = []
+    for offset in range(days):
+        guide_date = start_date + timedelta(days=offset)
+        if guide_date > ECUADOR_TV_VERIFIED_EVENING_VALID_UNTIL:
+            continue
+        if guide_date.weekday() >= 5:
+            continue
+        for start_clock, stop_clock, title in ECUADOR_TV_VERIFIED_EVENING:
+            stop_date = guide_date if stop_clock > start_clock else guide_date + timedelta(days=1)
+            programmes.append(
+                epg.Programme(
+                    channel_id=ECUADOR_TV_ID,
+                    start=datetime.combine(guide_date, start_clock, tzinfo=epg.TZ),
+                    stop=datetime.combine(stop_date, stop_clock, tzinfo=epg.TZ),
+                    title=title,
+                    description=None,
+                )
+            )
+    return programmes
+
+
 def combine_ecuador_tv(
     *,
     source_root: etree._Element,
@@ -1213,7 +1293,14 @@ def combine_ecuador_tv(
         try:
             page = epg.fetch_text(
                 schedule_url,
-                headers={"Referer": "https://www.ecuadortv.ec/"},
+                headers={
+                    "Referer": "https://www.ecuadortv.ec/",
+                    "User-Agent": (
+                        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                        "(KHTML, like Gecko) Chrome/139.0 Safari/537.36"
+                    ),
+                    "Accept-Language": "es-EC,es;q=0.9,en;q=0.5",
+                },
             )
             page_programmes, _page_dates = parse_ecuador_tv_page(
                 page,
@@ -1228,6 +1315,28 @@ def combine_ecuador_tv(
                 official_by_key.setdefault(item.start.isoformat(), item)
         except (requests.RequestException, RuntimeError) as exc:
             epg.warn(f"Ecuador TV oficial {schedule_url}: {exc}")
+
+    # Guardia de contingencia de la franja nocturna verificada. La parrilla
+    # scrapeada conserva prioridad; si existe el mismo título a la misma hora
+    # pero con un fin anterior a la siguiente tarjeta verificada, se amplía al
+    # fin verificado (caso Honores Policiales 20:00 -> siguiente inicio 21:00).
+    verified_candidates = verified_ecuador_tv_evening_programmes(start_date, days)
+    verified_used: list[epg.Programme] = []
+    verified_adjusted = 0
+    for verified in verified_candidates:
+        key = verified.start.isoformat()
+        current = official_by_key.get(key)
+        if current is None:
+            official_by_key[key] = verified
+            verified_used.append(verified)
+            continue
+        if (
+            normalized(current.title) == normalized(verified.title)
+            and current.stop < verified.stop
+        ):
+            official_by_key[key] = verified
+            verified_used.append(verified)
+            verified_adjusted += 1
 
     official_programmes = sorted(
         official_by_key.values(),
@@ -1261,16 +1370,17 @@ def combine_ecuador_tv(
         }
     )
     if official_programmes and kept_fallback:
-        source_name = "official_overlay+epgshare_fallback"
+        source_name = "official_or_verified_overlay+epgshare_fallback"
     elif official_programmes:
-        source_name = "official"
+        source_name = "official_or_verified"
     else:
         source_name = "epgshare_fallback"
 
     if official_programmes:
         epg.log(
-            "Ecuador TV oficial: "
-            f"{len(official_programmes)} bloques superpuestos; "
+            "Ecuador TV: "
+            f"{len(official_programmes)} bloques oficial/verificados superpuestos; "
+            f"{len(verified_used)} de contingencia; "
             f"{replaced_fallback} bloques EPGShare reemplazados."
         )
     else:
@@ -1284,6 +1394,9 @@ def combine_ecuador_tv(
         "fallback_programmes_kept": len(kept_fallback),
         "fallback_programmes_replaced": replaced_fallback,
         "official_sources": official_sources,
+        "verified_evening_programmes": len(verified_used),
+        "verified_evening_adjusted": verified_adjusted,
+        "verified_evening_valid_until": ECUADOR_TV_VERIFIED_EVENING_VALID_UNTIL.isoformat(),
     }
 
 
@@ -1599,6 +1712,7 @@ def build_latam(
             "ecuador_tv_official": ECUADOR_TV_URL,
             "ecuador_tv_official_news": ECUADOR_TV_NEWS_URL,
             "ecuador_tv_official_home": ECUADOR_TV_HOME_URL,
+            "ecuador_tv_official_probes": list(ECUADOR_TV_PROBE_URLS),
             "mi_tv": {
                 TVE_ID: TVE_MITV_URL,
                 **{
@@ -1756,7 +1870,7 @@ def self_test() -> None:
         config for config in GATOTV_CHANNELS if config.channel_id == "TVEStarHD.es"
     )
     assert star_config.source_timezone == STAR_GATOTV_SOURCE_TIMEZONE
-    assert star_config.prefer_ampm_local is True
+    assert star_config.prefer_ampm_local is False
     assert not hasattr(star_config, "time_offset_minutes")
     star_24h_sample = """
     <html><body><table>
@@ -1779,35 +1893,36 @@ def self_test() -> None:
     assert salon.start.isoformat() == "2026-08-13T10:00:00-05:00"
     assert salon.stop.isoformat() == "2026-08-13T11:00:00-05:00"
 
-    # Si GatoTV entrega directamente su variante AM/PM local, se toma como
-    # hora de Guayaquil y no se vuelve a convertir.
-    star_ampm_sample = """
+    # Prueba de regresión real del 13-08-2026 por la noche: en la tabla fuente
+    # del 14-08, ``Estoy vivo`` 02:00-03:05 Atlantic/Canary debe convertirse
+    # exactamente en 20:00-21:05 del 13-08 en Guayaquil.
+    star_evening_sample = """
     <html><body><table>
       <tr><th>Hora Inicio</th><th>Hora Fin</th><th>Programa</th></tr>
-      <tr><td>8:30 AM</td><td>9:25 AM</td><td>Acacias 38</td></tr>
-      <tr><td>9:25 AM</td><td>9:30 AM</td><td>La promesa</td></tr>
-      <tr><td>9:30 AM</td><td>10:00 AM</td><td>Viaje al centro de la tele</td></tr>
-      <tr><td>10:00 AM</td><td>11:00 AM</td><td>Salón de té La Moderna</td></tr>
-      <tr><td>11:00 AM</td><td>11:50 AM</td><td>La promesa</td></tr>
+      <tr><td>00:10</td><td>01:00</td><td>Acacias 38</td></tr>
+      <tr><td>01:00</td><td>02:00</td><td>La promesa</td></tr>
+      <tr><td>02:00</td><td>03:05</td><td>Estoy vivo</td></tr>
+      <tr><td>03:05</td><td>04:00</td><td>Seis hermanas</td></tr>
+      <tr><td>04:00</td><td>05:00</td><td>La Moderna</td></tr>
     </table></body></html>
     """
-    star_ampm = parse_gatotv_page(
-        star_ampm_sample,
-        date(2026, 8, 13),
+    star_evening = parse_gatotv_page(
+        star_evening_sample,
+        date(2026, 8, 14),
         "TVEStarHD.es",
         source_timezone=star_config.source_timezone,
         prefer_ampm_local=star_config.prefer_ampm_local,
     )
-    salon_ampm = next(item for item in star_ampm if item.title == "Salón de té La Moderna")
-    assert salon_ampm.start.isoformat() == "2026-08-13T10:00:00-05:00"
-    assert salon_ampm.stop.isoformat() == "2026-08-13T11:00:00-05:00"
+    estoy_vivo = next(item for item in star_evening if item.title == "Estoy vivo")
+    assert estoy_vivo.start.isoformat() == "2026-08-13T20:00:00-05:00"
+    assert estoy_vivo.stop.isoformat() == "2026-08-13T21:05:00-05:00"
 
     # MakroDigital publica una parrilla semanal en horario NEW YORK. Se prueba
     # la conversión DST-aware a Guayaquil y la reparación del rango anómalo
     # 5:30 AM - 5:00 AM usando el siguiente inicio (6:00 AM).
     regular = """
-      <p>MakroNoticias</p><p>12:00 AM - 12:30 AM</p>
-      <p>STV Noticias</p><p>12:30 AM - 1:00 AM</p>
+      <p>MakroNoticias</p><span>-</span><p>12:00 AM - 12:30 AM</p>
+      <p>STV Noticias</p><span>—</span><p>12:30 AM - 1:00 AM</p>
       <p>Vis a Vis con Janet Hinostroza</p><p>1:00 AM - 3:00 AM</p>
       <p>Vis a Vis con Janet Hinostroza</p><p>9:00 AM - 11:00 AM</p>
       <p>MakroNoticias</p><p>11:00 AM - 11:30 AM</p>
@@ -1827,6 +1942,12 @@ def self_test() -> None:
         )
     ) + "</body></html>"
     weekly = parse_makro_weekly(makro_sample)
+    assert all(
+        not _is_makro_placeholder_title(item.title)
+        for items in weekly.values()
+        for item in items
+    )
+    assert any(item.title == "MakroNoticias" for item in weekly[3])
     makro_thursday, _ = makro_programmes_for_window(
         weekly, date(2026, 8, 13), 1
     )
@@ -1843,8 +1964,18 @@ def self_test() -> None:
     assert parada.start.isoformat() == "2026-08-12T04:30:00-05:00"
     assert parada.stop.isoformat() == "2026-08-12T05:00:00-05:00"
     assert repairs >= 1
+
+    verified_ec = verified_ecuador_tv_evening_programmes(date(2026, 8, 13), 1)
+    assert [(item.title, item.start.strftime("%H:%M"), item.stop.strftime("%H:%M")) for item in verified_ec] == [
+        ("Honores Policiales", "20:00", "21:00"),
+        ("Fanático", "21:00", "22:00"),
+        ("Un Café con JJ", "22:00", "22:30"),
+        ("Estas Secretarias", "22:30", "23:30"),
+        ("Noticiero NCC Climático", "23:30", "00:00"),
+    ]
     print(
-        "Prueba latam correcta: 27 IDs únicos; STAR TVE sin offset manual, MakroDigital NEW YORK→Guayaquil y parser/overlay Ecuador TV validados."
+        "Prueba latam correcta: 27 IDs únicos; STAR TVE 24 h Canary→Guayaquil, "
+        "MakroDigital con títulos válidos y contingencia Ecuador TV validadas."
     )
 
 
