@@ -1,5 +1,7 @@
-EPG MrG v0.2.10 — pruebas adicionales
-- STAR TVE: parser limitado a filas canónicas `tbl_EPG_row`.
+EPG MrG v0.2.11 — pruebas adicionales
+
+- Regresión crítica 14-08-2026 con ambas vistas canónicas presentes: Víctimas del misterio 13:55–14:45, Un país para reírlo 14:45–15:45 y Zoom tendencias 15:45–16:20 en America/Guayaquil.
+- Se verifica que la vista AM/PM canónica no recibe una segunda conversión de zona.
 - STAR TVE: inicio/fin extraídos únicamente de `tbl_EPG_TimesColumn*`; título de `div_program_title_on_channel`.
 - Regresión con tabla señuelo más larga: la tabla no canónica se ignora aunque tenga más filas.
 - Regresión real 14-08-2026: `Un país para reírlo` 20:45–21:45 Atlantic/Canary -> 14:45–15:45 America/Guayaquil.
@@ -10,7 +12,7 @@ EPG MrG v0.2.10 — pruebas adicionales
 EPG MrG v0.2.9 — pruebas adicionales
 - STAR TVE: una tabla estructurada AM/PM ya no se descarta en GitHub Actions.
 - STAR TVE: fallback AM/PM sin `<tr>` validado con horarios distribuidos en `div/span`.
-- STAR TVE: AM/PM y 24 h se interpretan siempre con `Atlantic/Canary` y se convierten a `America/Guayaquil`; AM/PM nunca se toma directamente como hora de Ecuador.
+- STAR TVE: si GatoTV entrega simultáneamente AM/PM y 24 h, se selecciona una sola vista. AM/PM se toma directamente como `America/Guayaquil`; 24 h es respaldo y se convierte `Atlantic/Canary` -> `America/Guayaquil`.
 - Regresión: `Salón de té La Moderna` 4:00 PM–5:00 PM de origen -> 10:00–11:00 Guayaquil.
 - Regresión: `Estoy vivo` 2:00 AM–3:05 AM del 14-08 fuente -> 20:00–21:05 del 13-08 Guayaquil.
 - Se conserva el fallback 24 h sin `<tr>` de v0.2.8.

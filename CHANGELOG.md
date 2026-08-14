@@ -1,3 +1,12 @@
+# Changelog
+
+## 0.2.11 - 2026-08-14
+
+- Corregida la doble conversión horaria de STAR TVE observada en el XML publicado de v0.2.10.
+- GatoTV puede incluir simultáneamente filas canónicas AM/PM y 24 h con las mismas clases `tbl_EPG_row`. Ya no se mezclan ambas vistas.
+- Para `TVEStarHD.es` se prefiere la vista canónica AM/PM, que se toma directamente como `America/Guayaquil`. La vista canónica 24 h queda como respaldo y solo esa se convierte `Atlantic/Canary` → `America/Guayaquil`.
+- Referencia real validada 14-08-2026: Víctimas del misterio → Un país para reírlo → Zoom tendencias; `Un país para reírlo` corresponde a 14:45–15:45 Guayaquil.
+
 # Cambios
 
 ## v0.2.10 — 2026-08-14
@@ -17,7 +26,6 @@
 - Se mantienen los fallbacks 24 h por tabla y por texto estructurado; los días futuros aún no publicados continúan siendo advertencias.
 - Regresiones verificadas: `Salón de té La Moderna` 4:00 PM–5:00 PM de origen -> 10:00–11:00 Guayaquil; `Estoy vivo` 2:00 AM–3:05 AM del 14/08 de origen -> 20:00–21:05 del 13/08 Guayaquil.
 
-# Changelog
 
 ## v0.2.8 — 2026-08-13
 
