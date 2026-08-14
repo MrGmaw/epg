@@ -51,3 +51,14 @@ PRUEBAS v0.2.5 — 13-08-2026
 - MakroDigital: 11:00 AM America/New_York del 13-08-2026 -> 10:00 America/Guayaquil.
 - MakroDigital: rango anómalo Parada Juvenil 5:30 AM–5:00 AM reparado hasta el siguiente inicio 6:00 AM.
 - build_latam_epg.py --self-test: correcto con 27 IDs únicos.
+
+
+PRUEBAS v0.2.6 — 13-08-2026
+- STAR TVE: `prefer_ampm_local=False`; con zona fuente definida se exige la tabla 24 h y se rechaza una representación AM/PM ambigua.
+- STAR TVE: Salón de té La Moderna 16:00–17:00 Atlantic/Canary -> 10:00–11:00 America/Guayaquil.
+- STAR TVE: Estoy vivo 02:00–03:05 del 14-08 Atlantic/Canary -> 20:00–21:05 del 13-08 America/Guayaquil.
+- MakroDigital: HTML sintético con guion entre título y rango conserva `MakroNoticias` y `STV Noticias`; ningún título puede ser solo `-`, `–`, `—` u otra puntuación.
+- Ecuador TV: con todas las URLs oficiales simuladas como no disponibles, el overlay elimina `Telediario` 20:00–21:00 y publica `Honores Policiales` 20:00–21:00 seguido de Fanático, Un Café con JJ, Estas Secretarias y Noticiero NCC Climático.
+- Ecuador TV: guardia nocturna limitada a lunes-viernes y con caducidad 31-08-2026.
+- `build_latam_epg.py --self-test`: correcto con 27 IDs únicos.
+- Compilación Python correcta de todos los scripts incluidos.

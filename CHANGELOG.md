@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.2.6 — 2026-08-13
+
+- Corregida la selección de representación horaria de STAR TVE (`TVEStarHD.es`). Cuando existe `source_timezone`, el parser exige y usa la tabla 24 h de GatoTV; ya no puede elegir la variante AM/PM alternativa.
+- STAR TVE mantiene **cero offset manual**: el reloj 24 h se interpreta con `Atlantic/Canary` y se convierte con `ZoneInfo` a `America/Guayaquil`. Prueba de regresión: `Estoy vivo` 02:00–03:05 del 14-08-2026 en la tabla fuente queda 20:00–21:05 del 13-08-2026 en Guayaquil.
+- Corregido MakroDigital (`MakroDigitalTV.ec`): guiones y separadores decorativos entre el nombre y el horario ya no pueden convertirse en títulos XMLTV (`<title>-</title>`). Se rechaza cualquier título compuesto solo por puntuación.
+- Reforzada la adquisición oficial de Ecuador TV con páginas de programa adicionales y cabeceras de navegador.
+- Si Ecuador TV se renderiza vacío para GitHub Actions, se activa hasta el 31-08-2026 una guardia temporal de la franja nocturna verificada: `Honores Policiales` 20:00–21:00, `Fanático` 21:00–22:00, `Un Café con JJ` 22:00–22:30, `Estas Secretarias` 22:30–23:30 y `Noticiero NCC Climático` 23:30–00:00, de lunes a viernes. Los bloques oficial/verificados sustituyen el fallback incorrecto de EPGShare.
+- `latam-status.json` informa cuántos bloques de contingencia de Ecuador TV fueron utilizados y su fecha de caducidad.
+- Se mantienen 27 canales y no se modifica France 24 Español.
+
 ## v0.2.5 — 2026-08-13
 
 - STAR TVE (`TVEStarHD.es`) se reconstruye desde cero tomando exclusivamente `https://www.gatotv.com/canal/star_tve`.

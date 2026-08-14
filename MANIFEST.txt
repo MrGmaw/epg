@@ -1,4 +1,4 @@
-EPG MrG v0.2.5 — REPOSITORIO COMPLETO LATAM 27 CANALES
+EPG MrG v0.2.6 — REPOSITORIO COMPLETO LATAM 27 CANALES
 
 TIPO DE PAQUETE:
 - Reemplazo total de la rama main del repositorio MrGmaw/epg.
@@ -78,20 +78,21 @@ GATOTV v0.2.1:
 - Cada fecha se valida de forma independiente; los días futuros no publicados generan advertencia.
 - Se corrige el programa de arrastre que cruza desde la noche anterior a las 00:00.
 
-STAR TVE v0.2.5:
+STAR TVE v0.2.6:
 - Fuente exclusiva: https://www.gatotv.com/canal/star_tve
-- Se elimina el offset manual -60 min de v0.2.1.
-- Variante AM/PM de GatoTV: se toma directamente como America/Guayaquil.
-- Si el runner recibe la tabla 24 h: se interpreta con Atlantic/Canary y se convierte con ZoneInfo a America/Guayaquil.
+- No usa offset manual.
+- STAR TVE exige la representación 24 h de GatoTV; la variante AM/PM alternativa no se selecciona.
+- El reloj 24 h se interpreta con Atlantic/Canary y se convierte con ZoneInfo a America/Guayaquil.
 - Atlantic/Canary es una inferencia del reloj de la representación 24 h de GatoTV, no la zona de emisión del canal.
-- Referencia validada 13-08-2026: Salón de té La Moderna = 10:00–11:00 Guayaquil.
+- Referencias 13-08-2026: Salón de té La Moderna 16:00–17:00 fuente -> 10:00–11:00 Guayaquil; Estoy vivo 02:00–03:05 del 14-08 fuente -> 20:00–21:05 del 13-08 Guayaquil.
 - Canal24Horas.es, La1.es y Clan.es siguen interpretándose directamente en America/Guayaquil.
 
-MAKRODIGITAL v0.2.5:
+MAKRODIGITAL v0.2.6:
 - tvg-id: MakroDigitalTV.ec
 - Fuente: https://makrodigitaltelevision.com/programacion/
 - Zona fuente publicada por la web: NEW YORK -> America/New_York.
 - Conversión dinámica con ZoneInfo a America/Guayaquil (incluye DST).
+- Guiones/separadores decorativos se ignoran y nunca pueden convertirse en título XMLTV.
 - Rango defectuoso que invade el siguiente bloque se repara usando el siguiente inicio como frontera segura.
 
 
@@ -102,3 +103,10 @@ CORRECCIÓN v0.2.4 — ECUADOR TV:
 - Ignora fechas históricas ajenas a la ventana local solicitada.
 - Deduplica duplicados desktop/móvil por hora de inicio.
 - Secuencia validada 12-08-2026: Honores Policiales 20:00–20:30; Fanático 21:00–22:00; Un Café con JJ 22:00–22:30; Estas Secretarias 22:30–23:30; Noticiero NCC Climático 23:30–00:00.
+
+
+CORRECCIÓN v0.2.6 — ECUADOR TV:
+- Se añaden páginas de programa como sondas oficiales y cabeceras de navegador.
+- Si la extracción oficial no entrega la franja verificada, una guardia temporal hasta 31-08-2026 sustituye el fallback incorrecto de EPGShare.
+- Lunes a viernes: Honores Policiales 20:00–21:00; Fanático 21:00–22:00; Un Café con JJ 22:00–22:30; Estas Secretarias 22:30–23:30; Noticiero NCC Climático 23:30–00:00.
+- latam-status.json informa uso y caducidad de esta contingencia.

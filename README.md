@@ -1,4 +1,4 @@
-# EPG MrG v0.2.5 para GitHub Pages
+# EPG MrG v0.2.6 para GitHub Pages
 
 Este repositorio genera y publica dos guías XMLTV en un mismo workflow y,
 además, conserva localmente los logos de los canales obtenidos desde mi.tv.
@@ -131,14 +131,15 @@ días. Si una fecha futura todavía está vacía o incompleta, se registra una
 advertencia y se conservan los días válidos del canal, sin abortar por ese día.
 
 Los canales 24 Horas, La 1 y Clan se interpretan directamente en
-`America/Guayaquil`. **STAR TVE se reconstruyó desde cero en v0.2.5 y ya no usa
-ningún offset manual.** GatoTV muestra para ese canal dos representaciones del
-mismo horario: cuando aparece la tabla AM/PM local se toma directamente como
-hora de Guayaquil; cuando el runner recibe la tabla 24 h, el reloj se interpreta
-con la zona IANA `Atlantic/Canary` (inferencia validada el 13-08-2026) y se
-convierte mediante `ZoneInfo` a `America/Guayaquil`. La prueba de referencia es
-`Salón de té La Moderna`: 16:00–17:00 en la representación 24 h equivale a
-10:00–11:00 en Guayaquil. No existe suma/resta fija de minutos.
+`America/Guayaquil`. **STAR TVE no usa ningún offset manual.** Desde v0.2.6,
+cuando GatoTV ofrece distintas representaciones, STAR TVE exige la tabla de
+24 horas: ese reloj se interpreta con `Atlantic/Canary` (inferencia técnica de
+la representación observada, no zona declarada por el canal) y se convierte
+mediante `ZoneInfo` a `America/Guayaquil`. La variante AM/PM ya no puede ser
+seleccionada para STAR TVE. Dos referencias de regresión son: `Salón de té La
+Moderna` 16:00–17:00 fuente = 10:00–11:00 Guayaquil, y `Estoy vivo` 02:00–03:05
+del día fuente siguiente = 20:00–21:05 del día anterior en Guayaquil. No existe
+suma/resta fija de minutos.
 
 El parser también corrige el caso en que la primera fila de una fecha corresponde
 a un programa iniciado la noche anterior y terminado después de medianoche.
@@ -157,10 +158,13 @@ horarios se interpretan con `America/New_York` y se convierten mediante
 `ZoneInfo` a `America/Guayaquil`; no se usa un desplazamiento fijo, de modo que
 el cambio estacional de Nueva York se resuelve automáticamente.
 
-El parser reconstruye los siete días de la semana y valida cada rango. Si la
-web publica un fin evidentemente defectuoso que invade el siguiente programa
-(como `Parada Juvenil 5:30 AM - 5:00 AM`), utiliza el inicio del siguiente
-bloque como frontera segura en vez de crear una emisión de casi 24 horas.
+El parser reconstruye los siete días de la semana y valida cada rango. Desde
+v0.2.6 ignora guiones y otros separadores decorativos entre el nombre del
+programa y el horario, y rechaza títulos compuestos únicamente por puntuación;
+así no puede volver a publicarse `<title>-</title>`. Si la web publica un fin
+evidentemente defectuoso que invade el siguiente programa (como `Parada
+Juvenil 5:30 AM - 5:00 AM`), utiliza el inicio del siguiente bloque como frontera
+segura en vez de crear una emisión de casi 24 horas.
 
 ## Logos de mi.tv almacenados en GitHub Pages
 
@@ -229,7 +233,9 @@ La fuente prioritaria es la programación oficial:
 https://www.ecuadortv.ec/programas
 ```
 
-Como vistas oficiales adicionales se consultan también:
+Como vistas oficiales adicionales se consultan también páginas estables de
+programas (Fanático, Perspectiva 7, Esto es Ecuador y Honores Policiales), además
+de:
 
 ```text
 https://www.ecuadortv.ec/noticias
@@ -253,6 +259,15 @@ la misma página y deduplica las versiones desktop/móvil por hora de inicio. La
 secuencia comprobada el 12-08-2026 incluye `Un Café con JJ` 22:00–22:30 y
 `Estas Secretarias` 22:30–23:30.
 
+Desde v0.2.6 existe además una **guardia temporal de contingencia**, válida hasta
+el 31-08-2026, para impedir que un HTML oficial vacío en GitHub Actions vuelva a
+introducir `Telediario` desde EPGShare en la franja comprobada. De lunes a
+viernes, si faltan esos bloques oficiales, se usan los inicios verificados de la
+parrilla/señal: `Honores Policiales` 20:00–21:00, `Fanático` 21:00–22:00, `Un
+Café con JJ` 22:00–22:30, `Estas Secretarias` 22:30–23:30 y `Noticiero NCC
+Climático` 23:30–00:00. La fecha de caducidad evita convertir esta contingencia
+en una parrilla estática permanente.
+
 ## Un solo repositorio y un solo workflow
 
 `ec.xml`, `latam.xml`, sus versiones `.gz`, estados, DTD y logos se publican
@@ -272,9 +287,9 @@ Antes de publicar, el workflow verifica:
 
 - compilación Python;
 - UTC → Ecuador y cambio de fecha;
-- parser GatoTV, incluido STAR TVE sin offset manual y cruce correcto de medianoche;
+- parser GatoTV, incluido STAR TVE por tabla 24 h con conversión `Atlantic/Canary` → `America/Guayaquil` y sin offset manual;
 - tolerancia a días futuros de GatoTV todavía no publicados;
-- parser semanal MakroDigital y conversión `America/New_York` → `America/Guayaquil`;
+- parser semanal MakroDigital, rechazo de títulos decorativos y conversión `America/New_York` → `America/Guayaquil`;
 - exactamente 27 canales en `latam.xml`;
 - programación no vacía para los 27 canales;
 - XML válido contra `xmltv.dtd`;

@@ -31,7 +31,7 @@ IMPORTANTE:
 - latam.xml contiene 27 canales.
 - TVE Internacional conserva el mismo tvg-id y la posición 4.
 - v0.2.0 añadió Canal 24 Horas (TVE), La 1, STAR TVE y Clan TVE desde GatoTV.
-- v0.2.5 reconstruye STAR TVE sin offset manual y añade MakroDigital TV desde su parrilla oficial NEW YORK.
+- v0.2.6 corrige STAR TVE usando exclusivamente la tabla 24 h convertida a Guayaquil, corrige los títulos de MakroDigital y protege la franja verificada de Ecuador TV frente al fallback incorrecto.
 - Si un día futuro de GatoTV aún no está publicado, ese día se omite con advertencia sin bloquear los demás días.
 - La programación de TVE Internacional en latam.xml procede exclusivamente de
   https://mi.tv/co/canales/tve; no se usa EPGShare como fallback.
