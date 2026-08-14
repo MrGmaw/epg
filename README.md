@@ -136,7 +136,7 @@ STAR TVE lee exclusivamente la tabla canónica de GatoTV: cada emisión debe
 estar en `tbl_EPG_row`, sus dos horas en `tbl_EPG_TimesColumn*` y su título en
 `div_program_title_on_channel`. Ya no se eligen tablas por cantidad de filas ni
 se mezclan relojes auxiliares/texto aplanado. El reloj canónico, esté escrito en
-GatoTV puede incluir simultáneamente una vista AM/PM localizada y una vista 24 h. Para STAR TVE se usa una sola representación: AM/PM se toma directamente como `America/Guayaquil`; si no está disponible, la vista 24 h se interpreta con `Atlantic/Canary` y se convierte con `ZoneInfo` a `America/Guayaquil`. Referencia verificada el 14-08-2026: `Un país para reírlo`
+GatoTV puede incluir simultáneamente una vista AM/PM y una vista 24 h. Para STAR TVE se usa una sola representación: la vista canónica 24 h tiene prioridad, se interpreta con `Atlantic/Canary` y se convierte con `ZoneInfo` a `America/Guayaquil`; AM/PM queda solo como respaldo. Referencia verificada el 14-08-2026: `Un país para reírlo`
 20:45–21:45 en GatoTV = 14:45–15:45 Guayaquil. No existe suma/resta fija de
 minutos.
 
@@ -286,7 +286,7 @@ Antes de publicar, el workflow verifica:
 
 - compilación Python;
 - UTC → Ecuador y cambio de fecha;
-- parser GatoTV, incluido STAR TVE con selección exclusiva de una vista canónica: AM/PM local en `America/Guayaquil` o respaldo 24 h convertido desde `Atlantic/Canary`, sin offset manual;
+- parser GatoTV, incluido STAR TVE con selección exclusiva de una vista canónica: prioridad 24 h convertida desde `Atlantic/Canary` y AM/PM solo como respaldo, sin offset manual;
 - tolerancia a días futuros de GatoTV todavía no publicados;
 - parser semanal MakroDigital, rechazo de títulos decorativos y conversión `America/New_York` → `America/Guayaquil`;
 - exactamente 27 canales en `latam.xml`;
@@ -307,3 +307,8 @@ una parrilla parseable o falla temporalmente, `scripts/tvc_resilient.py` usa
 la última programación válida de `TVC.ec` almacenada en la rama `epg-data` y
 la traslada por día de la semana a la nueva ventana. No se inventan títulos ni
 horarios. Si tampoco existe una caché válida, la generación falla.
+
+
+## Ajuste STAR TVE v0.2.12
+
+Para `TVEStarHD.es` se prioriza la tabla canónica de 24 horas de GatoTV y se convierte `Atlantic/Canary` → `America/Guayaquil`. La vista AM/PM queda únicamente como respaldo. No se aplica offset manual.

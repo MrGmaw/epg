@@ -1,3 +1,11 @@
+# v0.2.12 — STAR TVE: prioridad definitiva a la tabla 24 h
+
+- Para `TVEStarHD.es`, cuando GatoTV entrega simultáneamente vistas canónicas 24 h y AM/PM, ahora se selecciona primero la vista 24 h.
+- La vista 24 h se interpreta con `Atlantic/Canary` y se convierte mediante `ZoneInfo` a `America/Guayaquil`, sin offset manual.
+- La vista AM/PM queda únicamente como respaldo si la vista 24 h no contiene al menos 5 emisiones.
+- Motivo: en señal real de Guayaquil, la secuencia `Víctimas del misterio` → `Un país para reírlo` → `Zoom tendencias` coincide con la conversión de la parrilla 24 h (`19:55` → `20:45` → `21:45`), mientras la vista AM/PM puede quedar un bloque retrasada.
+- Regresión: `20:45–21:45 Un país para reírlo` (GatoTV 24 h) → `14:45–15:45` en Guayaquil.
+
 # Changelog
 
 ## 0.2.11 - 2026-08-14

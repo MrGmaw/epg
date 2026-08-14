@@ -84,7 +84,7 @@ STAR TVE v0.2.11:
 - Solo se acepta la parrilla canónica de GatoTV (`tbl_EPG_row`).
 - Inicio/fin: `tbl_EPG_TimesColumn*`; título: `div_program_title_on_channel`.
 - No se seleccionan tablas por cantidad de filas y no se mezcla texto aplanado/relojes auxiliares.
-- La vista canónica AM/PM se toma directamente como `America/Guayaquil`; la vista canónica 24 h se usa como respaldo y se convierte `Atlantic/Canary` -> `America/Guayaquil` con `ZoneInfo`.
+- Para STAR TVE la vista canónica 24 h tiene prioridad y se convierte `Atlantic/Canary` -> `America/Guayaquil` con `ZoneInfo`; la vista AM/PM queda únicamente como respaldo.
 - No existe offset manual.
 - Referencia real 14-08-2026: Un país para reírlo 20:45–21:45 -> 14:45–15:45 Guayaquil.
 

@@ -12,7 +12,7 @@ EPG MrG v0.2.11 — pruebas adicionales
 EPG MrG v0.2.9 — pruebas adicionales
 - STAR TVE: una tabla estructurada AM/PM ya no se descarta en GitHub Actions.
 - STAR TVE: fallback AM/PM sin `<tr>` validado con horarios distribuidos en `div/span`.
-- STAR TVE: si GatoTV entrega simultáneamente AM/PM y 24 h, se selecciona una sola vista. AM/PM se toma directamente como `America/Guayaquil`; 24 h es respaldo y se convierte `Atlantic/Canary` -> `America/Guayaquil`.
+- STAR TVE: si GatoTV entrega simultáneamente AM/PM y 24 h, se selecciona una sola vista. La 24 h tiene prioridad y se convierte `Atlantic/Canary` -> `America/Guayaquil`; AM/PM queda solo como respaldo.
 - Regresión: `Salón de té La Moderna` 4:00 PM–5:00 PM de origen -> 10:00–11:00 Guayaquil.
 - Regresión: `Estoy vivo` 2:00 AM–3:05 AM del 14-08 fuente -> 20:00–21:05 del 13-08 Guayaquil.
 - Se conserva el fallback 24 h sin `<tr>` de v0.2.8.
@@ -74,7 +74,7 @@ no puede validarse; conserva el PNG de epg-data cuando existe una copia previa.
 PRUEBAS v0.2.5 — 13-08-2026
 - STAR TVE: eliminado el offset manual de minutos.
 - STAR TVE: tabla 24 h de prueba 16:00–17:00 convertida con Atlantic/Canary -> America/Guayaquil = 10:00–11:00.
-- STAR TVE: variante AM/PM 10:00–11:00 tomada directamente como hora de Guayaquil, sin doble conversión.
+- STAR TVE: con ambas vistas presentes, una variante AM/PM deliberadamente corrida no puede desplazar a la tabla 24 h; `20:45–21:45 Un país para reírlo` se genera como `14:45–15:45` Guayaquil.
 - MakroDigital: parser semanal de 7 días validado.
 - MakroDigital: 11:00 AM America/New_York del 13-08-2026 -> 10:00 America/Guayaquil.
 - MakroDigital: rango anómalo Parada Juvenil 5:30 AM–5:00 AM reparado hasta el siguiente inicio 6:00 AM.
