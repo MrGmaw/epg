@@ -742,6 +742,80 @@ def _gatotv_rows(container: Tag | BeautifulSoup) -> tuple[list[tuple[time, time,
     return rows, meridiem_rows
 
 
+
+
+def _gatotv_24h_rows_from_flat_text(
+    container: Tag | BeautifulSoup,
+) -> list[tuple[time, time, str, str | None]]:
+    """Fallback para la representación 24 h de GatoTV sin filas ``<tr>``.
+
+    GatoTV no siempre entrega al runner de GitHub la parrilla 24 h como una
+    tabla HTML tradicional. En algunas respuestas los datos siguen presentes
+    en el texto de la página, pero distribuidos en ``div``/``span`` u otros
+    nodos. Este parser trabaja únicamente con pares de relojes de 24 horas;
+    deliberadamente NO acepta AM/PM para que STAR TVE no vuelva a mezclar la
+    representación horaria alternativa.
+    """
+
+    text = epg.normalize_text(container.get_text(" ", strip=True))
+    if not text:
+        return []
+
+    # Acotar el análisis a la parrilla evita confundir fechas, canales y otros
+    # relojes de navegación con emisiones reales.
+    header_candidates = (
+        "Hora Inicio Hora Fin Programa",
+        "Horarios de Programación",
+    )
+    starts = [text.find(value) for value in header_candidates if text.find(value) >= 0]
+    if starts:
+        text = text[min(starts):]
+
+    for marker in ("Etiquetas:", "Disponibilidad", "La guía de Televisión"):
+        index = text.find(marker)
+        if index >= 0:
+            text = text[:index]
+
+    # La navegación al día anterior/siguiente aparece justo después de la
+    # última emisión en la representación que usa GatoTV.
+    nav_index = text.find("‹")
+    if nav_index >= 0:
+        text = text[:nav_index]
+
+    # Los rótulos de franja pueden quedar entre el título anterior y el reloj
+    # siguiente al aplanar el HTML. Se eliminan antes de dividir las filas.
+    text = re.sub(r"\b(?:Madrugada|Mañana|Tarde|Noche)\b", " ", text, flags=re.I)
+    text = re.sub(r"\s+", " ", text).strip()
+
+    clock = r"(?:[01]?\d|2[0-3]):[0-5]\d"
+    row_pattern = re.compile(
+        rf"(?<![\d:])(?P<start>{clock})\s*(?:[-–—]\s*)?"
+        rf"(?P<stop>{clock})\s+"
+        rf"(?P<body>.*?)"
+        rf"(?=(?:{clock})\s*(?:[-–—]\s*)?(?:{clock})\s+|$)",
+        re.I | re.S,
+    )
+
+    rows: list[tuple[time, time, str, str | None]] = []
+    for match in row_pattern.finditer(text):
+        body = epg.normalize_text(match.group("body")).strip(" :-–—|")
+        if not body:
+            continue
+        # Evitar que la navegación final quede pegada al último título si el
+        # sitio cambia de símbolo pero mantiene el mismo patrón textual.
+        body = re.split(r"\s+[‹›]\s*", body, maxsplit=1)[0].strip()
+        if not body:
+            continue
+        try:
+            start_clock = datetime.strptime(match.group("start"), "%H:%M").time()
+            stop_clock = datetime.strptime(match.group("stop"), "%H:%M").time()
+        except ValueError:
+            continue
+        rows.append((start_clock, stop_clock, body, None))
+
+    return rows
+
+
 def _convert_gatotv_rows(
     rows: list[tuple[time, time, str, str | None]],
     guide_date: date,
@@ -823,11 +897,19 @@ def parse_gatotv_page(
         if len(rows) >= 5:
             candidates.append((rows, meridiem_rows))
 
+    # STAR TVE necesita exclusivamente la representación 24 h. GatoTV puede
+    # entregarla al runner fuera de una tabla <tr>; en ese caso recuperamos
+    # las filas del texto aplanado de la parrilla.
+    if source_timezone is not None:
+        flat_24h_rows = _gatotv_24h_rows_from_flat_text(soup)
+        if len(flat_24h_rows) >= 5:
+            candidates.append((flat_24h_rows, 0))
+
     if not candidates:
         if source_timezone is not None:
             raise RuntimeError(
-                "GatoTV: no se encontró una tabla horaria suficientemente "
-                "estructurada para convertir la zona de origen con seguridad."
+                "GatoTV: no se encontró programación 24 h suficiente en tabla "
+                "ni en el texto estructurado de la página."
             )
         return epg.parse_gatotv_page(page, guide_date, channel_id)
 
@@ -1892,6 +1974,39 @@ def self_test() -> None:
     salon = next(item for item in star_programmes if item.title == "Salón de té La Moderna")
     assert salon.start.isoformat() == "2026-08-13T10:00:00-05:00"
     assert salon.stop.isoformat() == "2026-08-13T11:00:00-05:00"
+
+    # Regresión v0.2.7: GatoTV puede entregar la misma parrilla 24 h sin
+    # filas <tr>. Debe recuperarse desde el texto sin aceptar la variante
+    # AM/PM que también puede aparecer en la página.
+    star_flat_24h_sample = """
+    <html><body>
+      <div>AM/PM 24 Hrs</div>
+      <section>
+        <h2>Horarios de Programación</h2>
+        <div>Hora Inicio Hora Fin Programa</div>
+        <div>Tarde</div>
+        <div>14:30</div><div>15:30</div><div>El condensador de Fluzo</div>
+        <div>15:30</div><div>16:00</div><div>Viaje al centro de la tele</div>
+        <div>16:00</div><div>17:00</div><div>Salón de té La Moderna</div>
+        <div>17:00</div><div>17:50</div><div>La promesa</div>
+        <div>17:50</div><div>18:50</div><div>La promesa</div>
+        <div>Etiquetas:</div>
+      </section>
+    </body></html>
+    """
+    star_flat_programmes = parse_gatotv_page(
+        star_flat_24h_sample,
+        date(2026, 8, 13),
+        "TVEStarHD.es",
+        source_timezone=star_config.source_timezone,
+        prefer_ampm_local=star_config.prefer_ampm_local,
+    )
+    assert len(star_flat_programmes) == 5
+    flat_salon = next(
+        item for item in star_flat_programmes if item.title == "Salón de té La Moderna"
+    )
+    assert flat_salon.start.isoformat() == "2026-08-13T10:00:00-05:00"
+    assert flat_salon.stop.isoformat() == "2026-08-13T11:00:00-05:00"
 
     # Prueba de regresión real del 13-08-2026 por la noche: en la tabla fuente
     # del 14-08, ``Estoy vivo`` 02:00-03:05 Atlantic/Canary debe convertirse
