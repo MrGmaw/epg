@@ -1,12 +1,12 @@
 {
-  "version": "0.2.5",
-  "generated_at": "2026-08-13T17:03:05.458402-05:00",
+  "version": "0.2.9",
+  "generated_at": "2026-08-13T21:49:49.465672-05:00",
   "base_date": "2026-08-13",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 27,
-  "programmes": 2912,
+  "programmes": 2920,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 79,
     "Canal.Gamavisión.ec": 68,
@@ -31,10 +31,10 @@
     "France24Espanol.fr": 226,
     "Canal24Horas.es": 201,
     "La1.es": 102,
-    "TVEStarHD.es": 79,
+    "TVEStarHD.es": 70,
     "Clan.es": 469,
     "MakroDigitalTV.ec": 197,
-    "Canal.Ecuador.TV.ec": 62
+    "Canal.Ecuador.TV.ec": 79
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
@@ -95,7 +95,7 @@
   "gatotv_ampm_local_preferred": {
     "Canal24Horas.es": false,
     "La1.es": false,
-    "TVEStarHD.es": true,
+    "TVEStarHD.es": false,
     "Clan.es": false
   },
   "makrodigital": {
@@ -131,17 +131,26 @@
     "hgtv.ar"
   ],
   "ecuador_tv": {
-    "source": "epgshare_fallback",
-    "official_dates": [],
+    "source": "official_or_verified_overlay+epgshare_fallback",
+    "official_dates": [
+      "2026-08-13",
+      "2026-08-14",
+      "2026-08-17",
+      "2026-08-18",
+      "2026-08-19"
+    ],
     "fallback_dates": [
       "2026-08-13",
       "2026-08-14",
       "2026-08-15"
     ],
-    "official_programmes": 0,
-    "fallback_programmes_kept": 62,
-    "fallback_programmes_replaced": 0,
-    "official_sources": []
+    "official_programmes": 25,
+    "fallback_programmes_kept": 54,
+    "fallback_programmes_replaced": 8,
+    "official_sources": [],
+    "verified_evening_programmes": 25,
+    "verified_evening_adjusted": 0,
+    "verified_evening_valid_until": "2026-08-31"
   },
   "sources": {
     "base_guide": "ec.xml",
@@ -149,6 +158,12 @@
     "ecuador_tv_official": "https://www.ecuadortv.ec/programas",
     "ecuador_tv_official_news": "https://www.ecuadortv.ec/noticias",
     "ecuador_tv_official_home": "https://www.ecuadortv.ec/",
+    "ecuador_tv_official_probes": [
+      "https://www.ecuadortv.ec/programas/deportivo/fanatico",
+      "https://www.ecuadortv.ec/programas/informativo-y-opinion/perspectiva-7",
+      "https://www.ecuadortv.ec/programas/hogar-y-estilo-de-vida/esto-es-ecuador",
+      "https://www.ecuadortv.ec/programas/series-y-novelas/honores-policiales"
+    ],
     "mi_tv": {
       "Canal.TVE.Internacional.(Televisión.Española).ec": "https://mi.tv/co/canales/tve",
       "CanalRCN.co": "https://mi.tv/co/canales/rcn",
