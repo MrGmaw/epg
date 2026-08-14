@@ -1,4 +1,4 @@
-# EPG MrG v0.2.9 para GitHub Pages
+# EPG MrG v0.2.10 para GitHub Pages
 
 Este repositorio genera y publica dos guías XMLTV en un mismo workflow y,
 además, conserva localmente los logos de los canales obtenidos desde mi.tv.
@@ -131,15 +131,16 @@ días. Si una fecha futura todavía está vacía o incompleta, se registra una
 advertencia y se conservan los días válidos del canal, sin abortar por ese día.
 
 Los canales 24 Horas, La 1 y Clan se interpretan directamente en
-`America/Guayaquil`. **STAR TVE no usa ningún offset manual.** GatoTV puede
-entregar al runner el mismo reloj de origen en notación 24 h o AM/PM; ambas
-notaciones se interpretan con `Atlantic/Canary` (inferencia técnica de la
-representación observada, no zona declarada por el canal) y se convierten
-mediante `ZoneInfo` a `America/Guayaquil`. La notación AM/PM nunca se toma como
-hora local de Ecuador por sí sola. Dos referencias de regresión son: `Salón de
-té La Moderna` 16:00–17:00 (o 4:00 PM–5:00 PM) fuente = 10:00–11:00 Guayaquil,
-y `Estoy vivo` 02:00–03:05 (o 2:00 AM–3:05 AM) del día fuente siguiente =
-20:00–21:05 del día anterior en Guayaquil. No existe suma/resta fija de minutos.
+`America/Guayaquil`. **STAR TVE no usa ningún offset manual.** Desde v0.2.10,
+STAR TVE lee exclusivamente la tabla canónica de GatoTV: cada emisión debe
+estar en `tbl_EPG_row`, sus dos horas en `tbl_EPG_TimesColumn*` y su título en
+`div_program_title_on_channel`. Ya no se eligen tablas por cantidad de filas ni
+se mezclan relojes auxiliares/texto aplanado. El reloj canónico, esté escrito en
+24 h o AM/PM, se interpreta con `Atlantic/Canary` (inferencia técnica de la
+representación observada) y se convierte con `ZoneInfo` a
+`America/Guayaquil`. Referencia verificada el 14-08-2026: `Un país para reírlo`
+20:45–21:45 en GatoTV = 14:45–15:45 Guayaquil. No existe suma/resta fija de
+minutos.
 
 El parser también corrige el caso en que la primera fila de una fecha corresponde
 a un programa iniciado la noche anterior y terminado después de medianoche.

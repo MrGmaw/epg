@@ -1,5 +1,14 @@
 # Cambios
 
+## v0.2.10 — 2026-08-14
+
+- STAR TVE deja de seleccionar variantes de GatoTV por cantidad de filas.
+- Para `TVEStarHD.es` se aceptan exclusivamente las filas canónicas `tbl_EPG_row`; inicio/fin se leen de `tbl_EPG_TimesColumn*` y el título de `div_program_title_on_channel`.
+- Se ignoran tablas genéricas, relojes auxiliares y texto aplanado aunque contengan más filas, evitando duplicar/desplazar la parrilla.
+- El reloj canónico continúa convirtiéndose `Atlantic/Canary` → `America/Guayaquil` mediante `ZoneInfo`, sin offset manual.
+- Regresión real 14-08-2026: `Un país para reírlo` 20:45–21:45 en GatoTV → 14:45–15:45 Guayaquil.
+- Se añade diagnóstico en Actions: número de filas canónicas, formato de reloj detectado y zona fuente.
+
 ## v0.2.9 — 2026-08-13
 
 - STAR TVE deja de exigir exclusivamente la notación 24 h de GatoTV.

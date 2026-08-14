@@ -1,3 +1,12 @@
+EPG MrG v0.2.10 — pruebas adicionales
+- STAR TVE: parser limitado a filas canónicas `tbl_EPG_row`.
+- STAR TVE: inicio/fin extraídos únicamente de `tbl_EPG_TimesColumn*`; título de `div_program_title_on_channel`.
+- Regresión con tabla señuelo más larga: la tabla no canónica se ignora aunque tenga más filas.
+- Regresión real 14-08-2026: `Un país para reírlo` 20:45–21:45 Atlantic/Canary -> 14:45–15:45 America/Guayaquil.
+- `tbl_EPG_TimesColumnOutOfSchedule` se admite como hora canónica por prefijo.
+- No existe offset manual para STAR TVE.
+- Python: `build_latam_epg.py` compila correctamente.
+
 EPG MrG v0.2.9 — pruebas adicionales
 - STAR TVE: una tabla estructurada AM/PM ya no se descarta en GitHub Actions.
 - STAR TVE: fallback AM/PM sin `<tr>` validado con horarios distribuidos en `div/span`.
