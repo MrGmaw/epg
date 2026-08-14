@@ -1,4 +1,4 @@
-# EPG MrG v0.2.8 para GitHub Pages
+# EPG MrG v0.2.9 para GitHub Pages
 
 Este repositorio genera y publica dos guías XMLTV en un mismo workflow y,
 además, conserva localmente los logos de los canales obtenidos desde mi.tv.
@@ -131,15 +131,15 @@ días. Si una fecha futura todavía está vacía o incompleta, se registra una
 advertencia y se conservan los días válidos del canal, sin abortar por ese día.
 
 Los canales 24 Horas, La 1 y Clan se interpretan directamente en
-`America/Guayaquil`. **STAR TVE no usa ningún offset manual.** Desde v0.2.6,
-cuando GatoTV ofrece distintas representaciones, STAR TVE exige la tabla de
-24 horas: ese reloj se interpreta con `Atlantic/Canary` (inferencia técnica de
-la representación observada, no zona declarada por el canal) y se convierte
-mediante `ZoneInfo` a `America/Guayaquil`. La variante AM/PM ya no puede ser
-seleccionada para STAR TVE. Dos referencias de regresión son: `Salón de té La
-Moderna` 16:00–17:00 fuente = 10:00–11:00 Guayaquil, y `Estoy vivo` 02:00–03:05
-del día fuente siguiente = 20:00–21:05 del día anterior en Guayaquil. No existe
-suma/resta fija de minutos.
+`America/Guayaquil`. **STAR TVE no usa ningún offset manual.** GatoTV puede
+entregar al runner el mismo reloj de origen en notación 24 h o AM/PM; ambas
+notaciones se interpretan con `Atlantic/Canary` (inferencia técnica de la
+representación observada, no zona declarada por el canal) y se convierten
+mediante `ZoneInfo` a `America/Guayaquil`. La notación AM/PM nunca se toma como
+hora local de Ecuador por sí sola. Dos referencias de regresión son: `Salón de
+té La Moderna` 16:00–17:00 (o 4:00 PM–5:00 PM) fuente = 10:00–11:00 Guayaquil,
+y `Estoy vivo` 02:00–03:05 (o 2:00 AM–3:05 AM) del día fuente siguiente =
+20:00–21:05 del día anterior en Guayaquil. No existe suma/resta fija de minutos.
 
 El parser también corrige el caso en que la primera fila de una fecha corresponde
 a un programa iniciado la noche anterior y terminado después de medianoche.
@@ -287,7 +287,7 @@ Antes de publicar, el workflow verifica:
 
 - compilación Python;
 - UTC → Ecuador y cambio de fecha;
-- parser GatoTV, incluido STAR TVE por tabla 24 h con conversión `Atlantic/Canary` → `America/Guayaquil` y sin offset manual;
+- parser GatoTV, incluido STAR TVE en 24 h o AM/PM con conversión `Atlantic/Canary` → `America/Guayaquil` y sin offset manual;
 - tolerancia a días futuros de GatoTV todavía no publicados;
 - parser semanal MakroDigital, rechazo de títulos decorativos y conversión `America/New_York` → `America/Guayaquil`;
 - exactamente 27 canales en `latam.xml`;

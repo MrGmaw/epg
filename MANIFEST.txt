@@ -1,4 +1,4 @@
-EPG MrG v0.2.8 — REPOSITORIO COMPLETO LATAM 27 CANALES
+EPG MrG v0.2.9 — REPOSITORIO COMPLETO LATAM 27 CANALES
 
 TIPO DE PAQUETE:
 - Reemplazo total de la rama main del repositorio MrGmaw/epg.
@@ -78,6 +78,15 @@ GATOTV v0.2.1:
 - Cada fecha se valida de forma independiente; los días futuros no publicados generan advertencia.
 - Se corrige el programa de arrastre que cruza desde la noche anterior a las 00:00.
 
+
+
+STAR TVE v0.2.9:
+- La notación de reloj deja de ser un requisito: se aceptan 24 h y AM/PM.
+- Si la página llega sin filas `<tr>`, el fallback de texto acepta también AM/PM.
+- Ambas notaciones se interpretan con `Atlantic/Canary` y se convierten con `ZoneInfo` a `America/Guayaquil`.
+- AM/PM nunca se interpreta directamente como hora de Ecuador.
+- No existe offset manual.
+- Referencias: 4:00 PM–5:00 PM -> 10:00–11:00 Guayaquil; 2:00 AM–3:05 AM del 14-08 -> 20:00–21:05 del 13-08 Guayaquil.
 
 STAR TVE v0.2.8:
 - Además de tablas <tr>, acepta la representación 24 h cuando GatoTV la entrega como texto estructurado en otros nodos HTML.

@@ -1,20 +1,23 @@
+# Cambios
+
+## v0.2.9 — 2026-08-13
+
+- STAR TVE deja de exigir exclusivamente la notación 24 h de GatoTV.
+- Si GitHub Actions recibe la parrilla en AM/PM, tanto en tabla `<tr>` como aplanada en `div/span`, se acepta y se interpreta igualmente con `Atlantic/Canary`, convirtiéndola después a `America/Guayaquil` mediante `ZoneInfo`.
+- La notación AM/PM nunca se toma directamente como hora de Ecuador y no se aplica ningún offset manual.
+- Se mantienen los fallbacks 24 h por tabla y por texto estructurado; los días futuros aún no publicados continúan siendo advertencias.
+- Regresiones verificadas: `Salón de té La Moderna` 4:00 PM–5:00 PM de origen -> 10:00–11:00 Guayaquil; `Estoy vivo` 2:00 AM–3:05 AM del 14/08 de origen -> 20:00–21:05 del 13/08 Guayaquil.
+
 # Changelog
 
 ## v0.2.8 — 2026-08-13
 
-- Corregida la causa exacta del fallo de STAR TVE observado en GitHub Actions tras v0.2.7.
-- El fallback de texto 24 h ya no toma la primera aparición de `Horarios de Programación` ni recorta en el primer símbolo `‹`. GatoTV puede colocar esa navegación antes de la tabla real; v0.2.7 terminaba descartando todas las emisiones.
-- El parser ahora prioriza el encabezado inequívoco `Hora Inicio Hora Fin Programa`; si no existe, usa la última aparición de `Horarios de Programación`.
-- Los símbolos de navegación `‹`/`›` se limpian por fila y nunca se usan para truncar toda la parrilla.
-- Se mantiene sin cambios la regla horaria de STAR TVE: solo representación 24 h, `Atlantic/Canary` → `America/Guayaquil` mediante `ZoneInfo`, sin offset manual.
-- Los días futuros todavía no publicados por GatoTV continúan siendo advertencias y no invalidan el canal si existe al menos un día válido dentro de la ventana solicitada.
-- Nueva regresión que reproduce la estructura real: menú `Horarios de Programación` → navegación `‹ día anterior / día siguiente ›` → `Hora Inicio Hora Fin Programa` → emisiones.
-- Se conservan las correcciones de Ecuador TV, MakroDigital y France 24 Español de v0.2.6.
-
-## v0.2.7 — 2026-08-13
-
-- Primer intento de robustecer STAR TVE cuando la parrilla 24 h no venía en filas `<tr>`.
-- Se añadió reconstrucción desde texto aplanado, pero el recorte en el primer símbolo `‹` podía eliminar la programación real en GitHub Actions.
+- Corregido el fallo de GitHub Actions de STAR TVE cuando GatoTV entrega la representación 24 h fuera de filas HTML `<tr>`.
+- El parser mantiene como única fuente horaria de STAR TVE la representación **24 h** de GatoTV, pero ahora puede reconstruirla también desde el texto estructurado de la página (`div`/`span` u otros nodos).
+- La variante AM/PM continúa descartada para STAR TVE; no se reintroduce ningún offset manual. El reloj 24 h se interpreta con `Atlantic/Canary` y se convierte mediante `ZoneInfo` a `America/Guayaquil`.
+- Los días futuros aún no publicados por GatoTV siguen generando advertencias, pero no provocan el fallo del canal mientras existan días válidos dentro de la ventana solicitada.
+- Nueva prueba de regresión sin tabla `<tr>`: `Salón de té La Moderna` 16:00–17:00 en la representación 24 h queda 10:00–11:00 en Guayaquil.
+- Se conservan sin cambios las correcciones de Ecuador TV, MakroDigital y France 24 Español de v0.2.6.
 
 ## v0.2.6 — 2026-08-13
 

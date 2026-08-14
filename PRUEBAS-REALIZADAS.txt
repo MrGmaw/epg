@@ -1,3 +1,12 @@
+EPG MrG v0.2.9 — pruebas adicionales
+- STAR TVE: una tabla estructurada AM/PM ya no se descarta en GitHub Actions.
+- STAR TVE: fallback AM/PM sin `<tr>` validado con horarios distribuidos en `div/span`.
+- STAR TVE: AM/PM y 24 h se interpretan siempre con `Atlantic/Canary` y se convierten a `America/Guayaquil`; AM/PM nunca se toma directamente como hora de Ecuador.
+- Regresión: `Salón de té La Moderna` 4:00 PM–5:00 PM de origen -> 10:00–11:00 Guayaquil.
+- Regresión: `Estoy vivo` 2:00 AM–3:05 AM del 14-08 fuente -> 20:00–21:05 del 13-08 Guayaquil.
+- Se conserva el fallback 24 h sin `<tr>` de v0.2.8.
+- Python: todos los scripts compilan correctamente.
+
 EPG MrG v0.2.8 — pruebas adicionales
 - STAR TVE: parser 24 h validado cuando `Horarios de Programación` aparece primero en un menú y existe navegación `‹ ... ›` antes de la tabla real.
 - STAR TVE: se prioriza `Hora Inicio Hora Fin Programa` y ya no se recorta toda la parrilla en el primer `‹`.
