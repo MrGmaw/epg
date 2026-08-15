@@ -66,12 +66,13 @@ MAKRODIGITAL_URL = "https://makrodigitaltelevision.com/programacion/"
 MAKRODIGITAL_WEBSITE = "https://makrodigitaltelevision.com/"
 MAKRODIGITAL_ID = "MakroDigitalTV.ec"
 MAKRODIGITAL_SOURCE_TIMEZONE = "America/New_York"
-# STAR TVE: GatoTV puede servir al runner una vista 24 h de origen
-# (Atlantic/Canary) o una vista AM/PM localizada. La vista 24 h se convierte
-# con ZoneInfo; la AM/PM se usa solo como respaldo y se interpreta directamente
-# en America/Guayaquil. Nunca se mezclan y no existe offset manual.
+# STAR TVE: GatoTV puede servir al runner una vista AM/PM localizada o una
+# vista 24 h de origen. Desde v0.2.23 la AM/PM localizada tiene prioridad y se
+# interpreta directamente en America/Guayaquil; la 24 h queda como respaldo,
+# se interpreta como Atlantic/Canary y se convierte con ZoneInfo. Nunca se
+# mezclan y no existe offset manual.
 STAR_TVE_REGIONAL_SHIFT_MINUTES = 0
-STAR_TVE_PARSER_REVISION = "dual-gatotv-view-r7"
+STAR_TVE_PARSER_REVISION = "ampm-guayaquil-primary-r8"
 GATOTV_BROWSER_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
@@ -233,7 +234,7 @@ GATOTV_CHANNELS: tuple[GatoTvChannel, ...] = (
         ("STAR TVE", "Star TVE"),
         "https://www.gatotv.com/canal/star_tve",
         source_timezone="Atlantic/Canary",
-        prefer_ampm_local=False,
+        prefer_ampm_local=True,
     ),
     GatoTvChannel(
         "clan_tve",
@@ -936,10 +937,10 @@ def _gatotv_rows_from_flat_text_any_clock(
     """Recupera la parrilla aplanada en 24 h o AM/PM.
 
     GitHub Actions puede recibir GatoTV sin filas ``<tr>`` y, además, con la
-    notación AM/PM. Para STAR TVE la notación no determina la zona: tanto 24 h
-    como AM/PM representan el reloj de origen y después se convierten mediante
-    ``source_timezone``. Se devuelve también el número de filas AM/PM para
-    diagnóstico/selección.
+    notación AM/PM. Para STAR TVE la vista AM/PM localizada se interpreta como
+    ``America/Guayaquil`` cuando es seleccionada; la vista 24 h, si se usa como
+    respaldo, se interpreta como ``Atlantic/Canary``. Se devuelve también el
+    número de filas AM/PM para diagnóstico/selección.
     """
 
     text = epg.normalize_text(container.get_text(" ", strip=True))
@@ -1075,14 +1076,15 @@ def parse_gatotv_page(
     """Lee una fecha de GatoTV y normaliza el resultado a Guayaquil.
 
     STAR TVE admite las dos vistas que GatoTV puede servir al runner sin
-    mezclarlas: la vista 24 h se interpreta como ``Atlantic/Canary`` y se
-    convierte con ``ZoneInfo``; si esa vista no existe, la vista AM/PM
-    localizada se toma como ``America/Guayaquil``. Ambas pueden venir como
-    filas canónicas o como texto estructurado. No existe offset manual.
+    mezclarlas. La vista AM/PM localizada tiene prioridad y se interpreta
+    directamente como ``America/Guayaquil``; solo si no existe una vista
+    AM/PM suficiente se usa la vista 24 h como reloj ``Atlantic/Canary`` y se
+    convierte con ``ZoneInfo``. Ambas pueden venir como filas canónicas o como
+    texto estructurado. No existe offset manual.
 
-    Como la vista 24 h puede requerir las primeras horas del día fuente
-    siguiente para completar la noche ecuatoriana, ``scrape_gatotv_channel``
-    conserva un día fuente adicional y recorta después a la ventana local.
+    Se conserva un día fuente adicional porque el respaldo 24 h puede necesitar
+    las primeras horas del día siguiente para completar la noche ecuatoriana.
+    El resultado final se recorta siempre a la ventana local solicitada.
     """
 
     soup = BeautifulSoup(page, "lxml")
@@ -1097,50 +1099,47 @@ def parse_gatotv_page(
 
         # GatoTV puede entregar dos representaciones distintas según la
         # sesión/ubicación del cliente:
-        #   1) 24 h: reloj fuente Atlantic/Canary.
-        #   2) AM/PM: vista localizada; para TV Cable Ecuador coincide con
-        #      America/Guayaquil.
-        # Nunca se mezclan ambas. Se prefiere 24 h porque permite una
-        # conversión de zona determinista; AM/PM solo entra cuando no existe
-        # ninguna parrilla 24 h utilizable.
-        if len(rows_24h) >= 5:
+        #   1) AM/PM: vista localizada; para la señal validada en Ecuador
+        #      coincide directamente con America/Guayaquil.
+        #   2) 24 h: reloj fuente Atlantic/Canary.
+        # Nunca se mezclan ambas. Desde v0.2.23 se prioriza AM/PM porque la
+        # señal real confirmó 21:05 COMERSE EL MUNDO -> 22:05 Salón de té La
+        # Moderna -> 23:05 Seis hermanas. La vista 24 h queda solo de respaldo.
+        flat_rows_any, flat_meridiem_rows = _gatotv_rows_from_flat_text_any_clock(soup)
+        flat_ampm_usable = (
+            len(flat_rows_any) >= 5
+            and flat_meridiem_rows >= 5
+            and flat_meridiem_rows * 2 >= len(flat_rows_any)
+        )
+
+        if len(rows_ampm) >= 5:
+            rows = rows_ampm
+            clock_timezone = epg.TZ
+            source_mode = "canonical-ampm-america-guayaquil-primary"
+        elif flat_ampm_usable:
+            rows = flat_rows_any
+            clock_timezone = epg.TZ
+            source_mode = "structured-text-ampm-america-guayaquil-primary"
+        elif len(rows_24h) >= 5:
             rows = rows_24h
             clock_timezone = ZoneInfo("Atlantic/Canary")
-            source_mode = "canonical-24h-atlantic-canary"
+            source_mode = "canonical-24h-atlantic-canary-fallback"
         else:
             flat_rows_24h = _gatotv_24h_rows_from_flat_text(soup)
             if len(flat_rows_24h) >= 5:
                 rows = flat_rows_24h
                 clock_timezone = ZoneInfo("Atlantic/Canary")
-                source_mode = "structured-text-24h-atlantic-canary"
-            elif len(rows_ampm) >= 5:
-                rows = rows_ampm
-                clock_timezone = epg.TZ
-                source_mode = "canonical-ampm-america-guayaquil"
+                source_mode = "structured-text-24h-atlantic-canary-fallback"
             else:
-                flat_rows_any, flat_meridiem_rows = _gatotv_rows_from_flat_text_any_clock(soup)
-                # Aceptar el fallback aplanado solo si claramente es una vista
-                # AM/PM. Así una tabla 24 h incompleta nunca se reinterpreta
-                # accidentalmente como hora de Ecuador.
-                if (
-                    len(flat_rows_any) >= 5
-                    and flat_meridiem_rows >= 5
-                    and flat_meridiem_rows * 2 >= len(flat_rows_any)
-                ):
-                    rows = flat_rows_any
-                    clock_timezone = epg.TZ
-                    source_mode = "structured-text-ampm-america-guayaquil"
-                else:
-                    page_text = epg.normalize_text(soup.get_text(" ", strip=True))
-                    raise RuntimeError(
-                        "GatoTV: STAR TVE no encontró una parrilla utilizable; "
-                        f"canónica24h={canonical_24h_count}, "
-                        f"texto24h={len(flat_rows_24h)}, "
-                        f"canónicaAMPM={canonical_ampm_count}, "
-                        f"textoTotal={len(flat_rows_any)}, "
-                        f"textoAMPM={flat_meridiem_rows}, "
-                        f"html={len(page)} bytes, texto={len(page_text)} caracteres."
-                    )
+                page_text = epg.normalize_text(soup.get_text(" ", strip=True))
+                raise RuntimeError(
+                    "GatoTV: STAR TVE no encontró una parrilla utilizable; "
+                    f"canónicaAMPM={canonical_ampm_count}, "
+                    f"textoAMPM={flat_meridiem_rows}, "
+                    f"canónica24h={canonical_24h_count}, "
+                    f"texto24h={len(flat_rows_24h)}, "
+                    f"html={len(page)} bytes, texto={len(page_text)} caracteres."
+                )
 
         if source_timezone != "Atlantic/Canary":
             raise RuntimeError(
@@ -2237,7 +2236,7 @@ def build_latam(
             for config in GATOTV_CHANNELS
         },
         "star_tve_parser_revision": STAR_TVE_PARSER_REVISION,
-        "star_tve_time_mode": "24h-canary-primary-ampm-guayaquil-fallback",
+        "star_tve_time_mode": "ampm-guayaquil-primary-24h-canary-fallback",
         "star_tve_regional_shift_minutes": STAR_TVE_REGIONAL_SHIFT_MINUTES,
         "star_tve_source_extra_day": True,
         "makrodigital": {
@@ -2408,7 +2407,7 @@ def self_test() -> None:
     assert gatotv_programmes[0].start.isoformat() == "2026-08-10T23:20:00-05:00"
     assert gatotv_programmes[0].stop.isoformat() == "2026-08-11T00:10:00-05:00"
 
-    # STAR TVE v0.2.22: 24 h = Atlantic/Canary; AM/PM = fallback localizado.
+    # STAR TVE v0.2.23: AM/PM localizada = prioridad; 24 h Canary = fallback.
     # La noche ecuatoriana se completa con las primeras horas del día fuente
     # siguiente. Referencia validada el 14-08-2026: la página fuente del 15
     # publica 03:05-04:05 COMERSE EL MUNDO y 04:05-05:05 Salón de té La
@@ -2417,7 +2416,7 @@ def self_test() -> None:
         config for config in GATOTV_CHANNELS if config.channel_id == "TVEStarHD.es"
     )
     assert star_config.source_timezone == "Atlantic/Canary"
-    assert star_config.prefer_ampm_local is False
+    assert star_config.prefer_ampm_local is True
     assert STAR_TVE_REGIONAL_SHIFT_MINUTES == 0
     assert not hasattr(star_config, "time_offset_minutes")
     star_source_next_day_sample = """
@@ -2462,14 +2461,6 @@ def self_test() -> None:
         </tr>
       </table>
 
-      <!-- La vista AM/PM se ignora mientras exista una vista 24 h válida. -->
-      <table id="epg-ampm">
-        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">3:05 AM</div></td><td><div class="tbl_EPG_TimesColumn">4:05 AM</div></td><td><div class="div_program_title_on_channel">SEÑUELO AMPM</div></td></tr>
-        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">4:05 AM</div></td><td><div class="tbl_EPG_TimesColumn">5:05 AM</div></td><td><div class="div_program_title_on_channel">SEÑUELO AMPM 2</div></td></tr>
-        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">5:05 AM</div></td><td><div class="tbl_EPG_TimesColumn">6:05 AM</div></td><td><div class="div_program_title_on_channel">SEÑUELO AMPM 3</div></td></tr>
-        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">6:05 AM</div></td><td><div class="tbl_EPG_TimesColumn">7:05 AM</div></td><td><div class="div_program_title_on_channel">SEÑUELO AMPM 4</div></td></tr>
-        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">7:05 AM</div></td><td><div class="tbl_EPG_TimesColumn">8:05 AM</div></td><td><div class="div_program_title_on_channel">SEÑUELO AMPM 5</div></td></tr>
-      </table>
     </body></html>
     """
     star_programmes = parse_gatotv_page(
@@ -2492,8 +2483,8 @@ def self_test() -> None:
     assert moderna.stop.isoformat() == "2026-08-14T23:05:00-05:00"
     assert not any(item.title.startswith("SEÑUELO") for item in star_programmes)
 
-    # GitHub puede recibir la misma parrilla sin clases tbl_EPG_row. El
-    # fallback de texto 24 h debe conservar la misma conversión de zona.
+    # Si no existe AM/PM, el fallback 24 h debe conservar la conversión
+    # Atlantic/Canary -> America/Guayaquil.
     star_flat_24h_sample = """
     <html><body>
       <div>Horarios de Programación</div>
@@ -2544,6 +2535,40 @@ def self_test() -> None:
     ampm_comerse = next(item for item in star_ampm_programmes if item.title.upper() == "COMERSE EL MUNDO")
     assert ampm_comerse.start.isoformat() == "2026-08-14T21:05:00-05:00"
     assert ampm_comerse.stop.isoformat() == "2026-08-14T22:05:00-05:00"
+
+    # Si GatoTV entrega simultáneamente AM/PM localizada y una tabla 24 h,
+    # v0.2.23 debe elegir AM/PM. La tabla 24 h de este fixture es un señuelo.
+    star_both_views_sample = """
+    <html><body>
+      <table id="ampm-local">
+        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">7:10 PM</div></td><td><div class="tbl_EPG_TimesColumn">8:05 PM</div></td><td><div class="div_program_title_on_channel">La promesa</div></td></tr>
+        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">8:05 PM</div></td><td><div class="tbl_EPG_TimesColumn">9:05 PM</div></td><td><div class="div_program_title_on_channel">El Hombre de tu Vida</div></td></tr>
+        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">9:05 PM</div></td><td><div class="tbl_EPG_TimesColumn">10:05 PM</div></td><td><div class="div_program_title_on_channel">COMERSE EL MUNDO</div></td></tr>
+        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">10:05 PM</div></td><td><div class="tbl_EPG_TimesColumn">11:05 PM</div></td><td><div class="div_program_title_on_channel">Salón de té La Moderna</div></td></tr>
+        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">11:05 PM</div></td><td><div class="tbl_EPG_TimesColumn">11:59 PM</div></td><td><div class="div_program_title_on_channel">Seis hermanas</div></td></tr>
+      </table>
+      <table id="24h-decoy">
+        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">19:10</div></td><td><div class="tbl_EPG_TimesColumn">20:05</div></td><td><div class="div_program_title_on_channel">SEÑUELO 24H 1</div></td></tr>
+        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">20:05</div></td><td><div class="tbl_EPG_TimesColumn">21:05</div></td><td><div class="div_program_title_on_channel">SEÑUELO 24H 2</div></td></tr>
+        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">21:05</div></td><td><div class="tbl_EPG_TimesColumn">22:05</div></td><td><div class="div_program_title_on_channel">SEÑUELO 24H 3</div></td></tr>
+        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">22:05</div></td><td><div class="tbl_EPG_TimesColumn">23:05</div></td><td><div class="div_program_title_on_channel">SEÑUELO 24H 4</div></td></tr>
+        <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">23:05</div></td><td><div class="tbl_EPG_TimesColumn">23:59</div></td><td><div class="div_program_title_on_channel">SEÑUELO 24H 5</div></td></tr>
+      </table>
+    </body></html>
+    """
+    both_programmes = parse_gatotv_page(
+        star_both_views_sample,
+        date(2026, 8, 14),
+        "TVEStarHD.es",
+        source_timezone=star_config.source_timezone,
+        prefer_ampm_local=star_config.prefer_ampm_local,
+    )
+    both_comerse = next(item for item in both_programmes if item.title.upper() == "COMERSE EL MUNDO")
+    assert both_comerse.start.isoformat() == "2026-08-14T21:05:00-05:00"
+    assert both_comerse.stop.isoformat() == "2026-08-14T22:05:00-05:00"
+    both_seis = next(item for item in both_programmes if item.title == "Seis hermanas")
+    assert both_seis.start.isoformat() == "2026-08-14T23:05:00-05:00"
+    assert not any(item.title.startswith("SEÑUELO") for item in both_programmes)
 
     star_flat_ampm_sample = """
     <html><body>
