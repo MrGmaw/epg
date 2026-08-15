@@ -11,6 +11,7 @@ Guía seleccionada de 27 canales:
 - `latam.xml`
 - `latam.xml.gz`
 - `latam-status.json`
+- `publication-manifest.json` (SHA-256 de la salida LATAM de este run)
 
 Trazabilidad de la publicación:
 - `VERSION`: versión del código de `main` que generó estos archivos.
