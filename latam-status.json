@@ -1,47 +1,47 @@
 {
   "version": "0.2.23",
-  "generated_at": "2026-08-14T23:36:43.032366-05:00",
+  "generated_at": "2026-08-15T04:40:30.720419-05:00",
   "source_commit": "298fec181aedcbbc60d84d8fe88926ae26d099b2",
-  "github_run_id": "31864811289",
+  "github_run_id": "31877537937",
   "github_run_attempt": "1",
-  "base_date": "2026-08-14",
+  "base_date": "2026-08-15",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 27,
-  "programmes": 2768,
+  "programmes": 2547,
   "programme_counts": {
-    "Canal.TC.Televisión.ec": 78,
-    "Canal.Gamavisión.ec": 54,
-    "Canal.RTS.ec": 64,
-    "Canal.TVE.Internacional.(Televisión.Española).ec": 53,
+    "Canal.TC.Televisión.ec": 53,
+    "Canal.Gamavisión.ec": 26,
+    "Canal.RTS.ec": 42,
+    "Canal.TVE.Internacional.(Televisión.Española).ec": 56,
     "TeleamazonasQuito.ec": 204,
     "TeleamazonasGuayaquil.ec": 204,
-    "Ecuavisa.ec": 44,
-    "EcuavisaInternacional.ec": 80,
+    "Ecuavisa.ec": 30,
+    "EcuavisaInternacional.ec": 65,
     "TVC.ec": 156,
-    "Canal.CNN.en.Español.ec": 55,
-    "NTN24.co": 44,
-    "CanalRCN.co": 17,
-    "CaracolTV.co": 37,
-    "Canal.Elgourmet.ec": 90,
-    "Canal.History.co": 57,
-    "Canal.History.2.co": 64,
-    "TV.Publica.canal.7.ar": 36,
-    "Telefe.ar": 34,
-    "Deutsche.Welle.cl": 97,
+    "Canal.CNN.en.Español.ec": 65,
+    "NTN24.co": 49,
+    "CanalRCN.co": 38,
+    "CaracolTV.co": 35,
+    "Canal.Elgourmet.ec": 88,
+    "Canal.History.co": 59,
+    "Canal.History.2.co": 58,
+    "TV.Publica.canal.7.ar": 39,
+    "Telefe.ar": 30,
+    "Deutsche.Welle.cl": 108,
     "hgtv.ar": 85,
-    "France24Espanol.fr": 230,
-    "Canal24Horas.es": 174,
-    "La1.es": 89,
-    "TVEStarHD.es": 49,
-    "Clan.es": 392,
+    "France24Espanol.fr": 231,
+    "Canal24Horas.es": 142,
+    "La1.es": 70,
+    "TVEStarHD.es": 24,
+    "Clan.es": 328,
     "MakroDigitalTV.ec": 197,
-    "Canal.Ecuador.TV.ec": 84
+    "Canal.Ecuador.TV.ec": 65
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
-    "CanalRCN.co": 2,
+    "CanalRCN.co": 3,
     "CaracolTV.co": 3,
     "Canal.Elgourmet.ec": 3,
     "Canal.History.co": 3,
@@ -53,36 +53,32 @@
     "France24Espanol.fr": 3
   },
   "gatotv_source_days": {
-    "Canal24Horas.es": 5,
-    "La1.es": 5,
-    "TVEStarHD.es": 2,
-    "Clan.es": 5
+    "Canal24Horas.es": 4,
+    "La1.es": 4,
+    "TVEStarHD.es": 1,
+    "Clan.es": 4
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-08-14": 37,
-      "2026-08-15": 46,
-      "2026-08-16": 46,
+      "2026-08-15": 47,
+      "2026-08-16": 49,
       "2026-08-17": 29,
-      "2026-08-18": 18
+      "2026-08-18": 19
     },
     "La1.es": {
-      "2026-08-14": 20,
-      "2026-08-15": 19,
-      "2026-08-16": 19,
+      "2026-08-15": 18,
+      "2026-08-16": 18,
       "2026-08-17": 19,
-      "2026-08-18": 16
+      "2026-08-18": 17
     },
     "TVEStarHD.es": {
-      "2026-08-14": 29,
-      "2026-08-15": 20
+      "2026-08-15": 24
     },
     "Clan.es": {
-      "2026-08-14": 75,
-      "2026-08-15": 83,
-      "2026-08-16": 80,
+      "2026-08-15": 84,
+      "2026-08-16": 81,
       "2026-08-17": 88,
-      "2026-08-18": 68
+      "2026-08-18": 78
     }
   },
   "gatotv_source_timezones": {
@@ -115,8 +111,8 @@
       "6": 26
     },
     "programmes": 197,
-    "repaired_ranges": 0,
-    "mode": "previous-latam-cache"
+    "repaired_ranges": 1,
+    "mode": "official-live"
   },
   "logos_manifest": "manifest.json",
   "logos_available": [
@@ -137,20 +133,19 @@
   "ecuador_tv": {
     "source": "official_or_verified_overlay+epgshare_fallback",
     "official_dates": [
-      "2026-08-14",
       "2026-08-17",
       "2026-08-18",
       "2026-08-19",
-      "2026-08-20"
+      "2026-08-20",
+      "2026-08-21"
     ],
     "fallback_dates": [
-      "2026-08-14",
       "2026-08-15",
       "2026-08-16"
     ],
     "official_programmes": 25,
-    "fallback_programmes_kept": 59,
-    "fallback_programmes_replaced": 4,
+    "fallback_programmes_kept": 40,
+    "fallback_programmes_replaced": 0,
     "official_sources": [],
     "verified_evening_programmes": 25,
     "verified_evening_adjusted": 0,
