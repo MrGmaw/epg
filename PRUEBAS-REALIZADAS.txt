@@ -1,6 +1,6 @@
-EPG MrG v0.2.20 — pruebas adicionales
+EPG MrG v0.2.21 — pruebas adicionales
 
-- VERSION actualizado a 0.2.20.
+- VERSION actualizado a 0.2.21.
 - STAR TVE exige tabla canónica 24 h y `source_timezone=Atlantic/Canary`.
 - Conversión ZoneInfo validada: 15/08 03:05–04:05 fuente -> 14/08 21:05–22:05 Guayaquil (`COMERSE EL MUNDO`).
 - Conversión ZoneInfo validada: 15/08 04:05–05:05 fuente -> 14/08 22:05–23:05 Guayaquil (`Salón de té La Moderna`).
@@ -150,3 +150,6 @@ Pruebas añadidas específicamente en v0.2.16:
 - Validación de pareja LATAM: latam.xml.gz debe descomprimir exactamente a latam.xml.
 - publication-manifest.json registra SHA-256 y tamaño de latam.xml, latam.xml.gz y latam-status.json.
 - Verificación post-publicación compara hashes locales y de origin/epg-data antes de declarar sincronización correcta.
+
+- Fallback 24 h de texto estructurado para STAR TVE sin clases tbl_EPG_row: OK.
+- Regresión: 03:05-04:05 COMERSE EL MUNDO (Atlantic/Canary) -> 21:05-22:05 del día anterior (America/Guayaquil): OK.

@@ -1,3 +1,12 @@
+# Cambios
+
+## v0.2.21 — 2026-08-14
+
+- STAR TVE mantiene la lógica horaria de v0.2.20: reloj 24 h de GatoTV en `Atlantic/Canary` convertido con `ZoneInfo` a `America/Guayaquil`, sin offset manual.
+- Si GitHub Actions no recibe las filas `tbl_EPG_row`, el parser reconstruye la misma parrilla 24 h desde el texto estructurado de `Hora Inicio Hora Fin Programa`.
+- La vista AM/PM sigue descartada para STAR TVE.
+- Los días futuros aún no publicados continúan siendo advertencias y no invalidan los días válidos ya obtenidos.
+
 ## v0.2.20 — 2026-08-14
 
 - STAR TVE (`TVEStarHD.es`) deja de interpretar la tabla de GatoTV directamente como hora de Guayaquil.
