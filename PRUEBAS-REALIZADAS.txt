@@ -1,11 +1,13 @@
-EPG MrG v0.2.21 — pruebas adicionales
+EPG MrG v0.2.22 — pruebas adicionales
 
-- VERSION actualizado a 0.2.21.
-- STAR TVE exige tabla canónica 24 h y `source_timezone=Atlantic/Canary`.
+- VERSION actualizado a 0.2.22.
+- STAR TVE mantiene `source_timezone=Atlantic/Canary` para la vista 24 h y descarga `days + 1` días fuente.
 - Conversión ZoneInfo validada: 15/08 03:05–04:05 fuente -> 14/08 21:05–22:05 Guayaquil (`COMERSE EL MUNDO`).
 - Conversión ZoneInfo validada: 15/08 04:05–05:05 fuente -> 14/08 22:05–23:05 Guayaquil (`Salón de té La Moderna`).
-- La tabla AM/PM señuelo se ignora cuando existe la 24 h y, si solo existe AM/PM, STAR TVE falla explícitamente.
-- `source_timezone` provoca descarga de `days + 1` días fuente para cubrir la noche ecuatoriana.
+- Si existe una vista 24 h suficiente, una tabla AM/PM señuelo se ignora por completo.
+- Si no existe 24 h, la vista AM/PM canónica o aplanada se acepta como `America/Guayaquil`; 9:05 PM–10:05 PM produce 21:05–22:05 sin conversión adicional.
+- Parser aplanado 24 h y parser aplanado AM/PM probados por separado; nunca se combinan filas de ambas representaciones.
+- Cabeceras de navegador para GatoTV incluidas y diagnóstico ampliado con tamaño de HTML/texto y conteos de cada variante.
 - Se mantienen las comprobaciones de sincronización/publicación introducidas en v0.2.19.
 
 EPG MrG v0.2.19 — pruebas adicionales
@@ -153,3 +155,5 @@ Pruebas añadidas específicamente en v0.2.16:
 
 - Fallback 24 h de texto estructurado para STAR TVE sin clases tbl_EPG_row: OK.
 - Regresión: 03:05-04:05 COMERSE EL MUNDO (Atlantic/Canary) -> 21:05-22:05 del día anterior (America/Guayaquil): OK.
+
+- v0.2.22: STAR TVE probado con vista 24 h aplanada (Canary→Guayaquil) y con vista AM/PM aplanada/canónica localizada (Guayaquil directo); ambas producen COMERSE EL MUNDO 21:05–22:05 sin mezclarse.

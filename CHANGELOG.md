@@ -1,5 +1,14 @@
 # Cambios
 
+## v0.2.22 — 2026-08-14
+
+- STAR TVE conserva como primera opción la parrilla 24 h de GatoTV: `Atlantic/Canary` → `America/Guayaquil` con `ZoneInfo`, sin offset manual y con un día fuente adicional.
+- Corrige el fallo de GitHub Actions cuando GatoTV entrega la página sin `tbl_EPG_row` y en formato AM/PM: se acepta la vista AM/PM, canónica o aplanada, únicamente como respaldo y se interpreta directamente como `America/Guayaquil`.
+- Nunca se mezclan las vistas 24 h y AM/PM. Si existe una parrilla 24 h suficiente, siempre tiene prioridad.
+- Las peticiones a GatoTV incorporan cabeceras de navegador (`User-Agent`, `Accept`, `Accept-Language`, `Cache-Control`) para reducir respuestas HTML simplificadas al runner.
+- El error de STAR TVE informa ahora los conteos de las cuatro variantes, además del tamaño del HTML y del texto recibido, para diagnosticar futuros cambios de GatoTV.
+- Regresiones: `03:05–04:05 COMERSE EL MUNDO` del 15/08 en la vista 24 h → `21:05–22:05` del 14/08 en Guayaquil; y `9:05 PM–10:05 PM COMERSE EL MUNDO` en vista AM/PM localizada permanece `21:05–22:05`.
+
 ## v0.2.21 — 2026-08-14
 
 - STAR TVE mantiene la lógica horaria de v0.2.20: reloj 24 h de GatoTV en `Atlantic/Canary` convertido con `ZoneInfo` a `America/Guayaquil`, sin offset manual.

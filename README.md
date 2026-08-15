@@ -1,4 +1,4 @@
-# EPG MrG v0.2.21 para GitHub Pages
+# EPG MrG v0.2.22 para GitHub Pages
 
 Este repositorio genera y publica dos guías XMLTV en un mismo workflow y,
 además, conserva localmente los logos de los canales obtenidos desde mi.tv.
@@ -132,15 +132,14 @@ días. Si una fecha futura todavía está vacía o incompleta, se registra una
 advertencia y se conservan los días válidos del canal, sin abortar por ese día.
 
 Los canales 24 Horas, La 1 y Clan se interpretan directamente en
-`America/Guayaquil`. **STAR TVE también usa directamente la hora mostrada por
-GatoTV como hora de Guayaquil.** Desde v0.2.17 no existe conversión
-`Atlantic/Canary` → `America/Guayaquil` ni desplazamiento regional para
-`TVEStarHD.es`. El parser sigue leyendo exclusivamente la estructura canónica
-`tbl_EPG_row`: inicio/fin desde `tbl_EPG_TimesColumn*` y título desde
-`div_program_title_on_channel`. Si GatoTV publica simultáneamente 24 h y AM/PM,
-se usa una sola vista: 24 h tiene prioridad y AM/PM queda como respaldo; ambas
-se consideran reloj local de Guayaquil. Referencia validada contra señal real
-el 14-08-2026: `Comerse el mundo` 21:05–22:05 y `Salón de té La Moderna`
+`America/Guayaquil`. Para **STAR TVE**, la vista de 24 horas de GatoTV se
+interpreta como reloj `Atlantic/Canary` y se convierte con `ZoneInfo` a
+`America/Guayaquil`; la vista AM/PM se usa únicamente como respaldo cuando la
+24 h no está disponible y se interpreta como la vista localizada de Guayaquil.
+Las dos representaciones nunca se mezclan y no se aplica ningún offset manual.
+El parser admite tanto las filas canónicas `tbl_EPG_row` como el texto
+estructurado de la parrilla. Referencia validada contra señal real el
+14-08-2026: `COMERSE EL MUNDO` 21:05–22:05 y `Salón de té La Moderna`
 22:05–23:05.
 
 El parser también corrige el caso en que la primera fila de una fecha corresponde
@@ -289,7 +288,7 @@ Antes de publicar, el workflow verifica:
 
 - compilación Python;
 - UTC → Ecuador y cambio de fecha;
-- parser GatoTV, incluido STAR TVE con selección exclusiva de una vista canónica: prioridad 24 h, AM/PM solo como respaldo y ambas tomadas directamente como `America/Guayaquil`, sin conversión ni offset;
+- parser GatoTV, incluido STAR TVE con selección exclusiva de una vista: 24 h `Atlantic/Canary`→`America/Guayaquil` como prioridad y AM/PM localizada como respaldo, sin offset manual;
 - tolerancia a días futuros de GatoTV todavía no publicados;
 - parser semanal MakroDigital, rechazo de títulos decorativos y conversión `America/New_York` → `America/Guayaquil`;
 - exactamente 27 canales en `latam.xml`;
@@ -317,9 +316,9 @@ la traslada por día de la semana a la nueva ventana. No se inventan títulos ni
 horarios. Si tampoco existe una caché válida, la generación falla.
 
 
-## STAR TVE v0.2.17 — hora GatoTV directa
+## STAR TVE v0.2.22 — doble representación controlada
 
-Para `TVEStarHD.es`, v0.2.21 usa exclusivamente la tabla canónica de **24 horas** de GatoTV como reloj `Atlantic/Canary` y la convierte con `ZoneInfo` a `America/Guayaquil`, sin offset manual. Se descarga además un día fuente adicional: las primeras horas del día siguiente en Canarias corresponden todavía a la noche del día anterior en Ecuador. La vista AM/PM no se utiliza para STAR TVE. La referencia validada es `03:05–04:05 COMERSE EL MUNDO` del día fuente 15/08 → `21:05–22:05` del 14/08 en Guayaquil, seguida de `Salón de té La Moderna` `22:05–23:05`.
+Para `TVEStarHD.es`, v0.2.22 prioriza la tabla canónica de **24 horas** de GatoTV como reloj `Atlantic/Canary` y la convierte con `ZoneInfo` a `America/Guayaquil`, sin offset manual. Se descarga además un día fuente adicional: las primeras horas del día siguiente en Canarias corresponden todavía a la noche del día anterior en Ecuador. Si GitHub recibe únicamente la representación **AM/PM localizada**, el parser la acepta como respaldo, canónica o aplanada, y la interpreta directamente como `America/Guayaquil`; las dos vistas nunca se mezclan. La referencia validada es `03:05–04:05 COMERSE EL MUNDO` del día fuente 15/08 → `21:05–22:05` del 14/08 en Guayaquil, y el equivalente localizado `9:05 PM–10:05 PM` permanece `21:05–22:05`.
 
 `latam-status.json` incluye `star_tve_parser_revision`, `star_tve_time_mode`, `star_tve_regional_shift_minutes` y `star_tve_source_extra_day`. GitHub Actions imprime `VERSION` y el SHA-256 de `scripts/build_latam_epg.py` antes de construir la guía, permitiendo comprobar qué revisión ejecuta realmente el runner.
 
