@@ -242,6 +242,64 @@ jobs:
             public/latam.xml.gz \
             public/xmltv.dtd
 
+      - name: Sellar artefactos de esta ejecución
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python - <<'PY'
+          import gzip
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          public = Path("public")
+          version = Path("VERSION").read_text(encoding="utf-8").strip()
+          status_path = public / "latam-status.json"
+          status = json.loads(status_path.read_text(encoding="utf-8"))
+
+          expected_sha = os.environ["GITHUB_SHA"]
+          expected_run = os.environ["GITHUB_RUN_ID"]
+          expected_attempt = os.environ["GITHUB_RUN_ATTEMPT"]
+
+          assert status.get("version") == version, (status.get("version"), version)
+          assert status.get("source_commit") == expected_sha, status.get("source_commit")
+          assert str(status.get("github_run_id")) == expected_run, status.get("github_run_id")
+          assert str(status.get("github_run_attempt")) == expected_attempt, status.get("github_run_attempt")
+
+          xml_bytes = (public / "latam.xml").read_bytes()
+          with gzip.open(public / "latam.xml.gz", "rb") as fh:
+              gz_xml_bytes = fh.read()
+          assert gz_xml_bytes == xml_bytes, "latam.xml.gz no corresponde byte a byte a latam.xml"
+
+          def info(name: str) -> dict[str, object]:
+              data = (public / name).read_bytes()
+              return {
+                  "sha256": hashlib.sha256(data).hexdigest(),
+                  "bytes": len(data),
+              }
+
+          manifest = {
+              "version": version,
+              "source_commit": expected_sha,
+              "github_run_id": expected_run,
+              "github_run_attempt": expected_attempt,
+              "generated_at": status.get("generated_at"),
+              "files": {
+                  name: info(name)
+                  for name in ("latam.xml", "latam.xml.gz", "latam-status.json")
+              },
+          }
+          (public / "publication-manifest.json").write_text(
+              json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(manifest, ensure_ascii=False, indent=2))
+          PY
+
+          test -s public/publication-manifest.json
+
       - name: Configurar identidad Git
         shell: bash
         run: |
@@ -274,6 +332,7 @@ jobs:
           cp public/xmltv.dtd "${RAW_DIR}/xmltv.dtd"
           cp public/status.json "${RAW_DIR}/status.json"
           cp public/latam-status.json "${RAW_DIR}/latam-status.json"
+          cp public/publication-manifest.json "${RAW_DIR}/publication-manifest.json"
           cp VERSION "${RAW_DIR}/VERSION"
           printf '%s\n' "${GITHUB_SHA}" > "${RAW_DIR}/source-commit.txt"
           rm -rf "${RAW_DIR}/logos"
@@ -293,6 +352,7 @@ jobs:
           - `latam.xml`
           - `latam.xml.gz`
           - `latam-status.json`
+          - `publication-manifest.json` (SHA-256 de la salida LATAM de este run)
 
           Trazabilidad de la publicación:
           - `VERSION`: versión del código de `main` que generó estos archivos.
@@ -311,7 +371,7 @@ jobs:
             git add \
               ec.xml ec.xml.gz \
               latam.xml latam.xml.gz \
-              xmltv.dtd status.json latam-status.json README.md logos \
+              xmltv.dtd status.json latam-status.json publication-manifest.json README.md logos \
               VERSION source-commit.txt
 
             if git diff --cached --quiet; then
@@ -338,16 +398,35 @@ jobs:
           EXPECTED_VERSION="$(cat VERSION)"
           PUBLISHED_VERSION="$(git show origin/epg-data:VERSION | tr -d '\r\n')"
           PUBLISHED_SHA="$(git show origin/epg-data:source-commit.txt | tr -d '\r\n')"
+          PUBLISHED_STATUS_VERSION="$(git show origin/epg-data:latam-status.json | python -c 'import json,sys; print(json.load(sys.stdin)["version"])')"
+          PUBLISHED_STATUS_SHA="$(git show origin/epg-data:latam-status.json | python -c 'import json,sys; print(json.load(sys.stdin)["source_commit"])')"
+          PUBLISHED_RUN_ID="$(git show origin/epg-data:latam-status.json | python -c 'import json,sys; print(json.load(sys.stdin)["github_run_id"])')"
+          PUBLISHED_RUN_ATTEMPT="$(git show origin/epg-data:latam-status.json | python -c 'import json,sys; print(json.load(sys.stdin)["github_run_attempt"])')"
 
           echo "Versión esperada: ${EXPECTED_VERSION}"
-          echo "Versión publicada: ${PUBLISHED_VERSION}"
+          echo "VERSION publicado: ${PUBLISHED_VERSION}"
+          echo "latam-status.json publicado: ${PUBLISHED_STATUS_VERSION}"
           echo "Commit fuente esperado: ${GITHUB_SHA}"
-          echo "Commit fuente publicado: ${PUBLISHED_SHA}"
+          echo "source-commit.txt publicado: ${PUBLISHED_SHA}"
+          echo "Commit dentro de latam-status.json: ${PUBLISHED_STATUS_SHA}"
+          echo "Run esperado: ${GITHUB_RUN_ID}/${GITHUB_RUN_ATTEMPT}"
+          echo "Run publicado: ${PUBLISHED_RUN_ID}/${PUBLISHED_RUN_ATTEMPT}"
 
           test "${PUBLISHED_VERSION}" = "${EXPECTED_VERSION}"
+          test "${PUBLISHED_STATUS_VERSION}" = "${EXPECTED_VERSION}"
           test "${PUBLISHED_SHA}" = "${GITHUB_SHA}"
+          test "${PUBLISHED_STATUS_SHA}" = "${GITHUB_SHA}"
+          test "${PUBLISHED_RUN_ID}" = "${GITHUB_RUN_ID}"
+          test "${PUBLISHED_RUN_ATTEMPT}" = "${GITHUB_RUN_ATTEMPT}"
 
-          echo "epg-data sincronizada correctamente con main."
+          for FILE in latam.xml latam.xml.gz latam-status.json publication-manifest.json; do
+            LOCAL_HASH="$(sha256sum "public/${FILE}" | awk '{print $1}')"
+            PUBLISHED_HASH="$(git show "origin/epg-data:${FILE}" | sha256sum | awk '{print $1}')"
+            echo "${FILE}: local=${LOCAL_HASH} publicado=${PUBLISHED_HASH}"
+            test "${LOCAL_HASH}" = "${PUBLISHED_HASH}"
+          done
+
+          echo "epg-data sincronizada: VERSION, estado, run y bytes LATAM corresponden a esta ejecución."
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v6
