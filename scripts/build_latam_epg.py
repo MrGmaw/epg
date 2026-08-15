@@ -72,7 +72,7 @@ MAKRODIGITAL_SOURCE_TIMEZONE = "America/New_York"
 # No se aplica ningún offset manual: la conversión se hace únicamente con
 # ZoneInfo Atlantic/Canary -> America/Guayaquil.
 STAR_TVE_REGIONAL_SHIFT_MINUTES = 0
-STAR_TVE_PARSER_REVISION = "canonical-24h-atlantic-canary-r5"
+STAR_TVE_PARSER_REVISION = "canonical-24h-atlantic-canary-text-fallback-r6"
 TVE_ID = "Canal.TVE.Internacional.(Televisión.Española).ec"
 TVE_MITV_COUNTRY = "co"
 TVE_MITV_SLUG = "tve"
@@ -733,7 +733,8 @@ def _gatotv_canonical_rows(
 
     GatoTV puede incluir simultáneamente dos juegos de ``tbl_EPG_row``:
     una vista AM/PM y una vista 24 h. Para STAR TVE no deben mezclarse. La
-    versión 0.2.20 usa exclusivamente la vista canónica 24 h, porque es la que
+    versión 0.2.21 prioriza la vista canónica 24 h y conserva un fallback de
+    texto 24 h, porque es la que
     se interpreta de forma determinista con ``Atlantic/Canary`` y luego se
     convierte a ``America/Guayaquil``.
 
@@ -1064,9 +1065,11 @@ def parse_gatotv_page(
 ) -> list[epg.Programme]:
     """Lee una fecha de GatoTV y normaliza el resultado a Guayaquil.
 
-    STAR TVE usa exclusivamente las filas canónicas ``tbl_EPG_row`` en
-    notación 24 h. Ese reloj pertenece a ``Atlantic/Canary`` y se convierte
-    con ``ZoneInfo`` a ``America/Guayaquil``. No existe offset manual.
+    STAR TVE usa la parrilla 24 h de GatoTV. Se prefieren las filas canónicas
+    ``tbl_EPG_row``; si GitHub recibe la misma parrilla sin esas clases, se
+    reconstruye desde el texto estructurado ``Hora Inicio Hora Fin Programa``.
+    El reloj pertenece siempre a ``Atlantic/Canary`` y se convierte con
+    ``ZoneInfo`` a ``America/Guayaquil``. No existe offset manual.
 
     Como las primeras horas de un día fuente de Canarias corresponden todavía
     a la noche del día anterior en Ecuador, ``scrape_gatotv_channel`` descarga
@@ -1077,10 +1080,27 @@ def parse_gatotv_page(
 
     if channel_id == "TVEStarHD.es":
         rows_24h, rows_ampm = _gatotv_canonical_rows(soup)
+        canonical_24h_count = len(rows_24h)
+        flat_rows_24h: list[tuple[time, time, str, str | None]] = []
+        source_mode = "canonical-24h"
+
+        # GitHub Actions no siempre recibe las filas con las clases
+        # ``tbl_EPG_row`` aunque la parrilla 24 h siga presente en el texto
+        # estructurado de la página. En ese caso reconstruimos exclusivamente
+        # pares inicio/fin 24 h desde la sección ``Hora Inicio Hora Fin Programa``.
+        # No se acepta AM/PM para STAR TVE y no se altera la zona de origen.
+        if len(rows_24h) < 5:
+            flat_rows_24h = _gatotv_24h_rows_from_flat_text(soup)
+            if len(flat_rows_24h) >= 5:
+                rows_24h = flat_rows_24h
+                source_mode = "structured-text-24h"
+
         if len(rows_24h) < 5:
             raise RuntimeError(
-                "GatoTV: STAR TVE requiere la tabla canónica 24 h; "
-                f"24h={len(rows_24h)} emisiones, AM/PM={len(rows_ampm)} emisiones."
+                "GatoTV: STAR TVE no encontró una parrilla 24 h utilizable; "
+                f"canónica={canonical_24h_count} emisiones, "
+                f"texto24h={len(flat_rows_24h)} emisiones, "
+                f"AM/PM={len(rows_ampm)} emisiones."
             )
         if source_timezone != "Atlantic/Canary":
             raise RuntimeError(
@@ -1090,8 +1110,8 @@ def parse_gatotv_page(
         clock_timezone = ZoneInfo(source_timezone)
         epg.log(
             f"GatoTV {channel_id} {guide_date.isoformat()}: "
-            f"parser={STAR_TVE_PARSER_REVISION}; "
-            f"canónica 24h={len(rows_24h)}; AM/PM ignorada={len(rows_ampm)}; "
+            f"parser={STAR_TVE_PARSER_REVISION}; modo={source_mode}; "
+            f"24h={len(rows_24h)}; AM/PM ignorada={len(rows_ampm)}; "
             "zona_origen=Atlantic/Canary; destino=America/Guayaquil; "
             "ajuste_manual=0min."
         )
@@ -2177,7 +2197,7 @@ def build_latam(
             for config in GATOTV_CHANNELS
         },
         "star_tve_parser_revision": STAR_TVE_PARSER_REVISION,
-        "star_tve_time_mode": "canonical-24h-atlantic-canary-to-america-guayaquil",
+        "star_tve_time_mode": "24h-atlantic-canary-to-america-guayaquil-with-text-fallback",
         "star_tve_regional_shift_minutes": STAR_TVE_REGIONAL_SHIFT_MINUTES,
         "star_tve_source_extra_day": True,
         "makrodigital": {
@@ -2348,7 +2368,7 @@ def self_test() -> None:
     assert gatotv_programmes[0].start.isoformat() == "2026-08-10T23:20:00-05:00"
     assert gatotv_programmes[0].stop.isoformat() == "2026-08-11T00:10:00-05:00"
 
-    # STAR TVE v0.2.20: la tabla canónica 24 h es reloj Atlantic/Canary.
+    # STAR TVE v0.2.21: la parrilla 24 h es reloj Atlantic/Canary.
     # La noche ecuatoriana se completa con las primeras horas del día fuente
     # siguiente. Referencia validada el 14-08-2026: la página fuente del 15
     # publica 03:05-04:05 COMERSE EL MUNDO y 04:05-05:05 Salón de té La
@@ -2402,7 +2422,7 @@ def self_test() -> None:
         </tr>
       </table>
 
-      <!-- La vista AM/PM no debe utilizarse para STAR TVE en v0.2.20. -->
+      <!-- La vista AM/PM no debe utilizarse para STAR TVE en v0.2.21. -->
       <table id="epg-ampm">
         <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">3:05 AM</div></td><td><div class="tbl_EPG_TimesColumn">4:05 AM</div></td><td><div class="div_program_title_on_channel">SEÑUELO AMPM</div></td></tr>
         <tr class="tbl_EPG_row"><td><div class="tbl_EPG_TimesColumn">4:05 AM</div></td><td><div class="tbl_EPG_TimesColumn">5:05 AM</div></td><td><div class="div_program_title_on_channel">SEÑUELO AMPM 2</div></td></tr>
@@ -2432,8 +2452,38 @@ def self_test() -> None:
     assert moderna.stop.isoformat() == "2026-08-14T23:05:00-05:00"
     assert not any(item.title.startswith("SEÑUELO") for item in star_programmes)
 
-    # Si no existe una tabla canónica 24 h suficiente, STAR TVE debe fallar
-    # en vez de reinterpretar una vista AM/PM ambigua como reloj local.
+    # GitHub puede recibir la misma parrilla sin clases tbl_EPG_row. El
+    # fallback de texto 24 h debe conservar la misma conversión de zona.
+    star_flat_24h_sample = """
+    <html><body>
+      <div>Horarios de Programación</div>
+      <div>Hora Inicio Hora Fin Programa</div>
+      <div>Madrugada</div>
+      <div>00:15 01:10 Acacias 38</div>
+      <div>01:10 02:05 La promesa</div>
+      <div>02:05 03:05 El Hombre de tu Vida</div>
+      <div>03:05 04:05 COMERSE EL MUNDO</div>
+      <div>04:05 05:05 Salón de té La Moderna</div>
+      <div>05:05 06:00 Seis hermanas</div>
+      <div>Etiquetas: Canal Star TVE</div>
+    </body></html>
+    """
+    star_flat_programmes = parse_gatotv_page(
+        star_flat_24h_sample,
+        date(2026, 8, 15),
+        "TVEStarHD.es",
+        source_timezone=star_config.source_timezone,
+        prefer_ampm_local=star_config.prefer_ampm_local,
+    )
+    flat_comerse = next(
+        item for item in star_flat_programmes
+        if item.title.upper() == "COMERSE EL MUNDO"
+    )
+    assert flat_comerse.start.isoformat() == "2026-08-14T21:05:00-05:00"
+    assert flat_comerse.stop.isoformat() == "2026-08-14T22:05:00-05:00"
+
+    # Si no existe ni tabla canónica 24 h ni texto 24 h suficiente, STAR TVE
+    # debe fallar en vez de reinterpretar una vista AM/PM ambigua.
     star_ampm_only_sample = re.sub(
         r'<table id="epg-real-24h">.*?</table>',
         '',
@@ -2449,7 +2499,7 @@ def self_test() -> None:
             prefer_ampm_local=star_config.prefer_ampm_local,
         )
     except RuntimeError as exc:
-        assert "requiere la tabla canónica 24 h" in str(exc)
+        assert "no encontró una parrilla 24 h utilizable" in str(exc)
     else:
         raise AssertionError("STAR TVE aceptó AM/PM sin tabla canónica 24 h")
 
