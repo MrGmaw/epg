@@ -1,4 +1,4 @@
-# EPG MrG v0.2.17 para GitHub Pages
+# EPG MrG v0.2.18 para GitHub Pages
 
 Este repositorio genera y publica dos guías XMLTV en un mismo workflow y,
 además, conserva localmente los logos de los canales obtenidos desde mi.tv.
@@ -321,3 +321,10 @@ horarios. Si tampoco existe una caché válida, la generación falla.
 Para `TVEStarHD.es`, la hora visible en la tabla canónica de GatoTV se considera directamente `America/Guayaquil`. La vista 24 h tiene prioridad y AM/PM queda como respaldo, pero ninguna recibe conversión IANA adicional ni offset regional. La corrección `-120` de v0.2.14 queda retirada y el estado publica `star_tve_regional_shift_minutes: 0`.
 
 `latam-status.json` incluye `star_tve_parser_revision`, `star_tve_time_mode` y `star_tve_regional_shift_minutes`. GitHub Actions imprime `VERSION` y el SHA-256 de `scripts/build_latam_epg.py` antes de construir la guía, permitiendo comprobar qué revisión ejecuta realmente el runner.
+
+
+## Sincronización automática main → epg-data
+
+Desde v0.2.18, cada `push` a `main` ejecuta inmediatamente el workflow. Si la generación y las validaciones terminan correctamente, la rama `epg-data` se actualiza en la misma ejecución. La rama publicada incluye `VERSION` y `source-commit.txt`, y el workflow verifica después del `push` que ambos coincidan exactamente con la revisión de `main` que produjo la EPG.
+
+Si una fuente externa falla y la generación no supera las validaciones, `epg-data` conserva la última salida válida; no se publica una guía incompleta.

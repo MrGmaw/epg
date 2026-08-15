@@ -1,5 +1,14 @@
 ## v0.2.17 — 2026-08-14
 
+## v0.2.18 — 2026-08-14
+
+- GitHub Actions se ejecuta automáticamente con cada `push` a la rama `main`, además del cron y `workflow_dispatch`.
+- La publicación de `epg-data` incluye ahora `VERSION` y `source-commit.txt` para identificar exactamente qué versión y commit generaron los XMLTV.
+- El commit automático de `epg-data` incluye la versión y el SHA corto del commit fuente.
+- Tras publicar, el workflow vuelve a leer `epg-data` y falla si `VERSION` o `source-commit.txt` no coinciden con `main`.
+- La publicación sigue siendo transaccional: si falla la generación o la validación de la EPG, no se publica una salida incompleta en `epg-data`.
+- No se modifica la lógica de extracción de canales respecto de v0.2.17.
+
 - STAR TVE (`TVEStarHD.es`) adopta una regla horaria directa: la hora visible en `https://www.gatotv.com/canal/star_tve` se escribe como `America/Guayaquil`, sin convertir desde `Atlantic/Canary` y sin desplazamiento regional.
 - Se mantiene exclusivamente la estructura canónica `tbl_EPG_row`; la vista 24 h tiene prioridad y AM/PM queda como respaldo, pero ambas se interpretan como reloj local de Guayaquil.
 - Se elimina funcionalmente la corrección regional de `-120` minutos: `star_tve_regional_shift_minutes` pasa a `0`.

@@ -1,6 +1,6 @@
-EPG MrG v0.2.17 — pruebas adicionales
+EPG MrG v0.2.18 — pruebas adicionales
 
-- VERSION actualizado a 0.2.17.
+- VERSION actualizado a 0.2.18.
 - STAR TVE: la tabla canónica 24 h de GatoTV se toma directamente como `America/Guayaquil`; AM/PM es respaldo y también se toma como hora local.
 - No se utiliza `Atlantic/Canary` para STAR TVE y `star_tve_regional_shift_minutes=0`.
 - Regresión real: `Comerse el mundo` 21:05–22:05 permanece 21:05–22:05 en el XMLTV `-0500`; `Salón de té La Moderna` permanece 22:05–23:05.
@@ -131,3 +131,7 @@ Pruebas añadidas específicamente en v0.2.16:
 - Simulación de fallo HTTP de la fuente oficial: scrape_makrodigital continúa con previous-latam-cache y genera 56 emisiones en una ventana de 7 días.
 - Compilación Python de build_latam_epg.py.
 - Validación sintáctica YAML del workflow.
+
+- Verificado trigger `push` sobre `main`.
+- Verificada publicación de VERSION y source-commit.txt en epg-data.
+- Verificada comprobación post-publicación de versión y SHA fuente.
