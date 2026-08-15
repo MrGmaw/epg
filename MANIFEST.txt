@@ -1,4 +1,4 @@
-EPG MrG v0.2.22 — REPOSITORIO COMPLETO LATAM 27 CANALES
+EPG MrG v0.2.23 — REPOSITORIO COMPLETO LATAM 27 CANALES
 
 TIPO DE PAQUETE:
 - Reemplazo total de la rama main del repositorio MrGmaw/epg.
@@ -80,16 +80,16 @@ GATOTV v0.2.1:
 
 
 
-STAR TVE v0.2.22:
+STAR TVE v0.2.23:
 - Fuente: https://www.gatotv.com/canal/star_tve
-- Se aceptan dos representaciones de GatoTV, pero nunca se mezclan: 24 h como prioridad y AM/PM localizada solo como respaldo.
+- Se aceptan dos representaciones de GatoTV, pero nunca se mezclan: AM/PM localizada como prioridad y 24 h de Atlantic/Canary solo como respaldo.
 - Vista 24 h: filas canónicas `tbl_EPG_row` o texto estructurado; reloj `Atlantic/Canary` convertido con `ZoneInfo` a `America/Guayaquil`.
 - Vista AM/PM: filas canónicas o texto estructurado; se interpreta directamente como `America/Guayaquil` cuando no existe una vista 24 h suficiente.
 - Inicio/fin canónicos: `tbl_EPG_TimesColumn*`; título: `div_program_title_on_channel`; subtítulo opcional: `div_episode_programa_on_channel`.
 - No existe offset manual y se mantiene un día fuente adicional para cubrir la noche ecuatoriana cuando se usa la vista 24 h.
 - Referencia validada 14-08-2026: fuente 15-08 03:05–04:05 `COMERSE EL MUNDO` -> Guayaquil 14-08 21:05–22:05; el equivalente AM/PM localizado 9:05 PM–10:05 PM permanece 21:05–22:05.
-- Revisión publicada en latam-status.json: `dual-gatotv-view-r7`.
-- `star_tve_time_mode=24h-canary-primary-ampm-guayaquil-fallback`, `star_tve_source_extra_day=true` y `star_tve_regional_shift_minutes=0`.
+- Revisión publicada en latam-status.json: `ampm-guayaquil-primary-r8`.
+- `star_tve_time_mode=ampm-guayaquil-primary-24h-canary-fallback`, `star_tve_source_extra_day=true` y `star_tve_regional_shift_minutes=0`.
 - Las peticiones a GatoTV incluyen cabeceras de navegador y los errores registran tamaños/conteos para diagnosticar respuestas simplificadas del runner.
 - GitHub Actions imprime VERSION y SHA-256 de scripts/build_latam_epg.py para verificar el código realmente desplegado.
 

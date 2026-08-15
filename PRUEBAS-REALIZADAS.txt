@@ -1,6 +1,6 @@
-EPG MrG v0.2.22 — pruebas adicionales
+EPG MrG v0.2.23 — pruebas adicionales
 
-- VERSION actualizado a 0.2.22.
+- VERSION actualizado a 0.2.23.
 - STAR TVE mantiene `source_timezone=Atlantic/Canary` para la vista 24 h y descarga `days + 1` días fuente.
 - Conversión ZoneInfo validada: 15/08 03:05–04:05 fuente -> 14/08 21:05–22:05 Guayaquil (`COMERSE EL MUNDO`).
 - Conversión ZoneInfo validada: 15/08 04:05–05:05 fuente -> 14/08 22:05–23:05 Guayaquil (`Salón de té La Moderna`).
@@ -24,7 +24,7 @@ EPG MrG v0.2.19 — pruebas adicionales
 EPG MrG v0.2.16 — pruebas adicionales
 
 - VERSION actualizado a 0.2.16.
-- STAR TVE mantiene tabla canónica 24 h prioritaria y conversión `Atlantic/Canary` -> `America/Guayaquil`.
+- STAR TVE prioriza AM/PM localizada como `America/Guayaquil`; 24 h `Atlantic/Canary` -> `America/Guayaquil` queda como respaldo.
 - Se verifica que, después de la conversión IANA, solo `TVEStarHD.es` recibe una corrección regional de -120 minutos.
 - Regresión: `Un país para reírlo` 20:45–21:45 fuente -> 14:45–15:45 Guayaquil -> 12:45–13:45 tras corrección regional.
 - `latam-status.json` publica `star_tve_regional_shift_minutes=-120` y `star_tve_parser_revision=canonical-24h-primary-r3-regional-minus120`.
@@ -45,7 +45,7 @@ EPG MrG v0.2.11 — pruebas adicionales
 EPG MrG v0.2.9 — pruebas adicionales
 - STAR TVE: una tabla estructurada AM/PM ya no se descarta en GitHub Actions.
 - STAR TVE: fallback AM/PM sin `<tr>` validado con horarios distribuidos en `div/span`.
-- STAR TVE: si GatoTV entrega simultáneamente AM/PM y 24 h, se selecciona una sola vista. La 24 h tiene prioridad y se convierte `Atlantic/Canary` -> `America/Guayaquil`; AM/PM queda solo como respaldo.
+- STAR TVE: si GatoTV entrega simultáneamente AM/PM y 24 h, se selecciona una sola vista. AM/PM tiene prioridad como `America/Guayaquil`; 24 h queda solo como respaldo `Atlantic/Canary` -> Guayaquil.
 - Regresión: `Salón de té La Moderna` 4:00 PM–5:00 PM de origen -> 10:00–11:00 Guayaquil.
 - Regresión: `Estoy vivo` 2:00 AM–3:05 AM del 14-08 fuente -> 20:00–21:05 del 13-08 Guayaquil.
 - Se conserva el fallback 24 h sin `<tr>` de v0.2.8.
@@ -157,3 +157,5 @@ Pruebas añadidas específicamente en v0.2.16:
 - Regresión: 03:05-04:05 COMERSE EL MUNDO (Atlantic/Canary) -> 21:05-22:05 del día anterior (America/Guayaquil): OK.
 
 - v0.2.22: STAR TVE probado con vista 24 h aplanada (Canary→Guayaquil) y con vista AM/PM aplanada/canónica localizada (Guayaquil directo); ambas producen COMERSE EL MUNDO 21:05–22:05 sin mezclarse.
+
+- v0.2.23: regresión con ambas vistas presentes y una tabla 24 h señuelo; se exige 21:05–22:05 COMERSE EL MUNDO, 22:05–23:05 Salón de té La Moderna y 23:05 Seis hermanas desde la vista AM/PM localizada.

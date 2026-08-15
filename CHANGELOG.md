@@ -1,3 +1,14 @@
+# Historial de cambios
+
+## v0.2.23 — 2026-08-14
+
+- STAR TVE (`TVEStarHD.es`) cambia la prioridad de las dos representaciones de GatoTV: **AM/PM localizada primero**, 24 h de `Atlantic/Canary` solo como respaldo.
+- La vista AM/PM, canónica o aplanada, se interpreta directamente como `America/Guayaquil`; no se aplica conversión adicional ni offset manual.
+- La vista 24 h mantiene el comportamiento de respaldo `Atlantic/Canary` → `America/Guayaquil` mediante `ZoneInfo` y conserva el día fuente adicional.
+- Las dos vistas nunca se mezclan.
+- Se añade una regresión obligatoria con ambas vistas presentes: debe prevalecer `21:05–22:05 COMERSE EL MUNDO`, `22:05–23:05 Salón de té La Moderna` y `23:05–00:00 Seis hermanas`, ignorando una tabla 24 h señuelo.
+- `STAR_TVE_PARSER_REVISION=ampm-guayaquil-primary-r8` y `star_tve_time_mode=ampm-guayaquil-primary-24h-canary-fallback`.
+
 # Cambios
 
 ## v0.2.22 — 2026-08-14
