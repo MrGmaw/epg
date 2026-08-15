@@ -1,4 +1,4 @@
-# EPG MrG v0.2.18 para GitHub Pages
+# EPG MrG v0.2.19 para GitHub Pages
 
 Este repositorio genera y publica dos guías XMLTV en un mismo workflow y,
 además, conserva localmente los logos de los canales obtenidos desde mi.tv.
@@ -19,6 +19,7 @@ Guía seleccionada de 27 canales:
 latam.xml
 latam.xml.gz
 latam-status.json
+publication-manifest.json
 ```
 
 Logos persistentes:
@@ -326,5 +327,7 @@ Para `TVEStarHD.es`, la hora visible en la tabla canónica de GatoTV se consider
 ## Sincronización automática main → epg-data
 
 Desde v0.2.18, cada `push` a `main` ejecuta inmediatamente el workflow. Si la generación y las validaciones terminan correctamente, la rama `epg-data` se actualiza en la misma ejecución. La rama publicada incluye `VERSION` y `source-commit.txt`, y el workflow verifica después del `push` que ambos coincidan exactamente con la revisión de `main` que produjo la EPG.
+
+Desde v0.2.19 la verificación es también **sobre los archivos generados**: `latam-status.json` registra el commit y el run de GitHub, `publication-manifest.json` conserva los SHA-256 de la salida LATAM y, después de publicar, el workflow comprueba que `latam.xml`, `latam.xml.gz`, `latam-status.json` y el manifiesto de `epg-data` sean byte a byte los mismos que se acaban de generar. Esto evita que una rama pueda quedar marcada con una versión nueva mientras conserva una guía de una ejecución anterior.
 
 Si una fuente externa falla y la generación no supera las validaciones, `epg-data` conserva la última salida válida; no se publica una guía incompleta.

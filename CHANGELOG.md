@@ -1,3 +1,14 @@
+## v0.2.19 — 2026-08-14
+
+- Corrige la trazabilidad de `epg-data`: ya no basta con copiar `VERSION`; la salida LATAM debe demostrar que fue generada por el mismo commit y el mismo run de GitHub Actions.
+- `latam-status.json` añade `source_commit`, `github_run_id` y `github_run_attempt`.
+- `validate_outputs.py` exige esos valores cuando se ejecuta dentro de GitHub Actions.
+- Antes de publicar se crea `publication-manifest.json` con SHA-256 y tamaño de `latam.xml`, `latam.xml.gz` y `latam-status.json`.
+- Se verifica además que al descomprimir `latam.xml.gz` el contenido sea exactamente igual a `latam.xml`.
+- Tras publicar `epg-data`, el workflow comprueba `VERSION`, la versión interna de `latam-status.json`, commit fuente, run/attempt y los SHA-256 byte a byte de los tres archivos LATAM y del manifiesto.
+- Si cualquiera de esas comprobaciones falla, el workflow termina con error y no declara sincronizada la rama publicada.
+- No se modifica la lógica de extracción de canales respecto de v0.2.18.
+
 ## v0.2.17 — 2026-08-14
 
 ## v0.2.18 — 2026-08-14

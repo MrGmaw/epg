@@ -1,4 +1,4 @@
-EPG MrG v0.2.18 — REPOSITORIO COMPLETO LATAM 27 CANALES
+EPG MrG v0.2.19 — REPOSITORIO COMPLETO LATAM 27 CANALES
 
 TIPO DE PAQUETE:
 - Reemplazo total de la rama main del repositorio MrGmaw/epg.
@@ -80,7 +80,7 @@ GATOTV v0.2.1:
 
 
 
-STAR TVE v0.2.18:
+STAR TVE v0.2.19:
 - Fuente: https://www.gatotv.com/canal/star_tve
 - Solo se acepta la parrilla canónica de GatoTV (`tbl_EPG_row`).
 - Inicio/fin: `tbl_EPG_TimesColumn*`; título: `div_program_title_on_channel`; subtítulo opcional: `div_episode_programa_on_channel`.
@@ -137,3 +137,8 @@ MAKRODIGITAL v0.2.16:
 - Si WordPress entrega [tt_timetable ...] sin grilla válida, se usa epg-data/latam.xml como caché semanal.
 - La caché se reconvierte America/Guayaquil -> America/New_York para reconstruir el patrón semanal y luego se instancia nuevamente con ZoneInfo.
 - latam-status.json indica mode=official-live o mode=previous-latam-cache.
+
+TRAZABILIDAD v0.2.19:
+- latam-status.json registra source_commit, github_run_id y github_run_attempt.
+- publication-manifest.json sella SHA-256/tamaño de latam.xml, latam.xml.gz y latam-status.json.
+- epg-data se verifica tras el push comparando versión, run, commit y hashes contra public/.
