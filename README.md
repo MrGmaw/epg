@@ -1,4 +1,4 @@
-# EPG MrG v0.2.15 para GitHub Pages
+# EPG MrG v0.2.16 para GitHub Pages
 
 Este repositorio genera y publica dos guías XMLTV en un mismo workflow y,
 además, conserva localmente los logos de los canales obtenidos desde mi.tv.
@@ -299,6 +299,11 @@ Antes de publicar, el workflow verifica:
 - conservación de la caché de logos entre ejecuciones.
 
 
+## Respaldo MakroDigital v0.2.16
+
+La página oficial de MakroDigital utiliza el shortcode de WordPress `tt_timetable`. Si GitHub Actions recibe el shortcode sin la tabla renderizada o la fuente no produce siete días válidos, el workflow restaura el último `latam.xml` publicado desde `epg-data`, reconstruye de allí la parrilla semanal en `America/New_York` y la vuelve a proyectar a la ventana actual en `America/Guayaquil`. La EPG no inventa programas y deja constancia del modo usado en `latam-status.json`.
+
+
 ## Respaldo resiliente de TVC
 
 TVC se intenta obtener primero desde su parrilla oficial en
@@ -309,7 +314,7 @@ la traslada por día de la semana a la nueva ventana. No se inventan títulos ni
 horarios. Si tampoco existe una caché válida, la generación falla.
 
 
-## Ajuste STAR TVE v0.2.15
+## Ajuste STAR TVE v0.2.14
 
 Para `TVEStarHD.es` se prioriza la tabla canónica de 24 horas de GatoTV y se convierte `Atlantic/Canary` → `America/Guayaquil`. La vista AM/PM queda únicamente como respaldo. Después de esa normalización se aplica una corrección regional exclusiva de **-120 minutos** para alinear la ventana recibida en Ecuador. No cambia la zona horaria de Guayaquil y no afecta a ningún otro canal.
 

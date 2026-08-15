@@ -1,6 +1,6 @@
-EPG MrG v0.2.15 — pruebas adicionales
+EPG MrG v0.2.16 — pruebas adicionales
 
-- VERSION actualizado a 0.2.15.
+- VERSION actualizado a 0.2.16.
 - STAR TVE mantiene tabla canónica 24 h prioritaria y conversión `Atlantic/Canary` -> `America/Guayaquil`.
 - Se verifica que, después de la conversión IANA, solo `TVEStarHD.es` recibe una corrección regional de -120 minutos.
 - Regresión: `Un país para reírlo` 20:45–21:45 fuente -> 14:45–15:45 Guayaquil -> 12:45–13:45 tras corrección regional.
@@ -108,8 +108,15 @@ PRUEBAS v0.2.13 — 14-08-2026
 - El log de STAR TVE incluye la revisión del parser utilizada en cada fecha.
 - GitHub Actions imprime VERSION y SHA-256 de scripts/build_latam_epg.py antes de ejecutar la generación.
 - Se verificó que v0.2.13 contiene cambios reales respecto de v0.2.12 en VERSION, build_latam_epg.py, workflow, CHANGELOG, README, MANIFEST y PRUEBAS-REALIZADAS.
-Pruebas añadidas en v0.2.15:
+Pruebas añadidas en v0.2.16:
 - MakroDigital: grilla semanal Lunes–Domingos parseada directamente.
 - MakroDigital: expansión de rowspan validada con Retro Music ocupando dos franjas del domingo sin desplazar columnas.
 - MakroDigital: los siete días conservan al menos cinco emisiones en la prueba de regresión de tabla.
 
+
+
+Pruebas añadidas específicamente en v0.2.16:
+- Reconstrucción de 7 días MakroDigital desde una latam.xml sintética con 6 emisiones por día.
+- Simulación de fallo HTTP de la fuente oficial: scrape_makrodigital continúa con previous-latam-cache y genera 56 emisiones en una ventana de 7 días.
+- Compilación Python de build_latam_epg.py.
+- Validación sintáctica YAML del workflow.

@@ -1,3 +1,11 @@
+## v0.2.16 — 2026-08-14
+
+- MakroDigital deja de abortar toda la EPG cuando WordPress devuelve `[tt_timetable ...]` sin la grilla renderizada.
+- GitHub Actions restaura `epg-data/latam.xml` como caché persistente de MakroDigital.
+- Si la fuente oficial no produce una semana válida, se reconstruye la parrilla semanal NEW YORK desde el último XMLTV publicado y se vuelve a convertir a Guayaquil con `ZoneInfo`.
+- `latam-status.json` informa `official-live` o `previous-latam-cache` para MakroDigital.
+- STAR TVE queda sin cambios funcionales respecto de v0.2.15.
+
 # Cambios
 
 ## v0.2.15 — 14-08-2026
