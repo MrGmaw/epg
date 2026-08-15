@@ -1,4 +1,4 @@
-# EPG MrG v0.2.19 para GitHub Pages
+# EPG MrG v0.2.20 para GitHub Pages
 
 Este repositorio genera y publica dos guías XMLTV en un mismo workflow y,
 además, conserva localmente los logos de los canales obtenidos desde mi.tv.
@@ -319,9 +319,9 @@ horarios. Si tampoco existe una caché válida, la generación falla.
 
 ## STAR TVE v0.2.17 — hora GatoTV directa
 
-Para `TVEStarHD.es`, la hora visible en la tabla canónica de GatoTV se considera directamente `America/Guayaquil`. La vista 24 h tiene prioridad y AM/PM queda como respaldo, pero ninguna recibe conversión IANA adicional ni offset regional. La corrección `-120` de v0.2.14 queda retirada y el estado publica `star_tve_regional_shift_minutes: 0`.
+Para `TVEStarHD.es`, v0.2.20 usa exclusivamente la tabla canónica de **24 horas** de GatoTV como reloj `Atlantic/Canary` y la convierte con `ZoneInfo` a `America/Guayaquil`, sin offset manual. Se descarga además un día fuente adicional: las primeras horas del día siguiente en Canarias corresponden todavía a la noche del día anterior en Ecuador. La vista AM/PM no se utiliza para STAR TVE. La referencia validada es `03:05–04:05 COMERSE EL MUNDO` del día fuente 15/08 → `21:05–22:05` del 14/08 en Guayaquil, seguida de `Salón de té La Moderna` `22:05–23:05`.
 
-`latam-status.json` incluye `star_tve_parser_revision`, `star_tve_time_mode` y `star_tve_regional_shift_minutes`. GitHub Actions imprime `VERSION` y el SHA-256 de `scripts/build_latam_epg.py` antes de construir la guía, permitiendo comprobar qué revisión ejecuta realmente el runner.
+`latam-status.json` incluye `star_tve_parser_revision`, `star_tve_time_mode`, `star_tve_regional_shift_minutes` y `star_tve_source_extra_day`. GitHub Actions imprime `VERSION` y el SHA-256 de `scripts/build_latam_epg.py` antes de construir la guía, permitiendo comprobar qué revisión ejecuta realmente el runner.
 
 
 ## Sincronización automática main → epg-data

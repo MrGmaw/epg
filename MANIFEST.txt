@@ -1,4 +1,4 @@
-EPG MrG v0.2.19 — REPOSITORIO COMPLETO LATAM 27 CANALES
+EPG MrG v0.2.20 — REPOSITORIO COMPLETO LATAM 27 CANALES
 
 TIPO DE PAQUETE:
 - Reemplazo total de la rama main del repositorio MrGmaw/epg.
@@ -80,15 +80,16 @@ GATOTV v0.2.1:
 
 
 
-STAR TVE v0.2.19:
+STAR TVE v0.2.20:
 - Fuente: https://www.gatotv.com/canal/star_tve
-- Solo se acepta la parrilla canónica de GatoTV (`tbl_EPG_row`).
+- Solo se acepta la parrilla canónica de GatoTV (`tbl_EPG_row`) en representación 24 h.
 - Inicio/fin: `tbl_EPG_TimesColumn*`; título: `div_program_title_on_channel`; subtítulo opcional: `div_episode_programa_on_channel`.
-- La vista canónica 24 h tiene prioridad; AM/PM queda únicamente como respaldo.
-- Ambas vistas se interpretan directamente como `America/Guayaquil`: no hay `Atlantic/Canary`, conversión adicional ni offset regional.
-- Referencia real validada 14-08-2026: Comerse el mundo 21:05–22:05; Salón de té La Moderna 22:05–23:05.
-- Revisión publicada en latam-status.json: canonical-gatotv-guayaquil-direct-r4.
-- `star_tve_time_mode=gatotv-direct-america-guayaquil` y `star_tve_regional_shift_minutes=0`.
+- El reloj 24 h se interpreta como `Atlantic/Canary` y se convierte con `ZoneInfo` a `America/Guayaquil`; no existe offset manual.
+- La vista AM/PM se ignora para STAR TVE; si no hay al menos 5 emisiones canónicas 24 h se informa error explícito.
+- Se descarga un día fuente adicional para cubrir la noche ecuatoriana con las primeras horas del día siguiente en Canarias.
+- Referencia validada 14-08-2026: fuente 15-08 03:05–04:05 `COMERSE EL MUNDO` -> Guayaquil 14-08 21:05–22:05; 04:05–05:05 `Salón de té La Moderna` -> 22:05–23:05.
+- Revisión publicada en latam-status.json: canonical-24h-atlantic-canary-r5.
+- `star_tve_time_mode=canonical-24h-atlantic-canary-to-america-guayaquil`, `star_tve_source_extra_day=true` y `star_tve_regional_shift_minutes=0`.
 - GitHub Actions imprime VERSION y SHA-256 de scripts/build_latam_epg.py para verificar el código realmente desplegado.
 
 STAR TVE v0.2.8:

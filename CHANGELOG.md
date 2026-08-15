@@ -1,3 +1,12 @@
+## v0.2.20 — 2026-08-14
+
+- STAR TVE (`TVEStarHD.es`) deja de interpretar la tabla de GatoTV directamente como hora de Guayaquil.
+- Se usa exclusivamente la tabla canónica de 24 horas de GatoTV como reloj `Atlantic/Canary` y se convierte con `ZoneInfo` a `America/Guayaquil`, sin offset manual.
+- Se configura `source_timezone=Atlantic/Canary`, lo que hace que el scraper descargue un día fuente adicional y después recorte a la ventana local de Ecuador. Esto cubre correctamente la franja nocturna ecuatoriana con las primeras horas del día siguiente en Canarias.
+- Se elimina el fallback AM/PM para STAR TVE: si GatoTV no entrega al menos cinco filas canónicas 24 h, el canal falla explícitamente en vez de reinterpretar una vista ambigua.
+- Regresión validada: página fuente del 15/08 `03:05–04:05 COMERSE EL MUNDO` → Guayaquil 14/08 `21:05–22:05`; `04:05–05:05 Salón de té La Moderna` → `22:05–23:05`.
+- `latam-status.json` publica `star_tve_time_mode=canonical-24h-atlantic-canary-to-america-guayaquil`, `star_tve_source_extra_day=true` y `star_tve_regional_shift_minutes=0`.
+
 ## v0.2.19 — 2026-08-14
 
 - Corrige la trazabilidad de `epg-data`: ya no basta con copiar `VERSION`; la salida LATAM debe demostrar que fue generada por el mismo commit y el mismo run de GitHub Actions.
