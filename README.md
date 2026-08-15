@@ -12,6 +12,10 @@ Guía seleccionada de 27 canales:
 - `latam.xml.gz`
 - `latam-status.json`
 
+Trazabilidad de la publicación:
+- `VERSION`: versión del código de `main` que generó estos archivos.
+- `source-commit.txt`: SHA exacto del commit de `main` usado por GitHub Actions.
+
 Logos locales persistentes:
 - `logos/<tvg-id>.png`
 - `logos/manifest.json`
