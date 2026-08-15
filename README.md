@@ -1,4 +1,4 @@
-# EPG MrG v0.2.11 para GitHub Pages
+# EPG MrG v0.2.14 para GitHub Pages
 
 Este repositorio genera y publica dos guías XMLTV en un mismo workflow y,
 además, conserva localmente los logos de los canales obtenidos desde mi.tv.
@@ -286,7 +286,7 @@ Antes de publicar, el workflow verifica:
 
 - compilación Python;
 - UTC → Ecuador y cambio de fecha;
-- parser GatoTV, incluido STAR TVE con selección exclusiva de una vista canónica: prioridad 24 h convertida desde `Atlantic/Canary` y AM/PM solo como respaldo, sin offset manual;
+- parser GatoTV, incluido STAR TVE con selección exclusiva de una vista canónica: prioridad 24 h convertida desde `Atlantic/Canary`, AM/PM solo como respaldo y corrección regional exclusiva de -120 min después de normalizar a Guayaquil;
 - tolerancia a días futuros de GatoTV todavía no publicados;
 - parser semanal MakroDigital, rechazo de títulos decorativos y conversión `America/New_York` → `America/Guayaquil`;
 - exactamente 27 canales en `latam.xml`;
@@ -309,8 +309,8 @@ la traslada por día de la semana a la nueva ventana. No se inventan títulos ni
 horarios. Si tampoco existe una caché válida, la generación falla.
 
 
-## Ajuste STAR TVE v0.2.13
+## Ajuste STAR TVE v0.2.14
 
-Para `TVEStarHD.es` se prioriza la tabla canónica de 24 horas de GatoTV y se convierte `Atlantic/Canary` → `America/Guayaquil`. La vista AM/PM queda únicamente como respaldo. No se aplica offset manual.
+Para `TVEStarHD.es` se prioriza la tabla canónica de 24 horas de GatoTV y se convierte `Atlantic/Canary` → `America/Guayaquil`. La vista AM/PM queda únicamente como respaldo. Después de esa normalización se aplica una corrección regional exclusiva de **-120 minutos** para alinear la ventana recibida en Ecuador. No cambia la zona horaria de Guayaquil y no afecta a ningún otro canal.
 
-Desde v0.2.13, `latam-status.json` incluye `star_tve_parser_revision` y GitHub Actions imprime `VERSION` y el SHA-256 de `scripts/build_latam_epg.py` antes de construir la guía. Esto permite comprobar de forma inequívoca qué revisión está ejecutando el runner.
+`latam-status.json` incluye `star_tve_parser_revision` y `star_tve_regional_shift_minutes`. GitHub Actions imprime `VERSION` y el SHA-256 de `scripts/build_latam_epg.py` antes de construir la guía, permitiendo comprobar qué revisión ejecuta realmente el runner.

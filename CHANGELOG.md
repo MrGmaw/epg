@@ -1,3 +1,12 @@
+# v0.2.14 — STAR TVE: corrección regional -120 min
+
+- `VERSION` pasa a `0.2.14`.
+- Se mantiene la lectura canónica de STAR TVE de v0.2.13: tabla 24 h prioritaria de GatoTV, `Atlantic/Canary` → `America/Guayaquil`, AM/PM solo como respaldo.
+- Tras normalizar a `America/Guayaquil`, se aplica **exclusivamente a `TVEStarHD.es`** una corrección regional de `-120` minutos.
+- El ajuste no modifica la zona horaria de Ecuador ni afecta Canal 24 Horas, La 1, Clan TVE u otros canales.
+- `latam-status.json` publica `star_tve_regional_shift_minutes: -120` y la revisión `canonical-24h-primary-r3-regional-minus120`.
+- Regresión: `Un país para reírlo` 20:45–21:45 en el reloj 24 h de GatoTV se normaliza primero a 14:45–15:45 Guayaquil y, con la corrección regional, queda 12:45–13:45.
+
 # v0.2.13 — identidad de despliegue verificable y diagnóstico STAR TVE
 
 - `VERSION` pasa explícitamente a `0.2.13`.

@@ -1,3 +1,13 @@
+EPG MrG v0.2.14 — pruebas adicionales
+
+- VERSION actualizado a 0.2.14.
+- STAR TVE mantiene tabla canónica 24 h prioritaria y conversión `Atlantic/Canary` -> `America/Guayaquil`.
+- Se verifica que, después de la conversión IANA, solo `TVEStarHD.es` recibe una corrección regional de -120 minutos.
+- Regresión: `Un país para reírlo` 20:45–21:45 fuente -> 14:45–15:45 Guayaquil -> 12:45–13:45 tras corrección regional.
+- `latam-status.json` publica `star_tve_regional_shift_minutes=-120` y `star_tve_parser_revision=canonical-24h-primary-r3-regional-minus120`.
+- Los otros tres canales GatoTV mantienen ajuste regional 0.
+- Python: todos los scripts incluidos compilan correctamente.
+
 EPG MrG v0.2.11 — pruebas adicionales
 
 - Regresión crítica 14-08-2026 con ambas vistas canónicas presentes: Víctimas del misterio 13:55–14:45, Un país para reírlo 14:45–15:45 y Zoom tendencias 15:45–16:20 en America/Guayaquil.

@@ -1,4 +1,4 @@
-EPG MrG v0.2.13 — REPOSITORIO COMPLETO LATAM 27 CANALES
+EPG MrG v0.2.14 — REPOSITORIO COMPLETO LATAM 27 CANALES
 
 TIPO DE PAQUETE:
 - Reemplazo total de la rama main del repositorio MrGmaw/epg.
@@ -80,14 +80,16 @@ GATOTV v0.2.1:
 
 
 
-STAR TVE v0.2.13:
+STAR TVE v0.2.14:
 - Solo se acepta la parrilla canónica de GatoTV (`tbl_EPG_row`).
 - Inicio/fin: `tbl_EPG_TimesColumn*`; título: `div_program_title_on_channel`.
 - No se seleccionan tablas por cantidad de filas y no se mezcla texto aplanado/relojes auxiliares.
-- Para STAR TVE la vista canónica 24 h tiene prioridad y se convierte `Atlantic/Canary` -> `America/Guayaquil` con `ZoneInfo`; la vista AM/PM queda únicamente como respaldo.
-- No existe offset manual.
-- Referencia real 14-08-2026: Un país para reírlo 20:45–21:45 -> 14:45–15:45 Guayaquil.
-- Revisión del parser publicada en latam-status.json: canonical-24h-primary-r2.
+- La vista canónica 24 h tiene prioridad y se convierte `Atlantic/Canary` -> `America/Guayaquil` con `ZoneInfo`; AM/PM queda únicamente como respaldo.
+- Después de normalizar a Guayaquil se aplica una corrección regional exclusiva de -120 minutos a `TVEStarHD.es`.
+- La corrección regional no altera la zona horaria de Ecuador ni afecta a los demás canales GatoTV.
+- Referencia de regresión: Un país para reírlo 20:45–21:45 fuente -> 14:45–15:45 tras zona -> 12:45–13:45 tras corrección regional.
+- Revisión del parser publicada en latam-status.json: canonical-24h-primary-r3-regional-minus120.
+- `latam-status.json` publica además `star_tve_regional_shift_minutes=-120`.
 - GitHub Actions imprime VERSION y SHA-256 de scripts/build_latam_epg.py para verificar el código realmente desplegado.
 
 STAR TVE v0.2.8:
