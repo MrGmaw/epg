@@ -67,11 +67,13 @@ MAKRODIGITAL_WEBSITE = "https://makrodigitaltelevision.com/"
 MAKRODIGITAL_ID = "MakroDigitalTV.ec"
 MAKRODIGITAL_SOURCE_TIMEZONE = "America/New_York"
 # GatoTV entrega para STAR TVE el reloj de origen en notación 24 h o AM/PM
-# según la respuesta. El 13-08-2026, 16:00 de ese reloj correspondió a una
-# emisión comprobada en Ecuador a las 10:00. Ambas notaciones se interpretan
-# con esta zona IANA y se convierten a America/Guayaquil, sin offset manual.
+# según la respuesta. Primero se normaliza a America/Guayaquil. Desde v0.2.14
+# se aplica después una corrección exclusiva de ventana regional de -120 min,
+# basada en la comparación de la EPG publicada con la señal real en Ecuador.
+# No es un cambio de la zona horaria de Guayaquil ni afecta a otros canales.
 STAR_GATOTV_SOURCE_TIMEZONE = "Atlantic/Canary"
-STAR_TVE_PARSER_REVISION = "canonical-24h-primary-r2"
+STAR_TVE_REGIONAL_SHIFT_MINUTES = -120
+STAR_TVE_PARSER_REVISION = "canonical-24h-primary-r3-regional-minus120"
 TVE_ID = "Canal.TVE.Internacional.(Televisión.Española).ec"
 TVE_MITV_COUNTRY = "co"
 TVE_MITV_SLUG = "tve"
@@ -998,6 +1000,8 @@ def _convert_gatotv_rows(
     guide_date: date,
     channel_id: str,
     clock_timezone: ZoneInfo,
+    *,
+    regional_shift_minutes: int = 0,
 ) -> list[epg.Programme]:
     """Convierte el reloj de una tabla GatoTV a ``America/Guayaquil``."""
 
@@ -1017,6 +1021,15 @@ def _convert_gatotv_rows(
         source_stop = datetime.combine(stop_day, stop_clock, tzinfo=clock_timezone)
         start = source_start.astimezone(epg.TZ)
         stop = source_stop.astimezone(epg.TZ)
+
+        # STAR TVE: corrección de la ventana regional observada en la señal
+        # disponible en Ecuador. Se aplica DESPUÉS de la conversión IANA a
+        # America/Guayaquil, por lo que no altera la zona horaria del país.
+        if regional_shift_minutes:
+            regional_shift = timedelta(minutes=regional_shift_minutes)
+            start += regional_shift
+            stop += regional_shift
+
         if stop <= start:
             continue
         programmes.append(
@@ -1097,7 +1110,8 @@ def parse_gatotv_page(
             f"GatoTV {channel_id} {guide_date.isoformat()}: "
             f"parser={STAR_TVE_PARSER_REVISION}; "
             f"canónica 24h={len(rows_24h)}; AM/PM={len(rows_ampm)}; "
-            f"seleccion={clock_format}; zona={selected_zone}."
+            f"seleccion={clock_format}; zona={selected_zone}; "
+            f"ajuste_regional={STAR_TVE_REGIONAL_SHIFT_MINUTES}min."
         )
     else:
         candidates: list[
@@ -1125,11 +1139,17 @@ def parse_gatotv_page(
             clock_timezone = epg.TZ
         rows, _meridiem_rows = selected
 
+    regional_shift_minutes = (
+        STAR_TVE_REGIONAL_SHIFT_MINUTES
+        if channel_id == "TVEStarHD.es" and source_timezone is not None
+        else 0
+    )
     result = _convert_gatotv_rows(
         rows,
         guide_date,
         channel_id,
         clock_timezone,
+        regional_shift_minutes=regional_shift_minutes,
     )
     if len(result) < 5:
         raise RuntimeError(
@@ -1969,6 +1989,7 @@ def build_latam(
             for config in GATOTV_CHANNELS
         },
         "star_tve_parser_revision": STAR_TVE_PARSER_REVISION,
+        "star_tve_regional_shift_minutes": STAR_TVE_REGIONAL_SHIFT_MINUTES,
         "makrodigital": {
             "source": MAKRODIGITAL_URL,
             "source_timezone": MAKRODIGITAL_SOURCE_TIMEZONE,
@@ -2138,7 +2159,7 @@ def self_test() -> None:
 
     # STAR TVE v0.2.11: usar exclusivamente la tabla canónica de GatoTV.
     # La referencia real del 14-08-2026 muestra Un país para reírlo
-    # 20:45-21:45 en el reloj fuente, que debe quedar 14:45-15:45 Guayaquil.
+    # 20:45-21:45 en el reloj fuente; tras normalización y ajuste regional debe quedar 12:45-13:45 Guayaquil.
     star_config = next(
         config for config in GATOTV_CHANNELS if config.channel_id == "TVEStarHD.es"
     )
@@ -2210,8 +2231,8 @@ def self_test() -> None:
     )
     assert len(star_programmes) == 5
     un_pais = next(item for item in star_programmes if item.title == "Un país para reírlo")
-    assert un_pais.start.isoformat() == "2026-08-14T14:45:00-05:00"
-    assert un_pais.stop.isoformat() == "2026-08-14T15:45:00-05:00"
+    assert un_pais.start.isoformat() == "2026-08-14T12:45:00-05:00"
+    assert un_pais.stop.isoformat() == "2026-08-14T13:45:00-05:00"
     assert all("señuelo" not in normalized(item.title) for item in star_programmes)
 
     # Si la vista AM/PM no aparece, la canónica 24 h sigue siendo un respaldo
@@ -2232,8 +2253,8 @@ def self_test() -> None:
     fallback_un_pais = next(
         item for item in star_24h_programmes if item.title == "Un país para reírlo"
     )
-    assert fallback_un_pais.start.isoformat() == "2026-08-14T14:45:00-05:00"
-    assert fallback_un_pais.stop.isoformat() == "2026-08-14T15:45:00-05:00"
+    assert fallback_un_pais.start.isoformat() == "2026-08-14T12:45:00-05:00"
+    assert fallback_un_pais.stop.isoformat() == "2026-08-14T13:45:00-05:00"
 
     # MakroDigital publica una parrilla semanal en horario NEW YORK. Se prueba
     # la conversión DST-aware a Guayaquil y la reparación del rango anómalo
