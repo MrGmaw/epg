@@ -1,15 +1,15 @@
 {
   "version": "0.2.23",
-  "generated_at": "2026-08-15T04:40:30.720419-05:00",
+  "generated_at": "2026-08-15T16:35:07.522385-05:00",
   "source_commit": "298fec181aedcbbc60d84d8fe88926ae26d099b2",
-  "github_run_id": "31877537937",
+  "github_run_id": "31909791475",
   "github_run_attempt": "1",
   "base_date": "2026-08-15",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 27,
-  "programmes": 2547,
+  "programmes": 2524,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 53,
     "Canal.Gamavisión.ec": 26,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 204,
     "TeleamazonasGuayaquil.ec": 204,
     "Ecuavisa.ec": 30,
-    "EcuavisaInternacional.ec": 65,
+    "EcuavisaInternacional.ec": 63,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 65,
     "NTN24.co": 49,
@@ -28,14 +28,14 @@
     "Canal.History.co": 59,
     "Canal.History.2.co": 58,
     "TV.Publica.canal.7.ar": 39,
-    "Telefe.ar": 30,
+    "Telefe.ar": 29,
     "Deutsche.Welle.cl": 108,
     "hgtv.ar": 85,
     "France24Espanol.fr": 231,
-    "Canal24Horas.es": 142,
+    "Canal24Horas.es": 137,
     "La1.es": 70,
-    "TVEStarHD.es": 24,
-    "Clan.es": 328,
+    "TVEStarHD.es": 20,
+    "Clan.es": 317,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 65
   },
@@ -60,25 +60,25 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-08-15": 47,
-      "2026-08-16": 49,
+      "2026-08-15": 46,
+      "2026-08-16": 46,
       "2026-08-17": 29,
-      "2026-08-18": 19
+      "2026-08-18": 18
     },
     "La1.es": {
-      "2026-08-15": 18,
-      "2026-08-16": 18,
+      "2026-08-15": 19,
+      "2026-08-16": 19,
       "2026-08-17": 19,
-      "2026-08-18": 17
+      "2026-08-18": 16
     },
     "TVEStarHD.es": {
-      "2026-08-15": 24
+      "2026-08-15": 20
     },
     "Clan.es": {
-      "2026-08-15": 84,
-      "2026-08-16": 81,
+      "2026-08-15": 83,
+      "2026-08-16": 80,
       "2026-08-17": 88,
-      "2026-08-18": 78
+      "2026-08-18": 68
     }
   },
   "gatotv_source_timezones": {
