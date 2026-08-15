@@ -1608,29 +1608,93 @@ def makro_programmes_for_window(
     return result, repaired_ranges
 
 
+def makro_weekly_from_previous_latam(xml_path: Path) -> dict[int, list[MakroWeeklyItem]]:
+    """Reconstruye la semana NEW YORK desde el último latam.xml válido."""
+
+    parser = etree.XMLParser(
+        resolve_entities=False, load_dtd=False, no_network=True, recover=False, huge_tree=True
+    )
+    tree = etree.parse(str(xml_path), parser)
+    source_tz = ZoneInfo(MAKRODIGITAL_SOURCE_TIMEZONE)
+    weekly: dict[int, list[MakroWeeklyItem]] = defaultdict(list)
+
+    for node in tree.getroot().findall("programme"):
+        if node.get("channel") != MAKRODIGITAL_ID:
+            continue
+        title = epg.normalize_text(" ".join(node.xpath("./title/text()")))
+        if _is_makro_placeholder_title(title):
+            continue
+        try:
+            start = parse_xmltv_datetime(node.get("start", "")).astimezone(source_tz)
+            stop = parse_xmltv_datetime(node.get("stop", "")).astimezone(source_tz)
+        except (TypeError, ValueError):
+            continue
+        if stop <= start:
+            continue
+        weekly[start.weekday()].append(
+            MakroWeeklyItem(
+                title=title,
+                start=start.time().replace(tzinfo=None),
+                stop=stop.time().replace(tzinfo=None),
+            )
+        )
+
+    result: dict[int, list[MakroWeeklyItem]] = {}
+    for weekday in range(7):
+        deduplicated: dict[tuple[str, str], MakroWeeklyItem] = {}
+        for item in weekly.get(weekday, []):
+            deduplicated.setdefault((item.start.isoformat(), normalized(item.title)), item)
+        items = sorted(deduplicated.values(), key=lambda item: (item.start, item.title))
+        if len(items) < 5:
+            raise RuntimeError(
+                "MakroDigital: la caché latam.xml no contiene suficientes "
+                f"emisiones para el día semanal {weekday}."
+            )
+        result[weekday] = items
+    return result
+
+
 def scrape_makrodigital(
     start_date: date,
     days: int,
-) -> tuple[list[epg.Programme], dict[str, int], int]:
-    page = epg.fetch_text(
-        MAKRODIGITAL_URL,
-        headers={"Referer": MAKRODIGITAL_WEBSITE},
-    )
-    weekly = parse_makro_weekly(page)
+    previous_latam_xml: Path | None = None,
+) -> tuple[list[epg.Programme], dict[str, int], int, str]:
+    source = "official-live"
+    try:
+        page = epg.fetch_text(
+            MAKRODIGITAL_URL,
+            headers={"Referer": MAKRODIGITAL_WEBSITE},
+        )
+        if "[tt_timetable" in page:
+            epg.warn(
+                "MakroDigital: WordPress devolvió el shortcode tt_timetable; "
+                "si no hay grilla válida se usará la caché epg-data."
+            )
+        weekly = parse_makro_weekly(page)
+    except (requests.RequestException, etree.XMLSyntaxError, RuntimeError, ValueError) as exc:
+        if previous_latam_xml is None or not previous_latam_xml.is_file():
+            raise RuntimeError(
+                f"MakroDigital: la fuente oficial falló ({exc}) y no existe "
+                "latam.xml previa para respaldo."
+            ) from exc
+        epg.warn(
+            "MakroDigital: la fuente oficial no produjo una semana válida "
+            f"({exc}); usando caché previa {previous_latam_xml}."
+        )
+        weekly = makro_weekly_from_previous_latam(previous_latam_xml)
+        source = "previous-latam-cache"
+
     programmes, repaired_ranges = makro_programmes_for_window(
-        weekly,
-        start_date,
-        days,
+        weekly, start_date, days
     )
     weekly_counts = {
-        str(weekday): len(items)
-        for weekday, items in sorted(weekly.items())
+        str(weekday): len(items) for weekday, items in sorted(weekly.items())
     }
     epg.log(
         f"MakroDigital TV: {len(programmes)} emisiones locales; "
-        f"rangos reparados={repaired_ranges}."
+        f"rangos reparados={repaired_ranges}; fuente={source}."
     )
-    return programmes, weekly_counts, repaired_ranges
+    return programmes, weekly_counts, repaired_ranges, source
 
 
 def _xml_programme_interval(programme: etree._Element) -> tuple[datetime, datetime]:
@@ -1965,6 +2029,7 @@ def build_latam(
     mitv_days: int,
     gatotv_days: int,
     logos_manifest: Path | None = None,
+    previous_latam_xml: Path | None = None,
 ) -> dict[str, object]:
     start_date = datetime.now(epg.TZ).date()
     window_start = datetime.combine(start_date, time.min, tzinfo=epg.TZ)
@@ -2065,9 +2130,15 @@ def build_latam(
             MAKRODIGITAL_WEBSITE,
         )
     )
-    makro_programmes, makro_weekly_counts, makro_repaired_ranges = scrape_makrodigital(
+    (
+        makro_programmes,
+        makro_weekly_counts,
+        makro_repaired_ranges,
+        makro_source,
+    ) = scrape_makrodigital(
         start_date,
         days,
+        previous_latam_xml=previous_latam_xml,
     )
     programme_elements.extend(epg.make_programme(item) for item in makro_programmes)
 
@@ -2126,12 +2197,13 @@ def build_latam(
         "star_tve_parser_revision": STAR_TVE_PARSER_REVISION,
         "star_tve_regional_shift_minutes": STAR_TVE_REGIONAL_SHIFT_MINUTES,
         "makrodigital": {
-            "source": MAKRODIGITAL_URL,
+            "url": MAKRODIGITAL_URL,
             "source_timezone": MAKRODIGITAL_SOURCE_TIMEZONE,
             "target_timezone": "America/Guayaquil",
             "weekly_counts": makro_weekly_counts,
             "programmes": len(makro_programmes),
             "repaired_ranges": makro_repaired_ranges,
+            "mode": makro_source,
         },
         "logos_manifest": logos_manifest.name if logos_manifest is not None else None,
         "logos_available": sorted(logo_urls),
@@ -2466,9 +2538,38 @@ def self_test() -> None:
         ("Estas Secretarias", "22:30", "23:30"),
         ("Noticiero NCC Climático", "23:30", "00:00"),
     ]
+    # v0.2.16: respaldo semanal desde el último latam.xml publicado.
+    cache_root = etree.Element("tv")
+    source_tz = ZoneInfo(MAKRODIGITAL_SOURCE_TIMEZONE)
+    for weekday in range(7):
+        base_date = date(2026, 8, 10) + timedelta(days=weekday)
+        for index in range(6):
+            source_start = datetime.combine(
+                base_date, time(hour=index * 2), tzinfo=source_tz
+            )
+            source_stop = source_start + timedelta(hours=1)
+            local_start = source_start.astimezone(epg.TZ)
+            local_stop = source_stop.astimezone(epg.TZ)
+            node = etree.SubElement(
+                cache_root,
+                "programme",
+                channel=MAKRODIGITAL_ID,
+                start=local_start.strftime("%Y%m%d%H%M%S %z"),
+                stop=local_stop.strftime("%Y%m%d%H%M%S %z"),
+            )
+            etree.SubElement(node, "title", lang="es").text = f"Makro Cache {weekday}-{index}"
+    import tempfile
+    with tempfile.TemporaryDirectory() as temp_dir:
+        cache_path = Path(temp_dir) / "latam.xml"
+        etree.ElementTree(cache_root).write(
+            str(cache_path), encoding="UTF-8", xml_declaration=True
+        )
+        cached_weekly = makro_weekly_from_previous_latam(cache_path)
+        assert all(len(cached_weekly[weekday]) == 6 for weekday in range(7))
+
     print(
         "Prueba latam correcta: 27 IDs únicos; STAR TVE 24 h Canary→Guayaquil, "
-        "MakroDigital con títulos válidos y contingencia Ecuador TV validadas."
+        "MakroDigital con respaldo latam.xml y contingencia Ecuador TV validadas."
     )
 
 
@@ -2481,6 +2582,12 @@ def main() -> int:
         "--logos-manifest",
         type=Path,
         default=Path("public/logos/manifest.json"),
+    )
+    parser.add_argument(
+        "--previous-latam-xml",
+        type=Path,
+        default=Path(".cache/previous-latam.xml"),
+        help="Último latam.xml publicado para respaldo semanal de MakroDigital.",
     )
     parser.add_argument(
         "--days",
@@ -2515,6 +2622,12 @@ def main() -> int:
             "la guía se generará sin logos locales nuevos."
         )
         args.logos_manifest = None
+    if args.previous_latam_xml is not None and not args.previous_latam_xml.is_file():
+        epg.warn(
+            f"No existe la caché LATAM {args.previous_latam_xml}; "
+            "MakroDigital dependerá de la fuente oficial."
+        )
+        args.previous_latam_xml = None
 
     status = build_latam(
         source_xml=args.source_xml,
@@ -2524,6 +2637,7 @@ def main() -> int:
         mitv_days=args.mitv_days,
         gatotv_days=args.gatotv_days,
         logos_manifest=args.logos_manifest,
+        previous_latam_xml=args.previous_latam_xml,
     )
     epg.log(json.dumps(status, ensure_ascii=False, indent=2))
     epg.log(f"Guía latam generada en: {args.output.resolve()}")
