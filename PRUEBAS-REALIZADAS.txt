@@ -1,3 +1,14 @@
+EPG MrG v0.2.17 — pruebas adicionales
+
+- VERSION actualizado a 0.2.17.
+- STAR TVE: la tabla canónica 24 h de GatoTV se toma directamente como `America/Guayaquil`; AM/PM es respaldo y también se toma como hora local.
+- No se utiliza `Atlantic/Canary` para STAR TVE y `star_tve_regional_shift_minutes=0`.
+- Regresión real: `Comerse el mundo` 21:05–22:05 permanece 21:05–22:05 en el XMLTV `-0500`; `Salón de té La Moderna` permanece 22:05–23:05.
+- Se verifica el subtítulo `Tirana` asociado a `Comerse el mundo`.
+- `latam-status.json` publica `star_tve_time_mode=gatotv-direct-america-guayaquil` y `star_tve_parser_revision=canonical-gatotv-guayaquil-direct-r4`.
+- MakroDigital conserva el respaldo resiliente de v0.2.16.
+- Python: todos los scripts incluidos compilan correctamente.
+
 EPG MrG v0.2.16 — pruebas adicionales
 
 - VERSION actualizado a 0.2.16.

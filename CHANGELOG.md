@@ -1,3 +1,13 @@
+## v0.2.17 — 2026-08-14
+
+- STAR TVE (`TVEStarHD.es`) adopta una regla horaria directa: la hora visible en `https://www.gatotv.com/canal/star_tve` se escribe como `America/Guayaquil`, sin convertir desde `Atlantic/Canary` y sin desplazamiento regional.
+- Se mantiene exclusivamente la estructura canónica `tbl_EPG_row`; la vista 24 h tiene prioridad y AM/PM queda como respaldo, pero ambas se interpretan como reloj local de Guayaquil.
+- Se elimina funcionalmente la corrección regional de `-120` minutos: `star_tve_regional_shift_minutes` pasa a `0`.
+- Nueva revisión de parser: `canonical-gatotv-guayaquil-direct-r4`.
+- `latam-status.json` añade `star_tve_time_mode: gatotv-direct-america-guayaquil`.
+- Regresión validada con la referencia real del 14-08-2026: `Comerse el mundo` 21:05–22:05, seguido de `Salón de té La Moderna` 22:05–23:05.
+- MakroDigital, France 24, Ecuador TV y los demás canales no cambian respecto de v0.2.16.
+
 ## v0.2.16 — 2026-08-14
 
 - MakroDigital deja de abortar toda la EPG cuando WordPress devuelve `[tt_timetable ...]` sin la grilla renderizada.

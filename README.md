@@ -1,4 +1,4 @@
-# EPG MrG v0.2.16 para GitHub Pages
+# EPG MrG v0.2.17 para GitHub Pages
 
 Este repositorio genera y publica dos guías XMLTV en un mismo workflow y,
 además, conserva localmente los logos de los canales obtenidos desde mi.tv.
@@ -131,14 +131,16 @@ días. Si una fecha futura todavía está vacía o incompleta, se registra una
 advertencia y se conservan los días válidos del canal, sin abortar por ese día.
 
 Los canales 24 Horas, La 1 y Clan se interpretan directamente en
-`America/Guayaquil`. **STAR TVE no usa ningún offset manual.** Desde v0.2.10,
-STAR TVE lee exclusivamente la tabla canónica de GatoTV: cada emisión debe
-estar en `tbl_EPG_row`, sus dos horas en `tbl_EPG_TimesColumn*` y su título en
-`div_program_title_on_channel`. Ya no se eligen tablas por cantidad de filas ni
-se mezclan relojes auxiliares/texto aplanado. El reloj canónico, esté escrito en
-GatoTV puede incluir simultáneamente una vista AM/PM y una vista 24 h. Para STAR TVE se usa una sola representación: la vista canónica 24 h tiene prioridad, se interpreta con `Atlantic/Canary` y se convierte con `ZoneInfo` a `America/Guayaquil`; AM/PM queda solo como respaldo. Referencia verificada el 14-08-2026: `Un país para reírlo`
-20:45–21:45 en GatoTV = 14:45–15:45 Guayaquil. No existe suma/resta fija de
-minutos.
+`America/Guayaquil`. **STAR TVE también usa directamente la hora mostrada por
+GatoTV como hora de Guayaquil.** Desde v0.2.17 no existe conversión
+`Atlantic/Canary` → `America/Guayaquil` ni desplazamiento regional para
+`TVEStarHD.es`. El parser sigue leyendo exclusivamente la estructura canónica
+`tbl_EPG_row`: inicio/fin desde `tbl_EPG_TimesColumn*` y título desde
+`div_program_title_on_channel`. Si GatoTV publica simultáneamente 24 h y AM/PM,
+se usa una sola vista: 24 h tiene prioridad y AM/PM queda como respaldo; ambas
+se consideran reloj local de Guayaquil. Referencia validada contra señal real
+el 14-08-2026: `Comerse el mundo` 21:05–22:05 y `Salón de té La Moderna`
+22:05–23:05.
 
 El parser también corrige el caso en que la primera fila de una fecha corresponde
 a un programa iniciado la noche anterior y terminado después de medianoche.
@@ -286,7 +288,7 @@ Antes de publicar, el workflow verifica:
 
 - compilación Python;
 - UTC → Ecuador y cambio de fecha;
-- parser GatoTV, incluido STAR TVE con selección exclusiva de una vista canónica: prioridad 24 h convertida desde `Atlantic/Canary`, AM/PM solo como respaldo y corrección regional exclusiva de -120 min después de normalizar a Guayaquil;
+- parser GatoTV, incluido STAR TVE con selección exclusiva de una vista canónica: prioridad 24 h, AM/PM solo como respaldo y ambas tomadas directamente como `America/Guayaquil`, sin conversión ni offset;
 - tolerancia a días futuros de GatoTV todavía no publicados;
 - parser semanal MakroDigital, rechazo de títulos decorativos y conversión `America/New_York` → `America/Guayaquil`;
 - exactamente 27 canales en `latam.xml`;
@@ -314,8 +316,8 @@ la traslada por día de la semana a la nueva ventana. No se inventan títulos ni
 horarios. Si tampoco existe una caché válida, la generación falla.
 
 
-## Ajuste STAR TVE v0.2.14
+## STAR TVE v0.2.17 — hora GatoTV directa
 
-Para `TVEStarHD.es` se prioriza la tabla canónica de 24 horas de GatoTV y se convierte `Atlantic/Canary` → `America/Guayaquil`. La vista AM/PM queda únicamente como respaldo. Después de esa normalización se aplica una corrección regional exclusiva de **-120 minutos** para alinear la ventana recibida en Ecuador. No cambia la zona horaria de Guayaquil y no afecta a ningún otro canal.
+Para `TVEStarHD.es`, la hora visible en la tabla canónica de GatoTV se considera directamente `America/Guayaquil`. La vista 24 h tiene prioridad y AM/PM queda como respaldo, pero ninguna recibe conversión IANA adicional ni offset regional. La corrección `-120` de v0.2.14 queda retirada y el estado publica `star_tve_regional_shift_minutes: 0`.
 
-`latam-status.json` incluye `star_tve_parser_revision` y `star_tve_regional_shift_minutes`. GitHub Actions imprime `VERSION` y el SHA-256 de `scripts/build_latam_epg.py` antes de construir la guía, permitiendo comprobar qué revisión ejecuta realmente el runner.
+`latam-status.json` incluye `star_tve_parser_revision`, `star_tve_time_mode` y `star_tve_regional_shift_minutes`. GitHub Actions imprime `VERSION` y el SHA-256 de `scripts/build_latam_epg.py` antes de construir la guía, permitiendo comprobar qué revisión ejecuta realmente el runner.
