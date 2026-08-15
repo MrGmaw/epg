@@ -1,4 +1,4 @@
-# EPG MrG v0.2.14 para GitHub Pages
+# EPG MrG v0.2.15 para GitHub Pages
 
 Este repositorio genera y publica dos guías XMLTV en un mismo workflow y,
 además, conserva localmente los logos de los canales obtenidos desde mi.tv.
@@ -309,7 +309,7 @@ la traslada por día de la semana a la nueva ventana. No se inventan títulos ni
 horarios. Si tampoco existe una caché válida, la generación falla.
 
 
-## Ajuste STAR TVE v0.2.14
+## Ajuste STAR TVE v0.2.15
 
 Para `TVEStarHD.es` se prioriza la tabla canónica de 24 horas de GatoTV y se convierte `Atlantic/Canary` → `America/Guayaquil`. La vista AM/PM queda únicamente como respaldo. Después de esa normalización se aplica una corrección regional exclusiva de **-120 minutos** para alinear la ventana recibida en Ecuador. No cambia la zona horaria de Guayaquil y no afecta a ningún otro canal.
 

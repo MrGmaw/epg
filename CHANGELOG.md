@@ -1,3 +1,12 @@
+# Cambios
+
+## v0.2.15 — 14-08-2026
+
+- Corregido MakroDigital: la fuente principal pasa a ser la tabla semanal Lunes–Domingos publicada por `makrodigitaltelevision.com/programacion/`.
+- El parser reconstruye `rowspan`/`colspan` para que los programas largos no desplacen las columnas de los días.
+- La antigua lectura por encabezados diarios queda como respaldo.
+- Se mantiene sin cambios la corrección regional de STAR TVE de v0.2.14.
+
 # v0.2.14 — STAR TVE: corrección regional -120 min
 
 - `VERSION` pasa a `0.2.14`.
