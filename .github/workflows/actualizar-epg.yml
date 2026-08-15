@@ -1,6 +1,10 @@
 name: Actualizar EPG Ecuador y Latinoamérica
 
 on:
+  push:
+    branches:
+      - main
+
   workflow_dispatch:
 
   # Ecuador continental usa UTC-5 durante todo el año.
@@ -270,6 +274,8 @@ jobs:
           cp public/xmltv.dtd "${RAW_DIR}/xmltv.dtd"
           cp public/status.json "${RAW_DIR}/status.json"
           cp public/latam-status.json "${RAW_DIR}/latam-status.json"
+          cp VERSION "${RAW_DIR}/VERSION"
+          printf '%s\n' "${GITHUB_SHA}" > "${RAW_DIR}/source-commit.txt"
           rm -rf "${RAW_DIR}/logos"
           cp -R public/logos "${RAW_DIR}/logos"
 
@@ -288,6 +294,10 @@ jobs:
           - `latam.xml.gz`
           - `latam-status.json`
 
+          Trazabilidad de la publicación:
+          - `VERSION`: versión del código de `main` que generó estos archivos.
+          - `source-commit.txt`: SHA exacto del commit de `main` usado por GitHub Actions.
+
           Logos locales persistentes:
           - `logos/<tvg-id>.png`
           - `logos/manifest.json`
@@ -301,19 +311,43 @@ jobs:
             git add \
               ec.xml ec.xml.gz \
               latam.xml latam.xml.gz \
-              xmltv.dtd status.json latam-status.json README.md logos
+              xmltv.dtd status.json latam-status.json README.md logos \
+              VERSION source-commit.txt
 
             if git diff --cached --quiet; then
               echo "La copia Raw no tiene cambios."
               exit 0
             fi
 
-            git commit -m "Actualizar EPG Ecuador y Latinoamérica"
+            VERSION_VALUE="$(cat VERSION)"
+            SHORT_SHA="${GITHUB_SHA::7}"
+            git commit -m "Publicar EPG v${VERSION_VALUE} desde ${SHORT_SHA}"
             git push origin HEAD:epg-data
           )
 
           git worktree remove "${RAW_DIR}" --force
           rm -rf "${RAW_PARENT}"
+
+      - name: Verificar sincronización de epg-data
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch --no-tags --force origin epg-data:refs/remotes/origin/epg-data
+
+          EXPECTED_VERSION="$(cat VERSION)"
+          PUBLISHED_VERSION="$(git show origin/epg-data:VERSION | tr -d '\r\n')"
+          PUBLISHED_SHA="$(git show origin/epg-data:source-commit.txt | tr -d '\r\n')"
+
+          echo "Versión esperada: ${EXPECTED_VERSION}"
+          echo "Versión publicada: ${PUBLISHED_VERSION}"
+          echo "Commit fuente esperado: ${GITHUB_SHA}"
+          echo "Commit fuente publicado: ${PUBLISHED_SHA}"
+
+          test "${PUBLISHED_VERSION}" = "${EXPECTED_VERSION}"
+          test "${PUBLISHED_SHA}" = "${GITHUB_SHA}"
+
+          echo "epg-data sincronizada correctamente con main."
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v6
