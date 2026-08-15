@@ -1,15 +1,15 @@
 {
-  "version": "0.2.20",
-  "generated_at": "2026-08-14T22:20:30.845124-05:00",
-  "source_commit": "fa4534f4ad99a50bf1a0403c76ce563e06150bfe",
-  "github_run_id": "31861507373",
+  "version": "0.2.22",
+  "generated_at": "2026-08-14T23:03:20.257204-05:00",
+  "source_commit": "447ba785f3ca8f6218146347acb6b5503bbef02a",
+  "github_run_id": "31863390763",
   "github_run_attempt": "1",
   "base_date": "2026-08-14",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 27,
-  "programmes": 2786,
+  "programmes": 2809,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 78,
     "Canal.Gamavisión.ec": 54,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 204,
     "TeleamazonasGuayaquil.ec": 204,
     "Ecuavisa.ec": 44,
-    "EcuavisaInternacional.ec": 80,
+    "EcuavisaInternacional.ec": 82,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 55,
     "NTN24.co": 44,
@@ -32,10 +32,10 @@
     "Deutsche.Welle.cl": 97,
     "hgtv.ar": 85,
     "France24Espanol.fr": 230,
-    "Canal24Horas.es": 174,
-    "La1.es": 89,
-    "TVEStarHD.es": 49,
-    "Clan.es": 392,
+    "Canal24Horas.es": 175,
+    "La1.es": 90,
+    "TVEStarHD.es": 53,
+    "Clan.es": 407,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 84
   },
@@ -60,35 +60,35 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-08-14": 37,
-      "2026-08-15": 46,
-      "2026-08-16": 46,
+      "2026-08-14": 33,
+      "2026-08-15": 47,
+      "2026-08-16": 49,
       "2026-08-17": 29,
-      "2026-08-18": 18
+      "2026-08-18": 19
     },
     "La1.es": {
       "2026-08-14": 20,
-      "2026-08-15": 19,
-      "2026-08-16": 19,
+      "2026-08-15": 18,
+      "2026-08-16": 18,
       "2026-08-17": 19,
-      "2026-08-18": 16
+      "2026-08-18": 17
     },
     "TVEStarHD.es": {
       "2026-08-14": 29,
-      "2026-08-15": 20
+      "2026-08-15": 24
     },
     "Clan.es": {
-      "2026-08-14": 75,
-      "2026-08-15": 83,
-      "2026-08-16": 80,
+      "2026-08-14": 80,
+      "2026-08-15": 84,
+      "2026-08-16": 81,
       "2026-08-17": 88,
-      "2026-08-18": 68
+      "2026-08-18": 78
     }
   },
   "gatotv_source_timezones": {
     "Canal24Horas.es": "America/Guayaquil",
     "La1.es": "America/Guayaquil",
-    "TVEStarHD.es": "America/Guayaquil",
+    "TVEStarHD.es": "Atlantic/Canary",
     "Clan.es": "America/Guayaquil"
   },
   "gatotv_ampm_local_preferred": {
@@ -97,9 +97,10 @@
     "TVEStarHD.es": false,
     "Clan.es": false
   },
-  "star_tve_parser_revision": "canonical-gatotv-guayaquil-direct-r4",
-  "star_tve_time_mode": "gatotv-direct-america-guayaquil",
+  "star_tve_parser_revision": "dual-gatotv-view-r7",
+  "star_tve_time_mode": "24h-canary-primary-ampm-guayaquil-fallback",
   "star_tve_regional_shift_minutes": 0,
+  "star_tve_source_extra_day": true,
   "makrodigital": {
     "url": "https://makrodigitaltelevision.com/programacion/",
     "source_timezone": "America/New_York",
