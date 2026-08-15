@@ -1262,6 +1262,136 @@ def parse_makro_clock(value: str) -> time:
     raise ValueError(f"Hora MakroDigital no reconocida: {value!r}")
 
 
+def _makro_table_grid(table: Tag) -> list[list[Tag | None]]:
+    """Expande una tabla HTML respetando rowspan/colspan.
+
+    MakroDigital usa una grilla semanal donde un programa largo puede ocupar
+    varias filas mediante ``rowspan``. Si se leen solo los ``td`` presentes en
+    cada ``tr``, las columnas se desplazan y los días dejan de corresponderse.
+    Esta función reconstruye las columnas lógicas antes de interpretar la EPG.
+    """
+
+    rows: list[list[Tag | None]] = []
+    active: dict[int, tuple[int, Tag]] = {}
+
+    for tr in table.find_all("tr"):
+        cells = tr.find_all(["th", "td"], recursive=False)
+        logical: list[Tag | None] = []
+        cell_index = 0
+        column = 0
+
+        while cell_index < len(cells) or active:
+            if column in active:
+                remaining, carried = active[column]
+                logical.append(carried)
+                remaining -= 1
+                if remaining <= 0:
+                    del active[column]
+                else:
+                    active[column] = (remaining, carried)
+                column += 1
+                continue
+
+            if cell_index >= len(cells):
+                # Solo quedan rowspans en columnas posteriores. Conservamos el
+                # hueco para no desplazar las columnas lógicas.
+                next_columns = [value for value in active if value > column]
+                if not next_columns:
+                    break
+                logical.append(None)
+                column += 1
+                continue
+
+            cell = cells[cell_index]
+            cell_index += 1
+            try:
+                colspan = max(1, int(cell.get("colspan", 1)))
+            except (TypeError, ValueError):
+                colspan = 1
+            try:
+                rowspan = max(1, int(cell.get("rowspan", 1)))
+            except (TypeError, ValueError):
+                rowspan = 1
+
+            for offset in range(colspan):
+                logical.append(cell)
+                if rowspan > 1:
+                    active[column + offset] = (rowspan - 1, cell)
+            column += colspan
+
+        rows.append(logical)
+
+    return rows
+
+
+def _makro_item_from_grid_cell(cell: Tag | None) -> MakroWeeklyItem | None:
+    if cell is None:
+        return None
+    text = epg.normalize_text(cell.get_text(" ", strip=True))
+    if not text:
+        return None
+
+    clocks = list(
+        re.finditer(r"\d{1,2}(?::\d{2})?\s*(?:AM|PM)", text, re.I)
+    )
+    if len(clocks) < 2:
+        return None
+
+    # En la grilla oficial cada celda contiene título + inicio + fin. Usamos
+    # los dos últimos relojes para tolerar números que formen parte del título.
+    start_match, stop_match = clocks[-2], clocks[-1]
+    title = epg.normalize_text(text[: start_match.start()]).strip(" :-–—|")
+    if _is_makro_placeholder_title(title):
+        return None
+    try:
+        start_clock = parse_makro_clock(start_match.group(0))
+        stop_clock = parse_makro_clock(stop_match.group(0))
+    except ValueError:
+        return None
+    return MakroWeeklyItem(title=title, start=start_clock, stop=stop_clock)
+
+
+def _makro_weekly_from_grid(soup: BeautifulSoup) -> dict[int, list[MakroWeeklyItem]]:
+    """Lee la tabla semanal Lunes–Domingos publicada por MakroDigital."""
+
+    weekly: dict[int, list[MakroWeeklyItem]] = defaultdict(list)
+    for table in soup.find_all("table"):
+        grid = _makro_table_grid(table)
+        header_index: int | None = None
+        day_columns: dict[int, int] = {}
+
+        for row_index, row in enumerate(grid):
+            candidate: dict[int, int] = {}
+            for column, cell in enumerate(row):
+                if cell is None:
+                    continue
+                key = normalized(cell.get_text(" ", strip=True))
+                if key in MAKRO_WEEKDAYS:
+                    candidate[column] = MAKRO_WEEKDAYS[key]
+            # La tabla oficial tiene los siete días; cinco bastan para
+            # reconocerla sin confundirla con tablas accesorias del sitio.
+            if len(set(candidate.values())) >= 5:
+                header_index = row_index
+                day_columns = candidate
+                break
+
+        if header_index is None:
+            continue
+
+        for row in grid[header_index + 1 :]:
+            for column, weekday in day_columns.items():
+                if column >= len(row):
+                    continue
+                item = _makro_item_from_grid_cell(row[column])
+                if item is not None:
+                    weekly[weekday].append(item)
+
+        if all(len(weekly.get(day, [])) >= 5 for day in range(7)):
+            break
+
+    return weekly
+
+
 def _makro_day_headings(soup: BeautifulSoup) -> list[tuple[Tag, int]]:
     headings: list[tuple[Tag, int]] = []
     for tag in soup.find_all(["h2", "h3", "h4", "h5", "h6"]):
@@ -1308,7 +1438,12 @@ def parse_makro_weekly(page: str) -> dict[int, list[MakroWeeklyItem]]:
 
     soup = BeautifulSoup(page, "lxml")
     headings = _makro_day_headings(soup)
+    # Fuente primaria: la grilla semanal oficial Lunes–Domingos. El parser de
+    # encabezados se conserva como respaldo porque el sitio ofrece más de una
+    # representación según plantilla/dispositivo.
     weekly: dict[int, list[MakroWeeklyItem]] = defaultdict(list)
+    for weekday, items in _makro_weekly_from_grid(soup).items():
+        weekly[weekday].extend(items)
     clock_only_re = re.compile(r"^\d{1,2}(?::\d{2})?\s*(?:AM|PM)$", re.I)
 
     for heading, weekday in headings:
@@ -2255,6 +2390,25 @@ def self_test() -> None:
     )
     assert fallback_un_pais.start.isoformat() == "2026-08-14T12:45:00-05:00"
     assert fallback_un_pais.stop.isoformat() == "2026-08-14T13:45:00-05:00"
+
+    # La vista principal actual de MakroDigital es una tabla semanal con
+    # columnas y rowspans. Esta prueba reproduce esa estructura: Retro Music
+    # ocupa dos franjas del domingo, lo que no debe desplazar las columnas.
+    makro_grid_sample = """
+    <html><body><table>
+      <tr><th>Hora</th><th>Lunes</th><th>Martes</th><th>Miércoles</th><th>Jueves</th><th>Viernes</th><th>Sábados</th><th>Domingos</th></tr>
+      <tr><td>12:00 AM</td><td>MakroNoticias 12:00 AM 12:30 AM</td><td>MakroNoticias 12:00 AM 12:30 AM</td><td>MakroNoticias 12:00 AM 12:30 AM</td><td>MakroNoticias 12:00 AM 12:30 AM</td><td>MakroNoticias 12:00 AM 12:30 AM</td><td>MakroNoticias 12:00 AM 12:30 AM</td><td rowspan="2">Retro Music 12:00 AM 1:00 AM</td></tr>
+      <tr><td>12:30 AM</td><td>STV Noticias 12:30 AM 1:00 AM</td><td>STV Noticias 12:30 AM 1:00 AM</td><td>STV Noticias 12:30 AM 1:00 AM</td><td>STV Noticias 12:30 AM 1:00 AM</td><td>STV Noticias 12:30 AM 1:00 AM</td><td>STV Noticias 12:30 AM 1:00 AM</td></tr>
+      <tr><td>1:00 AM</td><td>Vis a Vis 1:00 AM 3:00 AM</td><td>Vis a Vis 1:00 AM 3:00 AM</td><td>Vis a Vis 1:00 AM 3:00 AM</td><td>Vis a Vis 1:00 AM 3:00 AM</td><td>Vis a Vis 1:00 AM 3:00 AM</td><td>Aquí y Allá 1:00 AM 1:30 AM</td><td>Vera A Su Manera 1:00 AM 2:00 AM</td></tr>
+      <tr><td>3:00 AM</td><td>Cine en Familia 3:00 AM 4:30 AM</td><td>Cine en Familia 3:00 AM 4:30 AM</td><td>Cine en Familia 3:00 AM 4:30 AM</td><td>Cine en Familia 3:00 AM 4:30 AM</td><td>Cine en Familia 3:00 AM 4:30 AM</td><td>Makro Documentales 3:00 AM 4:00 AM</td><td>Makro Documentales 3:00 AM 4:00 AM</td></tr>
+      <tr><td>6:00 AM</td><td>Nuestras Riquezas 6:00 AM 7:00 AM</td><td>Nuestras Riquezas 6:00 AM 7:00 AM</td><td>Nuestras Riquezas 6:00 AM 7:00 AM</td><td>Nuestras Riquezas 6:00 AM 7:00 AM</td><td>Nuestras Riquezas 6:00 AM 7:00 AM</td><td>Voces de la Comunidad 6:00 AM 7:00 AM</td><td>Vive Más 6:00 AM 6:30 AM</td></tr>
+      <tr><td>7:00 AM</td><td>Super Libro Clásico 7:00 AM 8:00 AM</td><td>Super Libro Clásico 7:00 AM 8:00 AM</td><td>Super Libro Clásico 7:00 AM 8:00 AM</td><td>Super Libro Clásico 7:00 AM 8:00 AM</td><td>Super Libro Clásico 7:00 AM 8:00 AM</td><td>Super Libro Clásico 7:00 AM 8:00 AM</td><td>Super Libro Clásico 7:00 AM 8:00 AM</td></tr>
+    </table></body></html>
+    """
+    grid_weekly = parse_makro_weekly(makro_grid_sample)
+    assert all(len(grid_weekly[weekday]) >= 5 for weekday in range(7))
+    assert any(item.title == "MakroNoticias" for item in grid_weekly[0])
+    assert any(item.title == "Retro Music" for item in grid_weekly[6])
 
     # MakroDigital publica una parrilla semanal en horario NEW YORK. Se prueba
     # la conversión DST-aware a Guayaquil y la reparación del rango anómalo
