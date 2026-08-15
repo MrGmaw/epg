@@ -104,7 +104,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p public/logos .cache
-          rm -f .cache/previous-ec.xml
+          rm -f .cache/previous-ec.xml .cache/previous-latam.xml
 
           if ! git show-ref --verify --quiet refs/remotes/origin/epg-data; then
             git fetch --no-tags origin epg-data:refs/remotes/origin/epg-data || true
@@ -123,6 +123,14 @@ jobs:
             echo "Caché de parrilla TVC restaurada desde epg-data/ec.xml."
           else
             echo "No existe ec.xml previa para respaldo de TVC."
+          fi
+
+          if git cat-file -e origin/epg-data:latam.xml 2>/dev/null; then
+            git show origin/epg-data:latam.xml > .cache/previous-latam.xml
+            test -s .cache/previous-latam.xml
+            echo "Caché de parrilla MakroDigital restaurada desde epg-data/latam.xml."
+          else
+            echo "No existe latam.xml previa para respaldo de MakroDigital."
           fi
 
       - name: Descargar XMLTV DTD
@@ -194,7 +202,8 @@ jobs:
             --days "${GUIDE_DAYS}" \
             --mitv-days "${MITV_LOCAL_DAYS}" \
             --gatotv-days "${GATOTV_DAYS}" \
-            --logos-manifest public/logos/manifest.json
+            --logos-manifest public/logos/manifest.json \
+            --previous-latam-xml .cache/previous-latam.xml
 
       - name: Validar archivos finales
         shell: bash
