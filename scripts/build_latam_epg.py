@@ -2162,6 +2162,12 @@ def build_latam(
     status: dict[str, object] = {
         "version": EPG_VERSION,
         "generated_at": now.isoformat(),
+        # Trazabilidad de la ejecución que produjo realmente este archivo.
+        # En GitHub Actions estas variables existen de forma nativa; en una
+        # ejecución local pueden quedar en null sin afectar la generación.
+        "source_commit": os.environ.get("GITHUB_SHA"),
+        "github_run_id": os.environ.get("GITHUB_RUN_ID"),
+        "github_run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
         "base_date": start_date.isoformat(),
         "window_days": days,
         "mitv_local_days": mitv_days,

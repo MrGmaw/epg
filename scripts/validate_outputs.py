@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import gzip
 import json
+import os
 from pathlib import Path
 
 from lxml import etree
@@ -214,6 +215,25 @@ def main() -> int:
             )
     if not status.get("generated_at") or not latam_status.get("generated_at"):
         raise RuntimeError("Falta generated_at en los archivos de estado.")
+
+    # En GitHub Actions, la salida LATAM debe demostrar que fue creada por
+    # ESTA ejecución. Esto impide publicar un latam-status.json heredado de
+    # una versión anterior aunque VERSION se haya actualizado por separado.
+    github_sha = os.environ.get("GITHUB_SHA")
+    github_run_id = os.environ.get("GITHUB_RUN_ID")
+    github_run_attempt = os.environ.get("GITHUB_RUN_ATTEMPT")
+    if github_sha and latam_status.get("source_commit") != github_sha:
+        raise RuntimeError(
+            "latam-status.json no corresponde al commit actual de GitHub Actions."
+        )
+    if github_run_id and str(latam_status.get("github_run_id")) != github_run_id:
+        raise RuntimeError(
+            "latam-status.json no corresponde al run actual de GitHub Actions."
+        )
+    if github_run_attempt and str(latam_status.get("github_run_attempt")) != github_run_attempt:
+        raise RuntimeError(
+            "latam-status.json no corresponde al intento actual de GitHub Actions."
+        )
 
     print("Validación final correcta.")
     print(f"ec.xml: {sum(ec_counts.values())} emisiones obligatorias.")
