@@ -1,0 +1,538 @@
+--- /mnt/data/epg-mrgmaw-v0.2.26/VERSION	2026-08-17 20:26:56.409778183 +0000
++++ /mnt/data/epg-mrgmaw-v0.2.27/VERSION	2026-08-17 20:37:49.341600649 +0000
+@@ -1 +1 @@
+-0.2.26
++0.2.27
+--- /mnt/data/epg-mrgmaw-v0.2.26/scripts/build_latam_resilient.py	2026-08-17 20:26:56.416452355 +0000
++++ /mnt/data/epg-mrgmaw-v0.2.27/scripts/build_latam_resilient.py	2026-08-17 20:38:43.751696315 +0000
+@@ -1,14 +1,18 @@
+ #!/usr/bin/env python3
+-"""Ejecuta build_latam_epg con respaldo exacto para STAR TVE.
++"""Ejecuta build_latam_epg con respaldo resiliente para STAR TVE.
+ 
+ La fuente primaria de STAR TVE sigue siendo GatoTV y conserva íntegra la lógica
+-horaria de build_latam_epg (AM/PM localizado en America/Guayaquil y 24 h
+-Atlantic/Canary como respaldo, sin offsets manuales).
+-
+-Si GatoTV no entrega ninguna parrilla utilizable para STAR TVE en una ejecución,
+-se reutilizan exclusivamente emisiones de TVEStarHD.es del último latam.xml
+-publicado que se solapen con las mismas fechas de la ventana actual. No se
+-proyectan días de semana, no se desplazan horas y no se inventan emisiones.
++horaria de build_latam_epg: la vista AM/PM localizada se interpreta directamente
++en America/Guayaquil y la vista 24 h queda como respaldo Atlantic/Canary ->
++America/Guayaquil mediante ZoneInfo. No existen offsets manuales.
++
++Si GatoTV no entrega ninguna parrilla utilizable, se intenta primero reutilizar
++emisiones de TVEStarHD.es de la última latam.xml que coincidan con fechas
++absolutas de la ventana vigente. Si esa intersección no es suficiente, se aplica
++el mismo principio resiliente usado por TVC: la última semana válida de
++``epg-data/latam.xml`` se agrupa por día de la semana y se proyecta únicamente
++sobre el mismo weekday, conservando hora local de Guayaquil, duración, título y
++descripción. No se desplazan horas ni se aplican correcciones manuales.
+ """
+ 
+ from __future__ import annotations
+@@ -16,6 +20,7 @@
+ import json
+ import sys
+ import tempfile
++from collections import defaultdict
+ from datetime import date, datetime, time, timedelta
+ from pathlib import Path
+ from typing import Callable
+@@ -25,9 +30,13 @@
+ import build_latam_epg as latam
+ 
+ STAR_ID = "TVEStarHD.es"
++MIN_PROGRAMMES_PER_DAY = 5
+ LAST_SOURCE_MODE: str | None = None
+ LAST_LIVE_ERROR: str | None = None
+ LAST_CACHE_PROGRAMMES = 0
++LAST_CACHE_DAYS = 0
++LAST_CACHE_EXACT_DAYS = 0
++LAST_CACHE_WEEKLY_DAYS = 0
+ 
+ 
+ def _arg_path(argv: list[str], name: str, default: Path) -> Path:
+@@ -54,12 +63,9 @@
+     return " — ".join(values) or None
+ 
+ 
+-def star_from_previous_latam(
++def _load_cached_star_entries(
+     xml_path: Path,
+-    start_date: date,
+-    days: int,
+-) -> tuple[list[latam.epg.Programme], int, dict[str, int]]:
+-    """Extrae STAR TVE del cache usando fechas absolutas, sin reproyección."""
++) -> list[tuple[datetime, timedelta, str, str | None]]:
+     if not xml_path.is_file() or xml_path.stat().st_size == 0:
+         raise RuntimeError(f"STAR TVE: no existe caché LATAM utilizable en {xml_path}.")
+ 
+@@ -71,29 +77,47 @@
+         huge_tree=True,
+     )
+     tree = etree.parse(str(xml_path), parser)
+-    root = tree.getroot()
+-    window_start = datetime.combine(start_date, time.min, tzinfo=latam.epg.TZ)
+-    window_end = window_start + timedelta(days=days)
+-
+-    programmes: list[latam.epg.Programme] = []
+-    for node in root.xpath("./programme[@channel=$channel_id]", channel_id=STAR_ID):
++    entries: list[tuple[datetime, timedelta, str, str | None]] = []
++    for node in tree.getroot().xpath("./programme[@channel=$channel_id]", channel_id=STAR_ID):
+         try:
+             start = latam.parse_xmltv_datetime(node.get("start", ""))
+             stop = latam.parse_xmltv_datetime(node.get("stop", ""))
+         except ValueError:
+             continue
+-        if not (start < window_end and stop > window_start):
++        duration = stop - start
++        if duration <= timedelta(0) or duration > timedelta(hours=12):
+             continue
+         title = _text(node, "title")
+         if not title:
+             continue
++        entries.append((start, duration, title, _text(node, "desc")))
++    if not entries:
++        raise RuntimeError("STAR TVE: la última latam.xml no contiene emisiones utilizables.")
++    return entries
++
++
++def star_exact_from_previous_latam(
++    xml_path: Path,
++    start_date: date,
++    days: int,
++) -> tuple[list[latam.epg.Programme], int, dict[str, int]]:
++    """Extrae STAR TVE usando únicamente fechas absolutas ya publicadas."""
++    entries = _load_cached_star_entries(xml_path)
++    window_start = datetime.combine(start_date, time.min, tzinfo=latam.epg.TZ)
++    window_end = window_start + timedelta(days=days)
++
++    programmes: list[latam.epg.Programme] = []
++    for start, duration, title, description in entries:
++        stop = start + duration
++        if not (start < window_end and stop > window_start):
++            continue
+         programmes.append(
+             latam.epg.Programme(
+                 channel_id=STAR_ID,
+                 start=start,
+                 stop=stop,
+                 title=title,
+-                description=_text(node, "desc"),
++                description=description,
+             )
+         )
+ 
+@@ -105,11 +129,8 @@
+             latam.normalized(programme.title),
+         )
+         deduplicated.setdefault(key, programme)
+-    result = sorted(
+-        deduplicated.values(),
+-        key=lambda item: (item.start, item.stop, item.title),
+-    )
+-    if len(result) < 5:
++    result = sorted(deduplicated.values(), key=lambda item: (item.start, item.stop, item.title))
++    if len(result) < MIN_PROGRAMMES_PER_DAY:
+         raise RuntimeError(
+             "STAR TVE: la última latam.xml no contiene al menos 5 emisiones "
+             "exactas dentro de la ventana vigente."
+@@ -119,16 +140,172 @@
+     for programme in result:
+         day_key = programme.start.astimezone(latam.epg.TZ).date().isoformat()
+         daily_counts[day_key] = daily_counts.get(day_key, 0) + 1
+-    loaded_days = len(daily_counts)
+-    return result, loaded_days, daily_counts
++    return result, len(daily_counts), daily_counts
++
++
++def star_weekly_from_previous_latam(
++    xml_path: Path,
++    start_date: date,
++    days: int,
++) -> tuple[list[latam.epg.Programme], int, dict[str, int]]:
++    """Proyecta la última semana STAR al mismo día semanal, como TVC.
++
++    La caché ya está expresada en America/Guayaquil. Por eso se conserva el reloj
++    local (hora/minuto/segundo) y la duración; solo cambia la fecha al mismo
++    weekday de la ventana nueva.
++    """
++    entries = _load_cached_star_entries(xml_path)
++    by_weekday: dict[int, list[tuple[datetime, timedelta, str, str | None]]] = defaultdict(list)
++    for entry in entries:
++        by_weekday[entry[0].astimezone(latam.epg.TZ).weekday()].append(entry)
++
++    # Si la caché contiene varias semanas, usar para cada weekday la ocurrencia
++    # más reciente de cada combinación hora+título. Esto evita mezclar duplicados
++    # históricos y mantiene la parrilla publicada más nueva disponible.
++    normalized_weekly: dict[int, list[tuple[datetime, timedelta, str, str | None]]] = {}
++    for weekday in range(7):
++        candidates = sorted(by_weekday.get(weekday, []), key=lambda item: item[0], reverse=True)
++        dedup: dict[tuple[int, int, int, str], tuple[datetime, timedelta, str, str | None]] = {}
++        for entry in candidates:
++            old_start, duration, title, description = entry
++            local_start = old_start.astimezone(latam.epg.TZ)
++            key = (
++                local_start.hour,
++                local_start.minute,
++                local_start.second,
++                latam.normalized(title),
++            )
++            dedup.setdefault(key, entry)
++        normalized_weekly[weekday] = sorted(
++            dedup.values(),
++            key=lambda item: item[0].astimezone(latam.epg.TZ).time(),
++        )
++
++    programmes: list[latam.epg.Programme] = []
++    daily_counts: dict[str, int] = {}
++    for offset in range(days):
++        guide_date = start_date + timedelta(days=offset)
++        source_entries = normalized_weekly.get(guide_date.weekday(), [])
++        if len(source_entries) < MIN_PROGRAMMES_PER_DAY:
++            raise RuntimeError(
++                "STAR TVE: la caché semanal no contiene una parrilla suficiente para "
++                f"weekday={guide_date.weekday()} ({len(source_entries)} emisiones)."
++            )
++        day_programmes: list[latam.epg.Programme] = []
++        for old_start, duration, title, description in source_entries:
++            local_old_start = old_start.astimezone(latam.epg.TZ)
++            start = datetime.combine(
++                guide_date,
++                local_old_start.timetz().replace(tzinfo=None),
++                tzinfo=latam.epg.TZ,
++            )
++            stop = start + duration
++            day_programmes.append(
++                latam.epg.Programme(
++                    channel_id=STAR_ID,
++                    start=start,
++                    stop=stop,
++                    title=title,
++                    description=description,
++                )
++            )
++        day_programmes.sort(key=lambda item: (item.start, item.stop, item.title))
++        programmes.extend(day_programmes)
++        daily_counts[guide_date.isoformat()] = len(day_programmes)
++
++    if len(programmes) < max(MIN_PROGRAMMES_PER_DAY, days * MIN_PROGRAMMES_PER_DAY):
++        raise RuntimeError("STAR TVE: la caché semanal no produjo programación suficiente.")
++    return programmes, len(daily_counts), daily_counts
++
++
++def star_hybrid_from_previous_latam(
++    xml_path: Path,
++    start_date: date,
++    days: int,
++) -> tuple[list[latam.epg.Programme], int, dict[str, int], int, int]:
++    """Conserva días exactos y completa solo faltantes por el mismo weekday."""
++    entries = _load_cached_star_entries(xml_path)
++    exact_by_date: dict[date, list[tuple[datetime, timedelta, str, str | None]]] = defaultdict(list)
++    by_weekday: dict[int, list[tuple[datetime, timedelta, str, str | None]]] = defaultdict(list)
++    for entry in entries:
++        local_start = entry[0].astimezone(latam.epg.TZ)
++        exact_by_date[local_start.date()].append(entry)
++        by_weekday[local_start.weekday()].append(entry)
++
++    # Para el respaldo semanal se conserva la misma selección que TVC: entradas
++    # válidas agrupadas por weekday, deduplicadas por reloj local+título.
++    weekly: dict[int, list[tuple[datetime, timedelta, str, str | None]]] = {}
++    for weekday in range(7):
++        candidates = sorted(by_weekday.get(weekday, []), key=lambda item: item[0], reverse=True)
++        dedup: dict[tuple[int, int, int, str], tuple[datetime, timedelta, str, str | None]] = {}
++        for entry in candidates:
++            old_start, duration, title, description = entry
++            local_start = old_start.astimezone(latam.epg.TZ)
++            key = (local_start.hour, local_start.minute, local_start.second, latam.normalized(title))
++            dedup.setdefault(key, entry)
++        weekly[weekday] = sorted(
++            dedup.values(),
++            key=lambda item: item[0].astimezone(latam.epg.TZ).time(),
++        )
++
++    programmes: list[latam.epg.Programme] = []
++    daily_counts: dict[str, int] = {}
++    exact_days = 0
++    weekly_days = 0
++    for offset in range(days):
++        guide_date = start_date + timedelta(days=offset)
++        exact_entries = sorted(exact_by_date.get(guide_date, []), key=lambda item: item[0])
++        if len(exact_entries) >= MIN_PROGRAMMES_PER_DAY:
++            source_entries = exact_entries
++            use_exact = True
++        else:
++            source_entries = weekly.get(guide_date.weekday(), [])
++            use_exact = False
++            if len(source_entries) < MIN_PROGRAMMES_PER_DAY:
++                raise RuntimeError(
++                    "STAR TVE: la caché no contiene una parrilla suficiente para "
++                    f"{guide_date.isoformat()} (exactas={len(exact_entries)}, "
++                    f"weekday={len(source_entries)})."
++                )
++
++        day_programmes: list[latam.epg.Programme] = []
++        for old_start, duration, title, description in source_entries:
++            if use_exact:
++                start = old_start.astimezone(latam.epg.TZ)
++            else:
++                local_old_start = old_start.astimezone(latam.epg.TZ)
++                start = datetime.combine(
++                    guide_date,
++                    local_old_start.timetz().replace(tzinfo=None),
++                    tzinfo=latam.epg.TZ,
++                )
++            stop = start + duration
++            day_programmes.append(
++                latam.epg.Programme(
++                    channel_id=STAR_ID,
++                    start=start,
++                    stop=stop,
++                    title=title,
++                    description=description,
++                )
++            )
++        day_programmes.sort(key=lambda item: (item.start, item.stop, item.title))
++        programmes.extend(day_programmes)
++        daily_counts[guide_date.isoformat()] = len(day_programmes)
++        if use_exact:
++            exact_days += 1
++        else:
++            weekly_days += 1
++
++    if len(programmes) < max(MIN_PROGRAMMES_PER_DAY, days * MIN_PROGRAMMES_PER_DAY):
++        raise RuntimeError("STAR TVE: la caché híbrida no produjo programación suficiente.")
++    return programmes, len(daily_counts), daily_counts, exact_days, weekly_days
+ 
+ 
+-def make_resilient_scraper(
+-    original: Callable,
+-    previous_latam_xml: Path,
+-) -> Callable:
++def make_resilient_scraper(original: Callable, previous_latam_xml: Path) -> Callable:
+     def resilient(config, start_date: date, days: int):
+-        global LAST_SOURCE_MODE, LAST_LIVE_ERROR, LAST_CACHE_PROGRAMMES
++        global LAST_SOURCE_MODE, LAST_LIVE_ERROR, LAST_CACHE_PROGRAMMES, LAST_CACHE_DAYS
++        global LAST_CACHE_EXACT_DAYS, LAST_CACHE_WEEKLY_DAYS
+         if config.channel_id != STAR_ID:
+             return original(config, start_date, days)
+         try:
+@@ -136,37 +313,49 @@
+             LAST_SOURCE_MODE = "gatotv-live"
+             LAST_LIVE_ERROR = None
+             LAST_CACHE_PROGRAMMES = 0
++            LAST_CACHE_DAYS = 0
++            LAST_CACHE_EXACT_DAYS = 0
++            LAST_CACHE_WEEKLY_DAYS = 0
+             return result
+         except RuntimeError as exc:
+             LAST_LIVE_ERROR = str(exc)
+             latam.epg.warn(
+                 "STAR TVE: GatoTV no entregó una parrilla utilizable; "
+-                "se probará la última latam.xml publicada sin mover fechas ni horas. "
++                "se probará epg-data conservando fechas exactas y completando "
++                "solo los días faltantes por el mismo día de la semana. "
+                 f"Detalle: {exc}"
+             )
+-            try:
+-                programmes, loaded_days, daily_counts = star_from_previous_latam(
+-                    previous_latam_xml,
+-                    start_date,
+-                    days,
+-                )
+-            except (OSError, etree.XMLSyntaxError, RuntimeError, ValueError) as cache_exc:
+-                raise RuntimeError(
+-                    "STAR TVE: falló GatoTV y tampoco existe una copia exacta suficiente "
+-                    f"en epg-data. GatoTV: {exc}; caché: {cache_exc}"
+-                ) from cache_exc
+-            LAST_SOURCE_MODE = "epg-data-exact-cache"
+-            LAST_CACHE_PROGRAMMES = len(programmes)
+-            latam.epg.log(
+-                "STAR TVE: respaldo exacto desde epg-data activado: "
+-                f"{len(programmes)} emisiones en {loaded_days} día(s); "
+-                "reproyección=NO; ajuste_manual=0min."
++
++        try:
++            programmes, loaded_days, daily_counts, exact_days, weekly_days = (
++                star_hybrid_from_previous_latam(previous_latam_xml, start_date, days)
+             )
+-            return programmes, loaded_days, daily_counts
++        except (OSError, etree.XMLSyntaxError, RuntimeError, ValueError) as cache_exc:
++            raise RuntimeError(
++                "STAR TVE: falló GatoTV y tampoco existe una caché exacta/semanal "
++                f"suficiente en epg-data. GatoTV: {LAST_LIVE_ERROR}; caché: {cache_exc}"
++            ) from cache_exc
++
++        LAST_CACHE_PROGRAMMES = len(programmes)
++        LAST_CACHE_DAYS = loaded_days
++        LAST_CACHE_EXACT_DAYS = exact_days
++        LAST_CACHE_WEEKLY_DAYS = weekly_days
++        if weekly_days == 0:
++            LAST_SOURCE_MODE = "epg-data-exact-cache"
++        elif exact_days == 0:
++            LAST_SOURCE_MODE = "epg-data-weekly-cache"
++        else:
++            LAST_SOURCE_MODE = "epg-data-exact-plus-weekly-cache"
++        latam.epg.log(
++            "STAR TVE: respaldo tipo TVC desde epg-data activado: "
++            f"{len(programmes)} emisiones en {loaded_days} día(s); "
++            f"días_exactos={exact_days}; días_weekday={weekly_days}; "
++            "reloj_local=America/Guayaquil; ajuste_manual=0min."
++        )
++        return programmes, loaded_days, daily_counts
+ 
+     return resilient
+ 
+-
+ def _record_status(output_dir: Path) -> None:
+     status_path = output_dir / "latam-status.json"
+     if not status_path.is_file() or LAST_SOURCE_MODE is None:
+@@ -176,11 +365,17 @@
+     except (OSError, json.JSONDecodeError):
+         return
+     status["star_tve_source_mode"] = LAST_SOURCE_MODE
+-    status["star_tve_cache_policy"] = "exact-dates-only-no-reprojection"
+-    if LAST_SOURCE_MODE == "epg-data-exact-cache":
++    status["star_tve_cache_policy"] = (
++        "gatotv-live -> exact-dates -> weekly-same-weekday-local-clock"
++    )
++    if LAST_SOURCE_MODE.startswith("epg-data-"):
+         status["star_tve_fallback"] = "epg-data/latam.xml"
+         status["star_tve_cache_programmes"] = LAST_CACHE_PROGRAMMES
++        status["star_tve_cache_days"] = LAST_CACHE_DAYS
++        status["star_tve_cache_exact_days"] = LAST_CACHE_EXACT_DAYS
++        status["star_tve_cache_weekly_days"] = LAST_CACHE_WEEKLY_DAYS
+         status["star_tve_gatotv_error"] = LAST_LIVE_ERROR
++        status["star_tve_cache_manual_offset_minutes"] = 0
+     status_path.write_text(
+         json.dumps(status, ensure_ascii=False, indent=2) + "\n",
+         encoding="utf-8",
+@@ -190,41 +385,57 @@
+ 
+ def self_test() -> None:
+     root = etree.Element("tv")
+-    base = datetime(2026, 8, 17, 0, 0, tzinfo=latam.epg.TZ)
+-    for index in range(6):
+-        start = base + timedelta(hours=index * 3)
+-        stop = start + timedelta(hours=1)
+-        node = etree.SubElement(
+-            root,
+-            "programme",
+-            channel=STAR_ID,
+-            start=start.strftime("%Y%m%d%H%M%S %z"),
+-            stop=stop.strftime("%Y%m%d%H%M%S %z"),
+-        )
+-        etree.SubElement(node, "title", lang="es").text = f"STAR cache {index}"
+-    # Emisión fuera de la ventana: debe ignorarse y jamás trasladarse.
+-    outside = etree.SubElement(
+-        root,
+-        "programme",
+-        channel=STAR_ID,
+-        start="20260825000000 -0500",
+-        stop="20260825010000 -0500",
+-    )
+-    etree.SubElement(outside, "title", lang="es").text = "NO trasladar"
++    base = date(2026, 8, 3)  # lunes, semana completa anterior
++    for offset in range(7):
++        guide_date = base + timedelta(days=offset)
++        for item in range(5):
++            start = datetime(
++                guide_date.year,
++                guide_date.month,
++                guide_date.day,
++                6 + item,
++                item,
++                tzinfo=latam.epg.TZ,
++            )
++            stop = start + timedelta(minutes=55 + item)
++            node = etree.SubElement(
++                root,
++                "programme",
++                channel=STAR_ID,
++                start=start.strftime("%Y%m%d%H%M%S %z"),
++                stop=stop.strftime("%Y%m%d%H%M%S %z"),
++            )
++            etree.SubElement(node, "title", lang="es").text = f"STAR prueba {offset}-{item}"
+ 
+     with tempfile.TemporaryDirectory() as temp_dir:
+         path = Path(temp_dir) / "previous-latam.xml"
+         etree.ElementTree(root).write(str(path), encoding="UTF-8", xml_declaration=True)
+-        programmes, loaded_days, daily_counts = star_from_previous_latam(
+-            path,
+-            date(2026, 8, 17),
+-            7,
++
++        # Semana siguiente: no hay fechas exactas; deben proyectarse 7 weekdays.
++        target = date(2026, 8, 10)
++        programmes, loaded_days, counts, exact_days, weekly_days = (
++            star_hybrid_from_previous_latam(path, target, 7)
+         )
+-        assert len(programmes) == 6
+-        assert loaded_days == 1
+-        assert daily_counts == {"2026-08-17": 6}
+-        assert programmes[0].start.isoformat() == "2026-08-17T00:00:00-05:00"
+-        assert all(item.title != "NO trasladar" for item in programmes)
++        assert len(programmes) == 35
++        assert loaded_days == 7
++        assert set(counts.values()) == {5}
++        assert exact_days == 0 and weekly_days == 7
++        assert programmes[0].start.date() == target
++        assert programmes[0].start.hour == 6
++        assert programmes[0].start.minute == 0
++        assert programmes[0].title == "STAR prueba 0-0"
++        assert programmes[0].stop - programmes[0].start == timedelta(minutes=55)
++
++        # Ventana solapada: jueves-domingo deben conservar fechas exactas y solo
++        # lunes-miércoles deben completarse por weekday.
++        overlap_target = date(2026, 8, 6)
++        mixed, mixed_days, mixed_counts, mixed_exact, mixed_weekly = (
++            star_hybrid_from_previous_latam(path, overlap_target, 7)
++        )
++        assert len(mixed) == 35 and mixed_days == 7
++        assert set(mixed_counts.values()) == {5}
++        assert mixed_exact == 4 and mixed_weekly == 3
++        assert mixed[0].start.date() == overlap_target
+ 
+         calls = 0
+         def failing_original(config, start_date, days):
+@@ -234,29 +445,22 @@
+ 
+         fake_config = type("Config", (), {"channel_id": STAR_ID})()
+         resilient = make_resilient_scraper(failing_original, path)
+-        fallback, fallback_days, fallback_counts = resilient(
+-            fake_config,
+-            date(2026, 8, 17),
+-            7,
+-        )
++        fallback, fallback_days, fallback_counts = resilient(fake_config, target, 7)
+         assert calls == 1
+-        assert len(fallback) == 6
+-        assert fallback_days == 1
+-        assert fallback_counts == {"2026-08-17": 6}
+-        assert LAST_SOURCE_MODE == "epg-data-exact-cache"
++        assert len(fallback) == 35
++        assert fallback_days == 7
++        assert set(fallback_counts.values()) == {5}
++        assert LAST_SOURCE_MODE == "epg-data-weekly-cache"
+ 
+     print(
+-        "Prueba STAR resiliente correcta: GatoTV primario; cache epg-data exacta, "
+-        "sin reproyección de fechas ni offsets manuales."
++        "Prueba STAR resiliente correcta: GatoTV primario; caché exacta cuando "
++        "existe y respaldo semanal tipo TVC solo para días faltantes; "
++        "reloj Guayaquil y 0 offsets."
+     )
+ 
+-
+ def main() -> int:
+     previous = _previous_latam(sys.argv[1:])
+-    latam.scrape_gatotv_channel = make_resilient_scraper(
+-        latam.scrape_gatotv_channel,
+-        previous,
+-    )
++    latam.scrape_gatotv_channel = make_resilient_scraper(latam.scrape_gatotv_channel, previous)
+     result = latam.main()
+     if result == 0:
+         _record_status(_output_dir(sys.argv[1:]))
