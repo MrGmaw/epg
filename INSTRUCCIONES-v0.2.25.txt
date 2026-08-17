@@ -1,0 +1,23 @@
+EPG MrG v0.2.25 - actualización sobre v0.2.24
+================================================
+
+Este ZIP es incremental sobre la v0.2.24 que acabas de ejecutar.
+
+Para aplicarlo:
+1. Copiar el contenido del ZIP en la raíz del repositorio actual.
+2. Reemplazar VERSION, scripts/build_epg.py y scripts/tc_resilient.py.
+3. No borrar los demás archivos del repositorio.
+4. Subir los cambios a GitHub.
+5. Ejecutar el workflow "Actualizar EPG".
+
+Resultado esperado en el caso actual:
+- TC puede permanecer en EPGShare/GatoTV según disponibilidad.
+- Si Gamavisión está vacío en EPGShare, se activa GatoTV /canal/gamavision.
+- Si RTS también está vacío, se activa GatoTV /canal/rts sin esperar a que el
+  workflow falle una tercera vez.
+- Ecuador TV y Ecuavisa nacional quedan protegidos por la misma política para
+  evitar el siguiente fallo secuencial.
+- La caché epg-data es el tercer nivel y no se usa si GatoTV funciona.
+- Si ninguna fuente es válida, el workflow se detiene como protección.
+
+STAR TVE NO SE MODIFICA en esta versión.
