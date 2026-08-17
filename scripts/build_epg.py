@@ -7,7 +7,8 @@ capa conserva ese generador y aplica solamente:
 - corrección UTC -> America/Guayaquil para mi.tv;
 - respaldo resiliente de TVC desde la última ``ec.xml`` válida de ``epg-data``
   cuando la web oficial cambia o deja de publicar una parrilla parseable;
-- respaldo resiliente de TC Televisión: EPGShare -> GatoTV -> última
+- resiliencia para canales LATAM heredados de EPGShare: TC, Gamavisión, RTS,
+  Ecuador TV y Ecuavisa nacional usan EPGShare vigente -> GatoTV -> última
   ``epg-data/ec.xml`` válida, sin offsets manuales.
 """
 
@@ -64,14 +65,20 @@ def _record_sources(output_dir: Path) -> None:
         if tvc_resilient.LAST_SOURCE == "epg-data-cache":
             status["tvc_fallback"] = "epg-data/ec.xml"
 
-    if tc_resilient.LAST_SOURCE is not None:
-        status["tc_source_mode"] = tc_resilient.LAST_SOURCE
-        status["tc_programmes"] = tc_resilient.LAST_PROGRAMMES
-        if tc_resilient.LAST_SOURCE == "gatotv":
-            status["tc_fallback"] = tc_resilient.GATOTV_TC_BASE
-            status["tc_gatotv_days"] = tc_resilient.LAST_GATOTV_DAYS
-        elif tc_resilient.LAST_SOURCE == "epg-data-cache":
-            status["tc_fallback"] = "epg-data/ec.xml"
+    if tc_resilient.LAST_RESULTS:
+        # Objeto único para todos los canales que dependen de EPGShare en LATAM.
+        status["epgshare_resilient_channels"] = tc_resilient.LAST_RESULTS
+
+        # Compatibilidad con los campos introducidos en v0.2.24 para TC.
+        tc = tc_resilient.LAST_RESULTS.get(tc_resilient.TC_ID)
+        if tc:
+            status["tc_source_mode"] = tc.get("source")
+            status["tc_programmes"] = tc.get("programmes")
+            if tc.get("source") == "gatotv":
+                status["tc_fallback"] = tc.get("gatotv")
+                status["tc_gatotv_days"] = tc.get("gatotv_days")
+            elif tc.get("source") == "epg-data-cache":
+                status["tc_fallback"] = "epg-data/ec.xml"
 
     status_path.write_text(
         json.dumps(status, ensure_ascii=False, indent=2) + "\n",
@@ -85,14 +92,23 @@ def main() -> int:
     epg.parse_mitv_page = parse_mitv_page_utc
 
     cache_xml = Path(os.environ.get("TVC_CACHE_XML", ".cache/previous-ec.xml"))
+    guide_days = _guide_days(sys.argv[1:])
 
-    # TC se corrige dentro de ec.xml antes de que build_latam_epg.py lo consuma.
-    # Si EPGShare ya contiene programación vigente, la guía se conserva intacta.
+    # Se reparan primero los IDs que EPGShare ya expone de forma estable.
     epg.parse_epgshare = tc_resilient.make_resilient_epgshare_parser(
         epg,
         epg.parse_epgshare,
         cache_xml,
-        _guide_days(sys.argv[1:]),
+        guide_days,
+    )
+
+    # Ecuavisa requiere un segundo punto de enganche porque el generador base
+    # normaliza uno o más IDs de EPGShare a Ecuavisa.ec después del parseo.
+    epg.normalize_ecuavisa_national = tc_resilient.make_resilient_ecuavisa_normalizer(
+        epg,
+        epg.normalize_ecuavisa_national,
+        cache_xml,
+        guide_days,
     )
 
     epg.scrape_tvc = tvc_resilient.make_resilient_tvc_scraper(
