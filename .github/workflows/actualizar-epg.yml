@@ -52,7 +52,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "VERSION=$(cat VERSION)"
-          echo "build_latam_epg.py + capa resiliente STAR:"
+          echo "build_latam_epg.py + exclusión de STAR TVE:"
           sha256sum scripts/build_latam_epg.py scripts/build_latam_resilient.py
 
 
@@ -228,7 +228,33 @@ jobs:
 
           gzip -t public/ec.xml.gz
           gzip -t public/latam.xml.gz
-          python scripts/validate_outputs.py --public public
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          from lxml import etree
+
+          sys.path.insert(0, "scripts")
+          import validate_outputs as validate
+
+          STAR_ID = "TVEStarHD.es"
+          validate.LATAM_REQUIRED = tuple(
+              channel_id for channel_id in validate.LATAM_REQUIRED if channel_id != STAR_ID
+          )
+          assert len(validate.LATAM_REQUIRED) == 26, validate.LATAM_REQUIRED
+
+          sys.argv = ["validate_outputs.py", "--public", "public"]
+          result = validate.main()
+          if result != 0:
+              raise SystemExit(result)
+
+          parser = etree.XMLParser(
+              resolve_entities=False, load_dtd=False, no_network=True, recover=False, huge_tree=True
+          )
+          root = etree.parse("public/latam.xml", parser).getroot()
+          assert not root.xpath("./channel[@id=$channel_id]", channel_id=STAR_ID)
+          assert not root.xpath("./programme[@channel=$channel_id]", channel_id=STAR_ID)
+          print("Validación adicional correcta: STAR TVE no está publicado.")
+          PY
 
           echo "Estado de la guía principal:"
           cat public/status.json
@@ -350,7 +376,7 @@ jobs:
           - `ec.xml.gz`
           - `status.json`
 
-          Guía seleccionada de 27 canales:
+          Guía seleccionada de 26 canales:
           - `latam.xml`
           - `latam.xml.gz`
           - `latam-status.json`
