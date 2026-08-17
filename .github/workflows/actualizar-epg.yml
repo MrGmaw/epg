@@ -52,8 +52,8 @@ jobs:
         run: |
           set -euo pipefail
           echo "VERSION=$(cat VERSION)"
-          echo "build_latam_epg.py:"
-          sha256sum scripts/build_latam_epg.py
+          echo "build_latam_epg.py + capa resiliente STAR:"
+          sha256sum scripts/build_latam_epg.py scripts/build_latam_resilient.py
 
 
       - name: Instalar dependencias
@@ -92,6 +92,7 @@ jobs:
             scripts/build_epg.py \
             scripts/tvc_resilient.py \
             scripts/build_latam_epg.py \
+            scripts/build_latam_resilient.py \
             scripts/mitv_logos.py \
             scripts/apply_local_logos.py \
             scripts/validate_outputs.py
@@ -161,6 +162,7 @@ jobs:
           set -euo pipefail
           python scripts/build_epg.py --self-test
           python scripts/build_latam_epg.py --self-test
+          python scripts/build_latam_resilient.py --self-test
           python scripts/mitv_logos.py --self-test
 
       - name: Construir guía principal ec.xml
@@ -199,7 +201,7 @@ jobs:
           TZ: America/Guayaquil
         run: |
           set -euo pipefail
-          python scripts/build_latam_epg.py \
+          python scripts/build_latam_resilient.py \
             --source-xml public/ec.xml \
             --output public \
             --dtd public/xmltv.dtd \
