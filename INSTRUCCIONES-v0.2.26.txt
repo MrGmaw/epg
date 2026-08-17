@@ -1,0 +1,27 @@
+EPG MrG v0.2.26 - actualización sobre v0.2.25
+================================================
+
+Este ZIP es incremental sobre la v0.2.25 actualmente instalada en main.
+
+Para aplicarlo:
+1. Copiar el contenido del ZIP en la raíz del repositorio actual.
+2. Reemplazar VERSION y .github/workflows/actualizar-epg.yml.
+3. Añadir scripts/build_latam_resilient.py.
+4. NO borrar ni reemplazar scripts/build_latam_epg.py: conserva la lógica STAR TVE v0.2.23.
+5. Subir los cambios a GitHub.
+6. Ejecutar el workflow "Actualizar EPG".
+
+Qué cambia:
+- STAR TVE sigue intentando GatoTV como fuente primaria.
+- Si GatoTV no produce una parrilla utilizable para STAR, se usa como respaldo
+  la última epg-data/latam.xml publicada.
+- El respaldo conserva exclusivamente emisiones con las MISMAS FECHAS y HORAS
+  que se solapan con la ventana actual.
+- No hay reproyección por día de semana, no hay offsets manuales y no se inventan
+  emisiones futuras.
+- Si la caché exacta tampoco tiene al menos 5 emisiones, el workflow se detiene.
+
+Qué NO cambia:
+- AM/PM de STAR sigue siendo America/Guayaquil y prioritaria.
+- 24 h sigue siendo Atlantic/Canary -> America/Guayaquil como respaldo.
+- TC/Gamavisión/RTS/Ecuador TV/Ecuavisa conservan la resiliencia de v0.2.25.
