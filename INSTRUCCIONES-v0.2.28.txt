@@ -1,0 +1,12 @@
+EPG MrG v0.2.28 - actualización incremental sobre v0.2.27
+
+1. Copiar el contenido de este ZIP sobre el repositorio actual.
+2. Reemplazar los archivos coincidentes.
+3. No borrar ningún archivo que no aparezca en este ZIP.
+4. Confirmar que VERSION contiene 0.2.28.
+5. Ejecutar normalmente el workflow "Actualizar EPG".
+
+Cambio funcional:
+STAR TVE intenta GatoTV directo y, si recibe el HTML reducido que deja 0 filas,
+reintenta la misma fuente mediante las vistas oficiales Móvil/Tablet manteniendo
+sesión/cookies. Solo después entra la caché de epg-data.
