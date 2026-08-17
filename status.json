@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-17T16:04:01.696303-05:00",
+  "generated_at": "2026-08-17T16:05:52.857191-05:00",
   "base_date": "2026-08-17",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
@@ -13,11 +13,11 @@
   "cnn_en_espanol_days": 2,
   "ntn24_days": 2,
   "channels": 95,
-  "programmes": 4968,
+  "programmes": 4961,
   "teleamazonas_quito": 208,
   "teleamazonas_guayaquil": 207,
   "ecuavisa": 43,
-  "ecuavisa_internacional": 70,
+  "ecuavisa_internacional": 68,
   "tvc": 156,
   "cnn_en_espanol": 52,
   "ntn24": 44,
@@ -26,7 +26,7 @@
     "Canal.TC.Televisión.ec": {
       "name": "TC Televisión",
       "source": "gatotv",
-      "programmes": 72,
+      "programmes": 70,
       "gatotv": "https://www.gatotv.com/canal/tc_television",
       "gatotv_days": 3
     },
@@ -40,14 +40,14 @@
     "Canal.RTS.ec": {
       "name": "RTS",
       "source": "gatotv",
-      "programmes": 60,
+      "programmes": 58,
       "gatotv": "https://www.gatotv.com/canal/rts",
       "gatotv_days": 3
     },
     "Canal.Ecuador.TV.ec": {
       "name": "Ecuador TV",
       "source": "gatotv",
-      "programmes": 66,
+      "programmes": 65,
       "gatotv": "https://www.gatotv.com/canal/ecuador_tv",
       "gatotv_days": 3
     },
@@ -60,7 +60,7 @@
     }
   },
   "tc_source_mode": "gatotv",
-  "tc_programmes": 72,
+  "tc_programmes": 70,
   "tc_fallback": "https://www.gatotv.com/canal/tc_television",
   "tc_gatotv_days": 3
 }
