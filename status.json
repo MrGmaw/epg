@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-15T16:34:27.381852-05:00",
-  "base_date": "2026-08-15",
+  "generated_at": "2026-08-17T16:04:01.696303-05:00",
+  "base_date": "2026-08-17",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
     "teleamazonas": "https://www.teleamazonas.com/programacion/",
@@ -9,17 +9,58 @@
     "cnn_en_espanol": "https://mi.tv/co/canales/cnn-en-espanol",
     "ntn24": "https://mi.tv/co/canales/nuestra-tele-noticias-24hs"
   },
-  "ecuavisa_internacional_days": 3,
+  "ecuavisa_internacional_days": 4,
   "cnn_en_espanol_days": 2,
   "ntn24_days": 2,
   "channels": 95,
-  "programmes": 8943,
-  "teleamazonas_quito": 204,
-  "teleamazonas_guayaquil": 204,
+  "programmes": 4968,
+  "teleamazonas_quito": 208,
+  "teleamazonas_guayaquil": 207,
   "ecuavisa": 43,
-  "ecuavisa_internacional": 63,
+  "ecuavisa_internacional": 70,
   "tvc": 156,
-  "cnn_en_espanol": 65,
-  "ntn24": 49,
-  "tvc_source_mode": "official"
+  "cnn_en_espanol": 52,
+  "ntn24": 44,
+  "tvc_source_mode": "official",
+  "epgshare_resilient_channels": {
+    "Canal.TC.Televisión.ec": {
+      "name": "TC Televisión",
+      "source": "gatotv",
+      "programmes": 72,
+      "gatotv": "https://www.gatotv.com/canal/tc_television",
+      "gatotv_days": 3
+    },
+    "Canal.Gamavisión.ec": {
+      "name": "Gamavisión",
+      "source": "gatotv",
+      "programmes": 78,
+      "gatotv": "https://www.gatotv.com/canal/gamavision",
+      "gatotv_days": 3
+    },
+    "Canal.RTS.ec": {
+      "name": "RTS",
+      "source": "gatotv",
+      "programmes": 60,
+      "gatotv": "https://www.gatotv.com/canal/rts",
+      "gatotv_days": 3
+    },
+    "Canal.Ecuador.TV.ec": {
+      "name": "Ecuador TV",
+      "source": "gatotv",
+      "programmes": 66,
+      "gatotv": "https://www.gatotv.com/canal/ecuador_tv",
+      "gatotv_days": 3
+    },
+    "Ecuavisa.ec": {
+      "name": "Ecuavisa",
+      "source": "gatotv",
+      "programmes": 43,
+      "gatotv": "https://www.gatotv.com/canal/ecuavisa_ecuador",
+      "gatotv_days": 3
+    }
+  },
+  "tc_source_mode": "gatotv",
+  "tc_programmes": 72,
+  "tc_fallback": "https://www.gatotv.com/canal/tc_television",
+  "tc_gatotv_days": 3
 }
