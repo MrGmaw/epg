@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-17T16:39:32.260385-05:00",
-  "base_date": "2026-08-17",
+  "generated_at": "2026-08-18T04:47:51.520151-05:00",
+  "base_date": "2026-08-18",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
     "teleamazonas": "https://www.teleamazonas.com/programacion/",
@@ -13,54 +13,42 @@
   "cnn_en_espanol_days": 2,
   "ntn24_days": 2,
   "channels": 95,
-  "programmes": 4961,
+  "programmes": 12154,
   "teleamazonas_quito": 208,
   "teleamazonas_guayaquil": 207,
-  "ecuavisa": 43,
-  "ecuavisa_internacional": 68,
+  "ecuavisa": 57,
+  "ecuavisa_internacional": 66,
   "tvc": 156,
-  "cnn_en_espanol": 52,
-  "ntn24": 44,
+  "cnn_en_espanol": 48,
+  "ntn24": 38,
   "tvc_source_mode": "official",
   "epgshare_resilient_channels": {
     "Canal.TC.Televisión.ec": {
       "name": "TC Televisión",
-      "source": "gatotv",
-      "programmes": 70,
-      "gatotv": "https://www.gatotv.com/canal/tc_television",
-      "gatotv_days": 3
+      "source": "epgshare",
+      "programmes": 65
     },
     "Canal.Gamavisión.ec": {
       "name": "Gamavisión",
-      "source": "gatotv",
-      "programmes": 78,
-      "gatotv": "https://www.gatotv.com/canal/gamavision",
-      "gatotv_days": 3
+      "source": "epgshare",
+      "programmes": 78
     },
     "Canal.RTS.ec": {
       "name": "RTS",
-      "source": "gatotv",
-      "programmes": 58,
-      "gatotv": "https://www.gatotv.com/canal/rts",
-      "gatotv_days": 3
+      "source": "epgshare",
+      "programmes": 61
     },
     "Canal.Ecuador.TV.ec": {
       "name": "Ecuador TV",
-      "source": "gatotv",
-      "programmes": 65,
-      "gatotv": "https://www.gatotv.com/canal/ecuador_tv",
-      "gatotv_days": 3
+      "source": "epgshare",
+      "programmes": 64
     },
     "Ecuavisa.ec": {
       "name": "Ecuavisa",
-      "source": "gatotv",
-      "programmes": 43,
-      "gatotv": "https://www.gatotv.com/canal/ecuavisa_ecuador",
-      "gatotv_days": 3
+      "source": "epgshare",
+      "programmes": 41
     }
   },
-  "tc_source_mode": "gatotv",
-  "tc_programmes": 70,
-  "tc_fallback": "https://www.gatotv.com/canal/tc_television",
-  "tc_gatotv_days": 3
+  "tc_source_mode": "epgshare",
+  "tc_programmes": 65
 }
