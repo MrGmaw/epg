@@ -1,15 +1,15 @@
 {
   "version": "0.2.29",
-  "generated_at": "2026-08-18T04:48:22.971267-05:00",
+  "generated_at": "2026-08-18T16:37:23.598291-05:00",
   "source_commit": "528c15a400b5aba8f85742b300b830f4cab50d71",
-  "github_run_id": "32123450786",
+  "github_run_id": "32188598593",
   "github_run_attempt": "1",
   "base_date": "2026-08-18",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 26,
-  "programmes": 2709,
+  "programmes": 2879,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 65,
     "Canal.Gamavisión.ec": 78,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 208,
     "TeleamazonasGuayaquil.ec": 207,
     "Ecuavisa.ec": 41,
-    "EcuavisaInternacional.ec": 66,
+    "EcuavisaInternacional.ec": 89,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 48,
     "NTN24.co": 38,
@@ -32,11 +32,11 @@
     "Deutsche.Welle.cl": 92,
     "hgtv.ar": 85,
     "France24Espanol.fr": 226,
-    "Canal24Horas.es": 153,
-    "La1.es": 83,
-    "Clan.es": 413,
+    "Canal24Horas.es": 200,
+    "La1.es": 102,
+    "Clan.es": 493,
     "MakroDigitalTV.ec": 197,
-    "Canal.Ecuador.TV.ec": 81
+    "Canal.Ecuador.TV.ec": 82
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
@@ -52,9 +52,9 @@
     "France24Espanol.fr": 3
   },
   "gatotv_source_days": {
-    "Canal24Horas.es": 5,
-    "La1.es": 5,
-    "Clan.es": 5
+    "Canal24Horas.es": 6,
+    "La1.es": 6,
+    "Clan.es": 6
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
@@ -62,21 +62,24 @@
       "2026-08-19": 28,
       "2026-08-20": 27,
       "2026-08-21": 31,
-      "2026-08-22": 41
+      "2026-08-22": 47,
+      "2026-08-23": 41
     },
     "La1.es": {
-      "2026-08-18": 19,
-      "2026-08-19": 17,
-      "2026-08-20": 18,
+      "2026-08-18": 20,
+      "2026-08-19": 20,
+      "2026-08-20": 19,
       "2026-08-21": 17,
-      "2026-08-22": 12
+      "2026-08-22": 13,
+      "2026-08-23": 13
     },
     "Clan.es": {
       "2026-08-18": 85,
       "2026-08-19": 86,
       "2026-08-20": 86,
       "2026-08-21": 83,
-      "2026-08-22": 73
+      "2026-08-22": 80,
+      "2026-08-23": 73
     }
   },
   "gatotv_source_timezones": {
@@ -136,12 +139,19 @@
       "2026-08-19",
       "2026-08-20"
     ],
-    "official_programmes": 25,
-    "fallback_programmes_kept": 56,
-    "fallback_programmes_replaced": 8,
-    "official_sources": [],
-    "verified_evening_programmes": 25,
-    "verified_evening_adjusted": 0,
+    "official_programmes": 29,
+    "fallback_programmes_kept": 53,
+    "fallback_programmes_replaced": 11,
+    "official_sources": [
+      "https://www.ecuadortv.ec/programas",
+      "https://www.ecuadortv.ec/programas/deportivo/fanatico",
+      "https://www.ecuadortv.ec/programas/informativo-y-opinion/perspectiva-7",
+      "https://www.ecuadortv.ec/programas/hogar-y-estilo-de-vida/esto-es-ecuador",
+      "https://www.ecuadortv.ec/programas/series-y-novelas/honores-policiales",
+      "https://www.ecuadortv.ec/"
+    ],
+    "verified_evening_programmes": 21,
+    "verified_evening_adjusted": 1,
     "verified_evening_valid_until": "2026-08-31"
   },
   "sources": {
