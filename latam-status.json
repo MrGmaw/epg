@@ -1,15 +1,15 @@
 {
   "version": "0.2.29",
-  "generated_at": "2026-08-19T04:48:59.027526-05:00",
+  "generated_at": "2026-08-19T16:40:18.735585-05:00",
   "source_commit": "528c15a400b5aba8f85742b300b830f4cab50d71",
-  "github_run_id": "32239460339",
+  "github_run_id": "32304973498",
   "github_run_attempt": "1",
   "base_date": "2026-08-19",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 26,
-  "programmes": 2823,
+  "programmes": 2865,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 65,
     "Canal.Gamavisión.ec": 78,
@@ -30,13 +30,13 @@
     "TV.Publica.canal.7.ar": 36,
     "Telefe.ar": 41,
     "Deutsche.Welle.cl": 92,
-    "hgtv.ar": 44,
+    "hgtv.ar": 85,
     "France24Espanol.fr": 227,
     "Canal24Horas.es": 203,
     "La1.es": 98,
     "Clan.es": 491,
     "MakroDigitalTV.ec": 197,
-    "Canal.Ecuador.TV.ec": 81
+    "Canal.Ecuador.TV.ec": 82
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
@@ -45,10 +45,10 @@
     "Canal.Elgourmet.ec": 3,
     "Canal.History.co": 3,
     "Canal.History.2.co": 3,
-    "TV.Publica.canal.7.ar": 2,
+    "TV.Publica.canal.7.ar": 3,
     "Telefe.ar": 3,
     "Deutsche.Welle.cl": 3,
-    "hgtv.ar": 2,
+    "hgtv.ar": 3,
     "France24Espanol.fr": 3
   },
   "gatotv_source_days": {
@@ -139,12 +139,19 @@
       "2026-08-20",
       "2026-08-21"
     ],
-    "official_programmes": 25,
-    "fallback_programmes_kept": 56,
-    "fallback_programmes_replaced": 8,
-    "official_sources": [],
-    "verified_evening_programmes": 25,
-    "verified_evening_adjusted": 0,
+    "official_programmes": 31,
+    "fallback_programmes_kept": 51,
+    "fallback_programmes_replaced": 13,
+    "official_sources": [
+      "https://www.ecuadortv.ec/programas",
+      "https://www.ecuadortv.ec/programas/deportivo/fanatico",
+      "https://www.ecuadortv.ec/programas/informativo-y-opinion/perspectiva-7",
+      "https://www.ecuadortv.ec/programas/hogar-y-estilo-de-vida/esto-es-ecuador",
+      "https://www.ecuadortv.ec/programas/series-y-novelas/honores-policiales",
+      "https://www.ecuadortv.ec/"
+    ],
+    "verified_evening_programmes": 21,
+    "verified_evening_adjusted": 1,
     "verified_evening_valid_until": "2026-08-31"
   },
   "sources": {
