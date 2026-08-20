@@ -1,24 +1,24 @@
 {
   "version": "0.2.29",
-  "generated_at": "2026-08-20T04:50:08.394529-05:00",
+  "generated_at": "2026-08-20T16:42:53.071060-05:00",
   "source_commit": "528c15a400b5aba8f85742b300b830f4cab50d71",
-  "github_run_id": "32355812464",
+  "github_run_id": "32420706385",
   "github_run_attempt": "1",
   "base_date": "2026-08-20",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 26,
-  "programmes": 2851,
+  "programmes": 2871,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 75,
     "Canal.Gamavisión.ec": 62,
     "Canal.RTS.ec": 64,
     "Canal.TVE.Internacional.(Televisión.Española).ec": 57,
-    "TeleamazonasQuito.ec": 208,
-    "TeleamazonasGuayaquil.ec": 207,
+    "TeleamazonasQuito.ec": 205,
+    "TeleamazonasGuayaquil.ec": 205,
     "Ecuavisa.ec": 44,
-    "EcuavisaInternacional.ec": 78,
+    "EcuavisaInternacional.ec": 80,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 50,
     "NTN24.co": 38,
@@ -32,9 +32,9 @@
     "Deutsche.Welle.cl": 90,
     "hgtv.ar": 85,
     "France24Espanol.fr": 226,
-    "Canal24Horas.es": 201,
-    "La1.es": 102,
-    "Clan.es": 478,
+    "Canal24Horas.es": 202,
+    "La1.es": 104,
+    "Clan.es": 498,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 79
   },
@@ -58,28 +58,28 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-08-20": 28,
-      "2026-08-21": 37,
-      "2026-08-22": 46,
-      "2026-08-23": 46,
-      "2026-08-24": 29,
-      "2026-08-25": 18
+      "2026-08-20": 27,
+      "2026-08-21": 31,
+      "2026-08-22": 47,
+      "2026-08-23": 50,
+      "2026-08-24": 28,
+      "2026-08-25": 19
     },
     "La1.es": {
       "2026-08-20": 21,
-      "2026-08-21": 18,
+      "2026-08-21": 17,
       "2026-08-22": 17,
-      "2026-08-23": 16,
-      "2026-08-24": 19,
-      "2026-08-25": 16
+      "2026-08-23": 14,
+      "2026-08-24": 18,
+      "2026-08-25": 17
     },
     "Clan.es": {
-      "2026-08-20": 87,
-      "2026-08-21": 79,
+      "2026-08-20": 86,
+      "2026-08-21": 83,
       "2026-08-22": 80,
       "2026-08-23": 79,
-      "2026-08-24": 88,
-      "2026-08-25": 68
+      "2026-08-24": 87,
+      "2026-08-25": 83
     }
   },
   "gatotv_source_timezones": {
