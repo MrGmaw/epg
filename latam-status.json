@@ -1,42 +1,42 @@
 {
   "version": "0.2.29",
-  "generated_at": "2026-08-19T16:40:18.735585-05:00",
+  "generated_at": "2026-08-20T04:50:08.394529-05:00",
   "source_commit": "528c15a400b5aba8f85742b300b830f4cab50d71",
-  "github_run_id": "32304973498",
+  "github_run_id": "32355812464",
   "github_run_attempt": "1",
-  "base_date": "2026-08-19",
+  "base_date": "2026-08-20",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 26,
-  "programmes": 2865,
+  "programmes": 2851,
   "programme_counts": {
-    "Canal.TC.Televisión.ec": 65,
-    "Canal.Gamavisión.ec": 78,
-    "Canal.RTS.ec": 62,
-    "Canal.TVE.Internacional.(Televisión.Española).ec": 54,
+    "Canal.TC.Televisión.ec": 75,
+    "Canal.Gamavisión.ec": 62,
+    "Canal.RTS.ec": 64,
+    "Canal.TVE.Internacional.(Televisión.Española).ec": 57,
     "TeleamazonasQuito.ec": 208,
     "TeleamazonasGuayaquil.ec": 207,
-    "Ecuavisa.ec": 41,
-    "EcuavisaInternacional.ec": 72,
+    "Ecuavisa.ec": 44,
+    "EcuavisaInternacional.ec": 78,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 50,
     "NTN24.co": 38,
     "CanalRCN.co": 34,
     "CaracolTV.co": 41,
     "Canal.Elgourmet.ec": 92,
-    "Canal.History.co": 59,
-    "Canal.History.2.co": 56,
-    "TV.Publica.canal.7.ar": 36,
-    "Telefe.ar": 41,
-    "Deutsche.Welle.cl": 92,
+    "Canal.History.co": 58,
+    "Canal.History.2.co": 57,
+    "TV.Publica.canal.7.ar": 33,
+    "Telefe.ar": 39,
+    "Deutsche.Welle.cl": 90,
     "hgtv.ar": 85,
-    "France24Espanol.fr": 227,
-    "Canal24Horas.es": 203,
-    "La1.es": 98,
-    "Clan.es": 491,
+    "France24Espanol.fr": 226,
+    "Canal24Horas.es": 201,
+    "La1.es": 102,
+    "Clan.es": 478,
     "MakroDigitalTV.ec": 197,
-    "Canal.Ecuador.TV.ec": 82
+    "Canal.Ecuador.TV.ec": 79
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
@@ -58,28 +58,28 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-08-19": 29,
       "2026-08-20": 28,
-      "2026-08-21": 33,
-      "2026-08-22": 47,
-      "2026-08-23": 49,
-      "2026-08-24": 20
+      "2026-08-21": 37,
+      "2026-08-22": 46,
+      "2026-08-23": 46,
+      "2026-08-24": 29,
+      "2026-08-25": 18
     },
     "La1.es": {
-      "2026-08-19": 20,
-      "2026-08-20": 20,
+      "2026-08-20": 21,
       "2026-08-21": 18,
-      "2026-08-22": 14,
-      "2026-08-23": 15,
-      "2026-08-24": 16
+      "2026-08-22": 17,
+      "2026-08-23": 16,
+      "2026-08-24": 19,
+      "2026-08-25": 16
     },
     "Clan.es": {
-      "2026-08-19": 87,
       "2026-08-20": 87,
-      "2026-08-21": 84,
-      "2026-08-22": 81,
-      "2026-08-23": 80,
-      "2026-08-24": 77
+      "2026-08-21": 79,
+      "2026-08-22": 80,
+      "2026-08-23": 79,
+      "2026-08-24": 88,
+      "2026-08-25": 68
     }
   },
   "gatotv_source_timezones": {
@@ -128,30 +128,23 @@
   "ecuador_tv": {
     "source": "official_or_verified_overlay+epgshare_fallback",
     "official_dates": [
-      "2026-08-19",
       "2026-08-20",
       "2026-08-21",
       "2026-08-24",
-      "2026-08-25"
+      "2026-08-25",
+      "2026-08-26"
     ],
     "fallback_dates": [
-      "2026-08-19",
       "2026-08-20",
-      "2026-08-21"
+      "2026-08-21",
+      "2026-08-22"
     ],
-    "official_programmes": 31,
-    "fallback_programmes_kept": 51,
-    "fallback_programmes_replaced": 13,
-    "official_sources": [
-      "https://www.ecuadortv.ec/programas",
-      "https://www.ecuadortv.ec/programas/deportivo/fanatico",
-      "https://www.ecuadortv.ec/programas/informativo-y-opinion/perspectiva-7",
-      "https://www.ecuadortv.ec/programas/hogar-y-estilo-de-vida/esto-es-ecuador",
-      "https://www.ecuadortv.ec/programas/series-y-novelas/honores-policiales",
-      "https://www.ecuadortv.ec/"
-    ],
-    "verified_evening_programmes": 21,
-    "verified_evening_adjusted": 1,
+    "official_programmes": 25,
+    "fallback_programmes_kept": 54,
+    "fallback_programmes_replaced": 8,
+    "official_sources": [],
+    "verified_evening_programmes": 25,
+    "verified_evening_adjusted": 0,
     "verified_evening_valid_until": "2026-08-31"
   },
   "sources": {
