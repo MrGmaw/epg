@@ -30,6 +30,36 @@ ANTENA3_ID = "Antena3-America.co"
 STAR_CHANNEL_ID = "Star-Channel.co"
 LOCAL_MITV_IDS = frozenset({ANTENA3_ID, STAR_CHANNEL_ID})
 EXPECTED_CHANNELS = 28
+EXPECTED_LATAM_IDS: tuple[str, ...] = (
+    "Canal.TC.Televisión.ec",
+    "Canal.Gamavisión.ec",
+    "Canal.RTS.ec",
+    "Canal.TVE.Internacional.(Televisión.Española).ec",
+    "TeleamazonasQuito.ec",
+    "TeleamazonasGuayaquil.ec",
+    "Ecuavisa.ec",
+    "EcuavisaInternacional.ec",
+    "TVC.ec",
+    "Canal.CNN.en.Español.ec",
+    "NTN24.co",
+    "CanalRCN.co",
+    "CaracolTV.co",
+    "Canal.Elgourmet.ec",
+    "Canal.History.co",
+    "Canal.History.2.co",
+    "TV.Publica.canal.7.ar",
+    "Telefe.ar",
+    "Deutsche.Welle.cl",
+    "hgtv.ar",
+    "France24Espanol.fr",
+    ANTENA3_ID,
+    STAR_CHANNEL_ID,
+    "Canal24Horas.es",
+    "La1.es",
+    "Clan.es",
+    "MakroDigitalTV.ec",
+    "Canal.Ecuador.TV.ec",
+)
 MITV_LOCAL_MAX_DAYS = 2
 MITV_REQUEST_PAUSE_SECONDS = 1.0
 
@@ -249,6 +279,11 @@ def configure_channels() -> None:
         )
     if len(set(latam.LATAM_CHANNEL_IDS)) != EXPECTED_CHANNELS:
         raise RuntimeError("La guía LATAM contiene IDs duplicados.")
+    if tuple(latam.LATAM_CHANNEL_IDS) != EXPECTED_LATAM_IDS:
+        raise RuntimeError(
+            "El orden/identidad de LATAM_CHANNEL_IDS no coincide con los 28 IDs "
+            "canónicos de v0.2.31."
+        )
     for channel_id in LOCAL_MITV_IDS:
         if channel_id not in latam.LATAM_CHANNEL_IDS:
             raise RuntimeError(f"Falta el nuevo canal {channel_id}.")
@@ -328,6 +363,11 @@ def _assert_output(output_dir: Path) -> None:
             f"latam.xml debe contener {EXPECTED_CHANNELS} canales únicos; "
             f"obtenidos={len(channel_ids)}."
         )
+    if tuple(channel_ids) != EXPECTED_LATAM_IDS:
+        raise RuntimeError(
+            "latam.xml contiene 28 canales, pero su orden/identidad no coincide "
+            "con la secuencia canónica de v0.2.31."
+        )
 
     for channel_id in (ANTENA3_ID, STAR_CHANNEL_ID):
         if channel_id not in channel_ids:
@@ -383,6 +423,7 @@ def _sample_page(times_and_titles: list[tuple[str, str]]) -> str:
 def self_test() -> None:
     configure_channels()
     assert len(latam.LATAM_CHANNEL_IDS) == EXPECTED_CHANNELS
+    assert tuple(latam.LATAM_CHANNEL_IDS) == EXPECTED_LATAM_IDS
     assert STAR_TVE_ID not in latam.LATAM_CHANNEL_IDS
     assert ANTENA3_ID in latam.LATAM_CHANNEL_IDS
     assert STAR_CHANNEL_ID in latam.LATAM_CHANNEL_IDS
@@ -406,7 +447,7 @@ def self_test() -> None:
     assert programmes_star[0].start.isoformat() == "2026-08-21T15:00:00-05:00"
 
     print(
-        "Prueba v0.2.30 correcta: 28 canales; STAR TVE excluido; "
+        "Prueba v0.2.31 correcta: 28 canales; STAR TVE excluido; "
         "Antena 3 y Star Channel interpretados directamente en America/Guayaquil."
     )
 
