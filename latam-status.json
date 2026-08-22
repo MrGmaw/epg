@@ -1,15 +1,15 @@
 {
-  "version": "0.2.30",
-  "generated_at": "2026-08-21T23:29:50.049395-05:00",
-  "source_commit": "48ca8c1a2a4c5d1c7f2f0786c3b28e2f413ed986",
-  "github_run_id": "32551814527",
+  "version": "0.2.31",
+  "generated_at": "2026-08-21T23:38:29.912510-05:00",
+  "source_commit": "16bc3354c05b3ffa2b68f5630c0a2b375743aec7",
+  "github_run_id": "32552190422",
   "github_run_attempt": "1",
   "base_date": "2026-08-21",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
-  "channels": 26,
-  "programmes": 2892,
+  "channels": 28,
+  "programmes": 2941,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 75,
     "Canal.Gamavisión.ec": 51,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 205,
     "TeleamazonasGuayaquil.ec": 205,
     "Ecuavisa.ec": 46,
-    "EcuavisaInternacional.ec": 99,
+    "EcuavisaInternacional.ec": 100,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 55,
     "NTN24.co": 44,
@@ -32,9 +32,11 @@
     "Deutsche.Welle.cl": 99,
     "hgtv.ar": 85,
     "France24Espanol.fr": 230,
+    "Antena3-America.co": 29,
+    "Star-Channel.co": 25,
     "Canal24Horas.es": 202,
-    "La1.es": 107,
-    "Clan.es": 493,
+    "La1.es": 106,
+    "Clan.es": 488,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 84
   },
@@ -49,7 +51,9 @@
     "Telefe.ar": 3,
     "Deutsche.Welle.cl": 3,
     "hgtv.ar": 3,
-    "France24Espanol.fr": 3
+    "France24Espanol.fr": 3,
+    "Antena3-America.co": 2,
+    "Star-Channel.co": 2
   },
   "gatotv_source_days": {
     "Canal24Horas.es": 6,
@@ -58,28 +62,28 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-08-21": 31,
+      "2026-08-21": 33,
       "2026-08-22": 47,
-      "2026-08-23": 50,
-      "2026-08-24": 28,
-      "2026-08-25": 26,
+      "2026-08-23": 49,
+      "2026-08-24": 29,
+      "2026-08-25": 27,
       "2026-08-26": 20
     },
     "La1.es": {
       "2026-08-21": 21,
       "2026-08-22": 20,
       "2026-08-23": 19,
-      "2026-08-24": 19,
-      "2026-08-25": 20,
+      "2026-08-24": 20,
+      "2026-08-25": 21,
       "2026-08-26": 8
     },
     "Clan.es": {
-      "2026-08-21": 83,
-      "2026-08-22": 80,
-      "2026-08-23": 79,
-      "2026-08-24": 87,
-      "2026-08-25": 85,
-      "2026-08-26": 79
+      "2026-08-21": 84,
+      "2026-08-22": 81,
+      "2026-08-23": 80,
+      "2026-08-24": 88,
+      "2026-08-25": 86,
+      "2026-08-26": 74
     }
   },
   "gatotv_source_timezones": {
@@ -170,7 +174,9 @@
       "Telefe.ar": "https://mi.tv/ar/canales/telefe",
       "Deutsche.Welle.cl": "https://mi.tv/cl/canales/deutsche-welle-espanol",
       "hgtv.ar": "https://mi.tv/ar/canales/hgtv",
-      "France24Espanol.fr": "https://mi.tv/ar/canales/france-24-espanol"
+      "France24Espanol.fr": "https://mi.tv/ar/canales/france-24-espanol",
+      "Antena3-America.co": "https://mi.tv/co/canales/antena3",
+      "Star-Channel.co": "https://mi.tv/co/canales/fox"
     },
     "gato_tv": {
       "Canal24Horas.es": "https://www.gatotv.com/canal/24_horas_tve",
@@ -178,5 +184,17 @@
       "Clan.es": "https://www.gatotv.com/canal/clan_tve"
     },
     "makrodigital_official": "https://makrodigitaltelevision.com/programacion/"
+  },
+  "mitv_local_time_channels": {
+    "Antena3-America.co": {
+      "source": "https://mi.tv/co/canales/antena3",
+      "timezone": "America/Guayaquil",
+      "conversion": "none"
+    },
+    "Star-Channel.co": {
+      "source": "https://mi.tv/co/canales/fox",
+      "timezone": "America/Guayaquil",
+      "conversion": "none"
+    }
   }
 }
