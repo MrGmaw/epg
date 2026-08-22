@@ -1,0 +1,20 @@
+EPG MrG v0.2.30 — actualización incremental sobre v0.2.29
+
+1. Use como base el repositorio que ya tiene instalada la v0.2.29.
+2. Copie el contenido de este ZIP en la raíz del repositorio.
+3. Reemplace los archivos coincidentes.
+4. No elimine los demás archivos del repositorio.
+5. Confirme que VERSION contiene: 0.2.30
+6. Suba los cambios a GitHub y ejecute el workflow "Actualizar EPG Ecuador y Latinoamérica".
+
+Resultado esperado:
+- 28 canales en latam.xml.
+- Antena 3 con tvg-id Antena3-America.co.
+- Star Channel con tvg-id Star-Channel.co.
+- Ambos desde mi.tv Colombia en hora directa America/Guayaquil (-0500), sin conversión UTC ni offset manual.
+- STAR TVE (TVEStarHD.es) continúa excluido.
+
+Archivos que reemplaza esta actualización:
+- VERSION
+- .github/workflows/actualizar-epg.yml
+- scripts/build_latam_resilient.py
