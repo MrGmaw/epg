@@ -52,7 +52,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "VERSION=$(cat VERSION)"
-          echo "build_latam_epg.py + exclusión de STAR TVE:"
+          echo "build_latam_epg.py + STAR TVE excluido + Antena 3/Star Channel mi.tv local:"
           sha256sum scripts/build_latam_epg.py scripts/build_latam_resilient.py
 
 
@@ -237,10 +237,15 @@ jobs:
           import validate_outputs as validate
 
           STAR_ID = "TVEStarHD.es"
-          validate.LATAM_REQUIRED = tuple(
+          NEW_IDS = ("Antena3-America.co", "Star-Channel.co")
+          required = [
               channel_id for channel_id in validate.LATAM_REQUIRED if channel_id != STAR_ID
-          )
-          assert len(validate.LATAM_REQUIRED) == 26, validate.LATAM_REQUIRED
+          ]
+          for channel_id in NEW_IDS:
+              if channel_id not in required:
+                  required.append(channel_id)
+          validate.LATAM_REQUIRED = tuple(required)
+          assert len(validate.LATAM_REQUIRED) == 28, validate.LATAM_REQUIRED
 
           sys.argv = ["validate_outputs.py", "--public", "public"]
           result = validate.main()
@@ -253,7 +258,16 @@ jobs:
           root = etree.parse("public/latam.xml", parser).getroot()
           assert not root.xpath("./channel[@id=$channel_id]", channel_id=STAR_ID)
           assert not root.xpath("./programme[@channel=$channel_id]", channel_id=STAR_ID)
-          print("Validación adicional correcta: STAR TVE no está publicado.")
+          for channel_id in NEW_IDS:
+              assert root.xpath("./channel[@id=$channel_id]", channel_id=channel_id), channel_id
+              programmes = root.xpath("./programme[@channel=$channel_id]", channel_id=channel_id)
+              assert len(programmes) >= 5, (channel_id, len(programmes))
+              assert all(item.get("start", "").endswith(" -0500") for item in programmes), channel_id
+              assert all(item.get("stop", "").endswith(" -0500") for item in programmes), channel_id
+          print(
+              "Validación adicional correcta: STAR TVE ausente; "
+              "Antena 3 y Star Channel presentes en hora America/Guayaquil."
+          )
           PY
 
           echo "Estado de la guía principal:"
@@ -376,7 +390,7 @@ jobs:
           - `ec.xml.gz`
           - `status.json`
 
-          Guía seleccionada de 26 canales:
+          Guía seleccionada de 28 canales:
           - `latam.xml`
           - `latam.xml.gz`
           - `latam-status.json`
