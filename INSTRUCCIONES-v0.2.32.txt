@@ -1,0 +1,16 @@
+EPG MrG v0.2.32 — actualización incremental sobre v0.2.31
+
+1. Copie el contenido de este paquete sobre el repositorio que ya tiene v0.2.31.
+2. Reemplace los archivos coincidentes.
+3. No borre los demás archivos del proyecto.
+4. Confirme que VERSION contiene 0.2.32.
+5. Ejecute el workflow "Actualizar EPG Ecuador y Latinoamérica".
+
+Cambio principal:
+Antena 3 y Star Channel dejan de tratar la hora cruda del endpoint asíncrono de mi.tv como si fuera hora local. Ambos vuelven a usar la lógica estándar del proyecto: endpoint UTC -> America/Guayaquil. Esto corrige el desfase de cinco horas y hace que el XMLTV coincida con la hora visible en las páginas de mi.tv Colombia.
+
+Los tvg-id y fuentes no cambian:
+- Antena3-America.co -> https://mi.tv/co/canales/antena3
+- Star-Channel.co -> https://mi.tv/co/canales/fox
+
+STAR TVE continúa eliminado.
