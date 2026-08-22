@@ -235,17 +235,16 @@ jobs:
 
           sys.path.insert(0, "scripts")
           import validate_outputs as validate
+          import build_latam_resilient as resilient
 
           STAR_ID = "TVEStarHD.es"
           NEW_IDS = ("Antena3-America.co", "Star-Channel.co")
-          required = [
-              channel_id for channel_id in validate.LATAM_REQUIRED if channel_id != STAR_ID
-          ]
-          for channel_id in NEW_IDS:
-              if channel_id not in required:
-                  required.append(channel_id)
-          validate.LATAM_REQUIRED = tuple(required)
+          # Una sola secuencia canónica: el validador usa exactamente el mismo
+          # orden de IDs que el constructor v0.2.31.
+          validate.LATAM_REQUIRED = resilient.EXPECTED_LATAM_IDS
           assert len(validate.LATAM_REQUIRED) == 28, validate.LATAM_REQUIRED
+          assert STAR_ID not in validate.LATAM_REQUIRED
+          assert all(channel_id in validate.LATAM_REQUIRED for channel_id in NEW_IDS)
 
           sys.argv = ["validate_outputs.py", "--public", "public"]
           result = validate.main()
