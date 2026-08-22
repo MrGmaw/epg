@@ -52,7 +52,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "VERSION=$(cat VERSION)"
-          echo "build_latam_epg.py + STAR TVE excluido + Antena 3/Star Channel mi.tv local:"
+          echo "build_latam_epg.py + STAR TVE excluido + Antena 3/Star Channel mi.tv UTC→Guayaquil:"
           sha256sum scripts/build_latam_epg.py scripts/build_latam_resilient.py
 
 
@@ -240,7 +240,7 @@ jobs:
           STAR_ID = "TVEStarHD.es"
           NEW_IDS = ("Antena3-America.co", "Star-Channel.co")
           # Una sola secuencia canónica: el validador usa exactamente el mismo
-          # orden de IDs que el constructor v0.2.31.
+          # orden de IDs que el constructor v0.2.32.
           validate.LATAM_REQUIRED = resilient.EXPECTED_LATAM_IDS
           assert len(validate.LATAM_REQUIRED) == 28, validate.LATAM_REQUIRED
           assert STAR_ID not in validate.LATAM_REQUIRED
@@ -265,7 +265,7 @@ jobs:
               assert all(item.get("stop", "").endswith(" -0500") for item in programmes), channel_id
           print(
               "Validación adicional correcta: STAR TVE ausente; "
-              "Antena 3 y Star Channel presentes en hora America/Guayaquil."
+              "Antena 3 y Star Channel presentes en America/Guayaquil tras convertir el endpoint UTC de mi.tv."
           )
           PY
 
