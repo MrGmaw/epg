@@ -1,15 +1,15 @@
 {
   "version": "0.2.32",
-  "generated_at": "2026-08-23T04:42:40.495263-05:00",
+  "generated_at": "2026-08-23T16:35:53.019555-05:00",
   "source_commit": "13d937e3c205820cd03bd31e3ce81b86758df73f",
-  "github_run_id": "32631713558",
+  "github_run_id": "32667948528",
   "github_run_attempt": "1",
   "base_date": "2026-08-23",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 28,
-  "programmes": 2769,
+  "programmes": 2751,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 71,
     "Canal.Gamavisión.ec": 59,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 206,
     "TeleamazonasGuayaquil.ec": 206,
     "Ecuavisa.ec": 43,
-    "EcuavisaInternacional.ec": 77,
+    "EcuavisaInternacional.ec": 74,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 61,
     "NTN24.co": 46,
@@ -34,9 +34,9 @@
     "France24Espanol.fr": 224,
     "Antena3-America.co": 34,
     "Star-Channel.co": 31,
-    "Canal24Horas.es": 149,
+    "Canal24Horas.es": 145,
     "La1.es": 80,
-    "Clan.es": 404,
+    "Clan.es": 393,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 87
   },
@@ -62,25 +62,25 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-08-23": 49,
+      "2026-08-23": 46,
       "2026-08-24": 29,
       "2026-08-25": 27,
-      "2026-08-26": 29,
-      "2026-08-27": 19
+      "2026-08-26": 28,
+      "2026-08-27": 18
     },
     "La1.es": {
-      "2026-08-23": 19,
+      "2026-08-23": 20,
       "2026-08-24": 18,
-      "2026-08-25": 21,
-      "2026-08-26": 10,
-      "2026-08-27": 16
+      "2026-08-25": 20,
+      "2026-08-26": 11,
+      "2026-08-27": 15
     },
     "Clan.es": {
-      "2026-08-23": 80,
+      "2026-08-23": 84,
       "2026-08-24": 79,
       "2026-08-25": 86,
       "2026-08-26": 89,
-      "2026-08-27": 74
+      "2026-08-27": 59
     }
   },
   "gatotv_source_timezones": {
