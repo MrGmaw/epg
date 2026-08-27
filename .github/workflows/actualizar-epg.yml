@@ -99,17 +99,27 @@ jobs:
           grep -q 'def parse_gatotv_page' scripts/build_epg_base.py
           grep -q 'Canal.CNN.en.Español.ec' scripts/build_epg_base.py
           grep -q 'NTN24.co' scripts/build_epg_base.py
-          python -m py_compile \
+
+          # py_compile no resuelve imports. Restauramos cualquier módulo Python
+          # local que el generador descargado necesite (p. ej. tc_resilient.py)
+          # antes de realizar una importación real.
+          python scripts/restore_local_modules.py \
             scripts/build_epg_base.py \
-            scripts/mitv_utc.py \
             scripts/build_epg.py \
-            scripts/tvc_resilient.py \
             scripts/build_latam_epg.py \
-            scripts/build_latam_resilient.py \
-            scripts/patch_dw_mitv.py \
-            scripts/mitv_logos.py \
-            scripts/apply_local_logos.py \
-            scripts/validate_outputs.py
+            scripts/build_latam_resilient.py
+
+          python -m py_compile scripts/*.py
+
+          python - <<'PYIMPORT'
+          import sys
+          sys.path.insert(0, "scripts")
+          import build_epg_base  # noqa: F401
+          import build_epg  # noqa: F401
+          import build_latam_epg  # noqa: F401
+          import build_latam_resilient  # noqa: F401
+          print("Importación real de generadores correcta.")
+          PYIMPORT
 
       - name: Preparar directorio público
         shell: bash
@@ -254,7 +264,7 @@ jobs:
           STAR_ID = "TVEStarHD.es"
           MITV_REQUIRED = ("Deutsche.Welle.cl", "Antena3-America.co", "Star-Channel.co")
           # Una sola secuencia canónica: el validador usa exactamente el mismo
-          # orden de IDs que el constructor v0.2.33.
+          # orden de IDs que el constructor v0.2.34.
           validate.LATAM_REQUIRED = resilient.EXPECTED_LATAM_IDS
           assert len(validate.LATAM_REQUIRED) == 28, validate.LATAM_REQUIRED
           assert STAR_ID not in validate.LATAM_REQUIRED
