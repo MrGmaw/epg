@@ -41,6 +41,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Verificar base local del repositorio
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/restore_baseline_from_git.sh
+
       - name: Configurar Python
         uses: actions/setup-python@v6
         with:
