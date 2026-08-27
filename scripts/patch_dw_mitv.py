@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Hotfix idempotente para la nueva ruta de DW (Español) en mi.tv Chile."""
+"""Normaliza de forma segura el slug primario de DW en archivos heredados.
+
+A diferencia de v0.2.33/v0.2.34, este parche NO modifica
+``deutsche-welle-amerika`` porque v0.2.35 lo usa como segundo ID de mi.tv.
+"""
 
 from __future__ import annotations
 
@@ -7,9 +11,10 @@ import re
 import sys
 from pathlib import Path
 
-OLD_SLUG = "deutsche-welle"
 NEW_SLUG = "deutsche-welle-espanol"
-PATTERN = re.compile(r"deutsche-welle(?!-espanol)")
+# Solo coincide con el slug antiguo cuando termina ahí; no toca sufijos como
+# -espanol ni -amerika.
+PATTERN = re.compile(r"(?<![\w-])deutsche-welle(?!-[\w-])")
 TARGETS = (
     Path("scripts/build_latam_epg.py"),
     Path("scripts/mitv_logos.py"),
@@ -26,8 +31,8 @@ def patch_file(path: Path) -> int:
         text = PATTERN.sub(NEW_SLUG, text)
         path.write_text(text, encoding="utf-8", newline="\n")
     if PATTERN.search(text):
-        raise RuntimeError(f"Persistió el slug antiguo de DW en {path}.")
-    print(f"DW mi.tv: {path}: reemplazos={matches}; slug={NEW_SLUG}")
+        raise RuntimeError(f"Persistió el slug antiguo aislado de DW en {path}.")
+    print(f"DW mi.tv: {path}: reemplazos={matches}; primario={NEW_SLUG}")
     return matches
 
 
@@ -38,9 +43,9 @@ def main() -> int:
         text = base.read_text(encoding="utf-8")
         if "Deutsche.Welle.cl" in text and NEW_SLUG not in text:
             raise RuntimeError(
-                "build_latam_epg.py contiene Deutsche.Welle.cl pero no el slug corregido."
+                "build_latam_epg.py contiene Deutsche.Welle.cl pero no el slug primario esperado."
             )
-    print(f"Hotfix DW listo; reemplazos totales={total}.")
+    print(f"Normalización DW lista; reemplazos totales={total}.")
     return 0
 
 

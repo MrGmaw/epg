@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
-"""Construye LATAM sin STAR TVE y añade Antena 3 / Star Channel desde mi.tv.
+"""Construye LATAM sin STAR TVE y con fuentes resilientes para canales mi.tv.
 
-Compatibilidad con v0.2.29:
-- ``TVEStarHD.es`` continúa excluido completamente.
-- Se añaden ``Antena3-America.co`` y ``Star-Channel.co`` desde mi.tv Colombia.
-
-Reglas vigentes desde v0.2.34:
-- Antena 3 y Star Channel conservan la corrección de v0.2.32: el endpoint
-  asíncrono de mi.tv se interpreta como UTC y se convierte a
-  ``America/Guayaquil`` mediante ``scripts/mitv_utc.py``. No existe offset manual.
-- ``Deutsche.Welle.cl`` mantiene su tvg-id y posición, pero cambia su slug de
-  mi.tv Chile de ``deutsche-welle`` a ``deutsche-welle-espanol``.
+Reglas vigentes desde v0.2.35:
+- ``TVEStarHD.es`` permanece completamente excluido.
+- Antena 3 y Star Channel se obtienen desde el endpoint asíncrono de mi.tv,
+  interpretado como UTC y convertido a ``America/Guayaquil`` por ``mitv_utc``.
+- ``Deutsche.Welle.cl`` conserva su tvg-id y posición canónica. Para DW se prueba
+  primero ``deutsche-welle-espanol`` y luego ``deutsche-welle-amerika`` en mi.tv.
+  Si ambos endpoints están vacíos/incompatibles, se usa exclusivamente la señal
+  española ``dw_latinoamerica`` de GatoTV para la misma ventana local.
+- No se aplican offsets manuales.
 """
 
 from __future__ import annotations
@@ -20,6 +19,7 @@ import sys
 from dataclasses import fields as dataclass_fields, is_dataclass, replace as dataclass_replace
 from datetime import date
 from pathlib import Path
+from typing import Callable
 
 from lxml import etree
 
@@ -31,11 +31,16 @@ ANTENA3_ID = "Antena3-America.co"
 STAR_CHANNEL_ID = "Star-Channel.co"
 DW_ID = "Deutsche.Welle.cl"
 DW_OLD_SLUG = "deutsche-welle"
-DW_SLUG = "deutsche-welle-espanol"
+DW_PRIMARY_SLUG = "deutsche-welle-espanol"
+DW_ALTERNATE_SLUG = "deutsche-welle-amerika"
 DW_OLD_SOURCE_URL = "https://mi.tv/cl/canales/deutsche-welle"
-DW_SOURCE_URL = "https://mi.tv/cl/canales/deutsche-welle-espanol"
+DW_PRIMARY_SOURCE_URL = f"https://mi.tv/cl/canales/{DW_PRIMARY_SLUG}"
+DW_ALTERNATE_SOURCE_URL = f"https://mi.tv/cl/canales/{DW_ALTERNATE_SLUG}"
+DW_GATOTV_SLUG = "dw_latinoamerica"
+DW_GATOTV_SOURCE_URL = f"https://www.gatotv.com/canal/{DW_GATOTV_SLUG}"
+DW_MITV_CANDIDATES = (DW_PRIMARY_SLUG, DW_ALTERNATE_SLUG)
 ADDED_MITV_IDS = frozenset({ANTENA3_ID, STAR_CHANNEL_ID})
-REQUIRED_MITV_PROGRAMME_IDS = (DW_ID, ANTENA3_ID, STAR_CHANNEL_ID)
+REQUIRED_PROGRAMME_IDS = (DW_ID, ANTENA3_ID, STAR_CHANNEL_ID)
 EXPECTED_CHANNELS = 28
 EXPECTED_LATAM_IDS: tuple[str, ...] = (
     "Canal.TC.Televisión.ec",
@@ -56,7 +61,7 @@ EXPECTED_LATAM_IDS: tuple[str, ...] = (
     "Canal.History.2.co",
     "TV.Publica.canal.7.ar",
     "Telefe.ar",
-    "Deutsche.Welle.cl",
+    DW_ID,
     "hgtv.ar",
     "France24Espanol.fr",
     ANTENA3_ID,
@@ -84,6 +89,18 @@ ADDED_MITV_CHANNELS: tuple[latam.MitvChannel, ...] = (
     ),
 )
 
+# Se guarda la función real de mitv_utc antes de sustituir el símbolo global que
+# build_latam_epg usa en tiempo de ejecución. Así el wrapper nunca se llama a sí
+# mismo y configure_channels() es idempotente.
+ORIGINAL_MITV_SCRAPER: Callable = mitv_utc.scrape_mitv_channel
+
+DW_LAST_SOURCE_MODE: str | None = None
+DW_LAST_SOURCE_URL: str | None = None
+DW_LAST_SOURCE_TIMEZONE: str | None = None
+DW_LAST_LOADED_DAYS = 0
+DW_LAST_DAILY_COUNTS: dict[str, int] = {}
+DW_LAST_MITV_ERRORS: list[str] = []
+
 
 def _arg_path(argv: list[str], name: str, default: Path) -> Path:
     prefix = name + "="
@@ -100,15 +117,15 @@ def _output_dir(argv: list[str]) -> Path:
 
 
 def _replace_dw_mitv_config(config: latam.MitvChannel) -> latam.MitvChannel:
-    """Cambia solo slug/URL de DW, preservando los demás campos del objeto."""
+    """Normaliza solo el slug/URL primario de DW, preservando demás campos."""
     if is_dataclass(config):
         updates: dict[str, object] = {}
         for field in dataclass_fields(config):
             value = getattr(config, field.name)
-            if field.name == "slug" or value == DW_OLD_SLUG:
-                updates[field.name] = DW_SLUG
+            if field.name == "slug":
+                updates[field.name] = DW_PRIMARY_SLUG
             elif value == DW_OLD_SOURCE_URL:
-                updates[field.name] = DW_SOURCE_URL
+                updates[field.name] = DW_PRIMARY_SOURCE_URL
         if not updates:
             raise RuntimeError("No se pudo identificar el slug de DW en MitvChannel.")
         return dataclass_replace(config, **updates)
@@ -117,10 +134,10 @@ def _replace_dw_mitv_config(config: latam.MitvChannel) -> latam.MitvChannel:
         values = config._asdict()
         updates = {}
         for name, value in values.items():
-            if name == "slug" or value == DW_OLD_SLUG:
-                updates[name] = DW_SLUG
+            if name == "slug":
+                updates[name] = DW_PRIMARY_SLUG
             elif value == DW_OLD_SOURCE_URL:
-                updates[name] = DW_SOURCE_URL
+                updates[name] = DW_PRIMARY_SOURCE_URL
         if not updates:
             raise RuntimeError("No se pudo identificar el slug de DW en MitvChannel.")
         return config._replace(**updates)
@@ -128,27 +145,131 @@ def _replace_dw_mitv_config(config: latam.MitvChannel) -> latam.MitvChannel:
     try:
         values = list(config)
     except TypeError as exc:
-        raise RuntimeError("Tipo MitvChannel no soportado para aplicar hotfix DW.") from exc
+        raise RuntimeError("Tipo MitvChannel no soportado para normalizar DW.") from exc
     if len(values) < 2:
         raise RuntimeError("MitvChannel de DW no contiene suficientes campos.")
-    values = [
-        DW_SLUG if value == DW_OLD_SLUG else
-        DW_SOURCE_URL if value == DW_OLD_SOURCE_URL else value
-        for value in values
-    ]
-    values[1] = DW_SLUG
-    if len(values) >= 5 and isinstance(values[4], str) and "mi.tv/cl/canales/" in values[4]:
-        values[4] = DW_SOURCE_URL
+    values[1] = DW_PRIMARY_SLUG
+    if len(values) >= 5 and values[4] == DW_OLD_SOURCE_URL:
+        values[4] = DW_PRIMARY_SOURCE_URL
     return latam.MitvChannel(*values)
 
 
+def _dw_gatotv_config() -> latam.GatoTvChannel:
+    """Configuración de respaldo para la señal DW en español de Latinoamérica."""
+    return latam.GatoTvChannel(
+        DW_GATOTV_SLUG,
+        DW_ID,
+        ("DW (Latinoamérica)", "Deutsche Welle Español", "DW Español"),
+        "https://www.dw.com/es/",
+    )
+
+
+def scrape_mitv_with_dw_fallback(
+    *,
+    country: str,
+    slug: str,
+    channel_id: str,
+    start_date: date,
+    local_days: int = mitv_utc.MITV_LOCAL_MAX_DAYS,
+    pause_seconds: float = mitv_utc.MITV_REQUEST_PAUSE_SECONDS,
+):
+    """Usa mi.tv normalmente; DW prueba dos IDs y después GatoTV Latinoamérica."""
+    global DW_LAST_SOURCE_MODE, DW_LAST_SOURCE_URL, DW_LAST_SOURCE_TIMEZONE
+    global DW_LAST_LOADED_DAYS, DW_LAST_DAILY_COUNTS, DW_LAST_MITV_ERRORS
+
+    if channel_id != DW_ID:
+        return ORIGINAL_MITV_SCRAPER(
+            country=country,
+            slug=slug,
+            channel_id=channel_id,
+            start_date=start_date,
+            local_days=local_days,
+            pause_seconds=pause_seconds,
+        )
+
+    DW_LAST_SOURCE_MODE = None
+    DW_LAST_SOURCE_URL = None
+    DW_LAST_SOURCE_TIMEZONE = None
+    DW_LAST_LOADED_DAYS = 0
+    DW_LAST_DAILY_COUNTS = {}
+    DW_LAST_MITV_ERRORS = []
+
+    # Aunque la configuración venga de una versión antigua, la política v0.2.35
+    # prueba explícitamente los dos IDs que mi.tv mantiene para DW en Chile.
+    for index, candidate_slug in enumerate(DW_MITV_CANDIDATES):
+        try:
+            programmes, loaded_days = ORIGINAL_MITV_SCRAPER(
+                country="cl",
+                slug=candidate_slug,
+                channel_id=channel_id,
+                start_date=start_date,
+                local_days=local_days,
+                pause_seconds=pause_seconds,
+            )
+        except RuntimeError as exc:
+            message = f"{candidate_slug}: {exc}"
+            DW_LAST_MITV_ERRORS.append(message)
+            if index + 1 < len(DW_MITV_CANDIDATES):
+                latam.epg.warn(
+                    f"DW: mi.tv {candidate_slug} no entregó parrilla utilizable; "
+                    f"se probará {DW_MITV_CANDIDATES[index + 1]}."
+                )
+            continue
+
+        DW_LAST_SOURCE_MODE = (
+            "mi-tv-primary" if candidate_slug == DW_PRIMARY_SLUG else "mi-tv-alternate"
+        )
+        DW_LAST_SOURCE_URL = f"https://mi.tv/cl/canales/{candidate_slug}"
+        DW_LAST_SOURCE_TIMEZONE = "UTC"
+        DW_LAST_LOADED_DAYS = loaded_days
+        latam.epg.log(
+            f"DW: fuente seleccionada={DW_LAST_SOURCE_MODE}; slug={candidate_slug}; "
+            f"fechas_fuente={loaded_days}; UTC->America/Guayaquil; ajuste_manual=0min."
+        )
+        return programmes, loaded_days
+
+    latam.epg.warn(
+        "DW: los dos IDs de mi.tv Chile quedaron sin parrilla utilizable; "
+        f"se usará GatoTV {DW_GATOTV_SOURCE_URL} para la misma ventana local."
+    )
+    try:
+        programmes, loaded_days, daily_counts = latam.scrape_gatotv_channel(
+            _dw_gatotv_config(),
+            start_date,
+            local_days,
+        )
+    except RuntimeError as exc:
+        details = "; ".join(DW_LAST_MITV_ERRORS) or "sin detalle"
+        raise RuntimeError(
+            "Deutsche.Welle.cl: fallaron ambos IDs de mi.tv y el respaldo "
+            f"GatoTV. mi.tv=[{details}]; GatoTV={exc}"
+        ) from exc
+
+    if loaded_days < 1 or len(programmes) < 5:
+        raise RuntimeError(
+            "Deutsche.Welle.cl: GatoTV devolvió programación insuficiente "
+            f"({len(programmes)} emisiones; días={loaded_days})."
+        )
+
+    DW_LAST_SOURCE_MODE = "gatotv-live"
+    DW_LAST_SOURCE_URL = DW_GATOTV_SOURCE_URL
+    DW_LAST_SOURCE_TIMEZONE = "America/Guayaquil"
+    DW_LAST_LOADED_DAYS = loaded_days
+    DW_LAST_DAILY_COUNTS = dict(daily_counts)
+    latam.epg.log(
+        f"DW: respaldo GatoTV activo; emisiones={len(programmes)}; "
+        f"días={loaded_days}; reloj=America/Guayaquil; ajuste_manual=0min."
+    )
+    # build_latam_epg espera el contrato de mi.tv: (programmes, loaded_days).
+    return programmes, loaded_days
+
+
 def configure_channels() -> None:
-    """Retira STAR TVE, corrige DW y añade Antena 3 / Star Channel."""
+    """Retira STAR TVE, normaliza DW, instala fallback y añade A3/Star Channel."""
     latam.GATOTV_CHANNELS = tuple(
         config for config in latam.GATOTV_CHANNELS if config.channel_id != STAR_TVE_ID
     )
 
-    # Corrige DW en su posición original y conserva todos sus demás metadatos.
     patched_mitv_channels: list[latam.MitvChannel] = []
     dw_matches = 0
     for config in latam.MITV_CHANNELS:
@@ -162,10 +283,12 @@ def configure_channels() -> None:
             f"obtenidas={dw_matches}."
         )
 
-    # Idempotencia: si se invoca más de una vez, no duplica canales nuevos.
     latam.MITV_CHANNELS = tuple(
         config for config in patched_mitv_channels if config.channel_id not in ADDED_MITV_IDS
     ) + ADDED_MITV_CHANNELS
+
+    # Intercepta solamente DW. El resto sigue llamando a mitv_utc sin cambios.
+    latam.scrape_mitv_channel = scrape_mitv_with_dw_fallback
 
     latam.LATAM_CHANNEL_IDS = (
         *latam.BASE_CHANNEL_IDS,
@@ -189,19 +312,19 @@ def configure_channels() -> None:
     if tuple(latam.LATAM_CHANNEL_IDS) != EXPECTED_LATAM_IDS:
         raise RuntimeError(
             "El orden/identidad de LATAM_CHANNEL_IDS no coincide con los 28 IDs "
-            "canónicos de v0.2.34."
+            "canónicos de v0.2.35."
         )
     for channel_id in ADDED_MITV_IDS:
         if channel_id not in latam.LATAM_CHANNEL_IDS:
             raise RuntimeError(f"Falta el nuevo canal {channel_id}.")
 
     dw_configs = [config for config in latam.MITV_CHANNELS if config.channel_id == DW_ID]
-    if len(dw_configs) != 1 or dw_configs[0].slug != DW_SLUG:
-        raise RuntimeError("La configuración de Deutsche.Welle.cl no usa el slug corregido.")
+    if len(dw_configs) != 1 or dw_configs[0].slug != DW_PRIMARY_SLUG:
+        raise RuntimeError("La configuración primaria de Deutsche.Welle.cl no es la esperada.")
 
 
 def _clean_and_annotate_status(output_dir: Path) -> None:
-    """Limpia metadatos STAR TVE y registra la política mi.tv corregida."""
+    """Limpia STAR TVE y registra la fuente que realmente produjo DW."""
     status_path = output_dir / "latam-status.json"
     if not status_path.is_file():
         return
@@ -231,12 +354,6 @@ def _clean_and_annotate_status(output_dir: Path) -> None:
     status["channels"] = EXPECTED_CHANNELS
     status.pop("mitv_local_time_channels", None)
     status["mitv_endpoint_time_channels"] = {
-        DW_ID: {
-            "source": DW_SOURCE_URL,
-            "endpoint_timezone": "UTC",
-            "output_timezone": "America/Guayaquil",
-            "conversion": "UTC->America/Guayaquil",
-        },
         ANTENA3_ID: {
             "source": "https://mi.tv/co/canales/antena3",
             "endpoint_timezone": "UTC",
@@ -250,6 +367,60 @@ def _clean_and_annotate_status(output_dir: Path) -> None:
             "conversion": "UTC->America/Guayaquil",
         },
     }
+
+    if DW_LAST_SOURCE_MODE is None or DW_LAST_SOURCE_URL is None:
+        raise RuntimeError("DW terminó la generación sin registrar una fuente efectiva.")
+
+    status["dw_source_policy"] = {
+        "mode": DW_LAST_SOURCE_MODE,
+        "source": DW_LAST_SOURCE_URL,
+        "source_timezone": DW_LAST_SOURCE_TIMEZONE,
+        "output_timezone": "America/Guayaquil",
+        "manual_offset_minutes": 0,
+        "loaded_days": DW_LAST_LOADED_DAYS,
+        "mi_tv_candidates": [
+            DW_PRIMARY_SOURCE_URL,
+            DW_ALTERNATE_SOURCE_URL,
+        ],
+        "gatotv_fallback": DW_GATOTV_SOURCE_URL,
+        "mi_tv_errors": list(DW_LAST_MITV_ERRORS),
+    }
+
+    if DW_LAST_SOURCE_MODE.startswith("mi-tv-"):
+        status["mitv_endpoint_time_channels"][DW_ID] = {
+            "source": DW_LAST_SOURCE_URL,
+            "endpoint_timezone": "UTC",
+            "output_timezone": "America/Guayaquil",
+            "conversion": "UTC->America/Guayaquil",
+        }
+        if isinstance(sources, dict):
+            mi_tv = sources.get("mi_tv")
+            if isinstance(mi_tv, dict):
+                mi_tv[DW_ID] = DW_LAST_SOURCE_URL
+    elif DW_LAST_SOURCE_MODE == "gatotv-live":
+        mitv_days = status.get("mitv_source_days")
+        if isinstance(mitv_days, dict):
+            mitv_days.pop(DW_ID, None)
+        gatotv_days = status.get("gatotv_source_days")
+        if isinstance(gatotv_days, dict):
+            gatotv_days[DW_ID] = DW_LAST_LOADED_DAYS
+        daily_counts = status.get("gatotv_daily_counts")
+        if isinstance(daily_counts, dict):
+            daily_counts[DW_ID] = dict(DW_LAST_DAILY_COUNTS)
+        source_tzs = status.get("gatotv_source_timezones")
+        if isinstance(source_tzs, dict):
+            source_tzs[DW_ID] = "America/Guayaquil"
+        ampm_flags = status.get("gatotv_ampm_local_preferred")
+        if isinstance(ampm_flags, dict):
+            ampm_flags[DW_ID] = False
+        if isinstance(sources, dict):
+            mi_tv = sources.get("mi_tv")
+            if isinstance(mi_tv, dict):
+                mi_tv.pop(DW_ID, None)
+            gato_tv = sources.get("gato_tv")
+            if isinstance(gato_tv, dict):
+                gato_tv[DW_ID] = DW_GATOTV_SOURCE_URL
+
     status_path.write_text(
         json.dumps(status, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -258,7 +429,7 @@ def _clean_and_annotate_status(output_dir: Path) -> None:
 
 
 def _assert_output(output_dir: Path) -> None:
-    """Guardia final: 28 canales, nuevos IDs presentes y STAR TVE ausente."""
+    """Guardia final: 28 canales, programación útil, fuente DW trazable."""
     xml_path = output_dir / "latam.xml"
     if not xml_path.is_file():
         raise RuntimeError("No se generó latam.xml.")
@@ -286,10 +457,10 @@ def _assert_output(output_dir: Path) -> None:
     if tuple(channel_ids) != EXPECTED_LATAM_IDS:
         raise RuntimeError(
             "latam.xml contiene 28 canales, pero su orden/identidad no coincide "
-            "con la secuencia canónica de v0.2.34."
+            "con la secuencia canónica de v0.2.35."
         )
 
-    for channel_id in REQUIRED_MITV_PROGRAMME_IDS:
+    for channel_id in REQUIRED_PROGRAMME_IDS:
         if channel_id not in channel_ids:
             raise RuntimeError(f"latam.xml no contiene {channel_id}.")
         programmes = root.xpath("./programme[@channel=$channel_id]", channel_id=channel_id)
@@ -309,13 +480,12 @@ def _assert_output(output_dir: Path) -> None:
     if int(status.get("channels", 0)) != EXPECTED_CHANNELS:
         raise RuntimeError("latam-status.json no informa 28 canales.")
     counts = status.get("programme_counts", {})
-    for channel_id in REQUIRED_MITV_PROGRAMME_IDS:
+    for channel_id in REQUIRED_PROGRAMME_IDS:
         if int(counts.get(channel_id, 0)) < 5:
             raise RuntimeError(f"latam-status.json no registra programación de {channel_id}.")
 
     endpoint_modes = status.get("mitv_endpoint_time_channels", {})
     expected_sources = {
-        DW_ID: DW_SOURCE_URL,
         ANTENA3_ID: "https://mi.tv/co/canales/antena3",
         STAR_CHANNEL_ID: "https://mi.tv/co/canales/fox",
     }
@@ -329,6 +499,24 @@ def _assert_output(output_dir: Path) -> None:
             or mode.get("conversion") != "UTC->America/Guayaquil"
         ):
             raise RuntimeError(f"Política horaria inesperada para {channel_id}: {mode!r}")
+
+    dw_policy = status.get("dw_source_policy", {})
+    mode = dw_policy.get("mode")
+    source = dw_policy.get("source")
+    expected_dw_sources = {
+        "mi-tv-primary": DW_PRIMARY_SOURCE_URL,
+        "mi-tv-alternate": DW_ALTERNATE_SOURCE_URL,
+        "gatotv-live": DW_GATOTV_SOURCE_URL,
+    }
+    if mode not in expected_dw_sources or source != expected_dw_sources[mode]:
+        raise RuntimeError(f"Fuente efectiva inesperada para DW: {dw_policy!r}")
+    expected_tz = "America/Guayaquil" if mode == "gatotv-live" else "UTC"
+    if dw_policy.get("source_timezone") != expected_tz:
+        raise RuntimeError(f"Zona fuente inesperada para DW: {dw_policy!r}")
+    if dw_policy.get("output_timezone") != "America/Guayaquil":
+        raise RuntimeError(f"Zona destino inesperada para DW: {dw_policy!r}")
+    if int(dw_policy.get("manual_offset_minutes", -999)) != 0:
+        raise RuntimeError(f"DW no debe usar offset manual: {dw_policy!r}")
 
 
 def _sample_page(times_and_titles: list[tuple[str, str]]) -> str:
@@ -346,6 +534,8 @@ def _sample_page(times_and_titles: list[tuple[str, str]]) -> str:
 
 
 def self_test() -> None:
+    global ORIGINAL_MITV_SCRAPER
+
     configure_channels()
     assert len(latam.LATAM_CHANNEL_IDS) == EXPECTED_CHANNELS
     assert tuple(latam.LATAM_CHANNEL_IDS) == EXPECTED_LATAM_IDS
@@ -354,7 +544,8 @@ def self_test() -> None:
     assert STAR_CHANNEL_ID in latam.LATAM_CHANNEL_IDS
     dw_configs = [config for config in latam.MITV_CHANNELS if config.channel_id == DW_ID]
     assert len(dw_configs) == 1
-    assert dw_configs[0].slug == DW_SLUG
+    assert dw_configs[0].slug == DW_PRIMARY_SLUG
+    assert latam.scrape_mitv_channel is scrape_mitv_with_dw_fallback
 
     sample = _sample_page(
         [
@@ -369,8 +560,6 @@ def self_test() -> None:
     programmes = mitv_utc.parse_mitv_page_utc(
         sample, date(2026, 8, 21), ANTENA3_ID
     )
-    # El endpoint devuelve 15:00 UTC; la página visible en Colombia/Ecuador
-    # corresponde a 10:00 (-05:00). Este era el desfase de v0.2.30/v0.2.31.
     assert programmes[0].start.isoformat() == "2026-08-21T10:00:00-05:00"
     assert programmes[0].stop.isoformat() == "2026-08-21T11:00:00-05:00"
     assert programmes[0].channel_id == ANTENA3_ID
@@ -380,13 +569,73 @@ def self_test() -> None:
     )
     assert programmes_star[0].start.isoformat() == "2026-08-21T10:00:00-05:00"
 
-    # Asegura que el constructor no vuelve a sustituir el scraper estándar.
-    assert latam.scrape_mitv_channel is mitv_utc.scrape_mitv_channel
+    # Prueba 1: slug primario falla y el ID alternativo de mi.tv funciona.
+    real_mitv = ORIGINAL_MITV_SCRAPER
+    real_gatotv = latam.scrape_gatotv_channel
+    calls: list[str] = []
+
+    def fake_mitv(**kwargs):
+        candidate = kwargs["slug"]
+        calls.append(candidate)
+        if candidate == DW_PRIMARY_SLUG:
+            raise RuntimeError("0/3 simulado")
+        return [object()] * 8, 2
+
+    try:
+        ORIGINAL_MITV_SCRAPER = fake_mitv
+        result, loaded = scrape_mitv_with_dw_fallback(
+            country="cl",
+            slug=DW_PRIMARY_SLUG,
+            channel_id=DW_ID,
+            start_date=date(2026, 8, 26),
+            local_days=2,
+            pause_seconds=0,
+        )
+        assert len(result) == 8 and loaded == 2
+        assert calls == [DW_PRIMARY_SLUG, DW_ALTERNATE_SLUG]
+        assert DW_LAST_SOURCE_MODE == "mi-tv-alternate"
+        assert DW_LAST_SOURCE_URL == DW_ALTERNATE_SOURCE_URL
+
+        # Prueba 2: ambos IDs mi.tv fallan y entra GatoTV Latinoamérica.
+        calls.clear()
+
+        def all_mitv_fail(**kwargs):
+            calls.append(kwargs["slug"])
+            raise RuntimeError("0/3 simulado")
+
+        def fake_gatotv(config, start_date, days):
+            assert config.channel_id == DW_ID
+            assert config.slug == DW_GATOTV_SLUG
+            assert days == 2
+            return [object()] * 10, 2, {
+                "2026-08-26": 5,
+                "2026-08-27": 5,
+            }
+
+        ORIGINAL_MITV_SCRAPER = all_mitv_fail
+        latam.scrape_gatotv_channel = fake_gatotv
+        result, loaded = scrape_mitv_with_dw_fallback(
+            country="cl",
+            slug=DW_PRIMARY_SLUG,
+            channel_id=DW_ID,
+            start_date=date(2026, 8, 26),
+            local_days=2,
+            pause_seconds=0,
+        )
+        assert len(result) == 10 and loaded == 2
+        assert calls == [DW_PRIMARY_SLUG, DW_ALTERNATE_SLUG]
+        assert DW_LAST_SOURCE_MODE == "gatotv-live"
+        assert DW_LAST_SOURCE_URL == DW_GATOTV_SOURCE_URL
+        assert DW_LAST_SOURCE_TIMEZONE == "America/Guayaquil"
+        assert DW_LAST_DAILY_COUNTS == {"2026-08-26": 5, "2026-08-27": 5}
+    finally:
+        ORIGINAL_MITV_SCRAPER = real_mitv
+        latam.scrape_gatotv_channel = real_gatotv
 
     print(
-        "Prueba v0.2.34 correcta: 28 canales; STAR TVE excluido; "
-        "DW usa deutsche-welle-espanol; Antena 3 y Star Channel conservan "
-        "endpoint UTC -> America/Guayaquil."
+        "Prueba v0.2.35 correcta: 28 canales; STAR TVE excluido; DW="
+        "mi.tv espanol -> mi.tv amerika -> GatoTV dw_latinoamerica; "
+        "Antena 3/Star Channel conservan UTC -> America/Guayaquil; offsets manuales=0."
     )
 
 
