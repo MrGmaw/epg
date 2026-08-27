@@ -1,15 +1,15 @@
 {
   "version": "0.2.35",
-  "generated_at": "2026-08-26T22:51:56.593483-05:00",
-  "source_commit": "8b63d4b9edc118161cc3b7fe534c74e3b56e17f5",
-  "github_run_id": "33037587092",
+  "generated_at": "2026-08-26T22:53:21.042208-05:00",
+  "source_commit": "aecdbc3eb48c693929f68a9cbae0fb8903177559",
+  "github_run_id": "33037618891",
   "github_run_attempt": "1",
   "base_date": "2026-08-26",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 28,
-  "programmes": 2957,
+  "programmes": 2945,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 70,
     "Canal.Gamavisión.ec": 68,
@@ -29,14 +29,14 @@
     "Canal.History.2.co": 56,
     "TV.Publica.canal.7.ar": 36,
     "Telefe.ar": 43,
-    "Deutsche.Welle.cl": 95,
+    "Deutsche.Welle.cl": 96,
     "hgtv.ar": 85,
     "France24Espanol.fr": 227,
     "Antena3-America.co": 37,
     "Star-Channel.co": 31,
-    "Canal24Horas.es": 203,
-    "La1.es": 104,
-    "Clan.es": 487,
+    "Canal24Horas.es": 202,
+    "La1.es": 103,
+    "Clan.es": 476,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 76
   },
@@ -64,29 +64,29 @@
     "Canal24Horas.es": {
       "2026-08-26": 28,
       "2026-08-27": 27,
-      "2026-08-28": 31,
-      "2026-08-29": 47,
-      "2026-08-30": 50,
-      "2026-08-31": 20
+      "2026-08-28": 35,
+      "2026-08-29": 46,
+      "2026-08-30": 47,
+      "2026-08-31": 19
     },
     "La1.es": {
-      "2026-08-26": 19,
-      "2026-08-27": 21,
-      "2026-08-28": 17,
+      "2026-08-26": 20,
+      "2026-08-27": 22,
+      "2026-08-28": 18,
       "2026-08-29": 17,
-      "2026-08-30": 14,
-      "2026-08-31": 16
+      "2026-08-30": 15,
+      "2026-08-31": 15
     },
     "Clan.es": {
-      "2026-08-26": 88,
-      "2026-08-27": 87,
+      "2026-08-26": 89,
+      "2026-08-27": 88,
       "2026-08-28": 70,
-      "2026-08-29": 79,
-      "2026-08-30": 82,
-      "2026-08-31": 82
+      "2026-08-29": 80,
+      "2026-08-30": 83,
+      "2026-08-31": 71
     },
     "Deutsche.Welle.cl": {
-      "2026-08-26": 47,
+      "2026-08-26": 48,
       "2026-08-27": 48
     }
   },
