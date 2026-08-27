@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.34 — 2026-08-26
+
+- Corrige el fallo `ModuleNotFoundError: No module named 'tc_resilient'`.
+- Añade `scripts/restore_local_modules.py`, que analiza imports locales de forma
+  recursiva y restaura desde el historial Git cualquier `scripts/<modulo>.py`
+  ausente que haya existido en el repositorio.
+- El workflow deja de confiar solo en `py_compile`: después de restaurar las
+  dependencias realiza una importación real de `build_epg_base`, `build_epg`,
+  `build_latam_epg` y `build_latam_resilient`.
+- Conserva la corrección v0.2.33 de DW en
+  `https://mi.tv/cl/canales/deutsche-welle-espanol`, los 28 canales y UTC →
+  `America/Guayaquil`.
+
 ## 0.2.33 — 2026-08-26
 
 - Corrige la fuente de `Deutsche.Welle.cl` en mi.tv Chile:

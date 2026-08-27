@@ -1,7 +1,7 @@
-EPG MrG v0.2.33 — REEMPLAZO TOTAL
+EPG MrG v0.2.34 — REEMPLAZO TOTAL
 
 1. Descomprime el ZIP.
-2. Copia/sube TODO el contenido de la carpeta epg-mrgmaw-v0.2.33-completo a
+2. Copia/sube TODO el contenido de la carpeta epg-mrgmaw-v0.2.34-completo a
    la raíz de la rama main del repositorio MrGmaw/epg.
 3. Reemplaza los archivos coincidentes.
 4. No necesitas instalar antes v0.2.32.
