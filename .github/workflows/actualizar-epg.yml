@@ -53,7 +53,7 @@ jobs:
           python-version: "3.13"
           cache: pip
 
-      - name: Aplicar hotfix URL DW en mi.tv
+      - name: Normalizar fuente primaria DW
         shell: bash
         run: |
           set -euo pipefail
@@ -65,7 +65,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "VERSION=$(cat VERSION)"
-          echo "build_latam_epg.py + DW Español URL corregida + STAR TVE excluido + Antena 3/Star Channel UTC→Guayaquil:"
+          echo "build_latam_epg.py + DW resiliente (2 IDs mi.tv + GatoTV) + STAR TVE excluido + Antena 3/Star Channel UTC→Guayaquil:"
           sha256sum scripts/build_latam_epg.py scripts/build_latam_resilient.py scripts/patch_dw_mitv.py
 
 
@@ -262,13 +262,13 @@ jobs:
           import build_latam_resilient as resilient
 
           STAR_ID = "TVEStarHD.es"
-          MITV_REQUIRED = ("Deutsche.Welle.cl", "Antena3-America.co", "Star-Channel.co")
+          REQUIRED = ("Deutsche.Welle.cl", "Antena3-America.co", "Star-Channel.co")
           # Una sola secuencia canónica: el validador usa exactamente el mismo
-          # orden de IDs que el constructor v0.2.34.
+          # orden de IDs que el constructor v0.2.35.
           validate.LATAM_REQUIRED = resilient.EXPECTED_LATAM_IDS
           assert len(validate.LATAM_REQUIRED) == 28, validate.LATAM_REQUIRED
           assert STAR_ID not in validate.LATAM_REQUIRED
-          assert all(channel_id in validate.LATAM_REQUIRED for channel_id in MITV_REQUIRED)
+          assert all(channel_id in validate.LATAM_REQUIRED for channel_id in REQUIRED)
 
           sys.argv = ["validate_outputs.py", "--public", "public"]
           result = validate.main()
@@ -281,7 +281,7 @@ jobs:
           root = etree.parse("public/latam.xml", parser).getroot()
           assert not root.xpath("./channel[@id=$channel_id]", channel_id=STAR_ID)
           assert not root.xpath("./programme[@channel=$channel_id]", channel_id=STAR_ID)
-          for channel_id in MITV_REQUIRED:
+          for channel_id in REQUIRED:
               assert root.xpath("./channel[@id=$channel_id]", channel_id=channel_id), channel_id
               programmes = root.xpath("./programme[@channel=$channel_id]", channel_id=channel_id)
               assert len(programmes) >= 5, (channel_id, len(programmes))
@@ -289,7 +289,7 @@ jobs:
               assert all(item.get("stop", "").endswith(" -0500") for item in programmes), channel_id
           print(
               "Validación adicional correcta: STAR TVE ausente; DW Español, Antena 3 y "
-              "Star Channel presentes en America/Guayaquil tras convertir el endpoint UTC de mi.tv."
+              "Star Channel presentes en America/Guayaquil; DW admite fallback GatoTV."
           )
           PY
 
