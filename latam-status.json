@@ -1,15 +1,15 @@
 {
   "version": "0.2.35",
-  "generated_at": "2026-08-26T22:53:21.042208-05:00",
+  "generated_at": "2026-08-26T22:55:19.678594-05:00",
   "source_commit": "aecdbc3eb48c693929f68a9cbae0fb8903177559",
-  "github_run_id": "33037618891",
+  "github_run_id": "33037751008",
   "github_run_attempt": "1",
   "base_date": "2026-08-26",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 28,
-  "programmes": 2945,
+  "programmes": 2933,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 70,
     "Canal.Gamavisión.ec": 68,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 207,
     "TeleamazonasGuayaquil.ec": 207,
     "Ecuavisa.ec": 41,
-    "EcuavisaInternacional.ec": 97,
+    "EcuavisaInternacional.ec": 95,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 50,
     "NTN24.co": 38,
@@ -34,9 +34,9 @@
     "France24Espanol.fr": 227,
     "Antena3-America.co": 37,
     "Star-Channel.co": 31,
-    "Canal24Horas.es": 202,
+    "Canal24Horas.es": 201,
     "La1.es": 103,
-    "Clan.es": 476,
+    "Clan.es": 467,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 76
   },
@@ -48,9 +48,9 @@
     "Canal.History.co": 3,
     "Canal.History.2.co": 3,
     "TV.Publica.canal.7.ar": 3,
-    "Telefe.ar": 3,
+    "Telefe.ar": 2,
     "hgtv.ar": 3,
-    "France24Espanol.fr": 3,
+    "France24Espanol.fr": 2,
     "Antena3-America.co": 3,
     "Star-Channel.co": 3
   },
@@ -63,10 +63,10 @@
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
       "2026-08-26": 28,
-      "2026-08-27": 27,
-      "2026-08-28": 35,
+      "2026-08-27": 28,
+      "2026-08-28": 37,
       "2026-08-29": 46,
-      "2026-08-30": 47,
+      "2026-08-30": 46,
       "2026-08-31": 19
     },
     "La1.es": {
@@ -74,16 +74,16 @@
       "2026-08-27": 22,
       "2026-08-28": 18,
       "2026-08-29": 17,
-      "2026-08-30": 15,
+      "2026-08-30": 16,
       "2026-08-31": 15
     },
     "Clan.es": {
       "2026-08-26": 89,
       "2026-08-27": 88,
-      "2026-08-28": 70,
-      "2026-08-29": 80,
-      "2026-08-30": 83,
-      "2026-08-31": 71
+      "2026-08-28": 66,
+      "2026-08-29": 79,
+      "2026-08-30": 81,
+      "2026-08-31": 67
     },
     "Deutsche.Welle.cl": {
       "2026-08-26": 48,
