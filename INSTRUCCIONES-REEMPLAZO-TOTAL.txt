@@ -1,17 +1,20 @@
-EPG MrG v0.2.34 — REEMPLAZO TOTAL
+EPG MrG v0.2.35 — REEMPLAZO TOTAL
 
 1. Descomprime el ZIP.
-2. Copia/sube TODO el contenido de la carpeta epg-mrgmaw-v0.2.34-completo a
+2. Copia/sube TODO el contenido de la carpeta epg-mrgmaw-v0.2.35-completo a
    la raíz de la rama main del repositorio MrGmaw/epg.
 3. Reemplaza los archivos coincidentes.
-4. No necesitas instalar antes v0.2.32.
+4. No necesitas instalar antes v0.2.32, v0.2.33 ni v0.2.34.
 5. Ejecuta el workflow "Actualizar EPG Ecuador y Latinoamérica".
 
 El workflow comprueba/restaura scripts base desde el historial Git del mismo
-repositorio si alguno falta, aplica la nueva URL de DW y valida los 28 canales.
+repositorio si alguno falta y valida los 28 canales.
 
-DW:
-https://mi.tv/cl/canales/deutsche-welle-espanol
+Deutsche.Welle.cl conserva tvg-id y posición. La política de fuente es:
+1. https://mi.tv/cl/canales/deutsche-welle-espanol
+2. https://mi.tv/cl/canales/deutsche-welle-amerika
+3. https://www.gatotv.com/canal/dw_latinoamerica (fallback)
 
-No se cambia el tvg-id:
-Deutsche.Welle.cl
+Si DW usa mi.tv, la hora del endpoint se interpreta como UTC y se convierte a
+America/Guayaquil. Si usa GatoTV, se interpreta como reloj local de
+America/Guayaquil. En ambos casos el ajuste manual es 0 minutos.

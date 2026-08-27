@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.2.35 — DW resiliente
+
+- `Deutsche.Welle.cl` conserva tvg-id y posición canónica.
+- Fuente DW: `deutsche-welle-espanol` → `deutsche-welle-amerika` → GatoTV `dw_latinoamerica`.
+- El fallback GatoTV se usa solo cuando ambos endpoints mi.tv fallan o quedan vacíos.
+- La trazabilidad `latam-status.json` registra cuál fuente produjo realmente DW.
+- DW vía mi.tv mantiene UTC → `America/Guayaquil`; DW vía GatoTV usa el reloj local `America/Guayaquil`; offset manual = 0.
+- Se corrige el parche de slug para que nunca transforme `deutsche-welle-amerika`.
+- Se mantienen 28 canales, STAR TVE excluido y las correcciones v0.2.32 de Antena 3/Star Channel.
+
 ## 0.2.34 — 2026-08-26
 
 - Corrige el fallo `ModuleNotFoundError: No module named 'tc_resilient'`.

@@ -1,4 +1,4 @@
-EPG MrG v0.2.34 — bloque completo de reemplazo
+EPG MrG v0.2.35 — bloque completo de reemplazo
 
 Archivos incluidos en este paquete:
 .github/workflows/actualizar-epg.yml
@@ -7,13 +7,20 @@ CHANGELOG.md
 INSTRUCCIONES-REEMPLAZO-TOTAL.txt
 MANIFEST.txt
 README.md
-RELEASE-v0.2.34.md
+RELEASE-v0.2.35.md
 VERSION
 requirements.txt
 scripts/build_latam_resilient.py
 scripts/patch_dw_mitv.py
 scripts/restore_baseline_from_git.sh
 scripts/restore_local_modules.py
+
+Política DW de v0.2.35:
+1. mi.tv Chile: deutsche-welle-espanol
+2. mi.tv Chile: deutsche-welle-amerika
+3. fallback: https://www.gatotv.com/canal/dw_latinoamerica
+
+El tvg-id sigue siendo Deutsche.Welle.cl y permanece en su posición canónica.
 
 Archivos base esperados por el workflow y protegidos por restauración desde el
 historial Git si faltan tras el reemplazo:
