@@ -1,100 +1,106 @@
 {
-  "version": "0.2.32",
-  "generated_at": "2026-08-24T16:43:48.425446-05:00",
-  "source_commit": "13d937e3c205820cd03bd31e3ce81b86758df73f",
-  "github_run_id": "32780962116",
+  "version": "0.2.35",
+  "generated_at": "2026-08-26T22:51:56.593483-05:00",
+  "source_commit": "8b63d4b9edc118161cc3b7fe534c74e3b56e17f5",
+  "github_run_id": "33037587092",
   "github_run_attempt": "1",
-  "base_date": "2026-08-24",
+  "base_date": "2026-08-26",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 28,
-  "programmes": 2766,
+  "programmes": 2957,
   "programme_counts": {
-    "Canal.TC.Televisión.ec": 47,
-    "Canal.Gamavisión.ec": 42,
-    "Canal.RTS.ec": 38,
-    "Canal.TVE.Internacional.(Televisión.Española).ec": 43,
-    "TeleamazonasQuito.ec": 209,
-    "TeleamazonasGuayaquil.ec": 209,
-    "Ecuavisa.ec": 26,
-    "EcuavisaInternacional.ec": 69,
+    "Canal.TC.Televisión.ec": 70,
+    "Canal.Gamavisión.ec": 68,
+    "Canal.RTS.ec": 62,
+    "Canal.TVE.Internacional.(Televisión.Española).ec": 58,
+    "TeleamazonasQuito.ec": 207,
+    "TeleamazonasGuayaquil.ec": 207,
+    "Ecuavisa.ec": 41,
+    "EcuavisaInternacional.ec": 97,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 50,
-    "NTN24.co": 42,
-    "CanalRCN.co": 34,
-    "CaracolTV.co": 37,
-    "Canal.Elgourmet.ec": 91,
-    "Canal.History.co": 56,
-    "Canal.History.2.co": 61,
-    "TV.Publica.canal.7.ar": 31,
-    "Telefe.ar": 35,
-    "Deutsche.Welle.cl": 84,
-    "hgtv.ar": 81,
-    "France24Espanol.fr": 220,
-    "Antena3-America.co": 35,
+    "NTN24.co": 38,
+    "CanalRCN.co": 36,
+    "CaracolTV.co": 41,
+    "Canal.Elgourmet.ec": 92,
+    "Canal.History.co": 57,
+    "Canal.History.2.co": 56,
+    "TV.Publica.canal.7.ar": 36,
+    "Telefe.ar": 43,
+    "Deutsche.Welle.cl": 95,
+    "hgtv.ar": 85,
+    "France24Espanol.fr": 227,
+    "Antena3-America.co": 37,
     "Star-Channel.co": 31,
-    "Canal24Horas.es": 181,
-    "La1.es": 100,
-    "Clan.es": 497,
+    "Canal24Horas.es": 203,
+    "La1.es": 104,
+    "Clan.es": 487,
     "MakroDigitalTV.ec": 197,
-    "Canal.Ecuador.TV.ec": 64
+    "Canal.Ecuador.TV.ec": 76
   },
   "mitv_source_days": {
-    "Canal.TVE.Internacional.(Televisión.Española).ec": 2,
-    "CanalRCN.co": 2,
-    "CaracolTV.co": 2,
-    "Canal.Elgourmet.ec": 2,
-    "Canal.History.co": 2,
-    "Canal.History.2.co": 2,
-    "TV.Publica.canal.7.ar": 2,
-    "Telefe.ar": 2,
-    "Deutsche.Welle.cl": 2,
-    "hgtv.ar": 2,
-    "France24Espanol.fr": 2,
-    "Antena3-America.co": 2,
-    "Star-Channel.co": 2
+    "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
+    "CanalRCN.co": 3,
+    "CaracolTV.co": 3,
+    "Canal.Elgourmet.ec": 3,
+    "Canal.History.co": 3,
+    "Canal.History.2.co": 3,
+    "TV.Publica.canal.7.ar": 3,
+    "Telefe.ar": 3,
+    "hgtv.ar": 3,
+    "France24Espanol.fr": 3,
+    "Antena3-America.co": 3,
+    "Star-Channel.co": 3
   },
   "gatotv_source_days": {
     "Canal24Horas.es": 6,
     "La1.es": 6,
-    "Clan.es": 6
+    "Clan.es": 6,
+    "Deutsche.Welle.cl": 2
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-08-24": 28,
-      "2026-08-25": 26,
       "2026-08-26": 28,
       "2026-08-27": 27,
       "2026-08-28": 31,
-      "2026-08-29": 41
+      "2026-08-29": 47,
+      "2026-08-30": 50,
+      "2026-08-31": 20
     },
     "La1.es": {
-      "2026-08-24": 17,
-      "2026-08-25": 19,
-      "2026-08-26": 17,
-      "2026-08-27": 18,
+      "2026-08-26": 19,
+      "2026-08-27": 21,
       "2026-08-28": 17,
-      "2026-08-29": 12
+      "2026-08-29": 17,
+      "2026-08-30": 14,
+      "2026-08-31": 16
     },
     "Clan.es": {
-      "2026-08-24": 78,
-      "2026-08-25": 85,
       "2026-08-26": 88,
       "2026-08-27": 87,
-      "2026-08-28": 84,
-      "2026-08-29": 75
+      "2026-08-28": 70,
+      "2026-08-29": 79,
+      "2026-08-30": 82,
+      "2026-08-31": 82
+    },
+    "Deutsche.Welle.cl": {
+      "2026-08-26": 47,
+      "2026-08-27": 48
     }
   },
   "gatotv_source_timezones": {
     "Canal24Horas.es": "America/Guayaquil",
     "La1.es": "America/Guayaquil",
-    "Clan.es": "America/Guayaquil"
+    "Clan.es": "America/Guayaquil",
+    "Deutsche.Welle.cl": "America/Guayaquil"
   },
   "gatotv_ampm_local_preferred": {
     "Canal24Horas.es": false,
     "La1.es": false,
-    "Clan.es": false
+    "Clan.es": false,
+    "Deutsche.Welle.cl": false
   },
   "makrodigital": {
     "url": "https://makrodigitaltelevision.com/programacion/",
@@ -110,7 +116,7 @@
       "6": 26
     },
     "programmes": 197,
-    "repaired_ranges": 1,
+    "repaired_ranges": 2,
     "mode": "official-live"
   },
   "logos_manifest": "manifest.json",
@@ -132,22 +138,21 @@
   "ecuador_tv": {
     "source": "official_or_verified_overlay+epgshare_fallback",
     "official_dates": [
-      "2026-08-24",
-      "2026-08-25",
+      "2026-08-26",
+      "2026-08-27",
+      "2026-08-28",
+      "2026-08-31"
+    ],
+    "fallback_dates": [
       "2026-08-26",
       "2026-08-27",
       "2026-08-28"
     ],
-    "fallback_dates": [
-      "2026-08-23",
-      "2026-08-24",
-      "2026-08-25"
-    ],
-    "official_programmes": 25,
-    "fallback_programmes_kept": 39,
-    "fallback_programmes_replaced": 4,
+    "official_programmes": 20,
+    "fallback_programmes_kept": 56,
+    "fallback_programmes_replaced": 8,
     "official_sources": [],
-    "verified_evening_programmes": 25,
+    "verified_evening_programmes": 20,
     "verified_evening_adjusted": 0,
     "verified_evening_valid_until": "2026-08-31"
   },
@@ -172,7 +177,6 @@
       "Canal.History.2.co": "https://mi.tv/co/canales/h2",
       "TV.Publica.canal.7.ar": "https://mi.tv/ar/canales/canal-7-capital",
       "Telefe.ar": "https://mi.tv/ar/canales/telefe",
-      "Deutsche.Welle.cl": "https://mi.tv/cl/canales/deutsche-welle-espanol",
       "hgtv.ar": "https://mi.tv/ar/canales/hgtv",
       "France24Espanol.fr": "https://mi.tv/ar/canales/france-24-espanol",
       "Antena3-America.co": "https://mi.tv/co/canales/antena3",
@@ -181,7 +185,8 @@
     "gato_tv": {
       "Canal24Horas.es": "https://www.gatotv.com/canal/24_horas_tve",
       "La1.es": "https://www.gatotv.com/canal/la_1",
-      "Clan.es": "https://www.gatotv.com/canal/clan_tve"
+      "Clan.es": "https://www.gatotv.com/canal/clan_tve",
+      "Deutsche.Welle.cl": "https://www.gatotv.com/canal/dw_latinoamerica"
     },
     "makrodigital_official": "https://makrodigitaltelevision.com/programacion/"
   },
@@ -198,5 +203,22 @@
       "output_timezone": "America/Guayaquil",
       "conversion": "UTC->America/Guayaquil"
     }
+  },
+  "dw_source_policy": {
+    "mode": "gatotv-live",
+    "source": "https://www.gatotv.com/canal/dw_latinoamerica",
+    "source_timezone": "America/Guayaquil",
+    "output_timezone": "America/Guayaquil",
+    "manual_offset_minutes": 0,
+    "loaded_days": 2,
+    "mi_tv_candidates": [
+      "https://mi.tv/cl/canales/deutsche-welle-espanol",
+      "https://mi.tv/cl/canales/deutsche-welle-amerika"
+    ],
+    "gatotv_fallback": "https://www.gatotv.com/canal/dw_latinoamerica",
+    "mi_tv_errors": [
+      "deutsche-welle-espanol: mi.tv Deutsche.Welle.cl: no se obtuvo programación suficiente para la ventana local solicitada (fechas UTC cargadas: 0/3).",
+      "deutsche-welle-amerika: mi.tv Deutsche.Welle.cl: no se obtuvo programación suficiente para la ventana local solicitada (fechas UTC cargadas: 0/3)."
+    ]
   }
 }
