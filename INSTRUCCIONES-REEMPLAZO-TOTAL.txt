@@ -1,0 +1,17 @@
+EPG MrG v0.2.33 — REEMPLAZO TOTAL
+
+1. Descomprime el ZIP.
+2. Copia/sube TODO el contenido de la carpeta epg-mrgmaw-v0.2.33-completo a
+   la raíz de la rama main del repositorio MrGmaw/epg.
+3. Reemplaza los archivos coincidentes.
+4. No necesitas instalar antes v0.2.32.
+5. Ejecuta el workflow "Actualizar EPG Ecuador y Latinoamérica".
+
+El workflow comprueba/restaura scripts base desde el historial Git del mismo
+repositorio si alguno falta, aplica la nueva URL de DW y valida los 28 canales.
+
+DW:
+https://mi.tv/cl/canales/deutsche-welle-espanol
+
+No se cambia el tvg-id:
+Deutsche.Welle.cl

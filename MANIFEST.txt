@@ -1,0 +1,24 @@
+EPG MrG v0.2.33 — bloque completo de reemplazo
+
+Archivos incluidos en este paquete:
+.github/workflows/actualizar-epg.yml
+.gitignore
+CHANGELOG.md
+MANIFEST.txt
+README.md
+VERSION
+requirements.txt
+scripts/build_latam_resilient.py
+scripts/patch_dw_mitv.py
+scripts/restore_baseline_from_git.sh
+
+Archivos base esperados por el workflow y protegidos por restauración desde el
+historial Git si faltan tras el reemplazo:
+requirements.txt
+scripts/build_epg.py
+scripts/build_latam_epg.py
+scripts/mitv_utc.py
+scripts/mitv_logos.py
+scripts/apply_local_logos.py
+scripts/tvc_resilient.py
+scripts/validate_outputs.py
