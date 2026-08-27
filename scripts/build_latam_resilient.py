@@ -5,18 +5,19 @@ Compatibilidad con v0.2.29:
 - ``TVEStarHD.es`` continúa excluido completamente.
 - Se añaden ``Antena3-America.co`` y ``Star-Channel.co`` desde mi.tv Colombia.
 
-Regla horaria corregida desde v0.2.32:
-las páginas visibles de mi.tv Colombia corresponden al reloj local de
-Colombia/Ecuador, pero el endpoint HTML asíncrono usado por el scraper entrega
-sus horas en UTC. Por ello Antena 3 y Star Channel usan el mismo parser
-``scripts/mitv_utc.py`` que el resto de canales mi.tv: UTC ->
-``America/Guayaquil``. No existe offset manual.
+Reglas vigentes desde v0.2.33:
+- Antena 3 y Star Channel conservan la corrección de v0.2.32: el endpoint
+  asíncrono de mi.tv se interpreta como UTC y se convierte a
+  ``America/Guayaquil`` mediante ``scripts/mitv_utc.py``. No existe offset manual.
+- ``Deutsche.Welle.cl`` mantiene su tvg-id y posición, pero cambia su slug de
+  mi.tv Chile de ``deutsche-welle`` a ``deutsche-welle-espanol``.
 """
 
 from __future__ import annotations
 
 import json
 import sys
+from dataclasses import fields as dataclass_fields, is_dataclass, replace as dataclass_replace
 from datetime import date
 from pathlib import Path
 
@@ -28,7 +29,13 @@ import mitv_utc
 STAR_TVE_ID = "TVEStarHD.es"
 ANTENA3_ID = "Antena3-America.co"
 STAR_CHANNEL_ID = "Star-Channel.co"
+DW_ID = "Deutsche.Welle.cl"
+DW_OLD_SLUG = "deutsche-welle"
+DW_SLUG = "deutsche-welle-espanol"
+DW_OLD_SOURCE_URL = "https://mi.tv/cl/canales/deutsche-welle"
+DW_SOURCE_URL = "https://mi.tv/cl/canales/deutsche-welle-espanol"
 ADDED_MITV_IDS = frozenset({ANTENA3_ID, STAR_CHANNEL_ID})
+REQUIRED_MITV_PROGRAMME_IDS = (DW_ID, ANTENA3_ID, STAR_CHANNEL_ID)
 EXPECTED_CHANNELS = 28
 EXPECTED_LATAM_IDS: tuple[str, ...] = (
     "Canal.TC.Televisión.ec",
@@ -92,15 +99,72 @@ def _output_dir(argv: list[str]) -> Path:
     return _arg_path(argv, "--output", Path("public"))
 
 
+def _replace_dw_mitv_config(config: latam.MitvChannel) -> latam.MitvChannel:
+    """Cambia solo slug/URL de DW, preservando los demás campos del objeto."""
+    if is_dataclass(config):
+        updates: dict[str, object] = {}
+        for field in dataclass_fields(config):
+            value = getattr(config, field.name)
+            if field.name == "slug" or value == DW_OLD_SLUG:
+                updates[field.name] = DW_SLUG
+            elif value == DW_OLD_SOURCE_URL:
+                updates[field.name] = DW_SOURCE_URL
+        if not updates:
+            raise RuntimeError("No se pudo identificar el slug de DW en MitvChannel.")
+        return dataclass_replace(config, **updates)
+
+    if hasattr(config, "_asdict") and hasattr(config, "_replace"):
+        values = config._asdict()
+        updates = {}
+        for name, value in values.items():
+            if name == "slug" or value == DW_OLD_SLUG:
+                updates[name] = DW_SLUG
+            elif value == DW_OLD_SOURCE_URL:
+                updates[name] = DW_SOURCE_URL
+        if not updates:
+            raise RuntimeError("No se pudo identificar el slug de DW en MitvChannel.")
+        return config._replace(**updates)
+
+    try:
+        values = list(config)
+    except TypeError as exc:
+        raise RuntimeError("Tipo MitvChannel no soportado para aplicar hotfix DW.") from exc
+    if len(values) < 2:
+        raise RuntimeError("MitvChannel de DW no contiene suficientes campos.")
+    values = [
+        DW_SLUG if value == DW_OLD_SLUG else
+        DW_SOURCE_URL if value == DW_OLD_SOURCE_URL else value
+        for value in values
+    ]
+    values[1] = DW_SLUG
+    if len(values) >= 5 and isinstance(values[4], str) and "mi.tv/cl/canales/" in values[4]:
+        values[4] = DW_SOURCE_URL
+    return latam.MitvChannel(*values)
+
+
 def configure_channels() -> None:
-    """Retira STAR TVE y añade los dos canales mi.tv con IDs estables."""
+    """Retira STAR TVE, corrige DW y añade Antena 3 / Star Channel."""
     latam.GATOTV_CHANNELS = tuple(
         config for config in latam.GATOTV_CHANNELS if config.channel_id != STAR_TVE_ID
     )
 
-    # Idempotencia: si se invoca más de una vez, no duplica canales.
+    # Corrige DW en su posición original y conserva todos sus demás metadatos.
+    patched_mitv_channels: list[latam.MitvChannel] = []
+    dw_matches = 0
+    for config in latam.MITV_CHANNELS:
+        if config.channel_id == DW_ID:
+            config = _replace_dw_mitv_config(config)
+            dw_matches += 1
+        patched_mitv_channels.append(config)
+    if dw_matches != 1:
+        raise RuntimeError(
+            f"Se esperaba exactamente una configuración mi.tv para {DW_ID}; "
+            f"obtenidas={dw_matches}."
+        )
+
+    # Idempotencia: si se invoca más de una vez, no duplica canales nuevos.
     latam.MITV_CHANNELS = tuple(
-        config for config in latam.MITV_CHANNELS if config.channel_id not in ADDED_MITV_IDS
+        config for config in patched_mitv_channels if config.channel_id not in ADDED_MITV_IDS
     ) + ADDED_MITV_CHANNELS
 
     latam.LATAM_CHANNEL_IDS = (
@@ -125,11 +189,15 @@ def configure_channels() -> None:
     if tuple(latam.LATAM_CHANNEL_IDS) != EXPECTED_LATAM_IDS:
         raise RuntimeError(
             "El orden/identidad de LATAM_CHANNEL_IDS no coincide con los 28 IDs "
-            "canónicos de v0.2.32."
+            "canónicos de v0.2.33."
         )
     for channel_id in ADDED_MITV_IDS:
         if channel_id not in latam.LATAM_CHANNEL_IDS:
             raise RuntimeError(f"Falta el nuevo canal {channel_id}.")
+
+    dw_configs = [config for config in latam.MITV_CHANNELS if config.channel_id == DW_ID]
+    if len(dw_configs) != 1 or dw_configs[0].slug != DW_SLUG:
+        raise RuntimeError("La configuración de Deutsche.Welle.cl no usa el slug corregido.")
 
 
 def _clean_and_annotate_status(output_dir: Path) -> None:
@@ -163,6 +231,12 @@ def _clean_and_annotate_status(output_dir: Path) -> None:
     status["channels"] = EXPECTED_CHANNELS
     status.pop("mitv_local_time_channels", None)
     status["mitv_endpoint_time_channels"] = {
+        DW_ID: {
+            "source": DW_SOURCE_URL,
+            "endpoint_timezone": "UTC",
+            "output_timezone": "America/Guayaquil",
+            "conversion": "UTC->America/Guayaquil",
+        },
         ANTENA3_ID: {
             "source": "https://mi.tv/co/canales/antena3",
             "endpoint_timezone": "UTC",
@@ -212,10 +286,10 @@ def _assert_output(output_dir: Path) -> None:
     if tuple(channel_ids) != EXPECTED_LATAM_IDS:
         raise RuntimeError(
             "latam.xml contiene 28 canales, pero su orden/identidad no coincide "
-            "con la secuencia canónica de v0.2.32."
+            "con la secuencia canónica de v0.2.33."
         )
 
-    for channel_id in (ANTENA3_ID, STAR_CHANNEL_ID):
+    for channel_id in REQUIRED_MITV_PROGRAMME_IDS:
         if channel_id not in channel_ids:
             raise RuntimeError(f"latam.xml no contiene {channel_id}.")
         programmes = root.xpath("./programme[@channel=$channel_id]", channel_id=channel_id)
@@ -235,12 +309,13 @@ def _assert_output(output_dir: Path) -> None:
     if int(status.get("channels", 0)) != EXPECTED_CHANNELS:
         raise RuntimeError("latam-status.json no informa 28 canales.")
     counts = status.get("programme_counts", {})
-    for channel_id in (ANTENA3_ID, STAR_CHANNEL_ID):
+    for channel_id in REQUIRED_MITV_PROGRAMME_IDS:
         if int(counts.get(channel_id, 0)) < 5:
             raise RuntimeError(f"latam-status.json no registra programación de {channel_id}.")
 
     endpoint_modes = status.get("mitv_endpoint_time_channels", {})
     expected_sources = {
+        DW_ID: DW_SOURCE_URL,
         ANTENA3_ID: "https://mi.tv/co/canales/antena3",
         STAR_CHANNEL_ID: "https://mi.tv/co/canales/fox",
     }
@@ -277,6 +352,9 @@ def self_test() -> None:
     assert STAR_TVE_ID not in latam.LATAM_CHANNEL_IDS
     assert ANTENA3_ID in latam.LATAM_CHANNEL_IDS
     assert STAR_CHANNEL_ID in latam.LATAM_CHANNEL_IDS
+    dw_configs = [config for config in latam.MITV_CHANNELS if config.channel_id == DW_ID]
+    assert len(dw_configs) == 1
+    assert dw_configs[0].slug == DW_SLUG
 
     sample = _sample_page(
         [
@@ -306,8 +384,9 @@ def self_test() -> None:
     assert latam.scrape_mitv_channel is mitv_utc.scrape_mitv_channel
 
     print(
-        "Prueba v0.2.32 correcta: 28 canales; STAR TVE excluido; "
-        "Antena 3 y Star Channel usan endpoint UTC -> America/Guayaquil."
+        "Prueba v0.2.33 correcta: 28 canales; STAR TVE excluido; "
+        "DW usa deutsche-welle-espanol; Antena 3 y Star Channel conservan "
+        "endpoint UTC -> America/Guayaquil."
     )
 
 
