@@ -5,7 +5,7 @@ Compatibilidad con v0.2.29:
 - ``TVEStarHD.es`` continúa excluido completamente.
 - Se añaden ``Antena3-America.co`` y ``Star-Channel.co`` desde mi.tv Colombia.
 
-Reglas vigentes desde v0.2.33:
+Reglas vigentes desde v0.2.34:
 - Antena 3 y Star Channel conservan la corrección de v0.2.32: el endpoint
   asíncrono de mi.tv se interpreta como UTC y se convierte a
   ``America/Guayaquil`` mediante ``scripts/mitv_utc.py``. No existe offset manual.
@@ -189,7 +189,7 @@ def configure_channels() -> None:
     if tuple(latam.LATAM_CHANNEL_IDS) != EXPECTED_LATAM_IDS:
         raise RuntimeError(
             "El orden/identidad de LATAM_CHANNEL_IDS no coincide con los 28 IDs "
-            "canónicos de v0.2.33."
+            "canónicos de v0.2.34."
         )
     for channel_id in ADDED_MITV_IDS:
         if channel_id not in latam.LATAM_CHANNEL_IDS:
@@ -286,7 +286,7 @@ def _assert_output(output_dir: Path) -> None:
     if tuple(channel_ids) != EXPECTED_LATAM_IDS:
         raise RuntimeError(
             "latam.xml contiene 28 canales, pero su orden/identidad no coincide "
-            "con la secuencia canónica de v0.2.33."
+            "con la secuencia canónica de v0.2.34."
         )
 
     for channel_id in REQUIRED_MITV_PROGRAMME_IDS:
@@ -384,7 +384,7 @@ def self_test() -> None:
     assert latam.scrape_mitv_channel is mitv_utc.scrape_mitv_channel
 
     print(
-        "Prueba v0.2.33 correcta: 28 canales; STAR TVE excluido; "
+        "Prueba v0.2.34 correcta: 28 canales; STAR TVE excluido; "
         "DW usa deutsche-welle-espanol; Antena 3 y Star Channel conservan "
         "endpoint UTC -> America/Guayaquil."
     )
