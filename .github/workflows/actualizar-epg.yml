@@ -47,13 +47,20 @@ jobs:
           python-version: "3.13"
           cache: pip
 
+      - name: Aplicar hotfix URL DW en mi.tv
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/patch_dw_mitv.py
+          grep -q 'deutsche-welle-espanol' scripts/build_latam_epg.py
+
       - name: Mostrar versión y huella del generador LATAM
         shell: bash
         run: |
           set -euo pipefail
           echo "VERSION=$(cat VERSION)"
-          echo "build_latam_epg.py + STAR TVE excluido + Antena 3/Star Channel mi.tv UTC→Guayaquil:"
-          sha256sum scripts/build_latam_epg.py scripts/build_latam_resilient.py
+          echo "build_latam_epg.py + DW Español URL corregida + STAR TVE excluido + Antena 3/Star Channel UTC→Guayaquil:"
+          sha256sum scripts/build_latam_epg.py scripts/build_latam_resilient.py scripts/patch_dw_mitv.py
 
 
       - name: Instalar dependencias
@@ -93,6 +100,7 @@ jobs:
             scripts/tvc_resilient.py \
             scripts/build_latam_epg.py \
             scripts/build_latam_resilient.py \
+            scripts/patch_dw_mitv.py \
             scripts/mitv_logos.py \
             scripts/apply_local_logos.py \
             scripts/validate_outputs.py
@@ -238,13 +246,13 @@ jobs:
           import build_latam_resilient as resilient
 
           STAR_ID = "TVEStarHD.es"
-          NEW_IDS = ("Antena3-America.co", "Star-Channel.co")
+          MITV_REQUIRED = ("Deutsche.Welle.cl", "Antena3-America.co", "Star-Channel.co")
           # Una sola secuencia canónica: el validador usa exactamente el mismo
-          # orden de IDs que el constructor v0.2.32.
+          # orden de IDs que el constructor v0.2.33.
           validate.LATAM_REQUIRED = resilient.EXPECTED_LATAM_IDS
           assert len(validate.LATAM_REQUIRED) == 28, validate.LATAM_REQUIRED
           assert STAR_ID not in validate.LATAM_REQUIRED
-          assert all(channel_id in validate.LATAM_REQUIRED for channel_id in NEW_IDS)
+          assert all(channel_id in validate.LATAM_REQUIRED for channel_id in MITV_REQUIRED)
 
           sys.argv = ["validate_outputs.py", "--public", "public"]
           result = validate.main()
@@ -257,15 +265,15 @@ jobs:
           root = etree.parse("public/latam.xml", parser).getroot()
           assert not root.xpath("./channel[@id=$channel_id]", channel_id=STAR_ID)
           assert not root.xpath("./programme[@channel=$channel_id]", channel_id=STAR_ID)
-          for channel_id in NEW_IDS:
+          for channel_id in MITV_REQUIRED:
               assert root.xpath("./channel[@id=$channel_id]", channel_id=channel_id), channel_id
               programmes = root.xpath("./programme[@channel=$channel_id]", channel_id=channel_id)
               assert len(programmes) >= 5, (channel_id, len(programmes))
               assert all(item.get("start", "").endswith(" -0500") for item in programmes), channel_id
               assert all(item.get("stop", "").endswith(" -0500") for item in programmes), channel_id
           print(
-              "Validación adicional correcta: STAR TVE ausente; "
-              "Antena 3 y Star Channel presentes en America/Guayaquil tras convertir el endpoint UTC de mi.tv."
+              "Validación adicional correcta: STAR TVE ausente; DW Español, Antena 3 y "
+              "Star Channel presentes en America/Guayaquil tras convertir el endpoint UTC de mi.tv."
           )
           PY
 
