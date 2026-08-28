@@ -1,15 +1,15 @@
 {
   "version": "0.2.37",
-  "generated_at": "2026-08-28T00:23:25.179940-05:00",
+  "generated_at": "2026-08-28T15:50:58.226679-05:00",
   "source_commit": "fae032f4182d96ae5bdee056f56b4e2885379c89",
-  "github_run_id": "33144559914",
+  "github_run_id": "33209896730",
   "github_run_attempt": "1",
   "base_date": "2026-08-28",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 30,
-  "programmes": 2801,
+  "programmes": 2790,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 78,
     "Canal.Gamavisión.ec": 57,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 207,
     "TeleamazonasGuayaquil.ec": 207,
     "Ecuavisa.ec": 47,
-    "EcuavisaInternacional.ec": 83,
+    "EcuavisaInternacional.ec": 80,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 55,
     "NTN24.co": 44,
@@ -29,14 +29,14 @@
     "Canal.History.2.co": 58,
     "TV.Publica.canal.7.ar": 38,
     "Telefe.ar": 33,
-    "Deutsche.Welle.cl": 107,
+    "Deutsche.Welle.cl": 108,
     "hgtv.ar": 85,
     "France24Espanol.fr": 228,
     "Antena3-America.co": 32,
     "Star-Channel.co": 27,
     "Canal24Horas.es": 174,
     "La1.es": 89,
-    "Clan.es": 389,
+    "Clan.es": 380,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 69,
     "NBC6-Miami.us": 87,
@@ -64,29 +64,29 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-08-28": 35,
+      "2026-08-28": 37,
       "2026-08-29": 46,
-      "2026-08-30": 47,
-      "2026-08-31": 28,
+      "2026-08-30": 46,
+      "2026-08-31": 29,
       "2026-09-01": 18
     },
     "La1.es": {
       "2026-08-28": 20,
       "2026-08-29": 19,
-      "2026-08-30": 18,
-      "2026-08-31": 18,
+      "2026-08-30": 19,
+      "2026-08-31": 19,
       "2026-09-01": 16
     },
     "Clan.es": {
-      "2026-08-28": 70,
-      "2026-08-29": 80,
-      "2026-08-30": 83,
+      "2026-08-28": 66,
+      "2026-08-29": 79,
+      "2026-08-30": 81,
       "2026-08-31": 88,
-      "2026-09-01": 72
+      "2026-09-01": 68
     },
     "Deutsche.Welle.cl": {
       "2026-08-28": 48,
-      "2026-08-29": 59
+      "2026-08-29": 60
     }
   },
   "gatotv_source_timezones": {
