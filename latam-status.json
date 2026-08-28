@@ -1,15 +1,15 @@
 {
-  "version": "0.2.36",
-  "generated_at": "2026-08-27T23:07:51.762199-05:00",
-  "source_commit": "836024f9dfa5555873d7c37cc37f35a463701183",
-  "github_run_id": "33140862221",
+  "version": "0.2.37",
+  "generated_at": "2026-08-27T23:19:23.899894-05:00",
+  "source_commit": "fae032f4182d96ae5bdee056f56b4e2885379c89",
+  "github_run_id": "33141418055",
   "github_run_attempt": "1",
   "base_date": "2026-08-27",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
-  "channels": 28,
-  "programmes": 2957,
+  "channels": 30,
+  "programmes": 2933,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 79,
     "Canal.Gamavisión.ec": 65,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 207,
     "TeleamazonasGuayaquil.ec": 207,
     "Ecuavisa.ec": 44,
-    "EcuavisaInternacional.ec": 99,
+    "EcuavisaInternacional.ec": 97,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 50,
     "NTN24.co": 38,
@@ -34,11 +34,13 @@
     "France24Espanol.fr": 225,
     "Antena3-America.co": 34,
     "Star-Channel.co": 30,
-    "Canal24Horas.es": 202,
-    "La1.es": 109,
-    "Clan.es": 487,
+    "Canal24Horas.es": 201,
+    "La1.es": 108,
+    "Clan.es": 467,
     "MakroDigitalTV.ec": 197,
-    "Canal.Ecuador.TV.ec": 69
+    "Canal.Ecuador.TV.ec": 69,
+    "NBC6-Miami.us": 117,
+    "ABC-Miami.us": 120
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
@@ -62,28 +64,28 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-08-27": 27,
-      "2026-08-28": 31,
-      "2026-08-29": 47,
-      "2026-08-30": 50,
-      "2026-08-31": 28,
-      "2026-09-01": 19
+      "2026-08-27": 28,
+      "2026-08-28": 37,
+      "2026-08-29": 46,
+      "2026-08-30": 46,
+      "2026-08-31": 29,
+      "2026-09-01": 18
     },
     "La1.es": {
-      "2026-08-27": 19,
-      "2026-08-28": 19,
-      "2026-08-29": 18,
-      "2026-08-30": 18,
-      "2026-08-31": 18,
-      "2026-09-01": 17
+      "2026-08-27": 20,
+      "2026-08-28": 20,
+      "2026-08-29": 19,
+      "2026-08-30": 19,
+      "2026-08-31": 19,
+      "2026-09-01": 16
     },
     "Clan.es": {
-      "2026-08-27": 87,
-      "2026-08-28": 70,
+      "2026-08-27": 88,
+      "2026-08-28": 66,
       "2026-08-29": 79,
-      "2026-08-30": 82,
-      "2026-08-31": 87,
-      "2026-09-01": 83
+      "2026-08-30": 81,
+      "2026-08-31": 88,
+      "2026-09-01": 68
     },
     "Deutsche.Welle.cl": {
       "2026-08-27": 48,
@@ -187,7 +189,11 @@
       "Clan.es": "https://www.gatotv.com/canal/clan_tve",
       "Deutsche.Welle.cl": "https://www.gatotv.com/canal/dw_latinoamerica"
     },
-    "makrodigital_official": "https://makrodigitaltelevision.com/programacion/"
+    "makrodigital_official": "https://makrodigitaltelevision.com/programacion/",
+    "epgshare_miami": {
+      "NBC6-Miami.us": "https://epgshare01.online/epgshare01/epg_ripper_US_LOCALS1.xml.gz",
+      "ABC-Miami.us": "https://epgshare01.online/epgshare01/epg_ripper_US_LOCALS1.xml.gz"
+    }
   },
   "mitv_endpoint_time_channels": {
     "Antena3-America.co": {
@@ -219,5 +225,45 @@
       "deutsche-welle-espanol: mi.tv Deutsche.Welle.cl: no se obtuvo programación suficiente para la ventana local solicitada (fechas UTC cargadas: 0/3).",
       "deutsche-welle-amerika: mi.tv Deutsche.Welle.cl: no se obtuvo programación suficiente para la ventana local solicitada (fechas UTC cargadas: 0/3)."
     ]
+  },
+  "miami_epg": {
+    "provider": "EPGShare US_LOCALS1",
+    "source": "https://epgshare01.online/epgshare01/epg_ripper_US_LOCALS1.xml.gz",
+    "source_mode": "epgshare-live",
+    "output_timezone": "America/Guayaquil",
+    "manual_offset_minutes": 0,
+    "primary_error": null,
+    "channels": {
+      "NBC6-Miami.us": {
+        "display_name": "NBC 6 Miami",
+        "station": "WTVJ",
+        "network": "NBC",
+        "website": "https://www.nbcmiami.com/tv-schedule/",
+        "source_channel_id": "WTVJ-DT.us_locals1",
+        "source": "https://epgshare01.online/epgshare01/epg_ripper_US_LOCALS1.xml.gz",
+        "source_mode": "epgshare-live",
+        "source_timezone_policy": "XMLTV offset; America/New_York fallback",
+        "output_timezone": "America/Guayaquil",
+        "manual_offset_minutes": 0,
+        "programmes": 117,
+        "window_start": "2026-08-27",
+        "window_days": 7
+      },
+      "ABC-Miami.us": {
+        "display_name": "ABC Miami 18",
+        "station": "WSVN-DT2",
+        "network": "ABC",
+        "website": "https://wsvn.com/abc-miami-18/",
+        "source_channel_id": "WSVN-DT2.us_locals1",
+        "source": "https://epgshare01.online/epgshare01/epg_ripper_US_LOCALS1.xml.gz",
+        "source_mode": "epgshare-live",
+        "source_timezone_policy": "XMLTV offset; America/New_York fallback",
+        "output_timezone": "America/Guayaquil",
+        "manual_offset_minutes": 0,
+        "programmes": 120,
+        "window_start": "2026-08-27",
+        "window_days": 7
+      }
+    }
   }
 }

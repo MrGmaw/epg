@@ -7,7 +7,7 @@ Guía principal:
 - `ec.xml.gz`
 - `status.json`
 
-Guía seleccionada de 28 canales:
+Guía seleccionada de 30 canales:
 - `latam.xml`
 - `latam.xml.gz`
 - `latam-status.json`
