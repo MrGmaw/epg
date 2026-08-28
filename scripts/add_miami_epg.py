@@ -296,7 +296,7 @@ def _download_extract(
     attempts: int = 3,
 ) -> tuple[dict[str, etree._Element], dict[str, list[etree._Element]]]:
     headers = {
-        "User-Agent": "EPG-MrG/0.2.36 (+GitHub Actions; XMLTV)",
+        "User-Agent": "EPG-MrG/0.2.37 (+GitHub Actions; XMLTV)",
         "Accept": "application/gzip, application/octet-stream, */*",
     }
     errors: list[str] = []
@@ -443,9 +443,36 @@ def _update_status(
     primary_error: str | None,
 ) -> None:
     status = json.loads(status_path.read_text(encoding="utf-8"))
-    counts = status.setdefault("programme_counts", {})
-    sources = status.setdefault("sources", {})
-    epgshare_sources = sources.setdefault("epgshare", {})
+    if not isinstance(status, dict):
+        raise RuntimeError("latam-status.json debe contener un objeto JSON en la raíz.")
+
+    # Compatibilidad con distintas revisiones del generador base. Algunas
+    # versiones heredadas serializan metadatos auxiliares como texto en vez de
+    # objetos. No intentamos modificar esos strings: normalizamos únicamente
+    # los contenedores que esta capa necesita ampliar.
+    counts = status.get("programme_counts")
+    if not isinstance(counts, dict):
+        counts = {}
+        status["programme_counts"] = counts
+
+    sources = status.get("sources")
+    if not isinstance(sources, dict):
+        # Conservamos el valor heredado para diagnóstico sin romper el esquema
+        # nuevo que necesita un diccionario de proveedores.
+        if sources not in (None, ""):
+            status["legacy_sources"] = sources
+        sources = {}
+        status["sources"] = sources
+
+    # `sources.epgshare` pertenece al generador base y es históricamente una
+    # URL de texto. Se conserva intacto. Los canales Miami usan una clave
+    # separada para evitar colisiones de esquema.
+    epgshare_sources = sources.get("epgshare_miami")
+    if not isinstance(epgshare_sources, dict):
+        if epgshare_sources not in (None, ""):
+            sources["epgshare_miami_legacy"] = epgshare_sources
+        epgshare_sources = {}
+        sources["epgshare_miami"] = epgshare_sources
 
     details: dict[str, object] = {}
     for config in MIAMI_CHANNELS:
@@ -690,8 +717,41 @@ def self_test() -> None:
         )
         _assert_final(out)
 
+    # Regresión v0.2.37: tolera estados heredados donde campos auxiliares
+    # llegan como strings (causa del TypeError de v0.2.36).
+    legacy_shapes = (
+        {"channels": EXPECTED_BASE_CHANNELS, "programme_counts": "legacy", "sources": {}},
+        {"channels": EXPECTED_BASE_CHANNELS, "programme_counts": {}, "sources": "legacy"},
+        {
+            "channels": EXPECTED_BASE_CHANNELS,
+            "programme_counts": {},
+            "sources": {"epgshare": "legacy"},
+        },
+    )
+    for legacy_status in legacy_shapes:
+        with tempfile.TemporaryDirectory() as temp_name:
+            status_path = Path(temp_name) / "latam-status.json"
+            status_path.write_text(json.dumps(legacy_status), encoding="utf-8")
+            _update_status(
+                status_path,
+                programmes=programmes,
+                source_url=SOURCE_URL,
+                source_mode="self-test-legacy",
+                start_date=start,
+                days=7,
+                primary_error=None,
+            )
+            repaired = json.loads(status_path.read_text(encoding="utf-8"))
+            assert isinstance(repaired["programme_counts"], dict)
+            assert isinstance(repaired["sources"], dict)
+            assert isinstance(repaired["sources"]["epgshare_miami"], dict)
+            if isinstance(legacy_status.get("sources"), dict) and "epgshare" in legacy_status["sources"]:
+                assert repaired["sources"]["epgshare"] == legacy_status["sources"]["epgshare"]
+            assert repaired["programme_counts"]["NBC6-Miami.us"] == 6
+            assert repaired["programme_counts"]["ABC-Miami.us"] == 6
+
     print(
-        "Prueba v0.2.36 Miami correcta: WTVJ/NBC 6 + WSVN-DT2/ABC Miami; "
+        "Prueba v0.2.37 Miami correcta: WTVJ/NBC 6 + WSVN-DT2/ABC Miami; "
         "DST America/New_York -> America/Guayaquil; offset manual=0.",
         flush=True,
     )
