@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.2.37 — 2026-08-27
+
+- Corrige el `TypeError: 'str' object does not support item assignment` de la capa Miami.
+- La causa era que `latam-status.json` usa históricamente `sources.epgshare` como una URL de texto, mientras v0.2.36 la trataba como un diccionario por canal.
+- `scripts/add_miami_epg.py` ahora detecta y conserva `sources.epgshare` intacto y crea el contenedor separado `sources.epgshare_miami` para las fuentes de NBC 6 Miami y ABC Miami.
+- También normaliza de forma defensiva `programme_counts` y `sources` si una revisión heredada los serializara con un tipo inesperado.
+- Añade regresiones deterministas para los tres casos de metadatos heredados como texto.
+- Se mantienen los 30 canales, los IDs `NBC6-Miami.us` y `ABC-Miami.us`, y la conversión `America/New_York` → `America/Guayaquil` sin offset manual.
+
 ## v0.2.36 — NBC 6 Miami + ABC Miami
 
 - Añade `NBC6-Miami.us` a partir de `WTVJ-DT.us_locals1` de EPGShare.

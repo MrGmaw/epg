@@ -1,4 +1,4 @@
-# EPG MrG v0.2.36 — NBC 6 Miami + ABC Miami
+# EPG MrG v0.2.37 — NBC 6 Miami + ABC Miami
 
 Este paquete es un **reemplazo total** sobre v0.2.35. Conserva sin cambios la
 guía LATAM base de 28 canales y añade al final dos señales locales de Miami:
@@ -43,7 +43,7 @@ La salida de ambos canales se valida en `-0500`.
 
 ## Resiliencia
 
-Si EPGShare falla después de que ya exista una publicación v0.2.36 o posterior,
+Si EPGShare falla después de que ya exista una publicación v0.2.37 o posterior,
 `scripts/add_miami_epg.py` puede reutilizar desde `.cache/previous-latam.xml`
 únicamente programación de Miami que todavía esté vigente para la ventana
 solicitada. Si tampoco existe una parrilla previa útil, el workflow falla en vez

@@ -1,4 +1,4 @@
-EPG MrG v0.2.36 — bloque completo de reemplazo
+EPG MrG v0.2.37 — bloque completo de reemplazo
 
 Archivos incluidos en este paquete:
 .github/workflows/actualizar-epg.yml
@@ -8,7 +8,7 @@ CHECKSUMS-SHA256.txt
 INSTRUCCIONES-REEMPLAZO-TOTAL.txt
 MANIFEST.txt
 README.md
-RELEASE-v0.2.36.md
+RELEASE-v0.2.37.md
 VERSION
 requirements.txt
 scripts/add_miami_epg.py
