@@ -33,7 +33,7 @@ jobs:
   build:
     name: Generar y publicar EPG
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
 
     steps:
       - name: Descargar repositorio
@@ -65,8 +65,12 @@ jobs:
         run: |
           set -euo pipefail
           echo "VERSION=$(cat VERSION)"
-          echo "build_latam_epg.py + DW resiliente (2 IDs mi.tv + GatoTV) + STAR TVE excluido + Antena 3/Star Channel UTC→Guayaquil:"
-          sha256sum scripts/build_latam_epg.py scripts/build_latam_resilient.py scripts/patch_dw_mitv.py
+          echo "build_latam_epg.py + DW resiliente + STAR TVE excluido + Antena 3/Star Channel + Miami WTVJ/WSVN-DT2:"
+          sha256sum \
+            scripts/build_latam_epg.py \
+            scripts/build_latam_resilient.py \
+            scripts/add_miami_epg.py \
+            scripts/patch_dw_mitv.py
 
 
       - name: Instalar dependencias
@@ -107,7 +111,8 @@ jobs:
             scripts/build_epg_base.py \
             scripts/build_epg.py \
             scripts/build_latam_epg.py \
-            scripts/build_latam_resilient.py
+            scripts/build_latam_resilient.py \
+            scripts/add_miami_epg.py
 
           python -m py_compile scripts/*.py
 
@@ -118,7 +123,8 @@ jobs:
           import build_epg  # noqa: F401
           import build_latam_epg  # noqa: F401
           import build_latam_resilient  # noqa: F401
-          print("Importación real de generadores correcta.")
+          import add_miami_epg  # noqa: F401
+          print("Importación real de generadores y capa Miami correcta.")
           PYIMPORT
 
       - name: Preparar directorio público
@@ -157,7 +163,7 @@ jobs:
           if git cat-file -e origin/epg-data:latam.xml 2>/dev/null; then
             git show origin/epg-data:latam.xml > .cache/previous-latam.xml
             test -s .cache/previous-latam.xml
-            echo "Caché de parrilla MakroDigital restaurada desde epg-data/latam.xml."
+            echo "Caché LATAM previa restaurada (MakroDigital + posible fallback Miami)."
           else
             echo "No existe latam.xml previa para respaldo de MakroDigital."
           fi
@@ -187,6 +193,7 @@ jobs:
           python scripts/build_epg.py --self-test
           python scripts/build_latam_epg.py --self-test
           python scripts/build_latam_resilient.py --self-test
+          python scripts/add_miami_epg.py --self-test
           python scripts/mitv_logos.py --self-test
 
       - name: Construir guía principal ec.xml
@@ -235,6 +242,17 @@ jobs:
             --logos-manifest public/logos/manifest.json \
             --previous-latam-xml .cache/previous-latam.xml
 
+      - name: Añadir NBC 6 Miami y ABC Miami
+        shell: bash
+        env:
+          TZ: America/Guayaquil
+        run: |
+          set -euo pipefail
+          python scripts/add_miami_epg.py \
+            --output public \
+            --days "${GUIDE_DAYS}" \
+            --previous-latam-xml .cache/previous-latam.xml
+
       - name: Validar archivos finales
         shell: bash
         run: |
@@ -260,13 +278,18 @@ jobs:
           sys.path.insert(0, "scripts")
           import validate_outputs as validate
           import build_latam_resilient as resilient
+          import add_miami_epg as miami
 
           STAR_ID = "TVEStarHD.es"
-          REQUIRED = ("Deutsche.Welle.cl", "Antena3-America.co", "Star-Channel.co")
-          # Una sola secuencia canónica: el validador usa exactamente el mismo
-          # orden de IDs que el constructor v0.2.35.
-          validate.LATAM_REQUIRED = resilient.EXPECTED_LATAM_IDS
-          assert len(validate.LATAM_REQUIRED) == 28, validate.LATAM_REQUIRED
+          REQUIRED = (
+              "Deutsche.Welle.cl",
+              "Antena3-America.co",
+              "Star-Channel.co",
+              *miami.TARGET_IDS,
+          )
+          # Los 28 IDs base conservan su secuencia y Miami se añade al final.
+          validate.LATAM_REQUIRED = (*resilient.EXPECTED_LATAM_IDS, *miami.TARGET_IDS)
+          assert len(validate.LATAM_REQUIRED) == 30, validate.LATAM_REQUIRED
           assert STAR_ID not in validate.LATAM_REQUIRED
           assert all(channel_id in validate.LATAM_REQUIRED for channel_id in REQUIRED)
 
@@ -287,9 +310,13 @@ jobs:
               assert len(programmes) >= 5, (channel_id, len(programmes))
               assert all(item.get("start", "").endswith(" -0500") for item in programmes), channel_id
               assert all(item.get("stop", "").endswith(" -0500") for item in programmes), channel_id
+          assert tuple(node.get("id", "") for node in root.findall("channel")) == validate.LATAM_REQUIRED
+          policy = __import__("json").loads(Path("public/latam-status.json").read_text(encoding="utf-8")).get("miami_epg", {})
+          assert policy.get("output_timezone") == "America/Guayaquil", policy
+          assert int(policy.get("manual_offset_minutes", -1)) == 0, policy
           print(
-              "Validación adicional correcta: STAR TVE ausente; DW Español, Antena 3 y "
-              "Star Channel presentes en America/Guayaquil; DW admite fallback GatoTV."
+              "Validación adicional correcta: 30 canales; STAR TVE ausente; DW, Antena 3, "
+              "Star Channel, NBC 6 Miami y ABC Miami presentes en America/Guayaquil."
           )
           PY
 
@@ -413,7 +440,7 @@ jobs:
           - `ec.xml.gz`
           - `status.json`
 
-          Guía seleccionada de 28 canales:
+          Guía seleccionada de 30 canales:
           - `latam.xml`
           - `latam.xml.gz`
           - `latam-status.json`
