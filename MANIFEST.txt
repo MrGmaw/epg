@@ -1,26 +1,42 @@
-EPG MrG v0.2.35 — bloque completo de reemplazo
+EPG MrG v0.2.36 — bloque completo de reemplazo
 
 Archivos incluidos en este paquete:
 .github/workflows/actualizar-epg.yml
 .gitignore
 CHANGELOG.md
+CHECKSUMS-SHA256.txt
 INSTRUCCIONES-REEMPLAZO-TOTAL.txt
 MANIFEST.txt
 README.md
-RELEASE-v0.2.35.md
+RELEASE-v0.2.36.md
 VERSION
 requirements.txt
+scripts/add_miami_epg.py
 scripts/build_latam_resilient.py
 scripts/patch_dw_mitv.py
 scripts/restore_baseline_from_git.sh
 scripts/restore_local_modules.py
 
-Política DW de v0.2.35:
+Nuevos canales Miami:
+- WTVJ-DT.us_locals1 -> NBC6-Miami.us (NBC 6 Miami)
+- WSVN-DT2.us_locals1 -> ABC-Miami.us (ABC Miami 18)
+
+Fuente primaria:
+https://epgshare01.online/epgshare01/epg_ripper_US_LOCALS1.xml.gz
+
+Política horaria Miami:
+- offset XMLTV explícito cuando exista;
+- America/New_York como fallback para marcas sin offset;
+- salida America/Guayaquil;
+- offset manual = 0 minutos.
+
+La capa Miami se ejecuta después del constructor LATAM base. Los 28 canales
+existentes permanecen intactos y los dos nuevos se añaden al final: 30 total.
+
+Política DW heredada de v0.2.35:
 1. mi.tv Chile: deutsche-welle-espanol
 2. mi.tv Chile: deutsche-welle-amerika
 3. fallback: https://www.gatotv.com/canal/dw_latinoamerica
-
-El tvg-id sigue siendo Deutsche.Welle.cl y permanece en su posición canónica.
 
 Archivos base esperados por el workflow y protegidos por restauración desde el
 historial Git si faltan tras el reemplazo:
@@ -33,7 +49,5 @@ scripts/apply_local_logos.py
 scripts/tvc_resilient.py
 scripts/validate_outputs.py
 
-Además, restore_local_modules.py recupera automáticamente cualquier dependencia
-Python local histórica adicional importada por los generadores (por ejemplo,
-scripts/tc_resilient.py) y el workflow verifica los imports reales antes de
-construir la EPG.
+restore_local_modules.py recupera automáticamente dependencias Python locales
+históricas adicionales importadas por los generadores.

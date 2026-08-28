@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.2.36 — NBC 6 Miami + ABC Miami
+
+- Añade `NBC6-Miami.us` a partir de `WTVJ-DT.us_locals1` de EPGShare.
+- Añade `ABC-Miami.us` a partir de `WSVN-DT2.us_locals1` de EPGShare.
+- La guía LATAM final pasa de 28 a 30 canales, preservando intactos y en el mismo orden los 28 existentes.
+- Fuente primaria: `epg_ripper_US_LOCALS1.xml.gz`, procesada en streaming.
+- Las horas se convierten a `America/Guayaquil`; si falta offset en origen, se usa `America/New_York` como zona de interpretación, por lo que EST/EDT se resuelve automáticamente.
+- Offset manual para Miami: 0 minutos.
+- Añade fallback a `.cache/previous-latam.xml` solo cuando conserva programación Miami vigente y suficiente.
+- `latam-status.json` registra fuente, modo, IDs, conteos y política horaria de ambos canales.
+- Añade pruebas deterministas para horario de verano e invierno y validación final de 30 IDs.
+- Conserva la política resiliente de DW y todos los cambios de v0.2.35.
+
 ## v0.2.35 — DW resiliente
 
 - `Deutsche.Welle.cl` conserva tvg-id y posición canónica.

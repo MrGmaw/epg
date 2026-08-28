@@ -1,46 +1,85 @@
-# EPG MrG v0.2.35 — bloque de reemplazo total
+# EPG MrG v0.2.36 — NBC 6 Miami + ABC Miami
 
-Este paquete consolida el comportamiento vigente de la guía LATAM de 28 canales
-y no requiere instalar previamente v0.2.32, v0.2.33 ni v0.2.34.
+Este paquete es un **reemplazo total** sobre v0.2.35. Conserva sin cambios la
+guía LATAM base de 28 canales y añade al final dos señales locales de Miami:
 
-## Deutsche Welle resiliente
+- `NBC6-Miami.us` — **NBC 6 Miami / WTVJ**
+- `ABC-Miami.us` — **ABC Miami 18 / WSVN-DT2 (7.2)**
 
-`Deutsche.Welle.cl` conserva exactamente el mismo `tvg-id` y la misma posición
-canónica. v0.2.35 deja de depender de un único endpoint de mi.tv:
+La guía final `latam.xml` queda con **30 canales**.
 
-1. prueba `https://mi.tv/cl/canales/deutsche-welle-espanol`;
-2. si no entrega una parrilla utilizable, prueba
-   `https://mi.tv/cl/canales/deutsche-welle-amerika`;
-3. si ambos fallan, usa la señal española de Latinoamérica de GatoTV:
-   `https://www.gatotv.com/canal/dw_latinoamerica`.
+## Fuente Miami
 
-El fallback no añade un segundo canal ni altera `LATAM_CHANNEL_IDS`: intercepta
-únicamente el scraping de `Deutsche.Welle.cl`.
+La fuente primaria es:
 
-## Zona horaria
+`https://epgshare01.online/epgshare01/epg_ripper_US_LOCALS1.xml.gz`
 
-- DW vía mi.tv: endpoint UTC → `America/Guayaquil` mediante `mitv_utc.py`.
-- DW vía GatoTV: reloj local `America/Guayaquil`, igual que los canales GatoTV
-  ordinarios del generador.
-- Offset manual: 0 minutos.
-- `latam-status.json` registra qué fuente produjo realmente DW.
+IDs extraídos de EPGShare:
 
-## Se conserva de v0.2.32–v0.2.34
+- `WTVJ-DT.us_locals1` → `NBC6-Miami.us`
+- `WSVN-DT2.us_locals1` → `ABC-Miami.us`
 
-- 28 canales en `latam.xml` y orden canónico sin cambios.
+No se incorpora WSVN-DT 7.1 como ABC: ABC Miami corresponde a la sub-señal
+`WSVN-DT2` / 7.2, mientras WSVN 7.1 continúa siendo FOX.
+
+La descarga de US_LOCALS1 se procesa en streaming: no se carga la guía completa
+en memoria. Solo se conservan los dos canales y sus emisiones para la ventana
+local configurada.
+
+## Zona horaria Miami → Ecuador
+
+Las marcas XMLTV que ya traen offset se interpretan como instantes absolutos y
+se convierten a `America/Guayaquil`. Si excepcionalmente EPGShare entrega una
+marca sin offset, se interpreta con `America/New_York`.
+
+Esto respeta automáticamente EST/EDT:
+
+- verano de Miami: 20:00 EDT → 19:00 Ecuador;
+- invierno de Miami: 20:00 EST → 20:00 Ecuador.
+
+**Offset manual: 0 minutos.**
+
+La salida de ambos canales se valida en `-0500`.
+
+## Resiliencia
+
+Si EPGShare falla después de que ya exista una publicación v0.2.36 o posterior,
+`scripts/add_miami_epg.py` puede reutilizar desde `.cache/previous-latam.xml`
+únicamente programación de Miami que todavía esté vigente para la ventana
+solicitada. Si tampoco existe una parrilla previa útil, el workflow falla en vez
+de publicar datos vacíos o antiguos.
+
+`latam-status.json` registra:
+
+- fuente y modo efectivo (`epgshare-live` o fallback previo);
+- ID de origen y `tvg-id` final;
+- número de emisiones;
+- política horaria;
+- error de la fuente primaria, si hubo fallback.
+
+## Deutsche Welle resiliente — se conserva v0.2.35
+
+`Deutsche.Welle.cl` mantiene el mismo `tvg-id` y posición canónica:
+
+1. `https://mi.tv/cl/canales/deutsche-welle-espanol`;
+2. `https://mi.tv/cl/canales/deutsche-welle-amerika`;
+3. fallback `https://www.gatotv.com/canal/dw_latinoamerica`.
+
+DW vía mi.tv conserva UTC → `America/Guayaquil`; vía GatoTV usa reloj local
+`America/Guayaquil`. Offset manual: 0 minutos.
+
+## También se conserva
+
 - `TVEStarHD.es` excluido.
 - `Antena3-America.co` desde mi.tv Colombia (`antena3`).
 - `Star-Channel.co` desde mi.tv Colombia (`fox`).
-- Antena 3 y Star Channel mantienen UTC → `America/Guayaquil`.
-- salida XMLTV validada en `-0500`.
-- restauración de dependencias locales faltantes antes de importar los
-  generadores, evitando errores como `ModuleNotFoundError: tc_resilient`.
+- Antena 3 y Star Channel: UTC → `America/Guayaquil` sin offset manual.
+- restauración defensiva de dependencias Python locales desde el historial Git.
+- publicación sincronizada en GitHub Pages y rama `epg-data`.
 
 ## Reemplazo total
 
 Sube todo el contenido de este directorio a la raíz de `main`, reemplazando los
-archivos coincidentes, y ejecuta `Actualizar EPG Ecuador y Latinoamérica`.
+archivos coincidentes, y ejecuta **Actualizar EPG Ecuador y Latinoamérica**.
 
-El workflow restaura desde el historial Git del propio repositorio los scripts
-base que no formen parte del bloque de cambios si faltan después del reemplazo,
-y realiza una importación real antes de construir las guías.
+No necesitas instalar previamente v0.2.32, v0.2.33, v0.2.34 ni v0.2.35.
