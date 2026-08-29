@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-28T22:00:38.635842-05:00",
+  "generated_at": "2026-08-28T22:02:19.662845-05:00",
   "base_date": "2026-08-28",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
@@ -13,11 +13,11 @@
   "cnn_en_espanol_days": 2,
   "ntn24_days": 2,
   "channels": 95,
-  "programmes": 10932,
+  "programmes": 10930,
   "teleamazonas_quito": 207,
   "teleamazonas_guayaquil": 207,
   "ecuavisa": 61,
-  "ecuavisa_internacional": 82,
+  "ecuavisa_internacional": 80,
   "tvc": 156,
   "cnn_en_espanol": 55,
   "ntn24": 44,
