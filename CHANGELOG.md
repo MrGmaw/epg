@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.2.38 — 2026-08-28
+
+- Añade `Warner-channel.co` desde `https://mi.tv/co/canales/warner`.
+- Añade `HBO-Family.co` desde `https://mi.tv/co/canales/hbo-family`.
+- Ambos usan el scraper estándar `mitv_utc`: endpoint UTC → `America/Guayaquil`, sin offset manual.
+- La guía LATAM base pasa de 28 a 30 canales; con NBC 6 Miami y ABC Miami, la salida final pasa de 30 a 32 canales.
+- Amplía validaciones de programación, fuentes y orden canónico para exigir Warner Channel y HBO Family.
+- Conserva íntegramente las correcciones de v0.2.37 para `latam-status.json` y el fallback Miami.
+
 ## v0.2.37 — 2026-08-27
 
 - Corrige el `TypeError: 'str' object does not support item assignment` de la capa Miami.

@@ -1,31 +1,30 @@
-EPG MrG v0.2.37 — REEMPLAZO TOTAL
+EPG MrG v0.2.38 — REEMPLAZO TOTAL
 
 1. Descomprime el ZIP.
-2. Copia/sube TODO el contenido de la carpeta epg-mrgmaw-v0.2.37-completo a
+2. Copia/sube TODO el contenido de la carpeta epg-mrgmaw-v0.2.38-completo a
    la raíz de la rama main del repositorio MrGmaw/epg.
 3. Reemplaza los archivos coincidentes.
-4. No necesitas instalar antes v0.2.32, v0.2.33, v0.2.34 ni v0.2.35.
-5. Ejecuta el workflow "Actualizar EPG Ecuador y Latinoamérica".
+4. Ejecuta el workflow "Actualizar EPG Ecuador y Latinoamérica".
 
-La guía LATAM final queda con 30 canales.
+La guía LATAM final queda con 32 canales.
 
-NUEVOS CANALES MIAMI
-- NBC6-Miami.us = NBC 6 Miami / WTVJ
-  Fuente: WTVJ-DT.us_locals1
-- ABC-Miami.us = ABC Miami 18 / WSVN-DT2 (7.2)
-  Fuente: WSVN-DT2.us_locals1
+NUEVOS CANALES MI.TV COLOMBIA
+- Warner-channel.co = Warner Channel
+  Fuente: https://mi.tv/co/canales/warner
+  Slug: warner
+- HBO-Family.co = HBO Family
+  Fuente: https://mi.tv/co/canales/hbo-family
+  Slug: hbo-family
 
-Fuente primaria:
-https://epgshare01.online/epgshare01/epg_ripper_US_LOCALS1.xml.gz
+Política horaria para ambos:
+- endpoint asíncrono mi.tv = UTC
+- salida = America/Guayaquil (-0500)
+- ajuste manual = 0 minutos
 
-Las horas se convierten a America/Guayaquil. Si el XMLTV de origen trae offset,
-se respeta ese instante. Si no trae offset, se interpreta como
-America/New_York para resolver automáticamente EST/EDT. Ajuste manual: 0 min.
+Se conservan NBC 6 Miami y ABC Miami de v0.2.37, por lo que el orden final es
+30 canales base + 2 Miami = 32 canales.
 
-Si EPGShare falla, se intenta usar .cache/previous-latam.xml únicamente si la
-parrilla previa de ambos canales todavía es vigente y suficiente.
-
-Se conserva la política resiliente de Deutsche.Welle.cl de v0.2.35:
+También se conserva la política resiliente de Deutsche.Welle.cl:
 1. https://mi.tv/cl/canales/deutsche-welle-espanol
 2. https://mi.tv/cl/canales/deutsche-welle-amerika
 3. https://www.gatotv.com/canal/dw_latinoamerica (fallback)
