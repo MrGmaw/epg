@@ -65,7 +65,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "VERSION=$(cat VERSION)"
-          echo "build_latam_epg.py + DW resiliente + STAR TVE excluido + Antena 3/Star Channel + Miami WTVJ/WSVN-DT2:"
+          echo "build_latam_epg.py + DW resiliente + STAR TVE excluido + Antena 3/Star Channel/Warner/HBO Family + Miami WTVJ/WSVN-DT2:"
           sha256sum \
             scripts/build_latam_epg.py \
             scripts/build_latam_resilient.py \
@@ -285,11 +285,13 @@ jobs:
               "Deutsche.Welle.cl",
               "Antena3-America.co",
               "Star-Channel.co",
+              "Warner-channel.co",
+              "HBO-Family.co",
               *miami.TARGET_IDS,
           )
-          # Los 28 IDs base conservan su secuencia y Miami se añade al final.
+          # Los 30 IDs base conservan su secuencia y Miami se añade al final.
           validate.LATAM_REQUIRED = (*resilient.EXPECTED_LATAM_IDS, *miami.TARGET_IDS)
-          assert len(validate.LATAM_REQUIRED) == 30, validate.LATAM_REQUIRED
+          assert len(validate.LATAM_REQUIRED) == 32, validate.LATAM_REQUIRED
           assert STAR_ID not in validate.LATAM_REQUIRED
           assert all(channel_id in validate.LATAM_REQUIRED for channel_id in REQUIRED)
 
@@ -315,8 +317,9 @@ jobs:
           assert policy.get("output_timezone") == "America/Guayaquil", policy
           assert int(policy.get("manual_offset_minutes", -1)) == 0, policy
           print(
-              "Validación adicional correcta: 30 canales; STAR TVE ausente; DW, Antena 3, "
-              "Star Channel, NBC 6 Miami y ABC Miami presentes en America/Guayaquil."
+              "Validación adicional correcta: 32 canales; STAR TVE ausente; DW, Antena 3, "
+              "Star Channel, Warner Channel, HBO Family, NBC 6 Miami y ABC Miami "
+              "presentes en America/Guayaquil."
           )
           PY
 
@@ -440,7 +443,7 @@ jobs:
           - `ec.xml.gz`
           - `status.json`
 
-          Guía seleccionada de 30 canales:
+          Guía seleccionada de 32 canales:
           - `latam.xml`
           - `latam.xml.gz`
           - `latam-status.json`
