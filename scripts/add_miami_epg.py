@@ -7,7 +7,7 @@ tiempo viniera sin offset, se interpreta como ``America/New_York`` para respetar
 el horario legal de Miami (EST/EDT) sin aplicar offsets manuales.
 
 La integración ocurre *después* de construir la guía LATAM base. De esta forma
-los 28 canales existentes y sus scrapers permanecen intactos.
+los 30 canales base existentes y sus scrapers permanecen intactos.
 """
 from __future__ import annotations
 
@@ -33,8 +33,8 @@ SOURCE_URL = "https://epgshare01.online/epgshare01/epg_ripper_US_LOCALS1.xml.gz"
 SOURCE_NAME = "EPGShare US_LOCALS1"
 SOURCE_FALLBACK_TIMEZONE = ZoneInfo("America/New_York")
 OUTPUT_TIMEZONE = ZoneInfo("America/Guayaquil")
-EXPECTED_BASE_CHANNELS = 28
-EXPECTED_FINAL_CHANNELS = 30
+EXPECTED_BASE_CHANNELS = 30
+EXPECTED_FINAL_CHANNELS = 32
 MIN_PROGRAMMES_PER_CHANNEL = 5
 
 
@@ -296,7 +296,7 @@ def _download_extract(
     attempts: int = 3,
 ) -> tuple[dict[str, etree._Element], dict[str, list[etree._Element]]]:
     headers = {
-        "User-Agent": "EPG-MrG/0.2.37 (+GitHub Actions; XMLTV)",
+        "User-Agent": "EPG-MrG/0.2.38 (+GitHub Actions; XMLTV)",
         "Accept": "application/gzip, application/octet-stream, */*",
     }
     errors: list[str] = []
@@ -427,7 +427,7 @@ def _update_index_html(output_dir: Path) -> None:
     if not path.is_file():
         return
     text = path.read_text(encoding="utf-8")
-    updated = re.sub(r"\b28\s+canales\b", "30 canales", text, flags=re.IGNORECASE)
+    updated = re.sub(r"\b(?:28|30)\s+canales\b", "32 canales", text, flags=re.IGNORECASE)
     if updated != text:
         path.write_text(updated, encoding="utf-8", newline="\n")
 
@@ -544,7 +544,7 @@ def _assert_final(output_dir: Path) -> None:
 
     status = json.loads(status_path.read_text(encoding="utf-8"))
     if int(status.get("channels", 0)) != EXPECTED_FINAL_CHANNELS:
-        raise RuntimeError("latam-status.json no informa 30 canales.")
+        raise RuntimeError("latam-status.json no informa 32 canales.")
     policy = status.get("miami_epg", {})
     if policy.get("output_timezone") != "America/Guayaquil":
         raise RuntimeError(f"Política Miami inválida: {policy!r}")
@@ -717,7 +717,7 @@ def self_test() -> None:
         )
         _assert_final(out)
 
-    # Regresión v0.2.37: tolera estados heredados donde campos auxiliares
+    # Regresión heredada de v0.2.37: tolera estados donde campos auxiliares
     # llegan como strings (causa del TypeError de v0.2.36).
     legacy_shapes = (
         {"channels": EXPECTED_BASE_CHANNELS, "programme_counts": "legacy", "sources": {}},
@@ -751,7 +751,7 @@ def self_test() -> None:
             assert repaired["programme_counts"]["ABC-Miami.us"] == 6
 
     print(
-        "Prueba v0.2.37 Miami correcta: WTVJ/NBC 6 + WSVN-DT2/ABC Miami; "
+        "Prueba v0.2.38 Miami correcta: base 30 + WTVJ/NBC 6 + WSVN-DT2/ABC Miami; "
         "DST America/New_York -> America/Guayaquil; offset manual=0.",
         flush=True,
     )

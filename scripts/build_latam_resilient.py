@@ -3,8 +3,9 @@
 
 Reglas vigentes desde v0.2.35:
 - ``TVEStarHD.es`` permanece completamente excluido.
-- Antena 3 y Star Channel se obtienen desde el endpoint asíncrono de mi.tv,
-  interpretado como UTC y convertido a ``America/Guayaquil`` por ``mitv_utc``.
+- Antena 3, Star Channel, Warner Channel y HBO Family se obtienen desde el
+  endpoint asíncrono de mi.tv, interpretado como UTC y convertido a
+  ``America/Guayaquil`` por ``mitv_utc``.
 - ``Deutsche.Welle.cl`` conserva su tvg-id y posición canónica. Para DW se prueba
   primero ``deutsche-welle-espanol`` y luego ``deutsche-welle-amerika`` en mi.tv.
   Si ambos endpoints están vacíos/incompatibles, se usa exclusivamente la señal
@@ -29,6 +30,8 @@ import mitv_utc
 STAR_TVE_ID = "TVEStarHD.es"
 ANTENA3_ID = "Antena3-America.co"
 STAR_CHANNEL_ID = "Star-Channel.co"
+WARNER_CHANNEL_ID = "Warner-channel.co"
+HBO_FAMILY_ID = "HBO-Family.co"
 DW_ID = "Deutsche.Welle.cl"
 DW_OLD_SLUG = "deutsche-welle"
 DW_PRIMARY_SLUG = "deutsche-welle-espanol"
@@ -39,9 +42,15 @@ DW_ALTERNATE_SOURCE_URL = f"https://mi.tv/cl/canales/{DW_ALTERNATE_SLUG}"
 DW_GATOTV_SLUG = "dw_latinoamerica"
 DW_GATOTV_SOURCE_URL = f"https://www.gatotv.com/canal/{DW_GATOTV_SLUG}"
 DW_MITV_CANDIDATES = (DW_PRIMARY_SLUG, DW_ALTERNATE_SLUG)
-ADDED_MITV_IDS = frozenset({ANTENA3_ID, STAR_CHANNEL_ID})
-REQUIRED_PROGRAMME_IDS = (DW_ID, ANTENA3_ID, STAR_CHANNEL_ID)
-EXPECTED_CHANNELS = 28
+ADDED_MITV_IDS = frozenset({ANTENA3_ID, STAR_CHANNEL_ID, WARNER_CHANNEL_ID, HBO_FAMILY_ID})
+REQUIRED_PROGRAMME_IDS = (
+    DW_ID,
+    ANTENA3_ID,
+    STAR_CHANNEL_ID,
+    WARNER_CHANNEL_ID,
+    HBO_FAMILY_ID,
+)
+EXPECTED_CHANNELS = 30
 EXPECTED_LATAM_IDS: tuple[str, ...] = (
     "Canal.TC.Televisión.ec",
     "Canal.Gamavisión.ec",
@@ -66,6 +75,8 @@ EXPECTED_LATAM_IDS: tuple[str, ...] = (
     "France24Espanol.fr",
     ANTENA3_ID,
     STAR_CHANNEL_ID,
+    WARNER_CHANNEL_ID,
+    HBO_FAMILY_ID,
     "Canal24Horas.es",
     "La1.es",
     "Clan.es",
@@ -86,6 +97,20 @@ ADDED_MITV_CHANNELS: tuple[latam.MitvChannel, ...] = (
         STAR_CHANNEL_ID,
         ("Star Channel", "STAR Channel"),
         "https://mi.tv/co/canales/fox",
+    ),
+    latam.MitvChannel(
+        "co",
+        "warner",
+        WARNER_CHANNEL_ID,
+        ("Warner Channel", "Warner"),
+        "https://mi.tv/co/canales/warner",
+    ),
+    latam.MitvChannel(
+        "co",
+        "hbo-family",
+        HBO_FAMILY_ID,
+        ("HBO Family",),
+        "https://mi.tv/co/canales/hbo-family",
     ),
 )
 
@@ -265,7 +290,7 @@ def scrape_mitv_with_dw_fallback(
 
 
 def configure_channels() -> None:
-    """Retira STAR TVE, normaliza DW, instala fallback y añade A3/Star Channel."""
+    """Retira STAR TVE, normaliza DW y añade los cuatro canales mi.tv extra."""
     latam.GATOTV_CHANNELS = tuple(
         config for config in latam.GATOTV_CHANNELS if config.channel_id != STAR_TVE_ID
     )
@@ -311,8 +336,8 @@ def configure_channels() -> None:
         raise RuntimeError("La guía LATAM contiene IDs duplicados.")
     if tuple(latam.LATAM_CHANNEL_IDS) != EXPECTED_LATAM_IDS:
         raise RuntimeError(
-            "El orden/identidad de LATAM_CHANNEL_IDS no coincide con los 28 IDs "
-            "canónicos de v0.2.35."
+            "El orden/identidad de LATAM_CHANNEL_IDS no coincide con los 30 IDs "
+            "canónicos de v0.2.38 antes de añadir Miami."
         )
     for channel_id in ADDED_MITV_IDS:
         if channel_id not in latam.LATAM_CHANNEL_IDS:
@@ -366,7 +391,27 @@ def _clean_and_annotate_status(output_dir: Path) -> None:
             "output_timezone": "America/Guayaquil",
             "conversion": "UTC->America/Guayaquil",
         },
+        WARNER_CHANNEL_ID: {
+            "source": "https://mi.tv/co/canales/warner",
+            "endpoint_timezone": "UTC",
+            "output_timezone": "America/Guayaquil",
+            "conversion": "UTC->America/Guayaquil",
+        },
+        HBO_FAMILY_ID: {
+            "source": "https://mi.tv/co/canales/hbo-family",
+            "endpoint_timezone": "UTC",
+            "output_timezone": "America/Guayaquil",
+            "conversion": "UTC->America/Guayaquil",
+        },
     }
+
+    if isinstance(sources, dict):
+        mi_tv_sources = sources.get("mi_tv")
+        if isinstance(mi_tv_sources, dict):
+            mi_tv_sources[ANTENA3_ID] = "https://mi.tv/co/canales/antena3"
+            mi_tv_sources[STAR_CHANNEL_ID] = "https://mi.tv/co/canales/fox"
+            mi_tv_sources[WARNER_CHANNEL_ID] = "https://mi.tv/co/canales/warner"
+            mi_tv_sources[HBO_FAMILY_ID] = "https://mi.tv/co/canales/hbo-family"
 
     if DW_LAST_SOURCE_MODE is None or DW_LAST_SOURCE_URL is None:
         raise RuntimeError("DW terminó la generación sin registrar una fuente efectiva.")
@@ -429,7 +474,7 @@ def _clean_and_annotate_status(output_dir: Path) -> None:
 
 
 def _assert_output(output_dir: Path) -> None:
-    """Guardia final: 28 canales, programación útil, fuente DW trazable."""
+    """Guardia final: 30 canales base, programación útil y fuentes trazables."""
     xml_path = output_dir / "latam.xml"
     if not xml_path.is_file():
         raise RuntimeError("No se generó latam.xml.")
@@ -456,8 +501,8 @@ def _assert_output(output_dir: Path) -> None:
         )
     if tuple(channel_ids) != EXPECTED_LATAM_IDS:
         raise RuntimeError(
-            "latam.xml contiene 28 canales, pero su orden/identidad no coincide "
-            "con la secuencia canónica de v0.2.35."
+            "latam.xml contiene 30 canales base, pero su orden/identidad no coincide "
+            "con la secuencia canónica de v0.2.38."
         )
 
     for channel_id in REQUIRED_PROGRAMME_IDS:
@@ -478,7 +523,7 @@ def _assert_output(output_dir: Path) -> None:
     status_path = output_dir / "latam-status.json"
     status = json.loads(status_path.read_text(encoding="utf-8"))
     if int(status.get("channels", 0)) != EXPECTED_CHANNELS:
-        raise RuntimeError("latam-status.json no informa 28 canales.")
+        raise RuntimeError("latam-status.json no informa 30 canales base.")
     counts = status.get("programme_counts", {})
     for channel_id in REQUIRED_PROGRAMME_IDS:
         if int(counts.get(channel_id, 0)) < 5:
@@ -488,6 +533,8 @@ def _assert_output(output_dir: Path) -> None:
     expected_sources = {
         ANTENA3_ID: "https://mi.tv/co/canales/antena3",
         STAR_CHANNEL_ID: "https://mi.tv/co/canales/fox",
+        WARNER_CHANNEL_ID: "https://mi.tv/co/canales/warner",
+        HBO_FAMILY_ID: "https://mi.tv/co/canales/hbo-family",
     }
     for channel_id, source_url in expected_sources.items():
         mode = endpoint_modes.get(channel_id, {})
@@ -542,6 +589,8 @@ def self_test() -> None:
     assert STAR_TVE_ID not in latam.LATAM_CHANNEL_IDS
     assert ANTENA3_ID in latam.LATAM_CHANNEL_IDS
     assert STAR_CHANNEL_ID in latam.LATAM_CHANNEL_IDS
+    assert WARNER_CHANNEL_ID in latam.LATAM_CHANNEL_IDS
+    assert HBO_FAMILY_ID in latam.LATAM_CHANNEL_IDS
     dw_configs = [config for config in latam.MITV_CHANNELS if config.channel_id == DW_ID]
     assert len(dw_configs) == 1
     assert dw_configs[0].slug == DW_PRIMARY_SLUG
@@ -568,6 +617,16 @@ def self_test() -> None:
         sample, date(2026, 8, 21), STAR_CHANNEL_ID
     )
     assert programmes_star[0].start.isoformat() == "2026-08-21T10:00:00-05:00"
+
+    programmes_warner = mitv_utc.parse_mitv_page_utc(
+        sample, date(2026, 8, 21), WARNER_CHANNEL_ID
+    )
+    assert programmes_warner[0].start.isoformat() == "2026-08-21T10:00:00-05:00"
+
+    programmes_hbo = mitv_utc.parse_mitv_page_utc(
+        sample, date(2026, 8, 21), HBO_FAMILY_ID
+    )
+    assert programmes_hbo[0].start.isoformat() == "2026-08-21T10:00:00-05:00"
 
     # Prueba 1: slug primario falla y el ID alternativo de mi.tv funciona.
     real_mitv = ORIGINAL_MITV_SCRAPER
@@ -633,9 +692,10 @@ def self_test() -> None:
         latam.scrape_gatotv_channel = real_gatotv
 
     print(
-        "Prueba v0.2.35 correcta: 28 canales; STAR TVE excluido; DW="
+        "Prueba v0.2.38 correcta: 30 canales base; STAR TVE excluido; DW="
         "mi.tv espanol -> mi.tv amerika -> GatoTV dw_latinoamerica; "
-        "Antena 3/Star Channel conservan UTC -> America/Guayaquil; offsets manuales=0."
+        "Antena 3/Star Channel/Warner/HBO Family conservan UTC -> "
+        "America/Guayaquil; offsets manuales=0."
     )
 
 
