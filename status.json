@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-28T22:09:51.957642-05:00",
-  "base_date": "2026-08-28",
+  "generated_at": "2026-08-29T09:27:50.292412-05:00",
+  "base_date": "2026-08-29",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
     "teleamazonas": "https://www.teleamazonas.com/programacion/",
@@ -13,42 +13,42 @@
   "cnn_en_espanol_days": 2,
   "ntn24_days": 2,
   "channels": 95,
-  "programmes": 10932,
+  "programmes": 8996,
   "teleamazonas_quito": 207,
   "teleamazonas_guayaquil": 207,
-  "ecuavisa": 61,
-  "ecuavisa_internacional": 82,
+  "ecuavisa": 46,
+  "ecuavisa_internacional": 83,
   "tvc": 156,
-  "cnn_en_espanol": 55,
-  "ntn24": 44,
+  "cnn_en_espanol": 65,
+  "ntn24": 49,
   "tvc_source_mode": "official",
   "epgshare_resilient_channels": {
     "Canal.TC.Televisión.ec": {
       "name": "TC Televisión",
       "source": "epgshare",
-      "programmes": 78
+      "programmes": 53
     },
     "Canal.Gamavisión.ec": {
       "name": "Gamavisión",
       "source": "epgshare",
-      "programmes": 57
+      "programmes": 32
     },
     "Canal.RTS.ec": {
       "name": "RTS",
       "source": "epgshare",
-      "programmes": 64
+      "programmes": 42
     },
     "Canal.Ecuador.TV.ec": {
       "name": "Ecuador TV",
       "source": "epgshare",
-      "programmes": 63
+      "programmes": 40
     },
     "Ecuavisa.ec": {
       "name": "Ecuavisa",
       "source": "epgshare",
-      "programmes": 47
+      "programmes": 32
     }
   },
   "tc_source_mode": "epgshare",
-  "tc_programmes": 78
+  "tc_programmes": 53
 }
