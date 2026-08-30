@@ -4,12 +4,9 @@ on:
   push:
     branches:
       - main
-
   workflow_dispatch:
-
   # Ecuador continental usa UTC-5 durante todo el año.
-  # 09:17 UTC = 04:17 Ecuador.
-  # 21:17 UTC = 16:17 Ecuador.
+  # 09:17 UTC = 04:17 Ecuador; 21:17 UTC = 16:17 Ecuador.
   schedule:
     - cron: "17 9,21 * * *"
 
@@ -23,7 +20,6 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  # Generador estable previo a las extensiones de esta versión.
   BASE_GENERATOR_COMMIT: "5a0e7c59d94e8fc20ad83237727b1a49a6246248"
   GUIDE_DAYS: "7"
   MITV_LOCAL_DAYS: "2"
@@ -65,13 +61,13 @@ jobs:
         run: |
           set -euo pipefail
           echo "VERSION=$(cat VERSION)"
-          echo "build_latam_epg.py + DW resiliente + STAR TVE excluido + Antena 3/Star Channel/Warner/HBO Family + Miami WTVJ/WSVN-DT2:"
+          echo "LATAM resiliente + Miami + CBS New York/Oromar v0.2.39:"
           sha256sum \
             scripts/build_latam_epg.py \
             scripts/build_latam_resilient.py \
             scripts/add_miami_epg.py \
+            scripts/add_v039_channels.py \
             scripts/patch_dw_mitv.py
-
 
       - name: Instalar dependencias
         shell: bash
@@ -84,7 +80,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           BASE_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${BASE_GENERATOR_COMMIT}/scripts/build_epg.py"
           curl \
             --fail \
@@ -96,7 +91,6 @@ jobs:
             --retry-delay 5 \
             "${BASE_URL}" \
             --output scripts/build_epg_base.py
-
           test -s scripts/build_epg_base.py
           grep -q 'def parse_mitv_page' scripts/build_epg_base.py
           grep -q 'def scrape_mitv_range' scripts/build_epg_base.py
@@ -104,18 +98,15 @@ jobs:
           grep -q 'Canal.CNN.en.Español.ec' scripts/build_epg_base.py
           grep -q 'NTN24.co' scripts/build_epg_base.py
 
-          # py_compile no resuelve imports. Restauramos cualquier módulo Python
-          # local que el generador descargado necesite (p. ej. tc_resilient.py)
-          # antes de realizar una importación real.
           python scripts/restore_local_modules.py \
             scripts/build_epg_base.py \
             scripts/build_epg.py \
             scripts/build_latam_epg.py \
             scripts/build_latam_resilient.py \
-            scripts/add_miami_epg.py
+            scripts/add_miami_epg.py \
+            scripts/add_v039_channels.py
 
           python -m py_compile scripts/*.py
-
           python - <<'PYIMPORT'
           import sys
           sys.path.insert(0, "scripts")
@@ -124,7 +115,8 @@ jobs:
           import build_latam_epg  # noqa: F401
           import build_latam_resilient  # noqa: F401
           import add_miami_epg  # noqa: F401
-          print("Importación real de generadores y capa Miami correcta.")
+          import add_v039_channels  # noqa: F401
+          print("Importación real de generadores, Miami y capa v0.2.39 correcta.")
           PYIMPORT
 
       - name: Preparar directorio público
@@ -140,7 +132,6 @@ jobs:
           set -euo pipefail
           mkdir -p public/logos .cache
           rm -f .cache/previous-ec.xml .cache/previous-latam.xml
-
           if ! git show-ref --verify --quiet refs/remotes/origin/epg-data; then
             git fetch --no-tags origin epg-data:refs/remotes/origin/epg-data || true
           fi
@@ -151,7 +142,6 @@ jobs:
           else
             echo "No existe caché previa de logos; se realizará descubrimiento inicial."
           fi
-
           if git cat-file -e origin/epg-data:ec.xml 2>/dev/null; then
             git show origin/epg-data:ec.xml > .cache/previous-ec.xml
             test -s .cache/previous-ec.xml
@@ -159,20 +149,18 @@ jobs:
           else
             echo "No existe ec.xml previa para respaldo de TVC."
           fi
-
           if git cat-file -e origin/epg-data:latam.xml 2>/dev/null; then
             git show origin/epg-data:latam.xml > .cache/previous-latam.xml
             test -s .cache/previous-latam.xml
-            echo "Caché LATAM previa restaurada (MakroDigital + posible fallback Miami)."
+            echo "Caché LATAM previa restaurada (MakroDigital + Miami + posibles fallbacks v0.2.39)."
           else
-            echo "No existe latam.xml previa para respaldo de MakroDigital."
+            echo "No existe latam.xml previa para respaldos."
           fi
 
       - name: Descargar XMLTV DTD
         shell: bash
         run: |
           set -euo pipefail
-
           curl \
             --fail \
             --location \
@@ -183,7 +171,6 @@ jobs:
             --retry-delay 5 \
             https://raw.githubusercontent.com/XMLTV/xmltv/master/xmltv.dtd \
             --output public/xmltv.dtd
-
           test -s public/xmltv.dtd
 
       - name: Ejecutar pruebas deterministas
@@ -194,6 +181,7 @@ jobs:
           python scripts/build_latam_epg.py --self-test
           python scripts/build_latam_resilient.py --self-test
           python scripts/add_miami_epg.py --self-test
+          python scripts/add_v039_channels.py --self-test
           python scripts/mitv_logos.py --self-test
 
       - name: Construir guía principal ec.xml
@@ -253,11 +241,26 @@ jobs:
             --days "${GUIDE_DAYS}" \
             --previous-latam-xml .cache/previous-latam.xml
 
+      - name: Añadir CBS New York, Oromar y logos v0.2.39
+        shell: bash
+        env:
+          TZ: America/Guayaquil
+        run: |
+          set -euo pipefail
+          python scripts/add_v039_channels.py \
+            --output public \
+            --days "${GUIDE_DAYS}" \
+            --previous-latam-xml .cache/previous-latam.xml
+          test -s public/logos/OromarTV.ec.png
+          test -s 'public/logos/CBS.(WCBS).New.York,.NY.us.png'
+          test -s public/logos/Antena3-America.co.png
+          test -s public/logos/HBO-Family.co.png
+          test -s public/logos/Warner-channel.co.png
+
       - name: Validar archivos finales
         shell: bash
         run: |
           set -euo pipefail
-
           test -s public/ec.xml
           test -s public/ec.xml.gz
           test -s public/latam.xml
@@ -267,10 +270,11 @@ jobs:
           test -s public/latam-status.json
           test -s public/index.html
           test -s public/logos/manifest.json
-
           gzip -t public/ec.xml.gz
           gzip -t public/latam.xml.gz
+
           python - <<'PY'
+          import json
           import sys
           from pathlib import Path
           from lxml import etree
@@ -279,6 +283,7 @@ jobs:
           import validate_outputs as validate
           import build_latam_resilient as resilient
           import add_miami_epg as miami
+          import add_v039_channels as v039
 
           STAR_ID = "TVEStarHD.es"
           REQUIRED = (
@@ -288,10 +293,14 @@ jobs:
               "Warner-channel.co",
               "HBO-Family.co",
               *miami.TARGET_IDS,
+              *v039.TARGET_IDS,
           )
-          # Los 30 IDs base conservan su secuencia y Miami se añade al final.
-          validate.LATAM_REQUIRED = (*resilient.EXPECTED_LATAM_IDS, *miami.TARGET_IDS)
-          assert len(validate.LATAM_REQUIRED) == 32, validate.LATAM_REQUIRED
+          validate.LATAM_REQUIRED = (
+              *resilient.EXPECTED_LATAM_IDS,
+              *miami.TARGET_IDS,
+              *v039.TARGET_IDS,
+          )
+          assert len(validate.LATAM_REQUIRED) == 34, validate.LATAM_REQUIRED
           assert STAR_ID not in validate.LATAM_REQUIRED
           assert all(channel_id in validate.LATAM_REQUIRED for channel_id in REQUIRED)
 
@@ -301,7 +310,11 @@ jobs:
               raise SystemExit(result)
 
           parser = etree.XMLParser(
-              resolve_entities=False, load_dtd=False, no_network=True, recover=False, huge_tree=True
+              resolve_entities=False,
+              load_dtd=False,
+              no_network=True,
+              recover=False,
+              huge_tree=True,
           )
           root = etree.parse("public/latam.xml", parser).getroot()
           assert not root.xpath("./channel[@id=$channel_id]", channel_id=STAR_ID)
@@ -312,14 +325,38 @@ jobs:
               assert len(programmes) >= 5, (channel_id, len(programmes))
               assert all(item.get("start", "").endswith(" -0500") for item in programmes), channel_id
               assert all(item.get("stop", "").endswith(" -0500") for item in programmes), channel_id
+
           assert tuple(node.get("id", "") for node in root.findall("channel")) == validate.LATAM_REQUIRED
-          policy = __import__("json").loads(Path("public/latam-status.json").read_text(encoding="utf-8")).get("miami_epg", {})
+          assert tuple(node.get("id", "") for node in root.findall("channel"))[-2:] == v039.TARGET_IDS
+
+          manifest = json.loads(Path("public/logos/manifest.json").read_text(encoding="utf-8"))
+          for channel_id in v039.LOGO_IDS:
+              png = Path("public/logos") / f"{channel_id}.png"
+              assert png.is_file() and png.stat().st_size > 0, png
+              assert png.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"), png
+              entry = manifest.get("channels", {}).get(channel_id, {})
+              assert entry.get("available") is True, (channel_id, entry)
+              expected_icon = f"{v039.LOCAL_LOGO_BASE}{channel_id}.png"
+              assert entry.get("local_url") == expected_icon, (channel_id, entry)
+              channels = root.xpath("./channel[@id=$channel_id]", channel_id=channel_id)
+              assert len(channels) == 1, channel_id
+              icons = channels[0].findall("icon")
+              assert len(icons) == 1 and icons[0].get("src") == expected_icon, channel_id
+
+          status = json.loads(Path("public/latam-status.json").read_text(encoding="utf-8"))
+          assert int(status.get("channels", 0)) == 34, status.get("channels")
+          miami_policy = status.get("miami_epg", {})
+          assert miami_policy.get("output_timezone") == "America/Guayaquil", miami_policy
+          assert int(miami_policy.get("manual_offset_minutes", -1)) == 0, miami_policy
+          policy = status.get("v039_epg", {})
           assert policy.get("output_timezone") == "America/Guayaquil", policy
           assert int(policy.get("manual_offset_minutes", -1)) == 0, policy
+          assert set(policy.get("channels", {})) == set(v039.TARGET_IDS), policy
+
           print(
-              "Validación adicional correcta: 32 canales; STAR TVE ausente; DW, Antena 3, "
-              "Star Channel, Warner Channel, HBO Family, NBC 6 Miami y ABC Miami "
-              "presentes en America/Guayaquil."
+              "Validación v0.2.39 correcta: 34 canales; STAR TVE ausente; "
+              "CBS New York y Oromar presentes; 5 logos locales válidos; "
+              "America/Guayaquil y offset manual 0."
           )
           PY
 
@@ -327,7 +364,7 @@ jobs:
           cat public/status.json
           echo "Estado de la guía seleccionada:"
           cat public/latam-status.json
-          echo "Estado de logos mi.tv:"
+          echo "Estado de logos:"
           cat public/logos/manifest.json
           echo "Tamaños:"
           du -h \
@@ -341,7 +378,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           python - <<'PY'
           import gzip
           import hashlib
@@ -353,11 +389,9 @@ jobs:
           version = Path("VERSION").read_text(encoding="utf-8").strip()
           status_path = public / "latam-status.json"
           status = json.loads(status_path.read_text(encoding="utf-8"))
-
           expected_sha = os.environ["GITHUB_SHA"]
           expected_run = os.environ["GITHUB_RUN_ID"]
           expected_attempt = os.environ["GITHUB_RUN_ATTEMPT"]
-
           assert status.get("version") == version, (status.get("version"), version)
           assert status.get("source_commit") == expected_sha, status.get("source_commit")
           assert str(status.get("github_run_id")) == expected_run, status.get("github_run_id")
@@ -370,10 +404,7 @@ jobs:
 
           def info(name: str) -> dict[str, object]:
               data = (public / name).read_bytes()
-              return {
-                  "sha256": hashlib.sha256(data).hexdigest(),
-                  "bytes": len(data),
-              }
+              return {"sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)}
 
           manifest = {
               "version": version,
@@ -392,7 +423,6 @@ jobs:
           )
           print(json.dumps(manifest, ensure_ascii=False, indent=2))
           PY
-
           test -s public/publication-manifest.json
 
       - name: Configurar identidad Git
@@ -405,10 +435,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           RAW_PARENT="$(mktemp -d)"
           RAW_DIR="${RAW_PARENT}/epg-data"
-
           if git ls-remote --exit-code --heads origin epg-data >/dev/null 2>&1; then
             git worktree add -B epg-data "${RAW_DIR}" origin/epg-data
           else
@@ -443,7 +471,7 @@ jobs:
           - `ec.xml.gz`
           - `status.json`
 
-          Guía seleccionada de 32 canales:
+          Guía seleccionada de 34 canales:
           - `latam.xml`
           - `latam.xml.gz`
           - `latam-status.json`
@@ -468,12 +496,10 @@ jobs:
               latam.xml latam.xml.gz \
               xmltv.dtd status.json latam-status.json publication-manifest.json README.md logos \
               VERSION source-commit.txt
-
             if git diff --cached --quiet; then
               echo "La copia Raw no tiene cambios."
               exit 0
             fi
-
             VERSION_VALUE="$(cat VERSION)"
             SHORT_SHA="${GITHUB_SHA::7}"
             git commit -m "Publicar EPG v${VERSION_VALUE} desde ${SHORT_SHA}"
@@ -487,9 +513,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           git fetch --no-tags --force origin epg-data:refs/remotes/origin/epg-data
-
           EXPECTED_VERSION="$(cat VERSION)"
           PUBLISHED_VERSION="$(git show origin/epg-data:VERSION | tr -d '\r\n')"
           PUBLISHED_SHA="$(git show origin/epg-data:source-commit.txt | tr -d '\r\n')"
@@ -520,7 +544,6 @@ jobs:
             echo "${FILE}: local=${LOCAL_HASH} publicado=${PUBLISHED_HASH}"
             test "${LOCAL_HASH}" = "${PUBLISHED_HASH}"
           done
-
           echo "epg-data sincronizada: VERSION, estado, run y bytes LATAM corresponden a esta ejecución."
 
       - name: Configurar GitHub Pages
@@ -535,11 +558,9 @@ jobs:
     name: Desplegar GitHub Pages
     needs: build
     runs-on: ubuntu-latest
-
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
       - name: Publicar GitHub Pages
         id: deployment
