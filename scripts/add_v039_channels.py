@@ -7,8 +7,9 @@ Fuentes:
 - CBS New York / WCBS-TV: TVPassport (WCBS 4555) como fuente primaria;
   EPGShare US1 como respaldo. Las horas se convierten con ZoneInfo desde
   America/New_York a America/Guayaquil. Nunca se aplica un offset manual.
-- Oromar TV: AmericaTVGuide Ecuador. La página ya publica la parrilla en
-  GMT-5 Ecuador; se interpreta directamente como America/Guayaquil.
+- Oromar TV: AmericaTVListings Ecuador como fuente primaria y
+  AmericaTVGuide Ecuador como respaldo. Ambas publican la parrilla en
+  hora Ecuador; se interpreta directamente como America/Guayaquil.
 
 Los logos se descargan como imágenes de marca, se validan con Pillow, se
 normalizan a PNG y se cachean en ``public/logos``. Si una fuente de imagen
@@ -67,6 +68,7 @@ CBS_LOGO_URL = (
 
 OROMAR_ID = "OromarTV.ec"
 OROMAR_NAME = "Oromar TV"
+OROMAR_LISTINGS_URL = "https://americatvlistings.com/es/ec-ECT/oromar-tv"
 OROMAR_SOURCE_URL = "https://americatvguide.com/es/ec/channel/oromar_tv"
 OROMAR_PAGE_URL = "https://oromartv.com/"
 OROMAR_LOGO_URL = "https://oromartv.com/images/OTV400.png"
@@ -427,6 +429,124 @@ def _parse_date_token(token: str) -> date:
     return datetime.strptime(token, fmt).date()
 
 
+
+
+_LISTINGS_DATE_RE = re.compile(
+    r"(?im)^(?:lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo),\s*"
+    r"(\d{1,2}/\d{1,2}/\d{2,4})(?:,|$)"
+)
+_LISTINGS_TIME_RE = re.compile(r"^(\d{1,2}:\d{2})\s+(.+)$")
+
+def _parse_listings_date(token: str) -> date:
+    parts = [int(x) for x in token.split("/")]
+    if len(parts) != 3:
+        raise ValueError(f"fecha AmericaTVListings inválida: {token!r}")
+    day, month, year = parts
+    if year < 100:
+        year += 2000
+    return date(year, month, day)
+
+def parse_americatvlistings_oromar(html: str) -> list[tuple[datetime, str]]:
+    """Parsea la página específica de Oromar en AmericaTVListings.
+
+    La página presenta encabezados diarios (p. ej. ``sábado, 29/08/26``) y
+    emisiones con formato ``HH:MM Título``. El HTML cambia de envoltorios con
+    frecuencia, por lo que se trabaja sobre texto normalizado y no sobre clases
+    CSS frágiles.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    lines = [
+        re.sub(r"\s+", " ", line.replace("\xa0", " ")).strip()
+        for line in soup.get_text("\n", strip=True).splitlines()
+    ]
+    lines = [line for line in lines if line]
+
+    current_date: date | None = None
+    rows: list[tuple[datetime, str]] = []
+
+    for line in lines:
+        date_match = _LISTINGS_DATE_RE.match(line)
+        if date_match:
+            current_date = _parse_listings_date(date_match.group(1))
+            continue
+        if current_date is None or line.lower().startswith("no results found"):
+            continue
+        match = _LISTINGS_TIME_RE.match(line)
+        if not match:
+            continue
+        hhmm, title = match.groups()
+        hour, minute = (int(x) for x in hhmm.split(":"))
+        if hour > 23 or minute > 59:
+            continue
+        title = re.sub(r"\s+", " ", title).strip(" |–—-\t")
+        if not title:
+            continue
+        rows.append((datetime.combine(current_date, dt_time(hour, minute), tzinfo=OUTPUT_TZ), title))
+
+    # Algunos renderizados agrupan todo el día en una sola línea. Si el pase
+    # anterior encontró muy poco, se segmenta por encabezados y por marcas HH:MM.
+    if len(rows) < MIN_PROGRAMMES_PER_CHANNEL + 1:
+        text = re.sub(r"[\t\r]+", " ", soup.get_text("\n", strip=True).replace("\xa0", " "))
+        headers = list(_LISTINGS_DATE_RE.finditer(text))
+        fallback_rows: list[tuple[datetime, str]] = []
+        for idx, header in enumerate(headers):
+            day = _parse_listings_date(header.group(1))
+            end = headers[idx + 1].start() if idx + 1 < len(headers) else len(text)
+            chunk = text[header.end():end]
+            starts = list(re.finditer(r"(?<!\d)(\d{1,2}:\d{2})\s+", chunk))
+            for j, start_match in enumerate(starts):
+                hour, minute = (int(x) for x in start_match.group(1).split(":"))
+                if hour > 23 or minute > 59:
+                    continue
+                title_start = start_match.end()
+                title_end = starts[j + 1].start() if j + 1 < len(starts) else len(chunk)
+                title = re.sub(r"\s+", " ", chunk[title_start:title_end]).strip(" |–—-\n")
+                title = re.split(r"(?:No results found|Facebook|Twitter|TV Channel|TV guide)", title, maxsplit=1)[0].strip()
+                if title:
+                    fallback_rows.append((datetime.combine(day, dt_time(hour, minute), tzinfo=OUTPUT_TZ), title))
+        if len(fallback_rows) > len(rows):
+            rows = fallback_rows
+
+    dedup: dict[tuple[datetime, str], None] = {}
+    for item in rows:
+        dedup.setdefault(item, None)
+    return sorted(dedup, key=lambda item: item[0])
+
+def build_oromar_from_schedule(
+    schedule: list[tuple[datetime, str]],
+    window_start: datetime,
+    window_end: datetime,
+    source_name: str,
+) -> tuple[etree._Element, list[etree._Element], int]:
+    if len(schedule) < MIN_PROGRAMMES_PER_CHANNEL + 1:
+        raise RuntimeError(f"{source_name} Oromar: solo se detectaron {len(schedule)} inicios.")
+
+    channel = etree.Element("channel", id=OROMAR_ID)
+    etree.SubElement(channel, "display-name").text = OROMAR_NAME
+    programmes: list[etree._Element] = []
+    loaded_days: set[date] = set()
+    for index, (start, title) in enumerate(schedule):
+        stop = schedule[index + 1][0] if index + 1 < len(schedule) else start + timedelta(hours=1)
+        if stop <= start or stop - start > timedelta(hours=8):
+            continue
+        if stop <= window_start or start >= window_end:
+            continue
+        node = etree.Element("programme", start=format_xmltv(start), stop=format_xmltv(stop), channel=OROMAR_ID)
+        etree.SubElement(node, "title", lang="es").text = title
+        programmes.append(node)
+        loaded_days.add(start.astimezone(OUTPUT_TZ).date())
+    if len(programmes) < MIN_PROGRAMMES_PER_CHANNEL:
+        raise RuntimeError(f"{source_name} Oromar: solo {len(programmes)} emisiones dentro de la ventana.")
+    return channel, programmes, len(loaded_days)
+
+def build_oromar_from_listings(
+    html: str, window_start: datetime, window_end: datetime
+) -> tuple[etree._Element, list[etree._Element], int]:
+    return build_oromar_from_schedule(
+        parse_americatvlistings_oromar(html), window_start, window_end, "AmericaTVListings"
+    )
+
+
 def parse_americatvguide_oromar(html: str) -> list[tuple[datetime, str]]:
     soup = BeautifulSoup(html, "html.parser")
     text = soup.get_text("\n", strip=True).replace("\xa0", " ")
@@ -522,43 +642,12 @@ def build_oromar_programmes(
     window_start: datetime,
     window_end: datetime,
 ) -> tuple[etree._Element, list[etree._Element], int]:
-    schedule = parse_americatvguide_oromar(html)
-    if len(schedule) < MIN_PROGRAMMES_PER_CHANNEL + 1:
-        raise RuntimeError(
-            f"AmericaTVGuide Oromar: solo se detectaron {len(schedule)} inicios."
-        )
-
-    channel = etree.Element("channel", id=OROMAR_ID)
-    display = etree.SubElement(channel, "display-name")
-    display.text = OROMAR_NAME
-
-    programmes: list[etree._Element] = []
-    loaded_days: set[date] = set()
-    for index, (start, title) in enumerate(schedule):
-        if index + 1 < len(schedule):
-            stop = schedule[index + 1][0]
-        else:
-            stop = start + timedelta(hours=1)
-        if stop <= start or stop - start > timedelta(hours=8):
-            continue
-        if stop <= window_start or start >= window_end:
-            continue
-        node = etree.Element(
-            "programme",
-            start=format_xmltv(start),
-            stop=format_xmltv(stop),
-            channel=OROMAR_ID,
-        )
-        title_node = etree.SubElement(node, "title", lang="es")
-        title_node.text = title
-        programmes.append(node)
-        loaded_days.add(start.astimezone(OUTPUT_TZ).date())
-
-    if len(programmes) < MIN_PROGRAMMES_PER_CHANNEL:
-        raise RuntimeError(
-            f"AmericaTVGuide Oromar: solo {len(programmes)} emisiones dentro de la ventana."
-        )
-    return channel, programmes, len(loaded_days)
+    return build_oromar_from_schedule(
+        parse_americatvguide_oromar(html),
+        window_start,
+        window_end,
+        "AmericaTVGuide",
+    )
 
 
 def clone_previous_channel(
@@ -839,7 +928,7 @@ def update_status(
         status["sources"] = sources
     sources["v039"] = {
         CBS_ID: CBS_TVPASSPORT_PAGE,
-        OROMAR_ID: OROMAR_SOURCE_URL,
+        OROMAR_ID: OROMAR_LISTINGS_URL,
     }
     status["v039_epg"] = {
         "version": VERSION,
@@ -862,7 +951,14 @@ def update_status(
             },
             OROMAR_ID: {
                 "mode": oromar_mode,
-                "source": OROMAR_SOURCE_URL,
+                "source": (
+                    OROMAR_LISTINGS_URL
+                    if oromar_mode == "americatvlistings-live"
+                    else OROMAR_SOURCE_URL
+                    if oromar_mode == "americatvguide-live"
+                    else "previous-latam-cache"
+                ),
+                "fallback_sources": [OROMAR_SOURCE_URL, "previous-latam-cache"],
                 "source_timezone": "America/Guayaquil",
                 "output_timezone": "America/Guayaquil",
                 "programmes": oromar_count,
@@ -914,6 +1010,25 @@ def self_test() -> int:
     """
     schedule = parse_americatvguide_oromar(sample)
     assert len(schedule) >= 16, schedule
+
+    listings_sample = """
+    <html><body>
+      <h3>sábado, 29/08/26, AmericaTVListings.com</h3>
+      <a>00:00 Iglesia universal</a><a>01:00 Así se hace Ecuador</a>
+      <a>03:30 Ecuador multicolor</a><a>06:00 Mar de risas</a>
+      <a>07:00 Outlet TV</a><a>08:30 Promo TV</a><a>09:00 Conversando con Orlando</a>
+      <a>09:30 Promo TV</a><a>11:00 Outlet TV</a><a>12:00 Promo TV</a>
+      <a>12:30 Walker Ranger Texas</a><a>14:00 El gran Chaparral</a>
+      <h3>domingo, 30/08/26, AmericaTVListings.com</h3>
+      <a>00:00 Iglesia universal</a><a>01:00 Así se hace Ecuador</a>
+      <a>03:30 Ecuador multicolor</a><a>06:00 Mar de risas</a>
+      <a>07:00 Outlet TV</a><a>08:30 Video control</a>
+    </body></html>
+    """
+    listings_schedule = parse_americatvlistings_oromar(listings_sample)
+    assert len(listings_schedule) >= 18, listings_schedule
+    assert listings_schedule[0][0].strftime("%Y-%m-%d %H:%M %z") == "2026-08-29 00:00 -0500"
+    assert any(title == "Walker Ranger Texas" for _start, title in listings_schedule)
     assert schedule[0][0].strftime("%Y-%m-%d %H:%M") == "2026-08-29 00:00"
     assert any(title == "Noticias Oromar - Primera emisión" for _start, title in schedule)
 
@@ -1026,32 +1141,56 @@ def main() -> int:
     append_channel(root, cbs_channel, cbs_programmes)
     log(f"CBS New York: {len(cbs_programmes)} emisiones; modo={cbs_mode}.")
 
-    # Oromar TV.
-    oromar_mode = "americatvguide-live"
+    # Oromar TV. AmericaTVListings es primario; AmericaTVGuide y XML previo son respaldos.
+    oromar_mode = "americatvlistings-live"
+    listings_error: Exception | None = None
+    guide_error: Exception | None = None
     try:
-        oromar_html = request_bytes(s, OROMAR_SOURCE_URL).decode("utf-8", errors="replace")
-        oromar_channel, oromar_programmes, oromar_days = build_oromar_programmes(
-            oromar_html, window_start, window_end
+        listings_html = request_bytes(
+            s,
+            OROMAR_LISTINGS_URL,
+            headers={
+                "User-Agent": TVPASSPORT_USER_AGENT,
+                "Accept-Language": "es-EC,es;q=0.9,en;q=0.7",
+                "Referer": "https://americatvlistings.com/es/ec-ECT/0",
+            },
+        ).decode("utf-8", errors="replace")
+        oromar_channel, oromar_programmes, oromar_days = build_oromar_from_listings(
+            listings_html, window_start, window_end
         )
-    except Exception as exc:  # noqa: BLE001 - fallback deliberado a caché publicada
-        warn(f"Oromar TV: fuente primaria falló: {exc}")
-        previous = clone_previous_channel(
-            args.previous_latam_xml, OROMAR_ID, OROMAR_NAME, window_start, window_end
-        )
-        if previous is None:
-            raise RuntimeError(
-                "Oromar TV: AmericaTVGuide falló y no existe fallback previo utilizable."
-            ) from exc
-        oromar_channel, oromar_programmes = previous
-        oromar_days = len(
-            {
-                parse_xmltv_datetime(node.get("start", ""), OUTPUT_TZ)
-                .astimezone(OUTPUT_TZ)
-                .date()
-                for node in oromar_programmes
-            }
-        )
-        oromar_mode = "previous-latam-cache"
+    except Exception as exc:  # noqa: BLE001 - fallback deliberado
+        listings_error = exc
+        warn(f"Oromar TV: AmericaTVListings falló: {exc}")
+        try:
+            oromar_html = request_bytes(
+                s, OROMAR_SOURCE_URL, headers={"User-Agent": TVPASSPORT_USER_AGENT}
+            ).decode("utf-8", errors="replace")
+            oromar_channel, oromar_programmes, oromar_days = build_oromar_programmes(
+                oromar_html, window_start, window_end
+            )
+            oromar_mode = "americatvguide-live"
+        except Exception as exc2:  # noqa: BLE001 - fallback a caché publicada
+            guide_error = exc2
+            warn(f"Oromar TV: AmericaTVGuide falló: {exc2}")
+            previous = clone_previous_channel(
+                args.previous_latam_xml, OROMAR_ID, OROMAR_NAME, window_start, window_end
+            )
+            if previous is None:
+                raise RuntimeError(
+                    "Oromar TV: fallaron AmericaTVListings y AmericaTVGuide y no existe "
+                    "fallback previo utilizable. "
+                    f"AmericaTVListings={listings_error}; AmericaTVGuide={guide_error}"
+                ) from exc2
+            oromar_channel, oromar_programmes = previous
+            oromar_days = len(
+                {
+                    parse_xmltv_datetime(node.get("start", ""), OUTPUT_TZ)
+                    .astimezone(OUTPUT_TZ)
+                    .date()
+                    for node in oromar_programmes
+                }
+            )
+            oromar_mode = "previous-latam-cache"
     append_channel(root, oromar_channel, oromar_programmes)
     log(
         f"Oromar TV: {len(oromar_programmes)} emisiones; días={oromar_days}; "
