@@ -1,15 +1,15 @@
 {
-  "version": "0.2.42",
-  "generated_at": "2026-08-29T22:44:14.913583-05:00",
-  "source_commit": "d5483a7c6e3d8afa74659ae5b70212851e591724",
-  "github_run_id": "33290896486",
+  "version": "0.2.43",
+  "generated_at": "2026-08-29T22:57:09.346808-05:00",
+  "source_commit": "ce190d0e8d55e3087cc6bf4c6c070e0cf74f7a87",
+  "github_run_id": "33291373945",
   "github_run_attempt": "1",
   "base_date": "2026-08-29",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 35,
-  "programmes": 2949,
+  "programmes": 2979,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 53,
     "Canal.Gamavisión.ec": 32,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 207,
     "TeleamazonasGuayaquil.ec": 207,
     "Ecuavisa.ec": 32,
-    "EcuavisaInternacional.ec": 101,
+    "EcuavisaInternacional.ec": 99,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 65,
     "NTN24.co": 49,
@@ -32,18 +32,18 @@
     "Deutsche.Welle.cl": 117,
     "hgtv.ar": 85,
     "France24Espanol.fr": 230,
-    "Antena3-America.co": 16,
+    "Antena3-America.co": 32,
     "Star-Channel.co": 29,
     "Warner-channel.co": 69,
     "HBO-Family.co": 27,
-    "Canal24Horas.es": 193,
-    "La1.es": 98,
-    "Clan.es": 495,
+    "Canal24Horas.es": 198,
+    "La1.es": 99,
+    "Clan.es": 505,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 45,
     "NBC6-Miami.us": 119,
     "ABC-Miami.us": 122,
-    "CBS.(WCBS).New.York,.NY.us": 216,
+    "CBS.(WCBS).New.York,.NY.us": 218,
     "OromarTV.ec": 140,
     "TVEStarHD.es": 75
   },
@@ -58,7 +58,7 @@
     "Telefe.ar": 3,
     "hgtv.ar": 3,
     "France24Espanol.fr": 3,
-    "Antena3-America.co": 2,
+    "Antena3-America.co": 3,
     "Star-Channel.co": 3,
     "Warner-channel.co": 3,
     "HBO-Family.co": 3
@@ -71,32 +71,32 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-08-29": 46,
-      "2026-08-30": 47,
+      "2026-08-29": 47,
+      "2026-08-30": 50,
       "2026-08-31": 28,
       "2026-09-01": 26,
       "2026-09-02": 28,
-      "2026-09-03": 18
+      "2026-09-03": 19
     },
     "La1.es": {
-      "2026-08-29": 21,
-      "2026-08-30": 18,
+      "2026-08-29": 20,
+      "2026-08-30": 17,
       "2026-08-31": 17,
       "2026-09-01": 20,
-      "2026-09-02": 10,
-      "2026-09-03": 15
+      "2026-09-02": 9,
+      "2026-09-03": 16
     },
     "Clan.es": {
-      "2026-08-29": 80,
-      "2026-08-30": 83,
-      "2026-08-31": 88,
-      "2026-09-01": 88,
-      "2026-09-02": 89,
-      "2026-09-03": 72
+      "2026-08-29": 79,
+      "2026-08-30": 82,
+      "2026-08-31": 87,
+      "2026-09-01": 87,
+      "2026-09-02": 88,
+      "2026-09-03": 83
     },
     "Deutsche.Welle.cl": {
-      "2026-08-29": 59,
-      "2026-08-30": 58
+      "2026-08-29": 58,
+      "2026-08-30": 59
     }
   },
   "gatotv_source_timezones": {
@@ -303,7 +303,7 @@
         ],
         "source_timezone": "America/New_York / explicit XMLTV offset",
         "output_timezone": "America/Guayaquil",
-        "programmes": 216
+        "programmes": 218
       },
       "OromarTV.ec": {
         "mode": "bundled-weekly-fallback",
