@@ -61,12 +61,13 @@ jobs:
         run: |
           set -euo pipefail
           echo "VERSION=$(cat VERSION)"
-          echo "LATAM resiliente + Miami + CBS New York/Oromar v0.2.39:"
+          echo "LATAM resiliente + Miami + CBS New York/Oromar + STAR TVE v0.2.40:"
           sha256sum \
             scripts/build_latam_epg.py \
             scripts/build_latam_resilient.py \
             scripts/add_miami_epg.py \
             scripts/add_v039_channels.py \
+            scripts/add_star_tve.py \
             scripts/patch_dw_mitv.py
 
       - name: Instalar dependencias
@@ -104,7 +105,8 @@ jobs:
             scripts/build_latam_epg.py \
             scripts/build_latam_resilient.py \
             scripts/add_miami_epg.py \
-            scripts/add_v039_channels.py
+            scripts/add_v039_channels.py \
+            scripts/add_star_tve.py
 
           python -m py_compile scripts/*.py
           python - <<'PYIMPORT'
@@ -116,7 +118,8 @@ jobs:
           import build_latam_resilient  # noqa: F401
           import add_miami_epg  # noqa: F401
           import add_v039_channels  # noqa: F401
-          print("Importación real de generadores, Miami y capa v0.2.39 correcta.")
+          import add_star_tve  # noqa: F401
+          print("Importación real de generadores, Miami, v0.2.39 y STAR TVE v0.2.40 correcta.")
           PYIMPORT
 
       - name: Preparar directorio público
@@ -152,7 +155,7 @@ jobs:
           if git cat-file -e origin/epg-data:latam.xml 2>/dev/null; then
             git show origin/epg-data:latam.xml > .cache/previous-latam.xml
             test -s .cache/previous-latam.xml
-            echo "Caché LATAM previa restaurada (MakroDigital + Miami + posibles fallbacks v0.2.39)."
+            echo "Caché LATAM previa restaurada (MakroDigital + Miami + posibles fallbacks v0.2.39/v0.2.40)."
           else
             echo "No existe latam.xml previa para respaldos."
           fi
@@ -182,6 +185,7 @@ jobs:
           python scripts/build_latam_resilient.py --self-test
           python scripts/add_miami_epg.py --self-test
           python scripts/add_v039_channels.py --self-test
+          python scripts/add_star_tve.py --self-test
           python scripts/mitv_logos.py --self-test
 
       - name: Construir guía principal ec.xml
@@ -257,6 +261,17 @@ jobs:
           test -s public/logos/HBO-Family.co.png
           test -s public/logos/Warner-channel.co.png
 
+      - name: Añadir STAR TVE v0.2.40
+        shell: bash
+        env:
+          TZ: America/Guayaquil
+        run: |
+          set -euo pipefail
+          python scripts/add_star_tve.py \
+            --output public \
+            --days "${GUIDE_DAYS}" \
+            --previous-latam-xml .cache/previous-latam.xml
+
       - name: Validar archivos finales
         shell: bash
         run: |
@@ -284,8 +299,9 @@ jobs:
           import build_latam_resilient as resilient
           import add_miami_epg as miami
           import add_v039_channels as v039
+          import add_star_tve as star
 
-          STAR_ID = "TVEStarHD.es"
+          STAR_ID = star.STAR_ID
           REQUIRED = (
               "Deutsche.Welle.cl",
               "Antena3-America.co",
@@ -294,14 +310,16 @@ jobs:
               "HBO-Family.co",
               *miami.TARGET_IDS,
               *v039.TARGET_IDS,
+              *star.TARGET_IDS,
           )
           validate.LATAM_REQUIRED = (
               *resilient.EXPECTED_LATAM_IDS,
               *miami.TARGET_IDS,
               *v039.TARGET_IDS,
+              *star.TARGET_IDS,
           )
-          assert len(validate.LATAM_REQUIRED) == 34, validate.LATAM_REQUIRED
-          assert STAR_ID not in validate.LATAM_REQUIRED
+          assert len(validate.LATAM_REQUIRED) == 35, validate.LATAM_REQUIRED
+          assert STAR_ID in validate.LATAM_REQUIRED
           assert all(channel_id in validate.LATAM_REQUIRED for channel_id in REQUIRED)
 
           sys.argv = ["validate_outputs.py", "--public", "public"]
@@ -317,8 +335,8 @@ jobs:
               huge_tree=True,
           )
           root = etree.parse("public/latam.xml", parser).getroot()
-          assert not root.xpath("./channel[@id=$channel_id]", channel_id=STAR_ID)
-          assert not root.xpath("./programme[@channel=$channel_id]", channel_id=STAR_ID)
+          assert root.xpath("./channel[@id=$channel_id]", channel_id=STAR_ID)
+          assert len(root.xpath("./programme[@channel=$channel_id]", channel_id=STAR_ID)) >= 5
           for channel_id in REQUIRED:
               assert root.xpath("./channel[@id=$channel_id]", channel_id=channel_id), channel_id
               programmes = root.xpath("./programme[@channel=$channel_id]", channel_id=channel_id)
@@ -327,7 +345,8 @@ jobs:
               assert all(item.get("stop", "").endswith(" -0500") for item in programmes), channel_id
 
           assert tuple(node.get("id", "") for node in root.findall("channel")) == validate.LATAM_REQUIRED
-          assert tuple(node.get("id", "") for node in root.findall("channel"))[-2:] == v039.TARGET_IDS
+          assert tuple(node.get("id", "") for node in root.findall("channel"))[-3:-1] == v039.TARGET_IDS
+          assert tuple(node.get("id", "") for node in root.findall("channel"))[-1:] == star.TARGET_IDS
 
           manifest = json.loads(Path("public/logos/manifest.json").read_text(encoding="utf-8"))
           for channel_id in v039.LOGO_IDS:
@@ -344,7 +363,7 @@ jobs:
               assert len(icons) == 1 and icons[0].get("src") == expected_icon, channel_id
 
           status = json.loads(Path("public/latam-status.json").read_text(encoding="utf-8"))
-          assert int(status.get("channels", 0)) == 34, status.get("channels")
+          assert int(status.get("channels", 0)) == 35, status.get("channels")
           miami_policy = status.get("miami_epg", {})
           assert miami_policy.get("output_timezone") == "America/Guayaquil", miami_policy
           assert int(miami_policy.get("manual_offset_minutes", -1)) == 0, miami_policy
@@ -352,11 +371,17 @@ jobs:
           assert policy.get("output_timezone") == "America/Guayaquil", policy
           assert int(policy.get("manual_offset_minutes", -1)) == 0, policy
           assert set(policy.get("channels", {})) == set(v039.TARGET_IDS), policy
+          star_policy = status.get("star_tve_epg", {})
+          assert star_policy.get("source_timezone") == "Atlantic/Canary", star_policy
+          assert star_policy.get("output_timezone") == "America/Guayaquil", star_policy
+          assert star_policy.get("primary_time_view") == "24h", star_policy
+          assert int(star_policy.get("manual_offset_minutes", -1)) == 0, star_policy
+          assert int(star_policy.get("programmes", 0)) >= 5, star_policy
 
           print(
-              "Validación v0.2.39 correcta: 34 canales; STAR TVE ausente; "
-              "CBS New York y Oromar presentes; 5 logos locales válidos; "
-              "America/Guayaquil y offset manual 0."
+              "Validación v0.2.40 correcta: 35 canales; STAR TVE presente; "
+              "24h GatoTV Atlantic/Canary -> America/Guayaquil; CBS/Oromar presentes; "
+              "5 logos locales válidos; offset manual 0."
           )
           PY
 
@@ -471,7 +496,7 @@ jobs:
           - `ec.xml.gz`
           - `status.json`
 
-          Guía seleccionada de 34 canales:
+          Guía seleccionada de 35 canales:
           - `latam.xml`
           - `latam.xml.gz`
           - `latam-status.json`
