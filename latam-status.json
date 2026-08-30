@@ -1,8 +1,8 @@
 {
-  "version": "0.2.44",
-  "generated_at": "2026-08-30T09:25:40.033720-05:00",
-  "source_commit": "6095a6580017d20c79df2ff91f12a8b7a1859acb",
-  "github_run_id": "33316778059",
+  "version": "0.2.45",
+  "generated_at": "2026-08-30T14:16:55.368833-05:00",
+  "source_commit": "b193824df80cc7434550043e1d0c128ea4f33a88",
+  "github_run_id": "33330372311",
   "github_run_attempt": "1",
   "base_date": "2026-08-30",
   "window_days": 7,
@@ -344,7 +344,7 @@
     ],
     "loaded_source_days": 2,
     "programmes": 48,
-    "cached_programmes_available": 50,
+    "cached_programmes_available": 48,
     "cache_policy": "programme cache disabled; fresh GatoTV required",
     "field_validation": {
       "date": "2026-08-29",
