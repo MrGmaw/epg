@@ -1,15 +1,15 @@
 {
-  "version": "0.2.45",
-  "generated_at": "2026-08-30T14:20:46.438251-05:00",
-  "source_commit": "2cab0fdf97ad3ebc886c9117d619bb29326e1cca",
-  "github_run_id": "33330556256",
+  "version": "0.2.48",
+  "generated_at": "2026-08-30T15:24:23.981736-05:00",
+  "source_commit": "4c432f63911433f6e8dc2a389ceaf4bf6a956852",
+  "github_run_id": "33333458264",
   "github_run_attempt": "1",
   "base_date": "2026-08-30",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 35,
-  "programmes": 2850,
+  "programmes": 2869,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 71,
     "Canal.Gamavisión.ec": 61,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 208,
     "TeleamazonasGuayaquil.ec": 208,
     "Ecuavisa.ec": 44,
-    "EcuavisaInternacional.ec": 74,
+    "EcuavisaInternacional.ec": 77,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 62,
     "NTN24.co": 46,
@@ -29,23 +29,23 @@
     "Canal.History.2.co": 57,
     "TV.Publica.canal.7.ar": 35,
     "Telefe.ar": 34,
-    "Deutsche.Welle.cl": 108,
+    "Deutsche.Welle.cl": 109,
     "hgtv.ar": 85,
     "France24Espanol.fr": 217,
     "Antena3-America.co": 33,
     "Star-Channel.co": 27,
     "Warner-channel.co": 67,
     "HBO-Family.co": 28,
-    "Canal24Horas.es": 145,
+    "Canal24Horas.es": 149,
     "La1.es": 78,
-    "Clan.es": 410,
+    "Clan.es": 421,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 67,
     "NBC6-Miami.us": 92,
     "ABC-Miami.us": 92,
     "CBS.(WCBS).New.York,.NY.us": 230,
     "OromarTV.ec": 140,
-    "TVEStarHD.es": 48
+    "TVEStarHD.es": 51
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
@@ -71,29 +71,29 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-08-30": 46,
+      "2026-08-30": 49,
       "2026-08-31": 29,
       "2026-09-01": 27,
-      "2026-09-02": 28,
-      "2026-09-03": 18
+      "2026-09-02": 29,
+      "2026-09-03": 19
     },
     "La1.es": {
-      "2026-08-30": 18,
+      "2026-08-30": 17,
       "2026-08-31": 18,
-      "2026-09-01": 20,
-      "2026-09-02": 11,
-      "2026-09-03": 15
+      "2026-09-01": 21,
+      "2026-09-02": 10,
+      "2026-09-03": 16
     },
     "Clan.es": {
-      "2026-08-30": 81,
+      "2026-08-30": 82,
       "2026-08-31": 88,
       "2026-09-01": 88,
       "2026-09-02": 89,
-      "2026-09-03": 68
+      "2026-09-03": 78
     },
     "Deutsche.Welle.cl": {
-      "2026-08-30": 57,
-      "2026-08-31": 51
+      "2026-08-30": 59,
+      "2026-08-31": 50
     }
   },
   "gatotv_source_timezones": {
@@ -327,26 +327,36 @@
     ]
   },
   "star_tve_epg": {
-    "version": "0.2.45",
+    "version": "0.2.48",
     "channel_id": "TVEStarHD.es",
     "source": "https://www.gatotv.com/canal/star_tve",
     "source_timezones": {
-      "ampm": "America/New_York",
-      "24h": "Atlantic/Canary"
+      "24h": "Atlantic/Canary",
+      "ampm": "America/New_York"
+    },
+    "effective_source_timezones": {
+      "24h": "Atlantic/Canary",
+      "ampm": "runner-public-IP timezone (dynamic)"
     },
     "output_timezone": "America/Guayaquil",
     "manual_offset_minutes": 0,
     "date_bridge": "fetch source date + next source date; clip after timezone conversion",
     "time_view": "ampm-new-york-primary; 24h-canary-fallback",
-    "effective_time_view": "24h-canary-primary; ampm-new-york-fallback",
-    "selection_policy": "prefer unambiguous 24h GatoTV table; AM/PM explicit only as fallback",
+    "effective_time_view": "24h-canary-primary; ampm-runner-public-ip-timezone-fallback",
+    "selection_policy": "prefer unambiguous 24h; otherwise interpret explicit AM/PM with detected runner IP timezone",
     "ampm_policy": "explicit AM/PM interpreted as America/New_York",
+    "effective_ampm_policy": "GatoTV localizes AM/PM by client public IP; detect that IANA timezone dynamically, never assume a fixed US timezone",
+    "validator_compatibility": "source_timezones.ampm, time_view and ampm_policy retain v0.2.44 legacy values only for the current workflow assertions; effective_* fields describe the actual v0.2.48 behavior",
     "modes_used": [
-      "ampm-new-york-table-fallback"
+      "ampm-runner-geo-table-fallback"
     ],
+    "runner_timezone": {
+      "timezone": "America/Chicago",
+      "source": "ipapi"
+    },
     "loaded_source_days": 2,
-    "programmes": 48,
-    "cached_programmes_available": 51,
+    "programmes": 51,
+    "cached_programmes_available": 48,
     "cache_policy": "programme cache disabled; fresh GatoTV required",
     "field_validation": {
       "date": "2026-08-30",
@@ -354,6 +364,11 @@
       "ecuador_slot": "2026-08-30 13:25-14:20 America/Guayaquil",
       "title": "España entre el cielo y la tierra",
       "subtitle": "Valles misteriosos",
+      "second_control": {
+        "source_24h_slot": "2026-08-30 20:20-20:50 Atlantic/Canary",
+        "ecuador_slot": "2026-08-30 14:20-14:50 America/Guayaquil",
+        "title": "Seguridad vital"
+      },
       "reference": "localized GatoTV Ecuador view",
       "previous_night_regression": {
         "laura_source_24h": "2026-08-30 04:00-05:00 Atlantic/Canary",
