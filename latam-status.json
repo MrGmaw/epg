@@ -1,15 +1,15 @@
 {
   "version": "0.2.45",
-  "generated_at": "2026-08-30T14:16:55.368833-05:00",
-  "source_commit": "b193824df80cc7434550043e1d0c128ea4f33a88",
-  "github_run_id": "33330372311",
+  "generated_at": "2026-08-30T14:18:35.784034-05:00",
+  "source_commit": "2cab0fdf97ad3ebc886c9117d619bb29326e1cca",
+  "github_run_id": "33330390356",
   "github_run_attempt": "1",
   "base_date": "2026-08-30",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 35,
-  "programmes": 2850,
+  "programmes": 2876,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 71,
     "Canal.Gamavisión.ec": 61,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 208,
     "TeleamazonasGuayaquil.ec": 208,
     "Ecuavisa.ec": 44,
-    "EcuavisaInternacional.ec": 74,
+    "EcuavisaInternacional.ec": 76,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 62,
     "NTN24.co": 46,
@@ -29,23 +29,23 @@
     "Canal.History.2.co": 57,
     "TV.Publica.canal.7.ar": 35,
     "Telefe.ar": 34,
-    "Deutsche.Welle.cl": 108,
+    "Deutsche.Welle.cl": 109,
     "hgtv.ar": 85,
     "France24Espanol.fr": 217,
     "Antena3-America.co": 33,
     "Star-Channel.co": 27,
     "Warner-channel.co": 67,
     "HBO-Family.co": 28,
-    "Canal24Horas.es": 145,
-    "La1.es": 78,
-    "Clan.es": 410,
+    "Canal24Horas.es": 151,
+    "La1.es": 79,
+    "Clan.es": 426,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 67,
     "NBC6-Miami.us": 92,
     "ABC-Miami.us": 92,
     "CBS.(WCBS).New.York,.NY.us": 230,
     "OromarTV.ec": 140,
-    "TVEStarHD.es": 48
+    "TVEStarHD.es": 51
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
@@ -71,29 +71,29 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-08-30": 46,
-      "2026-08-31": 29,
-      "2026-09-01": 27,
+      "2026-08-30": 50,
+      "2026-08-31": 28,
+      "2026-09-01": 26,
       "2026-09-02": 28,
-      "2026-09-03": 18
+      "2026-09-03": 19
     },
     "La1.es": {
-      "2026-08-30": 18,
-      "2026-08-31": 18,
+      "2026-08-30": 17,
+      "2026-08-31": 17,
       "2026-09-01": 20,
-      "2026-09-02": 11,
-      "2026-09-03": 15
+      "2026-09-02": 9,
+      "2026-09-03": 16
     },
     "Clan.es": {
-      "2026-08-30": 81,
-      "2026-08-31": 88,
-      "2026-09-01": 88,
-      "2026-09-02": 89,
-      "2026-09-03": 68
+      "2026-08-30": 82,
+      "2026-08-31": 87,
+      "2026-09-01": 87,
+      "2026-09-02": 88,
+      "2026-09-03": 83
     },
     "Deutsche.Welle.cl": {
-      "2026-08-30": 57,
-      "2026-08-31": 51
+      "2026-08-30": 59,
+      "2026-08-31": 50
     }
   },
   "gatotv_source_timezones": {
@@ -327,7 +327,7 @@
     ]
   },
   "star_tve_epg": {
-    "version": "0.2.44",
+    "version": "0.2.45",
     "channel_id": "TVEStarHD.es",
     "source": "https://www.gatotv.com/canal/star_tve",
     "source_timezones": {
@@ -338,26 +338,29 @@
     "manual_offset_minutes": 0,
     "date_bridge": "fetch source date + next source date; clip after timezone conversion",
     "time_view": "ampm-new-york-primary; 24h-canary-fallback",
+    "effective_time_view": "24h-canary-primary; ampm-new-york-fallback",
+    "selection_policy": "prefer unambiguous 24h GatoTV table; AM/PM explicit only as fallback",
     "ampm_policy": "explicit AM/PM interpreted as America/New_York",
     "modes_used": [
-      "ampm-new-york-table-primary"
+      "ampm-new-york-table-fallback"
     ],
     "loaded_source_days": 2,
-    "programmes": 48,
+    "programmes": 51,
     "cached_programmes_available": 48,
     "cache_policy": "programme cache disabled; fresh GatoTV required",
     "field_validation": {
-      "date": "2026-08-29",
-      "ecuador_slot": "20:25-22:00",
-      "title": "Sicarius, la noche y el silencio",
-      "source_24h_slot": "2026-08-30 02:25-04:00 Atlantic/Canary",
-      "source_ampm_slot": "2026-08-29 09:25-11:00 PM America/New_York",
-      "laura_source_ampm": "2026-08-29 11:00 PM-2026-08-30 12:00 AM America/New_York",
-      "laura_source_24h": "2026-08-30 04:00-05:00 Atlantic/Canary",
-      "laura_ecuador": "2026-08-29 22:00-23:00 America/Guayaquil",
-      "fugitiva_source_ampm": "2026-08-30 12:00-01:05 AM America/New_York",
-      "fugitiva_source_24h": "2026-08-30 05:00-06:05 Atlantic/Canary",
-      "fugitiva_ecuador": "2026-08-29 23:00-2026-08-30 00:05 America/Guayaquil"
+      "date": "2026-08-30",
+      "source_24h_slot": "2026-08-30 19:25-20:20 Atlantic/Canary",
+      "ecuador_slot": "2026-08-30 13:25-14:20 America/Guayaquil",
+      "title": "España entre el cielo y la tierra",
+      "subtitle": "Valles misteriosos",
+      "reference": "localized GatoTV Ecuador view",
+      "previous_night_regression": {
+        "laura_source_24h": "2026-08-30 04:00-05:00 Atlantic/Canary",
+        "laura_ecuador": "2026-08-29 22:00-23:00 America/Guayaquil",
+        "fugitiva_source_24h": "2026-08-30 05:00-06:05 Atlantic/Canary",
+        "fugitiva_ecuador": "2026-08-29 23:00-2026-08-30 00:05 America/Guayaquil"
+      }
     }
   }
 }
