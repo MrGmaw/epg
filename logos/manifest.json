@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-29T20:07:40.791674-05:00",
+  "generated_at": "2026-08-29T20:47:45.522848-05:00",
   "public_base_url": "https://mrgmaw.github.io/epg/logos",
   "targets": 13,
   "available": 13,
@@ -134,6 +134,56 @@
       "width": 200,
       "height": 200,
       "sha256": "377bb59a3e6722b7b76fbb2f051fac608ed8cbe15b143c11a8d48d6afdc5ac47"
+    },
+    "OromarTV.ec": {
+      "page_url": "https://oromartv.com/",
+      "local_url": "https://mrgmaw.github.io/epg/logos/OromarTV.ec.png",
+      "available": true,
+      "source": "downloaded",
+      "source_url": "https://oromartv.com/images/OTV400.png",
+      "width": 400,
+      "height": 400,
+      "sha256": "7f1c1df57a1722157a8ace5d18c3008e7c7f864ad3061a403f773eef6a4145c5"
+    },
+    "CBS.(WCBS).New.York,.NY.us": {
+      "page_url": "https://www.cbsnews.com/newyork/cbs2/",
+      "local_url": "https://mrgmaw.github.io/epg/logos/CBS.(WCBS).New.York,.NY.us.png",
+      "available": true,
+      "source": "downloaded",
+      "source_url": "https://assets2.cbsnewsstatic.com/hub/i/r/2024/07/26/c486368f-8a23-4d85-a7c6-569b3e9406c0/thumbnail/620x349/dfabdc6cf76863f0fac74ab6a394b1c4/lockup-logo-black.png",
+      "width": 620,
+      "height": 349,
+      "sha256": "bc36d407c2ee2c404c0616c055eb9407bd097477832a91533f137296b0754b18"
+    },
+    "Antena3-America.co": {
+      "page_url": "https://mi.tv/co/canales/antena3",
+      "local_url": "https://mrgmaw.github.io/epg/logos/Antena3-America.co.png",
+      "available": true,
+      "source": "downloaded",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/83/Antena3Internacional2025.png",
+      "width": 538,
+      "height": 514,
+      "sha256": "479f3ad3e0d323a4ebbe3ddd8c876f53bbb8aa8cd516e666b08c7bc568f88f5e"
+    },
+    "HBO-Family.co": {
+      "page_url": "https://mi.tv/co/canales/hbo-family",
+      "local_url": "https://mrgmaw.github.io/epg/logos/HBO-Family.co.png",
+      "available": true,
+      "source": "downloaded",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/HBO_Family.svg/960px-HBO_Family.svg.png",
+      "width": 960,
+      "height": 744,
+      "sha256": "4d36fa93b7e2bfa1ddfc62ad1fc143335d00272b704aad4faefc5a8fe612cfc9"
+    },
+    "Warner-channel.co": {
+      "page_url": "https://mi.tv/co/canales/warner",
+      "local_url": "https://mrgmaw.github.io/epg/logos/Warner-channel.co.png",
+      "available": true,
+      "source": "downloaded",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Warner_Channel_2026.svg/960px-Warner_Channel_2026.svg.png",
+      "width": 960,
+      "height": 896,
+      "sha256": "50085946db5fa31ef1a7f8145960a59e0b8fd81ec51cd222f60c36d99a410756"
     }
   }
 }

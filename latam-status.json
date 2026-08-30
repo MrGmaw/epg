@@ -1,14 +1,14 @@
 {
   "version": "0.2.39",
-  "generated_at": "2026-08-29T20:08:34.723854-05:00",
-  "source_commit": "4cb235e06fb26451c7f0890071e813c18c8c39a4",
-  "github_run_id": "33284932557",
+  "generated_at": "2026-08-29T20:47:35.416246-05:00",
+  "source_commit": "ccc352e226897d193e850be2a48072cd2bad79b8",
+  "github_run_id": "33286413265",
   "github_run_attempt": "1",
   "base_date": "2026-08-29",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
-  "channels": 32,
+  "channels": 34,
   "programmes": 2954,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 53,
@@ -42,7 +42,9 @@
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 45,
     "NBC6-Miami.us": 119,
-    "ABC-Miami.us": 122
+    "ABC-Miami.us": 122,
+    "CBS.(WCBS).New.York,.NY.us": 218,
+    "OromarTV.ec": 140
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
@@ -196,6 +198,10 @@
     "epgshare_miami": {
       "NBC6-Miami.us": "https://epgshare01.online/epgshare01/epg_ripper_US_LOCALS1.xml.gz",
       "ABC-Miami.us": "https://epgshare01.online/epgshare01/epg_ripper_US_LOCALS1.xml.gz"
+    },
+    "v039": {
+      "CBS.(WCBS).New.York,.NY.us": "https://www.tvpassport.com/tv-listings/stations/cbs-wcbs-new-york-ny-hd/4555",
+      "OromarTV.ec": "https://americatvlistings.com/es/ec-ECT/oromar-tv"
     }
   },
   "mitv_endpoint_time_channels": {
@@ -280,5 +286,43 @@
         "window_days": 7
       }
     }
+  },
+  "v039_epg": {
+    "version": "0.2.39",
+    "output_timezone": "America/Guayaquil",
+    "manual_offset_minutes": 0,
+    "channels": {
+      "CBS.(WCBS).New.York,.NY.us": {
+        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=8",
+        "source": "https://www.tvpassport.com/tv-listings/stations/cbs-wcbs-new-york-ny-hd/4555",
+        "fallback_sources": [
+          "https://epgshare01.online/epgshare01/epg_ripper_US1.xml.gz",
+          "previous-latam-cache"
+        ],
+        "source_timezone": "America/New_York / explicit XMLTV offset",
+        "output_timezone": "America/Guayaquil",
+        "programmes": 218
+      },
+      "OromarTV.ec": {
+        "mode": "bundled-weekly-fallback",
+        "source": "bundled-weekly-grid-2026-08-29",
+        "fallback_sources": [
+          "https://americatvguide.com/es/ec/channel/oromar_tv",
+          "bundled-weekly-grid-2026-08-29",
+          "previous-latam-cache"
+        ],
+        "source_timezone": "America/Guayaquil",
+        "output_timezone": "America/Guayaquil",
+        "programmes": 140,
+        "loaded_days": 7
+      }
+    },
+    "logos": [
+      "OromarTV.ec",
+      "CBS.(WCBS).New.York,.NY.us",
+      "Antena3-America.co",
+      "HBO-Family.co",
+      "Warner-channel.co"
+    ]
   }
 }
