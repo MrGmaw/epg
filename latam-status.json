@@ -1,15 +1,15 @@
 {
-  "version": "0.2.41",
-  "generated_at": "2026-08-29T22:27:14.380238-05:00",
-  "source_commit": "20401cb725236456b5703d80b5266d2ab6523cf9",
-  "github_run_id": "33290248958",
+  "version": "0.2.42",
+  "generated_at": "2026-08-29T22:39:43.557605-05:00",
+  "source_commit": "f55a12718c22b750f313b7a1f2f3968e6998a7eb",
+  "github_run_id": "33290727384",
   "github_run_attempt": "1",
   "base_date": "2026-08-29",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 35,
-  "programmes": 2965,
+  "programmes": 2939,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 53,
     "Canal.Gamavisión.ec": 32,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 207,
     "TeleamazonasGuayaquil.ec": 207,
     "Ecuavisa.ec": 32,
-    "EcuavisaInternacional.ec": 101,
+    "EcuavisaInternacional.ec": 98,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 65,
     "NTN24.co": 49,
@@ -28,7 +28,7 @@
     "Canal.History.co": 60,
     "Canal.History.2.co": 56,
     "TV.Publica.canal.7.ar": 40,
-    "Telefe.ar": 30,
+    "Telefe.ar": 15,
     "Deutsche.Welle.cl": 117,
     "hgtv.ar": 85,
     "France24Espanol.fr": 230,
@@ -36,16 +36,16 @@
     "Star-Channel.co": 29,
     "Warner-channel.co": 69,
     "HBO-Family.co": 27,
-    "Canal24Horas.es": 193,
+    "Canal24Horas.es": 191,
     "La1.es": 98,
-    "Clan.es": 495,
+    "Clan.es": 489,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 45,
     "NBC6-Miami.us": 119,
     "ABC-Miami.us": 122,
-    "CBS.(WCBS).New.York,.NY.us": 229,
+    "CBS.(WCBS).New.York,.NY.us": 218,
     "OromarTV.ec": 140,
-    "TVEStarHD.es": 76
+    "TVEStarHD.es": 75
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
@@ -55,7 +55,7 @@
     "Canal.History.co": 3,
     "Canal.History.2.co": 3,
     "TV.Publica.canal.7.ar": 3,
-    "Telefe.ar": 3,
+    "Telefe.ar": 2,
     "hgtv.ar": 3,
     "France24Espanol.fr": 3,
     "Antena3-America.co": 3,
@@ -72,31 +72,31 @@
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
       "2026-08-29": 46,
-      "2026-08-30": 47,
-      "2026-08-31": 28,
-      "2026-09-01": 26,
+      "2026-08-30": 46,
+      "2026-08-31": 29,
+      "2026-09-01": 27,
       "2026-09-02": 28,
       "2026-09-03": 18
     },
     "La1.es": {
       "2026-08-29": 21,
       "2026-08-30": 18,
-      "2026-08-31": 17,
+      "2026-08-31": 18,
       "2026-09-01": 20,
-      "2026-09-02": 10,
+      "2026-09-02": 11,
       "2026-09-03": 15
     },
     "Clan.es": {
-      "2026-08-29": 80,
-      "2026-08-30": 83,
+      "2026-08-29": 79,
+      "2026-08-30": 81,
       "2026-08-31": 88,
       "2026-09-01": 88,
       "2026-09-02": 89,
-      "2026-09-03": 72
+      "2026-09-03": 68
     },
     "Deutsche.Welle.cl": {
-      "2026-08-29": 59,
-      "2026-08-30": 58
+      "2026-08-29": 60,
+      "2026-08-30": 57
     }
   },
   "gatotv_source_timezones": {
@@ -295,7 +295,7 @@
     "manual_offset_minutes": 0,
     "channels": {
       "CBS.(WCBS).New.York,.NY.us": {
-        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=9",
+        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=8",
         "source": "https://www.tvpassport.com/tv-listings/stations/cbs-wcbs-new-york-ny-hd/4555",
         "fallback_sources": [
           "https://epgshare01.online/epgshare01/epg_ripper_US1.xml.gz",
@@ -303,7 +303,7 @@
         ],
         "source_timezone": "America/New_York / explicit XMLTV offset",
         "output_timezone": "America/Guayaquil",
-        "programmes": 229
+        "programmes": 218
       },
       "OromarTV.ec": {
         "mode": "bundled-weekly-fallback",
@@ -342,8 +342,8 @@
       "ampm-guayaquil-primary"
     ],
     "loaded_source_days": 3,
-    "programmes": 76,
-    "cached_programmes_available": 75,
+    "programmes": 75,
+    "cached_programmes_available": 76,
     "cache_policy": "fresh-only; previous-latam cache only when fresh fetch is empty",
     "field_validation": {
       "date": "2026-08-29",
