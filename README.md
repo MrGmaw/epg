@@ -1,37 +1,37 @@
-# EPG MrG v0.2.42 — STAR TVE: 24 h Canarias → Ecuador
+# EPG MrG v0.2.43 — STAR TVE: selección segura de la tabla 24 h
 
-Actualización incremental sobre **v0.2.39-corregido-3**, manteniendo los 35 canales y corrigiendo definitivamente el desfase de una hora de STAR TVE (`TVEStarHD.es`).
+Actualización incremental sobre **v0.2.42**, manteniendo los **35 canales** y corrigiendo el error de selección de vista de GatoTV que podía desplazar STAR TVE varias horas.
 
-## Regla horaria STAR TVE
-
-La referencia real observada en Ecuador el 29-08-2026 es:
+## Referencia real validada en Ecuador — 29-08-2026
 
 - 20:25–22:00 — `Sicarius, la noche y el silencio`
 - 22:00–23:00 — `Los misterios de laura` / `El misterio de la dama roja`
 - 23:00–00:05 — `Fugitiva` / `El plan`
 
-GatoTV publica esos mismos bloques en la parrilla 24 h del 30-08-2026 como 02:25–04:00, 04:00–05:00 y 05:00–06:05.
+La parrilla 24 h de GatoTV para el 30-08-2026 publica esos bloques como 02:25–04:00, 04:00–05:00 y 05:00–06:05. En agosto, `Atlantic/Canary` está en UTC+1 y `America/Guayaquil` en UTC−5: la diferencia correcta es **6 horas**.
 
-La estrategia de v0.2.42 es:
+## Causa del error de v0.2.42
 
-1. **Solo se acepta la vista 24 h de GatoTV.**
-2. Se interpreta siempre en `Atlantic/Canary`.
-3. Se convierte con `ZoneInfo` a `America/Guayaquil`.
-4. En agosto de 2026: Canarias UTC+1 y Ecuador UTC−5 → diferencia de **6 horas**.
-5. La vista AM/PM queda explícitamente rechazada para asignar horas.
-6. No existe ningún offset manual fijo.
-7. La caché previa solo rescata una caída total de GatoTV y nunca se mezcla con programación fresca.
-8. Se consulta también la fecha siguiente de GatoTV para cubrir correctamente la noche ecuatoriana con la madrugada canaria.
+GatoTV puede incluir más de una representación horaria en el HTML. En algunas respuestas, una tabla de 12 h puede perder el sufijo `AM/PM` al extraerse los nodos. Así, por ejemplo, `4:30 PM` podía llegar al parser como `4:30` y ser confundido con `04:30` de una supuesta tabla 24 h. Al convertir después desde Canarias, el horario quedaba gravemente desplazado.
+
+## Regla de v0.2.43
+
+1. Las tablas HTML se analizan **por separado**; ya no se mezclan filas de distintas vistas.
+2. Solo se acepta una tabla 24 h **inequívoca**, con al menos una hora mayor o igual a 13:00.
+3. Una tabla compuesta solo por horas `1..12` sin meridiano se considera ambigua y se rechaza.
+4. La vista AM/PM explícita sigue rechazada para asignar horas.
+5. La tabla 24 h válida se interpreta como `Atlantic/Canary` y se convierte con `ZoneInfo` a `America/Guayaquil`.
+6. No hay offset manual.
+7. Si GatoTV no entrega una tabla 24 h inequívoca, se usa el `latam.xml` previo como fallback en vez de publicar una parrilla dudosa.
 
 ## Regresiones
 
-El self-test exige expresamente:
+El self-test exige:
 
-- `04:00 Canary` → `22:00 -0500` para **Los misterios de laura**.
-- `05:00 Canary` → `23:00 -0500` para **Fugitiva**.
-- Una parrilla que solo tenga AM/PM debe ser rechazada.
-- En invierno, `ZoneInfo` cambia automáticamente la diferencia Canarias–Ecuador sin offsets manuales.
-
-El workflow mantiene los **35 canales**, `TVEStarHD.es` al final del orden canónico y timestamps finales `-0500`.
+- `04:00 Canary` → `22:00 -0500` — **Los misterios de laura**.
+- `05:00 Canary` → `23:00 -0500` — **Fugitiva**.
+- una tabla 12 h sin `AM/PM` visible debe ser rechazada;
+- si el HTML contiene una tabla 12 h ambigua y otra 24 h real, debe elegirse únicamente la 24 h;
+- la diferencia de verano Canarias–Ecuador es de 6 horas y la de invierno se calcula automáticamente con `ZoneInfo`.
 
 Instalación: copiar el contenido del ZIP sobre la raíz del repositorio y ejecutar **Actualizar EPG**.

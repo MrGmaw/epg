@@ -1,0 +1,10 @@
+EPG MrG v0.2.43
+
+1. Descomprime epg-mrgmaw-v0.2.43.zip.
+2. Copia TODO su contenido sobre la raíz del repositorio, reemplazando archivos coincidentes.
+3. En GitHub abre Actions -> Actualizar EPG Ecuador y Latinoamérica -> Run workflow.
+4. Verifica que la validación final indique 35 canales y STAR TVE con selector 24h-canary-table-only.
+5. En OTT Navigator fuerza una actualización de la EPG para descartar la guía cacheada anterior.
+
+STAR TVE v0.2.43 no cambia el cálculo correcto de zona horaria: Atlantic/Canary -> America/Guayaquil.
+En agosto de 2026 son 6 horas. La corrección está en impedir que una tabla de 12 h sin AM/PM visible sea confundida con la tabla 24 h.

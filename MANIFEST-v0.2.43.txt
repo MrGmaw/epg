@@ -1,0 +1,11 @@
+EPG MrG v0.2.43 - archivos del paquete
+
+.github/workflows/actualizar-epg.yml
+scripts/add_v039_channels.py
+scripts/add_star_tve.py
+README.md
+RELEASE-v0.2.43.md
+VERSION
+INSTRUCCIONES-v0.2.43.txt
+CHECKSUMS-v0.2.43.txt
+MANIFEST-v0.2.43.txt
