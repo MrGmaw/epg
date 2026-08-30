@@ -7,9 +7,11 @@ Fuentes:
 - CBS New York / WCBS-TV: TVPassport (WCBS 4555) como fuente primaria;
   EPGShare US1 como respaldo. Las horas se convierten con ZoneInfo desde
   America/New_York a America/Guayaquil. Nunca se aplica un offset manual.
-- Oromar TV: AmericaTVListings Ecuador como fuente primaria y
-  AmericaTVGuide Ecuador como respaldo. Ambas publican la parrilla en
-  hora Ecuador; se interpreta directamente como America/Guayaquil.
+- Oromar TV: AmericaTVListings Ecuador y AmericaTVGuide se intentan solo
+  como fuentes en vivo de actualización. Como ambos servicios pueden devolver
+  HTTP 403 a GitHub Actions, existe una parrilla semanal local garantizada,
+  basada en la grilla continental GMT-5 vigente al 29-08-2026 y contrastada
+  con Oromar TV. Nunca se aplica un offset manual.
 
 Los logos se descargan como imágenes de marca, se validan con Pillow, se
 normalizan a PNG y se cachean en ``public/logos``. Si una fuente de imagen
@@ -72,6 +74,75 @@ OROMAR_LISTINGS_URL = "https://americatvlistings.com/es/ec-ECT/oromar-tv"
 OROMAR_SOURCE_URL = "https://americatvguide.com/es/ec/channel/oromar_tv"
 OROMAR_PAGE_URL = "https://oromartv.com/"
 OROMAR_LOGO_URL = "https://oromartv.com/images/OTV400.png"
+OROMAR_BUNDLED_SOURCE = "bundled-weekly-grid-2026-08-29"
+
+# Parrilla continental (America/Guayaquil, UTC-5) verificada al 29-08-2026.
+# Se conserva en el repositorio como salvaguarda porque AmericaTVListings y
+# AmericaTVGuide responden 403 a IPs de GitHub Actions. La parrilla de lunes a
+# viernes coincide además con los horarios recurrentes publicados por Oromar.
+OROMAR_WEEKLY_GRID: dict[int, tuple[tuple[str, str], ...]] = {
+    # Lunes a viernes
+    **{weekday: (
+        ("00:00", "Mar de risas"),
+        ("02:30", "El Talismán"),
+        ("03:30", "Corazón apasionado"),
+        ("04:30", "Noticias Oromar"),
+        ("05:00", "Iglesia universal"),
+        ("06:00", "Desde tempranito"),
+        ("07:00", "Noticias Oromar - Primera emisión"),
+        ("08:00", "El Talismán"),
+        ("09:00", "Walker Ranger Texas"),
+        ("10:00", "Bonanza"),
+        ("11:00", "Bonanza"),
+        ("12:00", "Noticias Oromar - Segunda emisión"),
+        ("13:00", "Comunidad Oromar"),
+        ("14:00", "Triunfo del amor"),
+        ("15:00", "Triunfo del amor"),
+        ("16:00", "La hija del Mariachi"),
+        ("17:00", "Bonanza"),
+        ("18:00", "Bonanza"),
+        ("19:00", "Noticias Oromar - Tercera emisión"),
+        ("20:00", "BLN: La dinastía"),
+        ("22:30", "Noticias Oromar"),
+        ("23:00", "Iglesia universal"),
+    ) for weekday in range(5)},
+    # Sábado, parrilla continental ec-ECT del 29-08-2026.
+    5: (
+        ("00:00", "Iglesia universal"),
+        ("01:00", "Así se hace Ecuador"),
+        ("03:30", "Ecuador multicolor"),
+        ("06:00", "Mar de risas"),
+        ("07:00", "Outlet TV"),
+        ("08:30", "Promo TV"),
+        ("09:00", "Conversando con Orlando"),
+        ("09:30", "Promo TV"),
+        ("11:00", "Outlet TV"),
+        ("12:00", "Promo TV"),
+        ("12:30", "Walker Ranger Texas"),
+        ("14:00", "El gran Chaparral"),
+        ("16:00", "Bonanza"),
+        ("19:00", "Butaca Premiere"),
+        ("21:00", "El gran Chaparral"),
+        ("23:00", "Walker Ranger Texas"),
+    ),
+    # Domingo, parrilla continental ec-ECT del 30-08-2026.
+    6: (
+        ("00:00", "Iglesia universal"),
+        ("01:00", "Así se hace Ecuador"),
+        ("03:30", "Ecuador multicolor"),
+        ("06:00", "Mar de risas"),
+        ("07:00", "Outlet TV"),
+        ("08:30", "Video control"),
+        ("09:00", "Iglesia universal"),
+        ("11:00", "Mundo TV"),
+        ("12:30", "Walker Ranger Texas"),
+        ("14:00", "El gran Chaparral"),
+        ("16:00", "Bonanza"),
+        ("19:00", "Butaca Premiere"),
+        ("21:00", "El gran Chaparral"),
+        ("23:00", "Walker Ranger Texas"),
+    ),
+}
 
 TARGET_IDS = (CBS_ID, OROMAR_ID)
 LOGO_IDS = (
@@ -511,6 +582,40 @@ def parse_americatvlistings_oromar(html: str) -> list[tuple[datetime, str]]:
     for item in rows:
         dedup.setdefault(item, None)
     return sorted(dedup, key=lambda item: item[0])
+
+def build_oromar_bundled_schedule(
+    window_start: datetime, window_end: datetime
+) -> list[tuple[datetime, str]]:
+    """Genera una grilla completa sin red para la ventana solicitada.
+
+    Se agrega el primer inicio del día siguiente como centinela para calcular
+    correctamente el ``stop`` del último programa dentro de la ventana.
+    """
+    first_day = window_start.astimezone(OUTPUT_TZ).date()
+    last_day = window_end.astimezone(OUTPUT_TZ).date()
+    schedule: list[tuple[datetime, str]] = []
+    day = first_day
+    while day <= last_day:
+        rows = OROMAR_WEEKLY_GRID[day.weekday()]
+        for hhmm, title in rows:
+            hour, minute = (int(part) for part in hhmm.split(":", 1))
+            schedule.append(
+                (datetime.combine(day, dt_time(hour, minute), tzinfo=OUTPUT_TZ), title)
+            )
+        day += timedelta(days=1)
+    return schedule
+
+
+def build_oromar_from_bundled(
+    window_start: datetime, window_end: datetime
+) -> tuple[etree._Element, list[etree._Element], int]:
+    return build_oromar_from_schedule(
+        build_oromar_bundled_schedule(window_start, window_end),
+        window_start,
+        window_end,
+        "Oromar bundled weekly grid",
+    )
+
 
 def build_oromar_from_schedule(
     schedule: list[tuple[datetime, str]],
@@ -956,9 +1061,15 @@ def update_status(
                     if oromar_mode == "americatvlistings-live"
                     else OROMAR_SOURCE_URL
                     if oromar_mode == "americatvguide-live"
+                    else OROMAR_BUNDLED_SOURCE
+                    if oromar_mode == "bundled-weekly-fallback"
                     else "previous-latam-cache"
                 ),
-                "fallback_sources": [OROMAR_SOURCE_URL, "previous-latam-cache"],
+                "fallback_sources": [
+                    OROMAR_SOURCE_URL,
+                    OROMAR_BUNDLED_SOURCE,
+                    "previous-latam-cache",
+                ],
                 "source_timezone": "America/Guayaquil",
                 "output_timezone": "America/Guayaquil",
                 "programmes": oromar_count,
@@ -1068,6 +1179,18 @@ def self_test() -> int:
     assert TARGET_IDS == (CBS_ID, OROMAR_ID)
     assert len(LOGO_IDS) == 5
     assert EXPECTED_FINAL_CHANNELS == 34
+    test_start = datetime(2026, 8, 29, 0, 0, tzinfo=OUTPUT_TZ)
+    test_end = test_start + timedelta(days=7)
+    bundled_channel, bundled_programmes, bundled_days = build_oromar_from_bundled(
+        test_start, test_end
+    )
+    assert bundled_channel.get("id") == OROMAR_ID
+    assert bundled_days == 7
+    assert len(bundled_programmes) >= 100
+    assert all(node.get("start", "").endswith(" -0500") for node in bundled_programmes)
+    bundled_titles = [node.findtext("title") for node in bundled_programmes]
+    assert "Conversando con Orlando" in bundled_titles
+    assert "BLN: La dinastía" in bundled_titles
     log("Prueba v0.2.39 correcta: horarios, Oromar, PNG y guardias validados.")
     return 0
 
@@ -1141,14 +1264,19 @@ def main() -> int:
     append_channel(root, cbs_channel, cbs_programmes)
     log(f"CBS New York: {len(cbs_programmes)} emisiones; modo={cbs_mode}.")
 
-    # Oromar TV. AmericaTVListings es primario; AmericaTVGuide y XML previo son respaldos.
+    # Oromar TV. Las fuentes en vivo pueden bloquear GitHub Actions con 403.
+    # Se prueban una sola vez y, si fallan, se usa la parrilla semanal local
+    # garantizada. El XML previo queda como último salvavidas ante un error
+    # interno inesperado del fallback local.
     oromar_mode = "americatvlistings-live"
     listings_error: Exception | None = None
     guide_error: Exception | None = None
+    bundled_error: Exception | None = None
     try:
         listings_html = request_bytes(
             s,
             OROMAR_LISTINGS_URL,
+            attempts=1,
             headers={
                 "User-Agent": TVPASSPORT_USER_AGENT,
                 "Accept-Language": "es-EC,es;q=0.9,en;q=0.7",
@@ -1160,37 +1288,52 @@ def main() -> int:
         )
     except Exception as exc:  # noqa: BLE001 - fallback deliberado
         listings_error = exc
-        warn(f"Oromar TV: AmericaTVListings falló: {exc}")
+        warn(f"Oromar TV: AmericaTVListings no utilizable: {exc}")
         try:
             oromar_html = request_bytes(
-                s, OROMAR_SOURCE_URL, headers={"User-Agent": TVPASSPORT_USER_AGENT}
+                s,
+                OROMAR_SOURCE_URL,
+                attempts=1,
+                headers={"User-Agent": TVPASSPORT_USER_AGENT},
             ).decode("utf-8", errors="replace")
             oromar_channel, oromar_programmes, oromar_days = build_oromar_programmes(
                 oromar_html, window_start, window_end
             )
             oromar_mode = "americatvguide-live"
-        except Exception as exc2:  # noqa: BLE001 - fallback a caché publicada
+        except Exception as exc2:  # noqa: BLE001 - fallback local garantizado
             guide_error = exc2
-            warn(f"Oromar TV: AmericaTVGuide falló: {exc2}")
-            previous = clone_previous_channel(
-                args.previous_latam_xml, OROMAR_ID, OROMAR_NAME, window_start, window_end
-            )
-            if previous is None:
-                raise RuntimeError(
-                    "Oromar TV: fallaron AmericaTVListings y AmericaTVGuide y no existe "
-                    "fallback previo utilizable. "
-                    f"AmericaTVListings={listings_error}; AmericaTVGuide={guide_error}"
-                ) from exc2
-            oromar_channel, oromar_programmes = previous
-            oromar_days = len(
-                {
-                    parse_xmltv_datetime(node.get("start", ""), OUTPUT_TZ)
-                    .astimezone(OUTPUT_TZ)
-                    .date()
-                    for node in oromar_programmes
-                }
-            )
-            oromar_mode = "previous-latam-cache"
+            warn(f"Oromar TV: AmericaTVGuide no utilizable: {exc2}")
+            try:
+                oromar_channel, oromar_programmes, oromar_days = build_oromar_from_bundled(
+                    window_start, window_end
+                )
+                oromar_mode = "bundled-weekly-fallback"
+                warn(
+                    "Oromar TV: usando parrilla semanal local porque las fuentes web "
+                    "bloquearon GitHub Actions. La EPG continuará normalmente."
+                )
+            except Exception as exc3:  # noqa: BLE001 - último salvavidas
+                bundled_error = exc3
+                previous = clone_previous_channel(
+                    args.previous_latam_xml, OROMAR_ID, OROMAR_NAME, window_start, window_end
+                )
+                if previous is None:
+                    raise RuntimeError(
+                        "Oromar TV: fuentes web bloqueadas y falló también la parrilla "
+                        "local garantizada. "
+                        f"AmericaTVListings={listings_error}; "
+                        f"AmericaTVGuide={guide_error}; bundled={bundled_error}"
+                    ) from exc3
+                oromar_channel, oromar_programmes = previous
+                oromar_days = len(
+                    {
+                        parse_xmltv_datetime(node.get("start", ""), OUTPUT_TZ)
+                        .astimezone(OUTPUT_TZ)
+                        .date()
+                        for node in oromar_programmes
+                    }
+                )
+                oromar_mode = "previous-latam-cache"
     append_channel(root, oromar_channel, oromar_programmes)
     log(
         f"Oromar TV: {len(oromar_programmes)} emisiones; días={oromar_days}; "
