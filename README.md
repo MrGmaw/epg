@@ -11,13 +11,17 @@ La guía final queda en **34 canales**.
 
 Fuente primaria:
 
+`https://www.tvpassport.com/tv-listings/stations/cbs-wcbs-new-york-ny-hd/4555`
+
+Respaldo en vivo:
+
 `https://epgshare01.online/epgshare01/epg_ripper_US1.xml.gz`
 
 `tvg-id`: `CBS.(WCBS).New.York,.NY.us`
 
-Las marcas XMLTV con offset se convierten a `America/Guayaquil`. Si una marca viniera sin offset, se interpreta como `America/New_York`; `ZoneInfo` resuelve EST/EDT según la fecha. **No se aplica offset manual**.
+TVPassport publica las emisiones de WCBS con su zona horaria; el scraper interpreta `America/New_York` y convierte con `ZoneInfo` a `America/Guayaquil`. **No se aplica offset manual**. Si TVPassport falla, se prueba EPGShare US1 y, como tercer nivel, la programación válida del `latam.xml` publicado anteriormente.
 
-Si la fuente primaria falla, se intenta conservar la programación válida del `latam.xml` publicado anteriormente.
+La integración prueba dos identificadores de TVPassport (HD 4555 y SD 1766) y tolera fallos aislados de una fecha futura sin descartar los demás días válidos.
 
 ## Oromar TV
 
