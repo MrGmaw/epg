@@ -1,0 +1,12 @@
+EPG MrG v0.2.47 — Overlay sobre v0.2.46
+
+1. Extraer este ZIP en la raíz del repositorio v0.2.46.
+2. Permitir reemplazar VERSION y scripts/add_star_tve.py.
+3. Ejecutar GitHub Actions normalmente.
+
+No es necesario definir ninguna variable. Si GatoTV entrega AM/PM, el script detecta automáticamente la zona horaria IANA de la IP pública del runner.
+
+Override opcional para diagnóstico:
+  STAR_TVE_GATOTV_TIMEZONE=America/Los_Angeles
+
+No usar el override salvo que los logs demuestren que la geolocalización automática no coincide con la que aplica GatoTV.

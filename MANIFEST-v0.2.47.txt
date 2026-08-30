@@ -1,0 +1,8 @@
+EPG MrG v0.2.47 — archivos del overlay
+
+VERSION
+scripts/add_star_tve.py
+RELEASE-v0.2.47.md
+INSTRUCCIONES-v0.2.47.txt
+MANIFEST-v0.2.47.txt
+CHECKSUMS-v0.2.47.txt
