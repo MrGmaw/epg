@@ -7,7 +7,7 @@ Repositorio actual v0.2.38 o una instalación previa/fallida de v0.2.39.
 
 INSTALACION
 -----------
-1. Descomprime epg-mrgmaw-v0.2.39-corregido-2.zip.
+1. Descomprime epg-mrgmaw-v0.2.39-corregido-3.zip.
 2. Copia TODO el contenido descomprimido a la RAIZ del repositorio GitHub MrGmaw/epg.
 3. Reemplaza los archivos coincidentes.
 4. NO borres los archivos existentes que no aparecen dentro del ZIP.
@@ -47,6 +47,8 @@ CBS usa TVPassport WCBS HD (4555) como fuente primaria, WCBS SD (1766) y EPGShar
 
 CORRECCION OROMAR
 -----------------
-Oromar usa AmericaTVListings como fuente primaria:
-https://americatvlistings.com/es/ec-ECT/oromar-tv
-Si falla, intenta AmericaTVGuide y finalmente la guia previa.
+AmericaTVListings y AmericaTVGuide están devolviendo HTTP 403 a GitHub Actions.
+La corrección 3 los intenta una sola vez y, si están bloqueados, usa automáticamente
+una parrilla semanal continental local verificada al 29-08-2026. Esta ruta NO depende
+de la red y garantiza que Oromar se incluya incluso en la primera ejecución.
+La guía previa queda únicamente como último salvavidas.

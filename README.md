@@ -25,19 +25,16 @@ La integración prueba dos identificadores de TVPassport (HD 4555 y SD 1766) y t
 
 ## Oromar TV
 
-Fuente primaria:
+Fuentes de actualización en vivo (cuando aceptan la IP del runner):
 
-`https://americatvlistings.com/es/ec-ECT/oromar-tv`
-
-Respaldo en vivo:
-
-`https://americatvguide.com/es/ec/channel/oromar_tv`
+- `https://americatvlistings.com/es/ec-ECT/oromar-tv`
+- `https://americatvguide.com/es/ec/channel/oromar_tv`
 
 `tvg-id`: `OromarTV.ec`
 
-Ambas fuentes publican la parrilla en hora Ecuador. Se interpreta directamente como `America/Guayaquil`, sin desplazamientos manuales. AmericaTVListings expone la página específica del canal con hoy y mañana; la publicación exige al menos cinco emisiones válidas.
+Ambas fuentes publican la parrilla en hora Ecuador, pero actualmente pueden responder **HTTP 403 a GitHub Actions**. Por eso v0.2.39 incorpora una parrilla semanal continental local (`America/Guayaquil`) verificada al 29-08-2026. Esa parrilla garantiza la primera ejecución y evita que una restricción anti-bot tumbe toda la EPG.
 
-Cadena de respaldo: **AmericaTVListings → AmericaTVGuide → `latam.xml` previo**.
+Cadena efectiva: **AmericaTVListings (1 intento) → AmericaTVGuide (1 intento) → parrilla semanal local garantizada → `latam.xml` previo como último salvavidas**.
 
 ## Logos locales añadidos
 
