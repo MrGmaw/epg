@@ -1,8 +1,8 @@
 {
-  "version": "0.2.39",
-  "generated_at": "2026-08-29T20:47:35.416246-05:00",
-  "source_commit": "ccc352e226897d193e850be2a48072cd2bad79b8",
-  "github_run_id": "33286413265",
+  "version": "0.2.40",
+  "generated_at": "2026-08-29T22:02:33.121753-05:00",
+  "source_commit": "8c047c96b5a980bad11c1ff71321d6d9aa29fd88",
+  "github_run_id": "33289304508",
   "github_run_attempt": "1",
   "base_date": "2026-08-29",
   "window_days": 7,
