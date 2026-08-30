@@ -1,0 +1,37 @@
+EPG MrG v0.2.45 — STAR TVE
+============================
+
+Este ZIP es un overlay sobre la versión vigente v0.2.44.
+
+APLICACIÓN
+1. Abra/descomprima su repositorio EPG v0.2.44.
+2. Extraiga el contenido de este ZIP en la raíz del repositorio.
+3. Permita reemplazar:
+   - VERSION
+   - scripts/add_star_tve.py
+4. Suba/commit los dos archivos al repositorio.
+5. Ejecute GitHub Actions normalmente.
+
+No es necesario editar el workflow actual: el script conserva compatibilidad
+con sus validaciones, pero usa realmente la nueva prioridad 24h Canarias.
+
+PRUEBA LOCAL OPCIONAL
+python scripts/add_star_tve.py --self-test
+
+Debe aparecer:
+Self-test STAR TVE v0.2.45 correcto: 24h Atlantic/Canary primario ->
+America/Guayaquil; referencia 19:25-20:20 = 13:25-14:20 Ecuador ...
+
+RESULTADO ESPERADO
+- tvg-id: TVEStarHD.es
+- fuente: https://www.gatotv.com/canal/star_tve
+- vista primaria: 24h
+- timezone fuente primaria: Atlantic/Canary
+- salida XMLTV: America/Guayaquil (-0500)
+- offset manual: 0
+- referencia 30/08/2026:
+  13:25-14:20 Ecuador = España entre el cielo y la tierra / Valles misteriosos
+
+IMPORTANTE
+STAR TVE no reutiliza programación antigua si GatoTV no entrega datos frescos.
+Esto evita volver a publicar una parrilla con desfase horario.

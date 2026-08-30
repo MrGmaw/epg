@@ -1,0 +1,8 @@
+EPG MrG v0.2.45 STAR TVE overlay
+
+VERSION
+scripts/add_star_tve.py
+RELEASE-v0.2.45.md
+INSTRUCCIONES-v0.2.45.txt
+MANIFEST-v0.2.45.txt
+CHECKSUMS-v0.2.45.txt
