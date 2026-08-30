@@ -61,7 +61,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "VERSION=$(cat VERSION)"
-          echo "LATAM resiliente + Miami + CBS New York/Oromar + STAR TVE v0.2.40:"
+          echo "LATAM resiliente + Miami + CBS New York/Oromar + STAR TVE v0.2.41:"
           sha256sum \
             scripts/build_latam_epg.py \
             scripts/build_latam_resilient.py \
@@ -119,7 +119,7 @@ jobs:
           import add_miami_epg  # noqa: F401
           import add_v039_channels  # noqa: F401
           import add_star_tve  # noqa: F401
-          print("Importación real de generadores, Miami, v0.2.39 y STAR TVE v0.2.40 correcta.")
+          print("Importación real de generadores, Miami, v0.2.39 y STAR TVE v0.2.41 correcta.")
           PYIMPORT
 
       - name: Preparar directorio público
@@ -155,7 +155,7 @@ jobs:
           if git cat-file -e origin/epg-data:latam.xml 2>/dev/null; then
             git show origin/epg-data:latam.xml > .cache/previous-latam.xml
             test -s .cache/previous-latam.xml
-            echo "Caché LATAM previa restaurada (MakroDigital + Miami + posibles fallbacks v0.2.39/v0.2.40)."
+            echo "Caché LATAM previa restaurada (MakroDigital + Miami + posibles fallbacks v0.2.39/v0.2.41)."
           else
             echo "No existe latam.xml previa para respaldos."
           fi
@@ -261,7 +261,7 @@ jobs:
           test -s public/logos/HBO-Family.co.png
           test -s public/logos/Warner-channel.co.png
 
-      - name: Añadir STAR TVE v0.2.40
+      - name: Añadir STAR TVE v0.2.41
         shell: bash
         env:
           TZ: America/Guayaquil
@@ -372,15 +372,17 @@ jobs:
           assert int(policy.get("manual_offset_minutes", -1)) == 0, policy
           assert set(policy.get("channels", {})) == set(v039.TARGET_IDS), policy
           star_policy = status.get("star_tve_epg", {})
-          assert star_policy.get("source_timezone") == "Atlantic/Canary", star_policy
+          assert star_policy.get("source_timezone_ampm") == "America/Guayaquil", star_policy
+          assert star_policy.get("source_timezone_24h") == "Atlantic/Canary", star_policy
           assert star_policy.get("output_timezone") == "America/Guayaquil", star_policy
-          assert star_policy.get("primary_time_view") == "24h", star_policy
+          assert star_policy.get("primary_time_view") == "ampm-local", star_policy
+          assert star_policy.get("fallback_time_view") == "24h-canary", star_policy
           assert int(star_policy.get("manual_offset_minutes", -1)) == 0, star_policy
           assert int(star_policy.get("programmes", 0)) >= 5, star_policy
 
           print(
-              "Validación v0.2.40 correcta: 35 canales; STAR TVE presente; "
-              "24h GatoTV Atlantic/Canary -> America/Guayaquil; CBS/Oromar presentes; "
+              "Validación v0.2.41 correcta: 35 canales; STAR TVE presente; "
+              "AM/PM GatoTV Ecuador prioritario + 24h Canary fallback; CBS/Oromar presentes; "
               "5 logos locales válidos; offset manual 0."
           )
           PY
