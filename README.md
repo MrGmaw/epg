@@ -27,13 +27,17 @@ La integración prueba dos identificadores de TVPassport (HD 4555 y SD 1766) y t
 
 Fuente primaria:
 
+`https://americatvlistings.com/es/ec-ECT/oromar-tv`
+
+Respaldo en vivo:
+
 `https://americatvguide.com/es/ec/channel/oromar_tv`
 
 `tvg-id`: `OromarTV.ec`
 
-AmericaTVGuide publica la parrilla de Oromar en GMT-5 Ecuador. La hora se interpreta directamente como `America/Guayaquil`, sin desplazamientos manuales. La página normalmente expone hoy y mañana; la publicación exige al menos cinco emisiones válidas.
+Ambas fuentes publican la parrilla en hora Ecuador. Se interpreta directamente como `America/Guayaquil`, sin desplazamientos manuales. AmericaTVListings expone la página específica del canal con hoy y mañana; la publicación exige al menos cinco emisiones válidas.
 
-Si la fuente falla temporalmente y existe una guía anterior utilizable, se usa el canal previo como fallback.
+Cadena de respaldo: **AmericaTVListings → AmericaTVGuide → `latam.xml` previo**.
 
 ## Logos locales añadidos
 

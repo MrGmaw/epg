@@ -7,7 +7,7 @@ Repositorio actual v0.2.38 o una instalación previa/fallida de v0.2.39.
 
 INSTALACION
 -----------
-1. Descomprime epg-mrgmaw-v0.2.39-corregido.zip.
+1. Descomprime epg-mrgmaw-v0.2.39-corregido-2.zip.
 2. Copia TODO el contenido descomprimido a la RAIZ del repositorio GitHub MrGmaw/epg.
 3. Reemplaza los archivos coincidentes.
 4. NO borres los archivos existentes que no aparecen dentro del ZIP.
@@ -43,3 +43,10 @@ la realiza ZoneInfo según la fecha concreta.
 CORRECCION CBS
 --------------
 CBS usa TVPassport WCBS HD (4555) como fuente primaria, WCBS SD (1766) y EPGShare US1 como respaldos, y finalmente la guía previa si existe. Por tanto, una caída de EPGShare ya no bloquea una primera instalación de v0.2.39.
+
+
+CORRECCION OROMAR
+-----------------
+Oromar usa AmericaTVListings como fuente primaria:
+https://americatvlistings.com/es/ec-ECT/oromar-tv
+Si falla, intenta AmericaTVGuide y finalmente la guia previa.
