@@ -1,15 +1,15 @@
 {
   "version": "0.2.48",
-  "generated_at": "2026-08-30T15:24:23.981736-05:00",
+  "generated_at": "2026-08-30T15:26:15.346841-05:00",
   "source_commit": "4c432f63911433f6e8dc2a389ceaf4bf6a956852",
-  "github_run_id": "33333458264",
+  "github_run_id": "33333592576",
   "github_run_attempt": "1",
   "base_date": "2026-08-30",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 35,
-  "programmes": 2869,
+  "programmes": 2876,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 71,
     "Canal.Gamavisión.ec": 61,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 208,
     "TeleamazonasGuayaquil.ec": 208,
     "Ecuavisa.ec": 44,
-    "EcuavisaInternacional.ec": 77,
+    "EcuavisaInternacional.ec": 76,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 62,
     "NTN24.co": 46,
@@ -36,9 +36,9 @@
     "Star-Channel.co": 27,
     "Warner-channel.co": 67,
     "HBO-Family.co": 28,
-    "Canal24Horas.es": 149,
-    "La1.es": 78,
-    "Clan.es": 421,
+    "Canal24Horas.es": 151,
+    "La1.es": 79,
+    "Clan.es": 426,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 67,
     "NBC6-Miami.us": 92,
@@ -71,25 +71,25 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-08-30": 49,
-      "2026-08-31": 29,
-      "2026-09-01": 27,
-      "2026-09-02": 29,
+      "2026-08-30": 50,
+      "2026-08-31": 28,
+      "2026-09-01": 26,
+      "2026-09-02": 28,
       "2026-09-03": 19
     },
     "La1.es": {
       "2026-08-30": 17,
-      "2026-08-31": 18,
-      "2026-09-01": 21,
-      "2026-09-02": 10,
+      "2026-08-31": 17,
+      "2026-09-01": 20,
+      "2026-09-02": 9,
       "2026-09-03": 16
     },
     "Clan.es": {
       "2026-08-30": 82,
-      "2026-08-31": 88,
-      "2026-09-01": 88,
-      "2026-09-02": 89,
-      "2026-09-03": 78
+      "2026-08-31": 87,
+      "2026-09-01": 87,
+      "2026-09-02": 88,
+      "2026-09-03": 83
     },
     "Deutsche.Welle.cl": {
       "2026-08-30": 59,
@@ -351,12 +351,12 @@
       "ampm-runner-geo-table-fallback"
     ],
     "runner_timezone": {
-      "timezone": "America/Chicago",
+      "timezone": "America/New_York",
       "source": "ipapi"
     },
     "loaded_source_days": 2,
     "programmes": 51,
-    "cached_programmes_available": 48,
+    "cached_programmes_available": 51,
     "cache_policy": "programme cache disabled; fresh GatoTV required",
     "field_validation": {
       "date": "2026-08-30",
