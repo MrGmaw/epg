@@ -1,15 +1,15 @@
 {
   "version": "0.2.42",
-  "generated_at": "2026-08-29T22:39:43.557605-05:00",
-  "source_commit": "f55a12718c22b750f313b7a1f2f3968e6998a7eb",
-  "github_run_id": "33290727384",
+  "generated_at": "2026-08-29T22:41:43.138908-05:00",
+  "source_commit": "d5483a7c6e3d8afa74659ae5b70212851e591724",
+  "github_run_id": "33290756451",
   "github_run_attempt": "1",
   "base_date": "2026-08-29",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 35,
-  "programmes": 2939,
+  "programmes": 2917,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 53,
     "Canal.Gamavisión.ec": 32,
@@ -27,12 +27,12 @@
     "Canal.Elgourmet.ec": 88,
     "Canal.History.co": 60,
     "Canal.History.2.co": 56,
-    "TV.Publica.canal.7.ar": 40,
-    "Telefe.ar": 15,
+    "TV.Publica.canal.7.ar": 19,
+    "Telefe.ar": 30,
     "Deutsche.Welle.cl": 117,
     "hgtv.ar": 85,
     "France24Espanol.fr": 230,
-    "Antena3-America.co": 32,
+    "Antena3-America.co": 16,
     "Star-Channel.co": 29,
     "Warner-channel.co": 69,
     "HBO-Family.co": 27,
@@ -43,25 +43,25 @@
     "Canal.Ecuador.TV.ec": 45,
     "NBC6-Miami.us": 119,
     "ABC-Miami.us": 122,
-    "CBS.(WCBS).New.York,.NY.us": 218,
+    "CBS.(WCBS).New.York,.NY.us": 229,
     "OromarTV.ec": 140,
     "TVEStarHD.es": 75
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
-    "CanalRCN.co": 3,
-    "CaracolTV.co": 3,
+    "CanalRCN.co": 2,
+    "CaracolTV.co": 2,
     "Canal.Elgourmet.ec": 3,
     "Canal.History.co": 3,
     "Canal.History.2.co": 3,
-    "TV.Publica.canal.7.ar": 3,
-    "Telefe.ar": 2,
+    "TV.Publica.canal.7.ar": 2,
+    "Telefe.ar": 3,
     "hgtv.ar": 3,
     "France24Espanol.fr": 3,
-    "Antena3-America.co": 3,
+    "Antena3-America.co": 2,
     "Star-Channel.co": 3,
     "Warner-channel.co": 3,
-    "HBO-Family.co": 3
+    "HBO-Family.co": 2
   },
   "gatotv_source_days": {
     "Canal24Horas.es": 6,
@@ -295,7 +295,7 @@
     "manual_offset_minutes": 0,
     "channels": {
       "CBS.(WCBS).New.York,.NY.us": {
-        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=8",
+        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=9",
         "source": "https://www.tvpassport.com/tv-listings/stations/cbs-wcbs-new-york-ny-hd/4555",
         "fallback_sources": [
           "https://epgshare01.online/epgshare01/epg_ripper_US1.xml.gz",
@@ -303,7 +303,7 @@
         ],
         "source_timezone": "America/New_York / explicit XMLTV offset",
         "output_timezone": "America/Guayaquil",
-        "programmes": 218
+        "programmes": 229
       },
       "OromarTV.ec": {
         "mode": "bundled-weekly-fallback",
@@ -328,29 +328,31 @@
     ]
   },
   "star_tve_epg": {
-    "version": "0.2.41",
+    "version": "0.2.42",
     "channel_id": "TVEStarHD.es",
     "source": "https://www.gatotv.com/canal/star_tve",
-    "source_timezone_ampm": "America/Guayaquil",
-    "source_timezone_24h": "Atlantic/Canary",
+    "source_timezone": "Atlantic/Canary",
     "output_timezone": "America/Guayaquil",
     "manual_offset_minutes": 0,
-    "date_bridge": "fetch source date + next source date; clip after timezone interpretation",
-    "primary_time_view": "ampm-local",
-    "fallback_time_view": "24h-canary",
+    "date_bridge": "fetch source date + next source date; clip after timezone conversion",
+    "time_view": "24h-canary-only",
+    "ampm_policy": "ignored/rejected for time assignment",
     "modes_used": [
-      "ampm-guayaquil-primary"
+      "previous-latam-cache"
     ],
-    "loaded_source_days": 3,
+    "loaded_source_days": 0,
     "programmes": 75,
-    "cached_programmes_available": 76,
+    "cached_programmes_available": 75,
     "cache_policy": "fresh-only; previous-latam cache only when fresh fetch is empty",
     "field_validation": {
       "date": "2026-08-29",
       "ecuador_slot": "20:25-22:00",
       "title": "Sicarius, la noche y el silencio",
-      "ampm_slot": "2026-08-29 08:25 PM-10:00 PM America/Guayaquil",
-      "fallback_24h_slot": "2026-08-30 02:25-04:00 Atlantic/Canary"
+      "source_24h_slot": "2026-08-30 02:25-04:00 Atlantic/Canary",
+      "laura_source": "2026-08-30 04:00-05:00 Atlantic/Canary",
+      "laura_ecuador": "2026-08-29 22:00-23:00 America/Guayaquil",
+      "fugitiva_source": "2026-08-30 05:00-06:05 Atlantic/Canary",
+      "fugitiva_ecuador": "2026-08-29 23:00-2026-08-30 00:05 America/Guayaquil"
     }
   }
 }
