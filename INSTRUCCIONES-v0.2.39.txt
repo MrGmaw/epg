@@ -1,0 +1,41 @@
+EPG MrG v0.2.39
+================
+
+BASE REQUERIDA
+--------------
+Repositorio actual v0.2.38.
+
+INSTALACION
+-----------
+1. Descomprime epg-mrgmaw-v0.2.39.zip.
+2. Copia TODO el contenido descomprimido a la RAIZ del repositorio GitHub MrGmaw/epg.
+3. Reemplaza los archivos coincidentes.
+4. NO borres los archivos existentes que no aparecen dentro del ZIP.
+5. Confirma que queden, como mínimo:
+   - .github/workflows/actualizar-epg.yml
+   - scripts/add_v039_channels.py
+   - scripts/add_miami_epg.py
+   - scripts/build_latam_resilient.py
+   - scripts/patch_dw_mitv.py
+   - scripts/restore_baseline_from_git.sh
+   - scripts/restore_local_modules.py
+6. Haz commit de los cambios.
+7. Ejecuta Actions -> Actualizar EPG -> Run workflow.
+
+RESULTADO ESPERADO
+------------------
+- latam.xml: 34 canales.
+- Posición 33: CBS.(WCBS).New.York,.NY.us
+- Posición 34: OromarTV.ec
+- Logos locales publicados para:
+  OromarTV.ec
+  CBS.(WCBS).New.York,.NY.us
+  Antena3-America.co
+  HBO-Family.co
+  Warner-channel.co
+- Todas las marcas horarias requeridas terminan en -0500.
+
+IMPORTANTE
+----------
+No uses un offset manual para CBS New York. La conversión EST/EDT -> America/Guayaquil
+la realiza ZoneInfo según la fecha concreta.

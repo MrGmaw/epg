@@ -1,82 +1,77 @@
-# EPG MrG v0.2.38 — Warner Channel + HBO Family
+# EPG MrG v0.2.39 — CBS New York + Oromar TV + logos locales
 
-Este paquete es un **reemplazo total** sobre v0.2.37. Conserva los 30 canales
-publicados en v0.2.37 y añade dos señales desde mi.tv Colombia:
+Actualización incremental sobre **v0.2.38**. Mantiene intactos los 32 canales existentes y añade al final de `latam.xml`:
 
-- `Warner-channel.co` — **Warner Channel**
-- `HBO-Family.co` — **HBO Family**
+33. `CBS.(WCBS).New.York,.NY.us` — CBS New York / WCBS-TV
+34. `OromarTV.ec` — Oromar TV Ecuador
 
-La guía final `latam.xml` queda con **32 canales**.
+La guía final queda en **34 canales**.
 
-## Nuevos canales mi.tv Colombia
-
-### Warner Channel
-
-- `tvg-id`: `Warner-channel.co`
-- página: `https://mi.tv/co/canales/warner`
-- slug del endpoint: `warner`
-
-### HBO Family
-
-- `tvg-id`: `HBO-Family.co`
-- página: `https://mi.tv/co/canales/hbo-family`
-- slug del endpoint: `hbo-family`
-
-Ambos usan el scraper estándar `scripts/mitv_utc.py`. El endpoint asíncrono de
-mi.tv se interpreta como **UTC** y se convierte a `America/Guayaquil`.
-
-**Offset manual: 0 minutos.**
-
-La salida de ambos canales se valida en `-0500` y se exige un mínimo de cinco
-emisiones antes de publicar.
-
-## Orden de la guía
-
-La base LATAM queda con 30 canales. Los cuatro canales añadidos por la capa
-resiliente de mi.tv quedan en este orden:
-
-1. `Antena3-America.co`
-2. `Star-Channel.co`
-3. `Warner-channel.co`
-4. `HBO-Family.co`
-
-Después se añaden, como en v0.2.37:
-
-31. `NBC6-Miami.us` — NBC 6 Miami / WTVJ
-32. `ABC-Miami.us` — ABC Miami 18 / WSVN-DT2
-
-## Miami — se conserva v0.2.37
+## CBS New York / WCBS-TV
 
 Fuente primaria:
 
-`https://epgshare01.online/epgshare01/epg_ripper_US_LOCALS1.xml.gz`
+`https://epgshare01.online/epgshare01/epg_ripper_US1.xml.gz`
 
-- `WTVJ-DT.us_locals1` → `NBC6-Miami.us`
-- `WSVN-DT2.us_locals1` → `ABC-Miami.us`
+`tvg-id`: `CBS.(WCBS).New.York,.NY.us`
 
-Las marcas XMLTV con offset se convierten a `America/Guayaquil`. Si una marca
-viniera sin offset, se interpreta como `America/New_York`, respetando EST/EDT
-sin offsets manuales. El fallback a `.cache/previous-latam.xml` se mantiene.
+Las marcas XMLTV con offset se convierten a `America/Guayaquil`. Si una marca viniera sin offset, se interpreta como `America/New_York`; `ZoneInfo` resuelve EST/EDT según la fecha. **No se aplica offset manual**.
 
-## Deutsche Welle resiliente — se conserva
+Si la fuente primaria falla, se intenta conservar la programación válida del `latam.xml` publicado anteriormente.
 
-`Deutsche.Welle.cl` mantiene su `tvg-id` y política de fuentes:
+## Oromar TV
 
-1. `https://mi.tv/cl/canales/deutsche-welle-espanol`;
-2. `https://mi.tv/cl/canales/deutsche-welle-amerika`;
-3. fallback `https://www.gatotv.com/canal/dw_latinoamerica`.
+Fuente primaria:
 
-DW vía mi.tv conserva UTC → `America/Guayaquil`; vía GatoTV usa reloj local
-`America/Guayaquil`. Offset manual: 0 minutos.
+`https://americatvguide.com/es/ec/channel/oromar_tv`
 
-## También se conserva
+`tvg-id`: `OromarTV.ec`
 
-- `TVEStarHD.es` excluido.
-- restauración defensiva de dependencias Python locales desde el historial Git.
-- publicación sincronizada en GitHub Pages y rama `epg-data`.
-- compatibilidad del `latam-status.json` corregida en v0.2.37.
+AmericaTVGuide publica la parrilla de Oromar en GMT-5 Ecuador. La hora se interpreta directamente como `America/Guayaquil`, sin desplazamientos manuales. La página normalmente expone hoy y mañana; la publicación exige al menos cinco emisiones válidas.
 
-## Reemplazo total
+Si la fuente falla temporalmente y existe una guía anterior utilizable, se usa el canal previo como fallback.
 
-Sube todo el contenido de este directorio a la raíz de `main`, reemplazando los
-archivos coincidentes, y ejecuta **Actualizar EPG Ecuador y Latinoamérica**.
+## Logos locales añadidos
+
+v0.2.39 asegura PNG locales publicados desde GitHub Pages para:
+
+- `OromarTV.ec`
+- `CBS.(WCBS).New.York,.NY.us`
+- `Antena3-America.co`
+- `HBO-Family.co`
+- `Warner-channel.co`
+
+URL final de cada logo:
+
+`https://mrgmaw.github.io/epg/logos/<tvg-id>.png`
+
+Los PNG se descargan, validan con Pillow y se conservan en caché si una fuente remota falla. Las cinco entradas se añaden a `logos/manifest.json` sin alterar los contadores históricos del subsistema de logos base, para mantener compatibilidad con `validate_outputs.py`.
+
+## Orden final
+
+Los 30 canales de la base resiliente permanecen sin cambios. Después:
+
+31. `NBC6-Miami.us`
+32. `ABC-Miami.us`
+33. `CBS.(WCBS).New.York,.NY.us`
+34. `OromarTV.ec`
+
+## Validaciones v0.2.39
+
+Antes de publicar se comprueba:
+
+- exactamente 34 canales y sin IDs duplicados;
+- CBS New York y Oromar al final de la guía;
+- mínimo 5 emisiones para cada canal nuevo;
+- `start` y `stop` en `-0500` para todos los canales requeridos;
+- XML/XML.GZ idénticos;
+- cinco PNG locales reales y sus entradas de manifiesto;
+- `<icon>` local asociado a Antena 3, HBO Family, Warner, CBS y Oromar;
+- `TVEStarHD.es` continúa excluido;
+- offset manual igual a 0.
+
+## Instalación
+
+Este ZIP está pensado para **superponerse sobre el repositorio v0.2.38**. Copia todo su contenido a la raíz del repositorio y reemplaza los archivos coincidentes. **No borres los demás archivos del repositorio**.
+
+Después ejecuta manualmente el workflow `Actualizar EPG` o espera a la siguiente ejecución programada.

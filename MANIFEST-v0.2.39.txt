@@ -1,0 +1,9 @@
+EPG MrG v0.2.39 - archivos del paquete
+
+.github/workflows/actualizar-epg.yml
+scripts/add_v039_channels.py
+README.md
+RELEASE-v0.2.39.md
+INSTRUCCIONES-v0.2.39.txt
+VERSION
+CHECKSUMS-v0.2.39.txt
