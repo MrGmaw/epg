@@ -1,0 +1,43 @@
+EPG MrG v0.2.40
+================
+
+BASE UTILIZADA
+--------------
+epg-mrgmaw-v0.2.39-corregido-3.zip
+
+INSTALACION
+-----------
+1. Descomprime epg-mrgmaw-v0.2.40.zip.
+2. Copia TODO el contenido a la RAIZ del repositorio GitHub MrGmaw/epg.
+3. Reemplaza los archivos coincidentes.
+4. NO borres los demás archivos existentes del repositorio.
+5. Confirma que exista scripts/add_star_tve.py.
+6. Haz commit de los cambios.
+7. Ejecuta Actions -> Actualizar EPG -> Run workflow.
+
+RESULTADO ESPERADO
+------------------
+- latam.xml: 35 canales.
+- Posición 33: CBS.(WCBS).New.York,.NY.us
+- Posición 34: OromarTV.ec
+- Posición 35: TVEStarHD.es
+- STAR TVE usa GatoTV como fuente.
+- Todas las marcas horarias finales de STAR TVE terminan en -0500.
+
+REGLA HORARIA STAR TVE
+----------------------
+La vista 24 Hrs de GatoTV se interpreta como Atlantic/Canary y se convierte con
+ZoneInfo a America/Guayaquil. NO aplicar -5, -6 ni ningún otro offset manual.
+Si GatoTV solo entrega AM/PM, esa vista se toma directamente como America/Guayaquil;
+no se mezcla con la vista 24 Hrs.
+
+La fecha siguiente de GatoTV también debe consultarse. Ejemplo validado:
+30-08-2026 02:25 Canary -> 29-08-2026 20:25 Ecuador
+Sicarius, la noche y el silencio.
+
+PRUEBA RAPIDA
+-------------
+python scripts/add_star_tve.py --self-test
+
+Debe terminar con:
+Self-test STAR TVE correcto: 24h Atlantic/Canary -> America/Guayaquil; 20:25 Sicarius validado; cruce de fecha y DST automáticos.
