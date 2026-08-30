@@ -1,0 +1,8 @@
+EPG MrG v0.2.46 STAR TVE strict-24h overlay
+
+VERSION
+scripts/add_star_tve.py
+RELEASE-v0.2.46.md
+INSTRUCCIONES-v0.2.46.txt
+MANIFEST-v0.2.46.txt
+CHECKSUMS-v0.2.46.txt

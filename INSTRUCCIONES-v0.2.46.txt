@@ -1,0 +1,35 @@
+EPG MrG v0.2.46 — STAR TVE estricto 24 h
+==========================================
+
+Este ZIP es un overlay sobre la versión v0.2.45.
+
+APLICACIÓN
+1. Abra/descomprima su repositorio EPG v0.2.45.
+2. Extraiga el contenido de este ZIP en la raíz del repositorio.
+3. Permita reemplazar:
+   - VERSION
+   - scripts/add_star_tve.py
+4. Suba/commit los archivos al repositorio.
+5. Ejecute GitHub Actions normalmente.
+
+PRUEBA LOCAL OPCIONAL
+python scripts/add_star_tve.py --self-test
+
+Debe indicar, entre otros controles:
+- 13:25–14:20 Ecuador = España entre el cielo y la tierra.
+- 14:20–14:50 Ecuador = Seguridad vital.
+- AM/PM rechazado.
+
+RESULTADO ESPERADO
+- tvg-id: TVEStarHD.es
+- fuente: https://www.gatotv.com/canal/star_tve
+- única vista aceptada: 24 Hrs
+- timezone fuente: Atlantic/Canary
+- salida XMLTV: America/Guayaquil (-0500)
+- offset manual: 0
+- caché de programas: deshabilitada
+
+IMPORTANTE
+Si el runner recibe solamente la representación AM/PM de GatoTV, TVE STAR
+hará fallar el build. Esto es deliberado: esa vista depende de la zona horaria
+del cliente y fue la causa del desfase de 3 horas de v0.2.45.
