@@ -1,0 +1,16 @@
+EPG MrG v0.2.41
+
+1. Descomprime epg-mrgmaw-v0.2.41.zip.
+2. Copia todo sobre la raíz del repositorio, reemplazando archivos coincidentes.
+3. Ejecuta GitHub Actions > Actualizar EPG > Run workflow.
+
+STAR TVE (`TVEStarHD.es`):
+- AM/PM GatoTV localizado en Ecuador = prioridad.
+- 24 h GatoTV Atlantic/Canary = fallback con ZoneInfo.
+- No offset manual fijo.
+- No mezclar caché previa cuando existen datos frescos.
+
+Regresión esperada Ecuador 29-08-2026:
+20:25-22:00 Sicarius, la noche y el silencio
+22:00-23:00 Los misterios de laura - El misterio de la dama roja
+23:00-00:05 Fugitiva - El plan
