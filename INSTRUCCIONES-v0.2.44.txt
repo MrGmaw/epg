@@ -1,0 +1,10 @@
+EPG MrG v0.2.44
+
+1. Copie el contenido del ZIP en la raíz del repositorio y reemplace los archivos coincidentes.
+2. Ejecute el workflow "Actualizar EPG".
+3. Verifique en latam-status.json:
+   - version = 0.2.44
+   - star_tve_epg.loaded_source_days >= 1
+   - star_tve_epg.modes_used NO contiene previous-latam-cache
+   - cache_policy = programme cache disabled; fresh GatoTV required
+4. Fuerce la actualización de EPG en OTT Navigator.
