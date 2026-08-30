@@ -1,15 +1,15 @@
 {
   "version": "0.2.44",
-  "generated_at": "2026-08-29T23:21:40.029254-05:00",
-  "source_commit": "1322ae10c2fb11c010b931dd303c8879dfed98ef",
-  "github_run_id": "33292277988",
+  "generated_at": "2026-08-29T23:23:28.779906-05:00",
+  "source_commit": "6095a6580017d20c79df2ff91f12a8b7a1859acb",
+  "github_run_id": "33292313235",
   "github_run_attempt": "1",
   "base_date": "2026-08-29",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 35,
-  "programmes": 2972,
+  "programmes": 2954,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 53,
     "Canal.Gamavisión.ec": 32,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 207,
     "TeleamazonasGuayaquil.ec": 207,
     "Ecuavisa.ec": 32,
-    "EcuavisaInternacional.ec": 100,
+    "EcuavisaInternacional.ec": 98,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 65,
     "NTN24.co": 49,
@@ -36,16 +36,16 @@
     "Star-Channel.co": 29,
     "Warner-channel.co": 69,
     "HBO-Family.co": 27,
-    "Canal24Horas.es": 196,
+    "Canal24Horas.es": 191,
     "La1.es": 98,
-    "Clan.es": 500,
+    "Clan.es": 489,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 45,
     "NBC6-Miami.us": 119,
     "ABC-Miami.us": 122,
-    "CBS.(WCBS).New.York,.NY.us": 216,
+    "CBS.(WCBS).New.York,.NY.us": 215,
     "OromarTV.ec": 140,
-    "TVEStarHD.es": 75
+    "TVEStarHD.es": 73
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
@@ -71,32 +71,32 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-08-29": 47,
-      "2026-08-30": 49,
+      "2026-08-29": 46,
+      "2026-08-30": 46,
       "2026-08-31": 29,
       "2026-09-01": 27,
-      "2026-09-02": 29,
-      "2026-09-03": 19
+      "2026-09-02": 28,
+      "2026-09-03": 18
     },
     "La1.es": {
-      "2026-08-29": 20,
-      "2026-08-30": 17,
+      "2026-08-29": 21,
+      "2026-08-30": 18,
       "2026-08-31": 18,
-      "2026-09-01": 21,
-      "2026-09-02": 10,
-      "2026-09-03": 16
+      "2026-09-01": 20,
+      "2026-09-02": 11,
+      "2026-09-03": 15
     },
     "Clan.es": {
-      "2026-08-29": 80,
-      "2026-08-30": 82,
+      "2026-08-29": 79,
+      "2026-08-30": 81,
       "2026-08-31": 88,
       "2026-09-01": 88,
       "2026-09-02": 89,
-      "2026-09-03": 78
+      "2026-09-03": 68
     },
     "Deutsche.Welle.cl": {
-      "2026-08-29": 58,
-      "2026-08-30": 59
+      "2026-08-29": 60,
+      "2026-08-30": 57
     }
   },
   "gatotv_source_timezones": {
@@ -303,7 +303,7 @@
         ],
         "source_timezone": "America/New_York / explicit XMLTV offset",
         "output_timezone": "America/Guayaquil",
-        "programmes": 216
+        "programmes": 215
       },
       "OromarTV.ec": {
         "mode": "bundled-weekly-fallback",
@@ -328,30 +328,36 @@
     ]
   },
   "star_tve_epg": {
-    "version": "0.2.43",
+    "version": "0.2.44",
     "channel_id": "TVEStarHD.es",
     "source": "https://www.gatotv.com/canal/star_tve",
-    "source_timezone": "Atlantic/Canary",
+    "source_timezones": {
+      "ampm": "America/New_York",
+      "24h": "Atlantic/Canary"
+    },
     "output_timezone": "America/Guayaquil",
     "manual_offset_minutes": 0,
     "date_bridge": "fetch source date + next source date; clip after timezone conversion",
-    "time_view": "24h-canary-table-only",
-    "ampm_policy": "ignored/rejected for time assignment",
+    "time_view": "ampm-new-york-primary; 24h-canary-fallback",
+    "ampm_policy": "explicit AM/PM interpreted as America/New_York",
     "modes_used": [
-      "previous-latam-cache"
+      "ampm-new-york-table-primary"
     ],
-    "loaded_source_days": 0,
-    "programmes": 75,
+    "loaded_source_days": 3,
+    "programmes": 73,
     "cached_programmes_available": 75,
-    "cache_policy": "fresh-only; previous-latam cache only when fresh fetch is empty",
+    "cache_policy": "programme cache disabled; fresh GatoTV required",
     "field_validation": {
       "date": "2026-08-29",
       "ecuador_slot": "20:25-22:00",
       "title": "Sicarius, la noche y el silencio",
       "source_24h_slot": "2026-08-30 02:25-04:00 Atlantic/Canary",
-      "laura_source": "2026-08-30 04:00-05:00 Atlantic/Canary",
+      "source_ampm_slot": "2026-08-29 09:25-11:00 PM America/New_York",
+      "laura_source_ampm": "2026-08-29 11:00 PM-2026-08-30 12:00 AM America/New_York",
+      "laura_source_24h": "2026-08-30 04:00-05:00 Atlantic/Canary",
       "laura_ecuador": "2026-08-29 22:00-23:00 America/Guayaquil",
-      "fugitiva_source": "2026-08-30 05:00-06:05 Atlantic/Canary",
+      "fugitiva_source_ampm": "2026-08-30 12:00-01:05 AM America/New_York",
+      "fugitiva_source_24h": "2026-08-30 05:00-06:05 Atlantic/Canary",
       "fugitiva_ecuador": "2026-08-29 23:00-2026-08-30 00:05 America/Guayaquil"
     }
   }
