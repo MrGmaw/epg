@@ -1,0 +1,5 @@
+CHECKSUMS-v0.2.48.txt
+INSTRUCCIONES-v0.2.48.txt
+RELEASE-v0.2.48.md
+VERSION
+scripts/add_star_tve.py

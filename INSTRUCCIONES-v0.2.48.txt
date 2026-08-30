@@ -1,0 +1,12 @@
+EPG MrG v0.2.48
+
+Overlay sobre v0.2.47.
+
+1. Extraer este ZIP en la raíz del repositorio.
+2. Reemplazar VERSION y scripts/add_star_tve.py.
+3. Commit/push a main.
+4. Ejecutar GitHub Actions.
+
+No es necesario modificar .github/workflows/actualizar-epg.yml en esta versión:
+add_star_tve.py publica metadatos legacy compatibles con sus aserciones actuales,
+mientras los campos effective_* describen la lógica real de v0.2.48.
