@@ -1,0 +1,21 @@
+EPG MrG v0.2.42
+
+1. Descomprime epg-mrgmaw-v0.2.42.zip.
+2. Copia todo sobre la raíz del repositorio, reemplazando archivos coincidentes.
+3. Ejecuta GitHub Actions > Actualizar EPG > Run workflow.
+
+STAR TVE (`TVEStarHD.es`):
+- Solo parrilla 24 h de GatoTV.
+- Interpretación: Atlantic/Canary.
+- Conversión: ZoneInfo -> America/Guayaquil.
+- AM/PM rechazado para asignar horarios.
+- Sin offset manual fijo.
+- La caché previa solo se usa si GatoTV falla por completo.
+
+Regresión Ecuador 29-08-2026:
+20:25-22:00 Sicarius, la noche y el silencio
+22:00-23:00 Los misterios de laura - El misterio de la dama roja
+23:00-00:05 Fugitiva - El plan
+
+Comprobación clave:
+GatoTV 30-08 05:00 Atlantic/Canary = Ecuador 29-08 23:00 America/Guayaquil.
