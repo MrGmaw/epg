@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""EPG MrG v0.2.45: STAR TVE desde GatoTV con vista 24 h como referencia.
+"""EPG MrG v0.2.46: STAR TVE desde GatoTV usando exclusivamente la vista 24 h.
 
 Regla horaria validada el 30-08-2026 contra la vista localizada de GatoTV
 para Ecuador:
 - La vista 24 h de GatoTV es la referencia primaria y se interpreta como
   ``Atlantic/Canary``.
-- La vista AM/PM explícita queda únicamente como respaldo y se interpreta
-  como ``America/New_York``.
-- Ambas se convierten con ``ZoneInfo`` a ``America/Guayaquil``.
+- La vista AM/PM se rechaza: GatoTV la localiza según la zona horaria del
+  cliente/servidor que realiza la petición y no es estable en GitHub Actions.
+- La vista 24 h se convierte con ``ZoneInfo`` a ``America/Guayaquil``.
 - No se aplica ningún offset manual fijo.
 - Referencia de regresión: 19:25-20:20 Atlantic/Canary del 30-08-2026
   -> 13:25-14:20 America/Guayaquil, "España entre el cielo y la tierra".
@@ -36,7 +36,7 @@ import requests
 from bs4 import BeautifulSoup
 from lxml import etree
 
-VERSION = "0.2.45"
+VERSION = "0.2.46"
 EXPECTED_INPUT_CHANNELS = 34
 EXPECTED_FINAL_CHANNELS = 35
 MIN_PROGRAMMES = 5
@@ -49,7 +49,6 @@ TARGET_IDS = (STAR_ID,)
 
 OUTPUT_TZ = ZoneInfo("America/Guayaquil")
 SOURCE_TZ_24H = ZoneInfo("Atlantic/Canary")
-SOURCE_TZ_AMPM = ZoneInfo("America/New_York")
 REQUEST_TIMEOUT = 35
 CLOCK_24_RE = re.compile(r"^(?:[01]?\d|2[0-3]):[0-5]\d$")
 CLOCK_12_RE = re.compile(r"^(?:0?[1-9]|1[0-2]):[0-5]\d\s*(?:AM|PM)$", re.I)
@@ -77,7 +76,7 @@ HTTP_PROFILES: tuple[dict[str, str], ...] = (
         "Accept-Language": "es-ES,es;q=0.9,en;q=0.5",
     },
     {
-        "User-Agent": "EPG-MrG/0.2.45 (+GitHub Actions; XMLTV)",
+        "User-Agent": "EPG-MrG/0.2.46 (+GitHub Actions; XMLTV)",
         "Accept-Language": "en-GB,en;q=0.9,es;q=0.5",
     },
 )
@@ -243,17 +242,17 @@ def _parse_table_rows(table) -> list[RawRow]:
 
 
 def parse_gatotv_rows(page: str) -> tuple[list[RawRow], str]:
-    """Extrae una sola representación horaria coherente.
+    """Extrae exclusivamente la representación 24 h de GatoTV.
 
-    Prioridad v0.2.45:
-      1) vista 24 h inequívoca -> Atlantic/Canary (referencia localizada Ecuador)
-      2) vista AM/PM explícita -> America/New_York, solo respaldo
-
-    Nunca se mezclan las dos vistas y nunca se acepta 1..12 sin meridiano como 24 h.
+    v0.2.46 elimina por completo el fallback AM/PM. Esa vista se adapta a la
+    zona horaria del cliente que consulta GatoTV; un runner de GitHub Actions
+    puede recibir horas distintas de las que ve un usuario en Ecuador. La
+    única referencia aceptada para STAR TVE es una tabla 24 h inequívoca,
+    interpretada como Atlantic/Canary y convertida luego a America/Guayaquil.
     """
     soup = BeautifulSoup(page, "lxml")
     h24_candidates: list[list[RawRow]] = []
-    ampm_candidates: list[list[RawRow]] = []
+    ampm_candidates = 0
     for table in soup.find_all("table"):
         rows = _parse_table_rows(table)
         if len(rows) < MIN_PROGRAMMES:
@@ -261,14 +260,12 @@ def parse_gatotv_rows(page: str) -> tuple[list[RawRow], str]:
         if all(row.mode == "24h" for row in rows) and _looks_like_true_24h_table(rows):
             h24_candidates.append(rows)
         elif all(row.mode == "ampm" for row in rows):
-            ampm_candidates.append(rows)
+            ampm_candidates += 1
 
     if h24_candidates:
-        return max(h24_candidates, key=len), "24h-canary-table-primary"
-    if ampm_candidates:
-        return max(ampm_candidates, key=len), "ampm-new-york-table-fallback"
+        return max(h24_candidates, key=len), "24h-canary-table-only"
 
-    # Respaldo de maquetación: secuencia global, sin mezclar modos.
+    # Respaldo únicamente de maquetación: sigue exigiendo 24 h.
     rows: list[RawRow] = []
     for tr in soup.find_all("tr"):
         parsed = parse_row(list(tr.stripped_strings))
@@ -280,14 +277,18 @@ def parse_gatotv_rows(page: str) -> tuple[list[RawRow], str]:
         and all(row.mode == "24h" for row in rows)
         and _looks_like_true_24h_table(rows)
     ):
-        return rows, "24h-canary-global-primary"
-    if len(rows) >= MIN_PROGRAMMES and all(row.mode == "ampm" for row in rows):
-        return rows, "ampm-new-york-global-fallback"
+        return rows, "24h-canary-global-only"
 
     ampm_count = sum(1 for row in rows if row.mode == "ampm")
     h24_count = sum(1 for row in rows if row.mode == "24h")
+    if ampm_candidates or ampm_count >= MIN_PROGRAMMES:
+        raise RuntimeError(
+            "GatoTV STAR TVE: se recibió una parrilla AM/PM, pero v0.2.46 la "
+            "rechaza porque su zona horaria depende del cliente/runner. Se requiere "
+            "la vista 24 Hrs inequívoca."
+        )
     raise RuntimeError(
-        "GatoTV STAR TVE: no se encontró una parrilla horaria coherente; "
+        "GatoTV STAR TVE: no se encontró una parrilla 24 h inequívoca; "
         f"filas={len(rows)}, ampm={ampm_count}, h24={h24_count}."
     )
 
@@ -312,12 +313,11 @@ def instantiate_rows(rows: Sequence[RawRow], guide_date: date, mode: str) -> lis
         if previous_start_minute is not None and start_minute < previous_start_minute:
             event_date += timedelta(days=1)
         stop_date = event_date if row.stop > row.start else event_date + timedelta(days=1)
-        if row.mode == "24h":
-            source_tz = SOURCE_TZ_24H
-        elif row.mode == "ampm":
-            source_tz = SOURCE_TZ_AMPM
-        else:
-            raise RuntimeError(f"STAR TVE v{VERSION}: modo horario inesperado {row.mode!r}.")
+        if row.mode != "24h":
+            raise RuntimeError(
+                f"STAR TVE v{VERSION}: modo horario {row.mode!r} rechazado; solo se acepta 24h."
+            )
+        source_tz = SOURCE_TZ_24H
         start = datetime.combine(event_date, row.start, tzinfo=source_tz).astimezone(OUTPUT_TZ)
         stop = datetime.combine(stop_date, row.stop, tzinfo=source_tz).astimezone(OUTPUT_TZ)
         if stop <= start:
@@ -363,8 +363,8 @@ def fetch_and_parse_day(guide_date: date) -> tuple[list[StarProgramme], str]:
         try:
             page = request_page(url, headers)
             rows, mode = parse_gatotv_rows(page)
-            if not (mode.startswith("24h-canary-") or mode.startswith("ampm-new-york-")):
-                raise RuntimeError(f"modo inesperado: {mode}")
+            if not mode.startswith("24h-canary-"):
+                raise RuntimeError(f"modo no permitido: {mode}; STAR TVE exige 24h Canarias")
             programmes = instantiate_rows(rows, guide_date, mode)
             if len(programmes) < MIN_PROGRAMMES:
                 raise RuntimeError(f"solo {len(programmes)} emisiones tras convertir")
@@ -567,16 +567,16 @@ def update_status(
         "version": VERSION,
         "channel_id": STAR_ID,
         "source": STAR_SOURCE_BASE,
-        "source_timezones": {"ampm": "America/New_York", "24h": "Atlantic/Canary"},
+        "source_timezones": {"24h": "Atlantic/Canary", "ampm": "rejected-client-dependent"},
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
         "date_bridge": "fetch source date + next source date; clip after timezone conversion",
         # Se conserva este campo para que el validador v0.2.44 del workflow no falle
         # al aplicar el overlay. El campo efectivo siguiente documenta la nueva prioridad.
         "time_view": "ampm-new-york-primary; 24h-canary-fallback",
-        "effective_time_view": "24h-canary-primary; ampm-new-york-fallback",
-        "selection_policy": "prefer unambiguous 24h GatoTV table; AM/PM explicit only as fallback",
-        "ampm_policy": "explicit AM/PM interpreted as America/New_York",
+        "effective_time_view": "24h-canary-only",
+        "selection_policy": "accept only unambiguous 24h GatoTV table; reject AM/PM",
+        "ampm_policy": "rejected because GatoTV localizes AM/PM by requesting client timezone",
         "modes_used": sorted(modes),
         "loaded_source_days": loaded_source_days,
         "programmes": programme_count,
@@ -588,6 +588,11 @@ def update_status(
             "ecuador_slot": "2026-08-30 13:25-14:20 America/Guayaquil",
             "title": "España entre el cielo y la tierra",
             "subtitle": "Valles misteriosos",
+            "second_control": {
+                "source_24h_slot": "2026-08-30 20:20-20:50 Atlantic/Canary",
+                "ecuador_slot": "2026-08-30 14:20-14:50 America/Guayaquil",
+                "title": "Seguridad vital"
+            },
             "reference": "localized GatoTV Ecuador view",
             "previous_night_regression": {
                 "laura_source_24h": "2026-08-30 04:00-05:00 Atlantic/Canary",
@@ -627,12 +632,15 @@ def self_test() -> int:
     </table></body></html>
     """
     rows24, mode24 = parse_gatotv_rows(sample_24h_30)
-    assert mode24 == "24h-canary-table-primary"
+    assert mode24 == "24h-canary-table-only"
     programmes24 = instantiate_rows(rows24, date(2026, 8, 30), mode24)
     target = next(item for item in programmes24 if item.title == "España entre el cielo y la tierra")
     assert format_xmltv_datetime(target.start) == "20260830132500 -0500"
     assert format_xmltv_datetime(target.stop) == "20260830142000 -0500"
     assert target.subtitle == "Valles misteriosos"
+    seguridad = next(item for item in programmes24 if item.title == "Seguridad vital")
+    assert format_xmltv_datetime(seguridad.start) == "20260830142000 -0500"
+    assert format_xmltv_datetime(seguridad.stop) == "20260830145000 -0500"
 
     # Si ambas representaciones están en el DOM, la 24 h debe ganar.
     sample_both = sample_24h_30.replace(
@@ -648,24 +656,25 @@ def self_test() -> int:
         """,
     )
     rows_both, mode_both = parse_gatotv_rows(sample_both)
-    assert mode_both == "24h-canary-table-primary"
+    assert mode_both == "24h-canary-table-only"
     assert all(row.title != "SEÑUELO AMPM" for row in rows_both)
 
-    # AM/PM explícita sigue funcionando únicamente como fallback.
+    # AM/PM explícita debe rechazarse, aunque contenga una parrilla completa.
     sample_ampm = """
     <html><body><table>
-      <tr><td>09:25 PM</td><td>11:00 PM</td><td>Sicarius, la noche y el silencio</td></tr>
-      <tr><td>11:00 PM</td><td>12:00 AM</td><td>Los misterios de laura</td><td>El misterio de la dama roja</td></tr>
-      <tr><td>12:00 AM</td><td>01:05 AM</td><td>Fugitiva</td><td>El plan</td></tr>
-      <tr><td>01:05 AM</td><td>02:45 AM</td><td>Tiempo sin aire</td></tr>
-      <tr><td>02:45 AM</td><td>03:15 AM</td><td>Flash Moda - Monográficos</td></tr>
+      <tr><td>11:25 AM</td><td>12:20 PM</td><td>España entre el cielo y la tierra</td></tr>
+      <tr><td>12:20 PM</td><td>12:50 PM</td><td>Seguridad vital</td></tr>
+      <tr><td>12:50 PM</td><td>01:20 PM</td><td>Zoom tendencias</td></tr>
+      <tr><td>01:20 PM</td><td>02:55 PM</td><td>Sicarius, la noche y el silencio</td></tr>
+      <tr><td>02:55 PM</td><td>03:45 PM</td><td>La promesa</td></tr>
     </table></body></html>
     """
-    rows_am, mode_am = parse_gatotv_rows(sample_ampm)
-    assert mode_am == "ampm-new-york-table-fallback"
-    programmes_am = instantiate_rows(rows_am, date(2026, 8, 29), mode_am)
-    assert format_xmltv_datetime(programmes_am[1].start) == "20260829220000 -0500"
-    assert format_xmltv_datetime(programmes_am[2].start) == "20260829230000 -0500"
+    try:
+        parse_gatotv_rows(sample_ampm)
+    except RuntimeError as exc:
+        assert "AM/PM" in str(exc) and "rechaza" in str(exc)
+    else:
+        raise AssertionError("STAR TVE v0.2.46 aceptó indebidamente una tabla AM/PM")
 
     # Tabla 12 h sin meridiano: ambigua, debe rechazarse.
     ambiguous_12h = """
@@ -699,9 +708,10 @@ def self_test() -> int:
         raise AssertionError("STAR TVE reutilizó caché sin datos frescos")
 
     print(
-        "Self-test STAR TVE v0.2.45 correcto: 24h Atlantic/Canary primario -> "
-        "America/Guayaquil; referencia 19:25-20:20 = 13:25-14:20 Ecuador; "
-        "AM/PM New York solo fallback; offset manual=0; caché de programas deshabilitada."
+        "Self-test STAR TVE v0.2.46 correcto: SOLO 24h Atlantic/Canary -> "
+        "America/Guayaquil; 19:25-20:20 = 13:25-14:20 Ecuador y "
+        "20:20-20:50 Seguridad vital = 14:20-14:50; AM/PM rechazado; "
+        "offset manual=0; caché de programas deshabilitada."
     )
     return 0
 
@@ -741,8 +751,8 @@ def main() -> int:
         fresh_items, loaded_source_days, modes = scrape_star(start_date, args.days)
     except Exception as exc:  # noqa: BLE001
         raise RuntimeError(
-            f"STAR TVE v{VERSION}: GatoTV no entregó programación fresca utilizable; "
-            "se aborta para no reutilizar una parrilla horariamente incorrecta. "
+            f"STAR TVE v{VERSION}: GatoTV no entregó una parrilla 24 h fresca utilizable; "
+            "se aborta para no publicar horarios dependientes de la zona del runner. "
             f"Detalle: {exc}"
         ) from exc
 
@@ -778,8 +788,8 @@ def main() -> int:
     update_index(index_path)
     log(
         f"v{VERSION} aplicada: 35 canales; STAR TVE={len(merged)} emisiones frescas; "
-        "GatoTV 24h Atlantic/Canary primario / AM-PM America/New_York fallback -> "
-        "America/Guayaquil; caché de programas deshabilitada; offset manual=0."
+        "GatoTV SOLO 24h Atlantic/Canary -> America/Guayaquil; AM/PM rechazado; "
+        "caché de programas deshabilitada; offset manual=0."
     )
     return 0
 
