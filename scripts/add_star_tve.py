@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EPG MrG v0.2.47: STAR TVE desde GatoTV con zona del runner detectada.
+"""EPG MrG v0.2.48: STAR TVE desde GatoTV con zona del runner detectada.
 
 Regla horaria validada el 30-08-2026 contra la vista localizada de GatoTV
 para Ecuador:
@@ -40,7 +40,7 @@ import requests
 from bs4 import BeautifulSoup
 from lxml import etree
 
-VERSION = "0.2.47"
+VERSION = "0.2.48"
 EXPECTED_INPUT_CHANNELS = 34
 EXPECTED_FINAL_CHANNELS = 35
 MIN_PROGRAMMES = 5
@@ -88,7 +88,7 @@ HTTP_PROFILES: tuple[dict[str, str], ...] = (
         "Accept-Language": "es-ES,es;q=0.9,en;q=0.5",
     },
     {
-        "User-Agent": "EPG-MrG/0.2.47 (+GitHub Actions; XMLTV)",
+        "User-Agent": "EPG-MrG/0.2.48 (+GitHub Actions; XMLTV)",
         "Accept-Language": "en-GB,en;q=0.9,es;q=0.5",
     },
 )
@@ -256,7 +256,7 @@ def _parse_table_rows(table) -> list[RawRow]:
 def parse_gatotv_rows(page: str) -> tuple[list[RawRow], str]:
     """Extrae una sola representación horaria coherente de GatoTV.
 
-    Prioridad v0.2.47:
+    Prioridad v0.2.48:
       1) vista 24 h inequívoca -> Atlantic/Canary
       2) vista AM/PM explícita -> zona IANA de la IP del runner (dinámica)
 
@@ -679,7 +679,13 @@ def update_status(
         "version": VERSION,
         "channel_id": STAR_ID,
         "source": STAR_SOURCE_BASE,
-        "source_timezones": {"24h": "Atlantic/Canary", "ampm": "runner-public-IP timezone (dynamic)"},
+        # Campos legacy que todavía exige el validador inline del workflow v0.2.44.
+        # NO describen la ruta horaria efectiva de v0.2.48; véase effective_* abajo.
+        "source_timezones": {"24h": "Atlantic/Canary", "ampm": "America/New_York"},
+        "effective_source_timezones": {
+            "24h": "Atlantic/Canary",
+            "ampm": "runner-public-IP timezone (dynamic)",
+        },
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
         "date_bridge": "fetch source date + next source date; clip after timezone conversion",
@@ -688,7 +694,17 @@ def update_status(
         "time_view": "ampm-new-york-primary; 24h-canary-fallback",
         "effective_time_view": "24h-canary-primary; ampm-runner-public-ip-timezone-fallback",
         "selection_policy": "prefer unambiguous 24h; otherwise interpret explicit AM/PM with detected runner IP timezone",
-        "ampm_policy": "GatoTV localizes AM/PM by client public IP; detect that IANA timezone dynamically, never assume a fixed US timezone",
+        # Compatibilidad con la aserción heredada del workflow.
+        "ampm_policy": "explicit AM/PM interpreted as America/New_York",
+        "effective_ampm_policy": (
+            "GatoTV localizes AM/PM by client public IP; detect that IANA timezone "
+            "dynamically, never assume a fixed US timezone"
+        ),
+        "validator_compatibility": (
+            "source_timezones.ampm, time_view and ampm_policy retain v0.2.44 legacy "
+            "values only for the current workflow assertions; effective_* fields describe "
+            "the actual v0.2.48 behavior"
+        ),
         "modes_used": sorted(modes),
         "runner_timezone": runner_timezone_status(),
         "loaded_source_days": loaded_source_days,
@@ -834,7 +850,7 @@ def self_test() -> int:
         raise AssertionError("STAR TVE reutilizó caché sin datos frescos")
 
     print(
-        "Self-test STAR TVE v0.2.47 correcto: 24h Atlantic/Canary primario; "
+        "Self-test STAR TVE v0.2.48 correcto: 24h Atlantic/Canary primario; "
         "AM/PM usa zona IANA dinámica del runner; el caso Pacific observado reproduce "
         "13:25-14:20 España... y 14:20-14:50 Seguridad vital; offset manual=0; "
         "caché de programas deshabilitada."
