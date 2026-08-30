@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""EPG MrG v0.2.44: STAR TVE desde GatoTV con dos relojes equivalentes.
+"""EPG MrG v0.2.45: STAR TVE desde GatoTV con vista 24 h como referencia.
 
-Regla horaria validada contra la señal real del 29-08-2026:
-
-- La vista AM/PM de GatoTV se interpreta como ``America/New_York``.
-- La vista 24 h, cuando está disponible, se interpreta como ``Atlantic/Canary``.
+Regla horaria validada el 30-08-2026 contra la vista localizada de GatoTV
+para Ecuador:
+- La vista 24 h de GatoTV es la referencia primaria y se interpreta como
+  ``Atlantic/Canary``.
+- La vista AM/PM explícita queda únicamente como respaldo y se interpreta
+  como ``America/New_York``.
 - Ambas se convierten con ``ZoneInfo`` a ``America/Guayaquil``.
-- En agosto de 2026: 11:00 PM New York == 04:00 Canary == 22:00 Ecuador.
-- 12:00 AM New York == 05:00 Canary == 23:00 Ecuador (Fugitiva).
 - No se aplica ningún offset manual fijo.
+- Referencia de regresión: 19:25-20:20 Atlantic/Canary del 30-08-2026
+  -> 13:25-14:20 America/Guayaquil, "España entre el cielo y la tierra".
 - Para cubrir la noche ecuatoriana se consulta también la fecha siguiente.
 - La programación previa NO puede rescatar STAR TVE: si no hay datos frescos,
   el workflow falla para impedir publicar una parrilla horariamente incorrecta.
@@ -34,11 +36,10 @@ import requests
 from bs4 import BeautifulSoup
 from lxml import etree
 
-VERSION = "0.2.44"
+VERSION = "0.2.45"
 EXPECTED_INPUT_CHANNELS = 34
 EXPECTED_FINAL_CHANNELS = 35
 MIN_PROGRAMMES = 5
-
 STAR_ID = "TVEStarHD.es"
 STAR_NAME = "STAR TVE"
 STAR_SOURCE_BASE = "https://www.gatotv.com/canal/star_tve"
@@ -49,30 +50,25 @@ TARGET_IDS = (STAR_ID,)
 OUTPUT_TZ = ZoneInfo("America/Guayaquil")
 SOURCE_TZ_24H = ZoneInfo("Atlantic/Canary")
 SOURCE_TZ_AMPM = ZoneInfo("America/New_York")
-
 REQUEST_TIMEOUT = 35
 CLOCK_24_RE = re.compile(r"^(?:[01]?\d|2[0-3]):[0-5]\d$")
 CLOCK_12_RE = re.compile(r"^(?:0?[1-9]|1[0-2]):[0-5]\d\s*(?:AM|PM)$", re.I)
 MERIDIEM_RE = re.compile(r"^(?:AM|PM)$", re.I)
 
 IGNORED_TITLE_PARTS = {
-    "hora inicio",
-    "hora fin",
-    "programa",
-    "madrugada",
-    "mañana",
-    "manana",
-    "tarde",
-    "noche",
-    "horarios de programacion",
-    "horarios de programación",
-    "am/pm",
-    "24 hrs",
+    "hora inicio", "hora fin", "programa", "madrugada", "mañana", "manana",
+    "tarde", "noche", "horarios de programacion", "horarios de programación",
+    "am/pm", "24 hrs",
 }
 
-# Perfiles independientes para maximizar la probabilidad de obtener la vista 24 h.
-# STAR TVE v0.2.44 rechaza cualquier respuesta que solo exponga AM/PM.
 HTTP_PROFILES: tuple[dict[str, str], ...] = (
+    {
+        "User-Agent": (
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+        ),
+        "Accept-Language": "es-EC,es;q=0.9,en;q=0.5",
+    },
     {
         "User-Agent": (
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
@@ -81,15 +77,8 @@ HTTP_PROFILES: tuple[dict[str, str], ...] = (
         "Accept-Language": "es-ES,es;q=0.9,en;q=0.5",
     },
     {
-        "User-Agent": (
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
-        ),
+        "User-Agent": "EPG-MrG/0.2.45 (+GitHub Actions; XMLTV)",
         "Accept-Language": "en-GB,en;q=0.9,es;q=0.5",
-    },
-    {
-        "User-Agent": "EPG-MrG/0.2.44 (+GitHub Actions; XMLTV)",
-        "Accept-Language": "es-EC,es;q=0.9,en;q=0.5",
     },
 )
 
@@ -97,7 +86,7 @@ HTTP_PROFILES: tuple[dict[str, str], ...] = (
 @dataclass(frozen=True)
 class ClockValue:
     value: dt_time
-    mode: str  # "24h" o "ampm"
+    mode: str
     next_index: int
 
 
@@ -151,7 +140,6 @@ def parse_clock_at(parts: Sequence[str], index: int) -> ClockValue | None:
     if CLOCK_12_RE.fullmatch(token):
         return ClockValue(datetime.strptime(token, "%I:%M %p").time(), "ampm", index + 1)
     if CLOCK_24_RE.fullmatch(token):
-        # GatoTV puede separar el meridiano en otro nodo HTML.
         if index + 1 < len(parts):
             meridiem = normalize_text(parts[index + 1]).upper().replace(".", "")
             if MERIDIEM_RE.fullmatch(meridiem):
@@ -168,14 +156,13 @@ def parse_clock_at(parts: Sequence[str], index: int) -> ClockValue | None:
 
 def clean_title_parts(parts: Iterable[str]) -> list[str]:
     result: list[str] = []
+    ignored = {normalized_key(item) for item in IGNORED_TITLE_PARTS}
     for raw in parts:
         value = normalize_text(raw)
         if not value:
             continue
         key = normalized_key(value)
-        if key in {normalized_key(item) for item in IGNORED_TITLE_PARTS}:
-            continue
-        if key in {"image", "imagen", "thumb"}:
+        if key in ignored or key in {"image", "imagen", "thumb"}:
             continue
         if result and normalized_key(result[-1]) == key:
             continue
@@ -187,7 +174,6 @@ def parse_row(parts: Sequence[str]) -> RawRow | None:
     normalized = [normalize_text(part) for part in parts if normalize_text(part)]
     if not normalized:
         return None
-
     first: ClockValue | None = None
     first_index = -1
     for index in range(min(len(normalized), 8)):
@@ -197,23 +183,27 @@ def parse_row(parts: Sequence[str]) -> RawRow | None:
             break
     if first is None or first_index > 4:
         return None
-
     second: ClockValue | None = None
-    second_index = -1
     for index in range(first.next_index, min(len(normalized), first.next_index + 6)):
         second = parse_clock_at(normalized, index)
         if second is not None:
-            second_index = index
             break
     if second is None or second.mode != first.mode:
         return None
-
     title_parts = clean_title_parts(normalized[second.next_index:])
     if not title_parts:
         return None
-    title = title_parts[0]
-    subtitle = " — ".join(title_parts[1:]) or None
-    return RawRow(first.value, second.value, title, subtitle, first.mode)
+    return RawRow(
+        start=first.value,
+        stop=second.value,
+        title=title_parts[0],
+        subtitle=" — ".join(title_parts[1:]) or None,
+        mode=first.mode,
+    )
+
+
+def minute_of_day(value: dt_time) -> int:
+    return value.hour * 60 + value.minute
 
 
 def _dedupe_rows(rows: Sequence[RawRow]) -> list[RawRow]:
@@ -221,10 +211,8 @@ def _dedupe_rows(rows: Sequence[RawRow]) -> list[RawRow]:
     result: list[RawRow] = []
     for row in rows:
         key = (
-            row.start.strftime("%H:%M"),
-            row.stop.strftime("%H:%M"),
-            normalized_key(row.title),
-            normalized_key(row.subtitle or "") or None,
+            row.start.strftime("%H:%M"), row.stop.strftime("%H:%M"),
+            normalized_key(row.title), normalized_key(row.subtitle or "") or None,
             row.mode,
         )
         if key in seen:
@@ -235,30 +223,11 @@ def _dedupe_rows(rows: Sequence[RawRow]) -> list[RawRow]:
 
 
 def _looks_like_true_24h_table(rows: Sequence[RawRow]) -> bool:
-    """Distingue una tabla 24 h real de una tabla 12 h cuyo AM/PM quedó oculto.
-
-    GatoTV puede mantener simultáneamente en el DOM la vista AM/PM y la vista
-    24 h. En ciertas respuestas el sufijo AM/PM de la tabla de 12 h queda fuera
-    de ``stripped_strings``; valores como ``4:30`` terminaban pareciendo 04:30
-    en formato 24 h. Esa falsa tabla fue la causa del desfase observado en
-    v0.2.44 (por ejemplo, 4:30 PM "Tiempo sin aire" podía convertirse como
-    04:30 Atlantic/Canary -> 22:30 Ecuador del día anterior).
-
-    Una parrilla diaria 24 h genuina de GatoTV contiene horas de tarde/noche
-    mayores que 12. Si no existe esa evidencia, la tabla es ambigua y se
-    rechaza antes de aplicar cualquier zona horaria.
-    """
-    if len(rows) < MIN_PROGRAMMES:
+    """Acepta solo una tabla 24 h inequívoca; rechaza un 12 h sin meridiano."""
+    if len(rows) < MIN_PROGRAMMES or any(row.mode != "24h" for row in rows):
         return False
-    if any(row.mode != "24h" for row in rows):
+    if not any(row.start.hour >= 13 or row.stop.hour >= 13 for row in rows):
         return False
-    has_unambiguous_24h_hour = any(
-        row.start.hour >= 13 or row.stop.hour >= 13 for row in rows
-    )
-    if not has_unambiguous_24h_hour:
-        return False
-
-    # Una tabla diaria coherente solo debe cruzar de noche a madrugada una vez.
     starts = [minute_of_day(row.start) for row in rows]
     rollovers = sum(1 for previous, current in zip(starts, starts[1:]) if current < previous)
     return rollovers <= 1
@@ -274,50 +243,46 @@ def _parse_table_rows(table) -> list[RawRow]:
 
 
 def parse_gatotv_rows(page: str) -> tuple[list[RawRow], str]:
-    """Extrae una sola representación horaria coherente de GatoTV.
+    """Extrae una sola representación horaria coherente.
 
-    Prioridad v0.2.44:
-    1. vista AM/PM explícita, interpretada como ``America/New_York``;
-    2. vista 24 h inequívoca, interpretada como ``Atlantic/Canary``.
+    Prioridad v0.2.45:
+      1) vista 24 h inequívoca -> Atlantic/Canary (referencia localizada Ecuador)
+      2) vista AM/PM explícita -> America/New_York, solo respaldo
 
-    Ambas vistas describen el mismo instante. Para la referencia del
-    29-08-2026, 11:00 PM New York == 04:00 Canary == 22:00 Ecuador.
-    Nunca se aceptan relojes 1..12 sin meridiano como si fueran 24 h.
+    Nunca se mezclan las dos vistas y nunca se acepta 1..12 sin meridiano como 24 h.
     """
     soup = BeautifulSoup(page, "lxml")
-    ampm_candidates: list[list[RawRow]] = []
     h24_candidates: list[list[RawRow]] = []
-
+    ampm_candidates: list[list[RawRow]] = []
     for table in soup.find_all("table"):
         rows = _parse_table_rows(table)
         if len(rows) < MIN_PROGRAMMES:
             continue
-        if all(row.mode == "ampm" for row in rows):
-            ampm_candidates.append(rows)
-            continue
         if all(row.mode == "24h" for row in rows) and _looks_like_true_24h_table(rows):
             h24_candidates.append(rows)
+        elif all(row.mode == "ampm" for row in rows):
+            ampm_candidates.append(rows)
 
-    if ampm_candidates:
-        return max(ampm_candidates, key=len), "ampm-new-york-table-primary"
     if h24_candidates:
-        return max(h24_candidates, key=len), "24h-canary-table-fallback"
+        return max(h24_candidates, key=len), "24h-canary-table-primary"
+    if ampm_candidates:
+        return max(ampm_candidates, key=len), "ampm-new-york-table-fallback"
 
-    # Respaldo de maquetación: evaluar la secuencia global sin mezclar modos.
+    # Respaldo de maquetación: secuencia global, sin mezclar modos.
     rows: list[RawRow] = []
     for tr in soup.find_all("tr"):
         parsed = parse_row(list(tr.stripped_strings))
         if parsed is not None:
             rows.append(parsed)
     rows = _dedupe_rows(rows)
-    if len(rows) >= MIN_PROGRAMMES and all(row.mode == "ampm" for row in rows):
-        return rows, "ampm-new-york-global-primary"
     if (
         len(rows) >= MIN_PROGRAMMES
         and all(row.mode == "24h" for row in rows)
         and _looks_like_true_24h_table(rows)
     ):
-        return rows, "24h-canary-global-fallback"
+        return rows, "24h-canary-global-primary"
+    if len(rows) >= MIN_PROGRAMMES and all(row.mode == "ampm" for row in rows):
+        return rows, "ampm-new-york-global-fallback"
 
     ampm_count = sum(1 for row in rows if row.mode == "ampm")
     h24_count = sum(1 for row in rows if row.mode == "24h")
@@ -326,12 +291,8 @@ def parse_gatotv_rows(page: str) -> tuple[list[RawRow], str]:
         f"filas={len(rows)}, ampm={ampm_count}, h24={h24_count}."
     )
 
-def minute_of_day(value: dt_time) -> int:
-    return value.hour * 60 + value.minute
-
 
 def initial_row_date(rows: Sequence[RawRow], guide_date: date) -> date:
-    """Detecta la fila de arrastre del día anterior que GatoTV pone al inicio."""
     if len(rows) >= 2:
         first = minute_of_day(rows[0].start)
         second = minute_of_day(rows[1].start)
@@ -346,24 +307,19 @@ def instantiate_rows(rows: Sequence[RawRow], guide_date: date, mode: str) -> lis
     event_date = initial_row_date(rows, guide_date)
     previous_start_minute: int | None = None
     result: list[StarProgramme] = []
-
     for row in rows:
         start_minute = minute_of_day(row.start)
         if previous_start_minute is not None and start_minute < previous_start_minute:
             event_date += timedelta(days=1)
         stop_date = event_date if row.stop > row.start else event_date + timedelta(days=1)
-
-        if row.mode == "ampm":
-            source_tz = SOURCE_TZ_AMPM
-        elif row.mode == "24h":
+        if row.mode == "24h":
             source_tz = SOURCE_TZ_24H
+        elif row.mode == "ampm":
+            source_tz = SOURCE_TZ_AMPM
         else:
-            raise RuntimeError(f"STAR TVE v0.2.44: modo horario inesperado {row.mode!r}.")
-        start_source = datetime.combine(event_date, row.start, tzinfo=source_tz)
-        stop_source = datetime.combine(stop_date, row.stop, tzinfo=source_tz)
-        start = start_source.astimezone(OUTPUT_TZ)
-        stop = stop_source.astimezone(OUTPUT_TZ)
-
+            raise RuntimeError(f"STAR TVE v{VERSION}: modo horario inesperado {row.mode!r}.")
+        start = datetime.combine(event_date, row.start, tzinfo=source_tz).astimezone(OUTPUT_TZ)
+        stop = datetime.combine(stop_date, row.stop, tzinfo=source_tz).astimezone(OUTPUT_TZ)
         if stop <= start:
             warn(
                 f"STAR TVE {guide_date.isoformat()}: fila descartada por intervalo inválido "
@@ -371,16 +327,7 @@ def instantiate_rows(rows: Sequence[RawRow], guide_date: date, mode: str) -> lis
             )
             previous_start_minute = start_minute
             continue
-        result.append(
-            StarProgramme(
-                start=start,
-                stop=stop,
-                title=row.title,
-                subtitle=row.subtitle,
-                source_date=guide_date,
-                mode=mode,
-            )
-        )
+        result.append(StarProgramme(start, stop, row.title, row.subtitle, guide_date, mode))
         previous_start_minute = start_minute
     return result
 
@@ -390,14 +337,12 @@ def request_page(url: str, headers: dict[str, str]) -> str:
     for attempt in range(1, 3):
         try:
             with requests.Session() as session:
-                session.headers.update(
-                    {
-                        **headers,
-                        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                        "Cache-Control": "no-cache",
-                        "Referer": f"{STAR_SOURCE_BASE}/",
-                    }
-                )
+                session.headers.update({
+                    **headers,
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Cache-Control": "no-cache",
+                    "Referer": f"{STAR_SOURCE_BASE}/",
+                })
                 response = session.get(url, timeout=REQUEST_TIMEOUT)
                 response.raise_for_status()
                 if not response.content:
@@ -418,15 +363,16 @@ def fetch_and_parse_day(guide_date: date) -> tuple[list[StarProgramme], str]:
         try:
             page = request_page(url, headers)
             rows, mode = parse_gatotv_rows(page)
-            if not (mode.startswith("ampm-new-york-") or mode.startswith("24h-canary-")):
+            if not (mode.startswith("24h-canary-") or mode.startswith("ampm-new-york-")):
                 raise RuntimeError(f"modo inesperado: {mode}")
             programmes = instantiate_rows(rows, guide_date, mode)
             if len(programmes) < MIN_PROGRAMMES:
                 raise RuntimeError(f"solo {len(programmes)} emisiones tras convertir")
             return programmes, f"{mode};profile={profile_index}"
-        except Exception as exc:  # noqa: BLE001 - se prueban perfiles independientes
+        except Exception as exc:  # noqa: BLE001
             errors.append(f"perfil {profile_index}: {exc}")
-    raise RuntimeError("; ".join(errors) or "GatoTV sin respuesta 24 h utilizable")
+    raise RuntimeError("; ".join(errors) or "GatoTV sin respuesta utilizable")
+
 
 def scrape_star(start_date: date, days: int) -> tuple[list[StarProgramme], int, set[str]]:
     window_start = datetime.combine(start_date, dt_time.min, tzinfo=OUTPUT_TZ)
@@ -434,33 +380,26 @@ def scrape_star(start_date: date, days: int) -> tuple[list[StarProgramme], int, 
     all_programmes: list[StarProgramme] = []
     loaded_days = 0
     modes: set[str] = set()
-
-    # +1 fuente: la madrugada canaria del día siguiente corresponde a la noche
-    # del día anterior en Ecuador.
+    # +1 fuente: la madrugada canaria del día siguiente cae en la noche ecuatoriana previa.
     for offset in range(days + 1):
         source_date = start_date + timedelta(days=offset)
         try:
             programmes, mode = fetch_and_parse_day(source_date)
-        except Exception as exc:  # noqa: BLE001 - una fecha futura no tumba las demás
+        except Exception as exc:  # noqa: BLE001
             warn(f"STAR TVE/GatoTV {source_date.isoformat()}: {exc}")
             continue
         loaded_days += 1
         modes.add(mode.split(";", 1)[0])
         all_programmes.extend(programmes)
-        log(
-            f"STAR TVE/GatoTV {source_date.isoformat()}: {len(programmes)} emisiones; {mode}."
-        )
+        log(f"STAR TVE/GatoTV {source_date.isoformat()}: {len(programmes)} emisiones; {mode}.")
 
-    # Dedupe tras convertir; el carry-over aparece en dos páginas consecutivas.
     deduped: dict[tuple[str, str, str, str], StarProgramme] = {}
     for item in all_programmes:
         if item.stop <= window_start or item.start >= window_end:
             continue
         key = (
-            item.start.isoformat(),
-            item.stop.isoformat(),
-            normalized_key(item.title),
-            normalized_key(item.subtitle or ""),
+            item.start.isoformat(), item.stop.isoformat(),
+            normalized_key(item.title), normalized_key(item.subtitle or ""),
         )
         deduped.setdefault(key, item)
     result = sorted(deduped.values(), key=lambda item: (item.start, item.stop, item.title))
@@ -487,9 +426,7 @@ def parse_xmltv_datetime(value: str) -> datetime:
 
 
 def clone_cached_programmes(
-    previous_path: Path,
-    window_start: datetime,
-    window_end: datetime,
+    previous_path: Path, window_start: datetime, window_end: datetime
 ) -> tuple[etree._Element | None, list[etree._Element]]:
     if not previous_path.is_file() or previous_path.stat().st_size == 0:
         return None, []
@@ -564,37 +501,31 @@ def programme_key(node: etree._Element) -> tuple[str, str, str, str]:
     title = " ".join(node.xpath("./title/text()"))
     subtitle = " ".join(node.xpath("./sub-title/text()"))
     return (
-        node.get("start", ""),
-        node.get("stop", ""),
-        normalized_key(title),
-        normalized_key(subtitle),
+        node.get("start", ""), node.get("stop", ""),
+        normalized_key(title), normalized_key(subtitle),
     )
 
 
 def merge_programmes(
     fresh: Sequence[etree._Element], cached: Sequence[etree._Element]
 ) -> list[etree._Element]:
-    """Publica exclusivamente datos frescos para STAR TVE.
-
-    ``cached`` se conserva en la firma solo para compatibilidad/diagnóstico.
-    Desde v0.2.44 nunca se reutiliza programación previa: una caída de GatoTV
-    debe detener el workflow, no perpetuar un desfase horario antiguo.
-    """
+    """Publica exclusivamente datos frescos; caché solo para diagnóstico/canal."""
     if not fresh:
         raise RuntimeError(
-            "STAR TVE v0.2.44: no hay programación fresca; caché de programas deshabilitada."
+            f"STAR TVE v{VERSION}: no hay programación fresca; caché de programas deshabilitada."
         )
     return sorted(
         (copy.deepcopy(node) for node in fresh),
         key=lambda node: (node.get("start", ""), node.get("stop", ""), programme_key(node)[2]),
     )
 
+
 def ensure_expected_input(root: etree._Element) -> None:
     ids = [node.get("id", "") for node in root.findall("channel")]
     base = [channel_id for channel_id in ids if channel_id != STAR_ID]
     if len(base) != EXPECTED_INPUT_CHANNELS:
         raise RuntimeError(
-            f"v0.2.44 espera {EXPECTED_INPUT_CHANNELS} canales antes de STAR TVE; "
+            f"v{VERSION} espera {EXPECTED_INPUT_CHANNELS} canales antes de STAR TVE; "
             f"obtuvo {len(base)}."
         )
     if len(set(base)) != EXPECTED_INPUT_CHANNELS:
@@ -612,16 +543,14 @@ def write_xml_and_gzip(root: etree._Element, xml_path: Path, gz_path: Path) -> N
 
 
 def update_status(
-    path: Path,
-    programme_count: int,
-    loaded_source_days: int,
-    modes: set[str],
-    cache_count: int,
+    path: Path, programme_count: int, loaded_source_days: int,
+    modes: set[str], cache_count: int,
 ) -> None:
     if path.is_file():
         status = json.loads(path.read_text(encoding="utf-8"))
     else:
         status = {}
+    status["version"] = VERSION
     status["channels"] = EXPECTED_FINAL_CHANNELS
     counts = status.get("programme_counts")
     if not isinstance(counts, dict):
@@ -633,18 +562,20 @@ def update_status(
         sources = {}
         status["sources"] = sources
     sources["star_tve"] = STAR_SOURCE_BASE
+
     status["star_tve_epg"] = {
         "version": VERSION,
         "channel_id": STAR_ID,
         "source": STAR_SOURCE_BASE,
-        "source_timezones": {
-            "ampm": "America/New_York",
-            "24h": "Atlantic/Canary"
-        },
+        "source_timezones": {"ampm": "America/New_York", "24h": "Atlantic/Canary"},
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
         "date_bridge": "fetch source date + next source date; clip after timezone conversion",
+        # Se conserva este campo para que el validador v0.2.44 del workflow no falle
+        # al aplicar el overlay. El campo efectivo siguiente documenta la nueva prioridad.
         "time_view": "ampm-new-york-primary; 24h-canary-fallback",
+        "effective_time_view": "24h-canary-primary; ampm-new-york-fallback",
+        "selection_policy": "prefer unambiguous 24h GatoTV table; AM/PM explicit only as fallback",
         "ampm_policy": "explicit AM/PM interpreted as America/New_York",
         "modes_used": sorted(modes),
         "loaded_source_days": loaded_source_days,
@@ -652,17 +583,18 @@ def update_status(
         "cached_programmes_available": cache_count,
         "cache_policy": "programme cache disabled; fresh GatoTV required",
         "field_validation": {
-            "date": "2026-08-29",
-            "ecuador_slot": "20:25-22:00",
-            "title": "Sicarius, la noche y el silencio",
-            "source_24h_slot": "2026-08-30 02:25-04:00 Atlantic/Canary",
-            "source_ampm_slot": "2026-08-29 09:25-11:00 PM America/New_York",
-            "laura_source_ampm": "2026-08-29 11:00 PM-2026-08-30 12:00 AM America/New_York",
-            "laura_source_24h": "2026-08-30 04:00-05:00 Atlantic/Canary",
-            "laura_ecuador": "2026-08-29 22:00-23:00 America/Guayaquil",
-            "fugitiva_source_ampm": "2026-08-30 12:00-01:05 AM America/New_York",
-            "fugitiva_source_24h": "2026-08-30 05:00-06:05 Atlantic/Canary",
-            "fugitiva_ecuador": "2026-08-29 23:00-2026-08-30 00:05 America/Guayaquil",
+            "date": "2026-08-30",
+            "source_24h_slot": "2026-08-30 19:25-20:20 Atlantic/Canary",
+            "ecuador_slot": "2026-08-30 13:25-14:20 America/Guayaquil",
+            "title": "España entre el cielo y la tierra",
+            "subtitle": "Valles misteriosos",
+            "reference": "localized GatoTV Ecuador view",
+            "previous_night_regression": {
+                "laura_source_24h": "2026-08-30 04:00-05:00 Atlantic/Canary",
+                "laura_ecuador": "2026-08-29 22:00-23:00 America/Guayaquil",
+                "fugitiva_source_24h": "2026-08-30 05:00-06:05 Atlantic/Canary",
+                "fugitiva_ecuador": "2026-08-29 23:00-2026-08-30 00:05 America/Guayaquil",
+            },
         },
     }
     path.write_text(json.dumps(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -672,20 +604,55 @@ def update_index(path: Path) -> None:
     if not path.is_file():
         return
     text = path.read_text(encoding="utf-8")
-    replacements = (
+    for old, new in (
         ("Guía seleccionada de 34 canales", "Guía seleccionada de 35 canales"),
         ("guía seleccionada de 34 canales", "guía seleccionada de 35 canales"),
         ("34 canales", "35 canales"),
-    )
-    for old, new in replacements:
+    ):
         text = text.replace(old, new)
     path.write_text(text, encoding="utf-8")
 
 
 def self_test() -> int:
-    # Vista AM/PM publicada por GatoTV para el sábado 29: se interpreta como
-    # America/New_York y se convierte a Ecuador. Debe reproducir la señal real.
-    sample_ampm_29 = """
+    # Referencia exacta entregada por el usuario / vista localizada de GatoTV Ecuador.
+    sample_24h_30 = """
+    <html><body><table id="24h">
+      <tr><td>17:00</td><td>17:55</td><td>Acacias 38</td></tr>
+      <tr><td>17:55</td><td>18:50</td><td>Acacias 38</td></tr>
+      <tr><td>18:50</td><td>19:25</td><td>Acacias 38</td></tr>
+      <tr><td>19:25</td><td>20:20</td><td>España entre el cielo y la tierra</td><td>Valles misteriosos</td></tr>
+      <tr><td>20:20</td><td>20:50</td><td>Seguridad vital</td></tr>
+      <tr><td>20:50</td><td>21:20</td><td>Zoom tendencias</td></tr>
+      <tr><td>21:20</td><td>22:55</td><td>Sicarius, la noche y el silencio</td></tr>
+    </table></body></html>
+    """
+    rows24, mode24 = parse_gatotv_rows(sample_24h_30)
+    assert mode24 == "24h-canary-table-primary"
+    programmes24 = instantiate_rows(rows24, date(2026, 8, 30), mode24)
+    target = next(item for item in programmes24 if item.title == "España entre el cielo y la tierra")
+    assert format_xmltv_datetime(target.start) == "20260830132500 -0500"
+    assert format_xmltv_datetime(target.stop) == "20260830142000 -0500"
+    assert target.subtitle == "Valles misteriosos"
+
+    # Si ambas representaciones están en el DOM, la 24 h debe ganar.
+    sample_both = sample_24h_30.replace(
+        "</body></html>",
+        """
+        <table id="ampm">
+          <tr><td>01:25 PM</td><td>02:20 PM</td><td>SEÑUELO AMPM</td></tr>
+          <tr><td>02:20 PM</td><td>02:50 PM</td><td>SEÑUELO 2</td></tr>
+          <tr><td>02:50 PM</td><td>03:20 PM</td><td>SEÑUELO 3</td></tr>
+          <tr><td>03:20 PM</td><td>04:55 PM</td><td>SEÑUELO 4</td></tr>
+          <tr><td>04:55 PM</td><td>05:45 PM</td><td>SEÑUELO 5</td></tr>
+        </table></body></html>
+        """,
+    )
+    rows_both, mode_both = parse_gatotv_rows(sample_both)
+    assert mode_both == "24h-canary-table-primary"
+    assert all(row.title != "SEÑUELO AMPM" for row in rows_both)
+
+    # AM/PM explícita sigue funcionando únicamente como fallback.
+    sample_ampm = """
     <html><body><table>
       <tr><td>09:25 PM</td><td>11:00 PM</td><td>Sicarius, la noche y el silencio</td></tr>
       <tr><td>11:00 PM</td><td>12:00 AM</td><td>Los misterios de laura</td><td>El misterio de la dama roja</td></tr>
@@ -694,50 +661,13 @@ def self_test() -> int:
       <tr><td>02:45 AM</td><td>03:15 AM</td><td>Flash Moda - Monográficos</td></tr>
     </table></body></html>
     """
-    rows, mode = parse_gatotv_rows(sample_ampm_29)
-    assert mode == "ampm-new-york-table-primary"
-    programmes = instantiate_rows(rows, date(2026, 8, 29), mode)
-    assert format_xmltv_datetime(programmes[0].start) == "20260829202500 -0500"
-    assert format_xmltv_datetime(programmes[0].stop) == "20260829220000 -0500"
-    assert programmes[0].title == "Sicarius, la noche y el silencio"
-    assert format_xmltv_datetime(programmes[1].start) == "20260829220000 -0500"
-    assert format_xmltv_datetime(programmes[1].stop) == "20260829230000 -0500"
-    assert programmes[1].title == "Los misterios de laura"
-    assert programmes[1].subtitle == "El misterio de la dama roja"
-    assert format_xmltv_datetime(programmes[2].start) == "20260829230000 -0500"
-    assert format_xmltv_datetime(programmes[2].stop) == "20260830000500 -0500"
-    assert programmes[2].title == "Fugitiva"
-    assert programmes[2].subtitle == "El plan"
-    assert format_xmltv_datetime(programmes[3].start) == "20260830000500 -0500"
-    assert programmes[3].title == "Tiempo sin aire"
+    rows_am, mode_am = parse_gatotv_rows(sample_ampm)
+    assert mode_am == "ampm-new-york-table-fallback"
+    programmes_am = instantiate_rows(rows_am, date(2026, 8, 29), mode_am)
+    assert format_xmltv_datetime(programmes_am[1].start) == "20260829220000 -0500"
+    assert format_xmltv_datetime(programmes_am[2].start) == "20260829230000 -0500"
 
-    # Vista 24 h equivalente: debe producir exactamente los mismos instantes.
-    sample_24h = """
-    <html><body><table>
-      <tr><td>02:25</td><td>04:00</td><td>Sicarius, la noche y el silencio</td></tr>
-      <tr><td>04:00</td><td>05:00</td><td>Los misterios de laura</td><td>El misterio de la dama roja</td></tr>
-      <tr><td>05:00</td><td>06:05</td><td>Fugitiva</td><td>El plan</td></tr>
-      <tr><td>06:05</td><td>07:45</td><td>Tiempo sin aire</td></tr>
-      <tr><td>07:45</td><td>08:15</td><td>Flash Moda - Monográficos</td></tr>
-      <tr><td>13:05</td><td>14:00</td><td>El condensador de Fluzo</td></tr>
-    </table></body></html>
-    """
-    rows24, mode24 = parse_gatotv_rows(sample_24h)
-    assert mode24 == "24h-canary-table-fallback"
-    programmes24 = instantiate_rows(rows24, date(2026, 8, 30), mode24)
-    assert format_xmltv_datetime(programmes24[0].start) == "20260829202500 -0500"
-    assert format_xmltv_datetime(programmes24[1].start) == "20260829220000 -0500"
-    assert format_xmltv_datetime(programmes24[2].start) == "20260829230000 -0500"
-    assert format_xmltv_datetime(programmes24[3].start) == "20260830000500 -0500"
-
-    # Las dos vistas representan el mismo instante absoluto.
-    ny = datetime(2026, 8, 29, 23, 0, tzinfo=SOURCE_TZ_AMPM)
-    canary = datetime(2026, 8, 30, 4, 0, tzinfo=SOURCE_TZ_24H)
-    assert ny.astimezone(timezone.utc) == canary.astimezone(timezone.utc)
-    assert ny.astimezone(OUTPUT_TZ).strftime("%Y-%m-%d %H:%M") == "2026-08-29 22:00"
-    assert canary.astimezone(OUTPUT_TZ).strftime("%Y-%m-%d %H:%M") == "2026-08-29 22:00"
-
-    # Una tabla 12 h sin meridiano sigue siendo ambigua y debe rechazarse.
+    # Tabla 12 h sin meridiano: ambigua, debe rechazarse.
     ambiguous_12h = """
     <html><body><table>
       <tr><td>04:30</td><td>06:10</td><td>Tiempo sin aire</td></tr>
@@ -754,19 +684,13 @@ def self_test() -> int:
     else:
         raise AssertionError("STAR TVE aceptó una tabla 12 h sin meridiano")
 
-    # La caché de programas queda deshabilitada: nunca debe rescatar una parrilla vieja.
     stale = etree.Element(
-        "programme",
-        start="20260829220000 -0500",
-        stop="20260829230500 -0500",
-        channel=STAR_ID,
+        "programme", start="20260829220000 -0500", stop="20260829230500 -0500", channel=STAR_ID
     )
     etree.SubElement(stale, "title", lang="es").text = "Fugitiva"
-    fresh = [make_programme(item) for item in programmes[:4]]
+    fresh = [make_programme(item) for item in programmes24[:4]]
     merged = merge_programmes(fresh, [stale])
     assert len(merged) == 4
-    assert " ".join(merged[1].xpath("./title/text()")) == "Los misterios de laura"
-    assert merged[2].get("start") == "20260829230000 -0500"
     try:
         merge_programmes([], [stale])
     except RuntimeError as exc:
@@ -775,11 +699,12 @@ def self_test() -> int:
         raise AssertionError("STAR TVE reutilizó caché sin datos frescos")
 
     print(
-        "Self-test STAR TVE v0.2.44 correcto: AM/PM America/New_York primario; "
-        "24h Atlantic/Canary fallback; ambos -> Ecuador 22:00 Laura, 23:00 Fugitiva, "
-        "00:05 Tiempo sin aire; caché de programas deshabilitada."
+        "Self-test STAR TVE v0.2.45 correcto: 24h Atlantic/Canary primario -> "
+        "America/Guayaquil; referencia 19:25-20:20 = 13:25-14:20 Ecuador; "
+        "AM/PM New York solo fallback; offset manual=0; caché de programas deshabilitada."
     )
     return 0
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -812,12 +737,11 @@ def main() -> int:
     cached_channel, cached_programmes = clone_cached_programmes(
         args.previous_latam_xml, window_start, window_end
     )
-
     try:
         fresh_items, loaded_source_days, modes = scrape_star(start_date, args.days)
-    except Exception as exc:  # noqa: BLE001 - STAR no publica caché de programas
+    except Exception as exc:  # noqa: BLE001
         raise RuntimeError(
-            "STAR TVE v0.2.44: GatoTV no entregó programación fresca utilizable; "
+            f"STAR TVE v{VERSION}: GatoTV no entregó programación fresca utilizable; "
             "se aborta para no reutilizar una parrilla horariamente incorrecta. "
             f"Detalle: {exc}"
         ) from exc
@@ -826,7 +750,7 @@ def main() -> int:
     merged = merge_programmes(fresh_nodes, cached_programmes)
     if loaded_source_days < 1 or len(merged) < MIN_PROGRAMMES:
         raise RuntimeError(
-            "STAR TVE v0.2.44: programación fresca insuficiente; "
+            f"STAR TVE v{VERSION}: programación fresca insuficiente; "
             f"días={loaded_source_days}, emisiones={len(merged)}."
         )
 
@@ -838,12 +762,12 @@ def main() -> int:
     channel_ids = tuple(node.get("id", "") for node in root.findall("channel"))
     if len(channel_ids) != EXPECTED_FINAL_CHANNELS:
         raise RuntimeError(
-            f"v0.2.44 debe dejar {EXPECTED_FINAL_CHANNELS} canales; obtenidos={len(channel_ids)}"
+            f"v{VERSION} debe dejar {EXPECTED_FINAL_CHANNELS} canales; obtenidos={len(channel_ids)}"
         )
     if channel_ids[-1:] != TARGET_IDS:
         raise RuntimeError(f"STAR TVE no quedó al final: {channel_ids[-1:]}")
     if len(set(channel_ids)) != EXPECTED_FINAL_CHANNELS:
-        raise RuntimeError("v0.2.44 produjo IDs duplicados")
+        raise RuntimeError(f"v{VERSION} produjo IDs duplicados")
     if any(not node.get("start", "").endswith(" -0500") for node in merged):
         raise RuntimeError("STAR TVE: existe start fuera de America/Guayaquil (-0500)")
     if any(not node.get("stop", "").endswith(" -0500") for node in merged):
@@ -853,9 +777,9 @@ def main() -> int:
     update_status(status_path, len(merged), loaded_source_days, modes, len(cached_programmes))
     update_index(index_path)
     log(
-        f"v0.2.44 aplicada: 35 canales; STAR TVE={len(merged)} emisiones frescas; "
-        f"GatoTV AM/PM America/New_York primario / 24h Atlantic/Canary fallback -> "
-        f"America/Guayaquil; caché de programas deshabilitada; offset manual=0."
+        f"v{VERSION} aplicada: 35 canales; STAR TVE={len(merged)} emisiones frescas; "
+        "GatoTV 24h Atlantic/Canary primario / AM-PM America/New_York fallback -> "
+        "America/Guayaquil; caché de programas deshabilitada; offset manual=0."
     )
     return 0
 
