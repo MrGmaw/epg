@@ -4,9 +4,9 @@
 Se ejecuta después de ``add_miami_epg.py`` sobre el ``latam.xml`` de 32 canales.
 
 Fuentes:
-- CBS New York / WCBS-TV: EPGShare US1. Las marcas XMLTV con offset se
-  convierten a America/Guayaquil. Una marca sin offset se interpreta como
-  America/New_York. Nunca se aplica un offset manual.
+- CBS New York / WCBS-TV: TVPassport (WCBS 4555) como fuente primaria;
+  EPGShare US1 como respaldo. Las horas se convierten con ZoneInfo desde
+  America/New_York a America/Guayaquil. Nunca se aplica un offset manual.
 - Oromar TV: AmericaTVGuide Ecuador. La página ya publica la parrilla en
   GMT-5 Ecuador; se interpreta directamente como America/Guayaquil.
 
@@ -50,6 +50,14 @@ CBS_ID = "CBS.(WCBS).New.York,.NY.us"
 CBS_NAME = "CBS New York (WCBS-TV)"
 CBS_SOURCE_ID = "CBS.(WCBS).New.York,.NY.us"
 CBS_SOURCE_URL = "https://epgshare01.online/epgshare01/epg_ripper_US1.xml.gz"
+CBS_TVPASSPORT_BASE = "https://www.tvpassport.com/tv-listings/stations"
+CBS_TVPASSPORT_SITE_IDS = (
+    "cbs-wcbs-new-york-ny-hd/4555",
+    "cbs-wcbs-new-york-ny/1766",
+)
+CBS_TVPASSPORT_PAGE = (
+    f"{CBS_TVPASSPORT_BASE}/{CBS_TVPASSPORT_SITE_IDS[0]}"
+)
 CBS_PAGE_URL = "https://www.cbsnews.com/newyork/cbs2/"
 CBS_LOGO_URL = (
     "https://assets2.cbsnewsstatic.com/hub/i/r/2024/07/26/"
@@ -86,6 +94,10 @@ HBO_FAMILY_LOGO = (
 )
 
 USER_AGENT = "EPG-MrG/0.2.39 (+GitHub Actions; XMLTV)"
+TVPASSPORT_USER_AGENT = (
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+)
 REQUEST_TIMEOUT = 35
 
 
@@ -137,11 +149,11 @@ def session() -> requests.Session:
     return s
 
 
-def request_bytes(s: requests.Session, url: str, *, attempts: int = 4) -> bytes:
+def request_bytes(s: requests.Session, url: str, *, attempts: int = 4, headers: dict[str, str] | None = None) -> bytes:
     error: Exception | None = None
     for attempt in range(1, attempts + 1):
         try:
-            response = s.get(url, timeout=REQUEST_TIMEOUT)
+            response = s.get(url, timeout=REQUEST_TIMEOUT, headers=headers)
             response.raise_for_status()
             if not response.content:
                 raise RuntimeError(f"respuesta vacía desde {url}")
@@ -216,6 +228,144 @@ def select_source_channel(root: etree._Element, preferred: str) -> etree._Elemen
         return candidates[0]
     ids = [node.get("id") for node in candidates]
     raise RuntimeError(f"EPGShare US1: no se encontró WCBS de forma inequívoca: {ids}")
+
+
+def parse_tvpassport_cbs(
+    html: str,
+    window_start: datetime,
+    window_end: datetime,
+) -> list[etree._Element]:
+    """Parsea una página diaria de TVPassport siguiendo su estructura pública.
+
+    TVPassport expone cada emisión como ``.station-listings .list-group-item``
+    con ``data-st`` y ``data-duration``. El selector ``#timezone_selector``
+    indica la zona horaria de esas marcas; si no aparece, WCBS se interpreta
+    como America/New_York.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    selector = soup.select_one("#timezone_selector")
+    timezone_name = "America/New_York"
+    if selector is not None:
+        selected = selector.select_one("option[selected]")
+        candidate = (
+            (selected.get("value") if selected is not None else None)
+            or selector.get("value")
+        )
+        if candidate:
+            timezone_name = str(candidate).strip()
+    try:
+        source_tz = ZoneInfo(timezone_name)
+    except Exception:  # noqa: BLE001 - página externa puede traer una zona inesperada
+        source_tz = NEW_YORK_TZ
+
+    programmes: list[etree._Element] = []
+    for item in soup.select(".station-listings .list-group-item"):
+        start_raw = str(item.get("data-st") or "").strip()
+        duration_raw = str(item.get("data-duration") or "").strip()
+        title = str(item.get("data-showname") or "").strip()
+        if not start_raw or not duration_raw or not title:
+            continue
+        try:
+            naive = datetime.strptime(start_raw, "%Y-%m-%d %H:%M:%S")
+            start = naive.replace(tzinfo=source_tz).astimezone(OUTPUT_TZ)
+            duration = int(float(duration_raw))
+        except (ValueError, TypeError):
+            continue
+        if duration <= 0 or duration > 24 * 60:
+            continue
+        stop = start + timedelta(minutes=duration)
+        if stop <= window_start or start >= window_end:
+            continue
+
+        node = etree.Element(
+            "programme",
+            start=format_xmltv(start),
+            stop=format_xmltv(stop),
+            channel=CBS_ID,
+        )
+        title_node = etree.SubElement(node, "title", lang="en")
+        title_node.text = title
+        subtitle = str(item.get("data-episodetitle") or "").strip()
+        if subtitle:
+            subtitle_node = etree.SubElement(node, "sub-title", lang="en")
+            subtitle_node.text = subtitle
+        description = str(item.get("data-description") or "").strip()
+        if description:
+            desc_node = etree.SubElement(node, "desc", lang="en")
+            desc_node.text = description
+        categories = str(item.get("data-showtype") or "").strip()
+        if categories:
+            for category in (part.strip() for part in categories.split(",")):
+                if category:
+                    category_node = etree.SubElement(node, "category", lang="en")
+                    category_node.text = category
+        programmes.append(node)
+    return programmes
+
+
+def build_cbs_from_tvpassport(
+    s: requests.Session,
+    window_start: datetime,
+    window_end: datetime,
+) -> tuple[etree._Element, list[etree._Element], str]:
+    """Descarga WCBS de TVPassport; prueba HD y luego SD.
+
+    Se solicitan fechas de Nueva York con un día de margen a ambos extremos,
+    porque una página diaria puede contener emisiones posteriores a medianoche.
+    """
+    start_date = window_start.astimezone(NEW_YORK_TZ).date() - timedelta(days=1)
+    end_date = window_end.astimezone(NEW_YORK_TZ).date() + timedelta(days=1)
+    errors: list[str] = []
+    headers = {
+        "User-Agent": TVPASSPORT_USER_AGENT,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+
+    for site_id in CBS_TVPASSPORT_SITE_IDS:
+        programmes_by_key: dict[tuple[str, str, str], etree._Element] = {}
+        loaded_pages = 0
+        page_errors: list[str] = []
+        current = start_date
+        while current <= end_date:
+            url = f"{CBS_TVPASSPORT_BASE}/{site_id}/{current.isoformat()}"
+            try:
+                payload = request_bytes(s, url, attempts=3, headers=headers)
+                html = payload.decode("utf-8", errors="replace")
+                daily = parse_tvpassport_cbs(html, window_start, window_end)
+            except Exception as exc:  # noqa: BLE001 - una fecha no invalida toda la fuente
+                page_errors.append(f"{current.isoformat()}: {exc}")
+                current += timedelta(days=1)
+                continue
+            if daily:
+                loaded_pages += 1
+            for node in daily:
+                title_node = node.find("title")
+                key = (
+                    node.get("start", ""),
+                    node.get("stop", ""),
+                    title_node.text if title_node is not None and title_node.text else "",
+                )
+                programmes_by_key[key] = node
+            current += timedelta(days=1)
+
+        programmes = sorted(
+            programmes_by_key.values(), key=lambda node: node.get("start", "")
+        )
+        if len(programmes) >= MIN_PROGRAMMES_PER_CHANNEL:
+            channel = etree.Element("channel", id=CBS_ID)
+            display = etree.SubElement(channel, "display-name")
+            display.text = CBS_NAME
+            return channel, programmes, f"tvpassport-live:{site_id};pages={loaded_pages}"
+        detail = "; ".join(page_errors[:3])
+        if len(page_errors) > 3:
+            detail += f"; +{len(page_errors) - 3} errores más"
+        errors.append(
+            f"{site_id}: solo {len(programmes)} emisiones útiles ({loaded_pages} páginas)"
+            + (f"; errores={detail}" if detail else "")
+        )
+
+    raise RuntimeError("TVPassport WCBS no produjo guía suficiente: " + " | ".join(errors))
 
 
 def clone_cbs_from_epgshare(
@@ -688,7 +838,7 @@ def update_status(
         sources = {}
         status["sources"] = sources
     sources["v039"] = {
-        CBS_ID: CBS_SOURCE_URL,
+        CBS_ID: CBS_TVPASSPORT_PAGE,
         OROMAR_ID: OROMAR_SOURCE_URL,
     }
     status["v039_epg"] = {
@@ -698,7 +848,14 @@ def update_status(
         "channels": {
             CBS_ID: {
                 "mode": cbs_mode,
-                "source": CBS_SOURCE_URL,
+                "source": (
+                    CBS_TVPASSPORT_PAGE
+                    if cbs_mode.startswith("tvpassport-live")
+                    else CBS_SOURCE_URL
+                    if cbs_mode == "epgshare-us1-live"
+                    else "previous-latam-cache"
+                ),
+                "fallback_sources": [CBS_SOURCE_URL, "previous-latam-cache"],
                 "source_timezone": "America/New_York / explicit XMLTV offset",
                 "output_timezone": "America/Guayaquil",
                 "programmes": cbs_count,
@@ -776,6 +933,23 @@ def self_test() -> int:
     assert png.startswith(b"\x89PNG\r\n\x1a\n")
     assert (width, height) == (64, 48)
 
+    tvp_sample = """
+    <select id="timezone_selector"><option value="America/New_York" selected>Eastern</option></select>
+    <div class="station-listings">
+      <div class="list-group-item" data-st="2026-08-29 12:00:00" data-duration="60"
+           data-showname="CBS Test" data-episodetitle="Episode" data-description="Description"
+           data-showtype="News, Local"></div>
+    </div>
+    """
+    tvp = parse_tvpassport_cbs(
+        tvp_sample,
+        datetime(2026, 8, 29, 0, 0, tzinfo=OUTPUT_TZ),
+        datetime(2026, 8, 30, 0, 0, tzinfo=OUTPUT_TZ),
+    )
+    assert len(tvp) == 1
+    assert tvp[0].get("start") == "20260829110000 -0500"
+    assert tvp[0].findtext("title") == "CBS Test"
+
     assert TARGET_IDS == (CBS_ID, OROMAR_ID)
     assert len(LOGO_IDS) == 5
     assert EXPECTED_FINAL_CHANNELS == 34
@@ -817,25 +991,38 @@ def main() -> int:
     window_end = window_start + timedelta(days=args.days)
     s = session()
 
-    # CBS New York.
-    cbs_mode = "epgshare-us1-live"
+    # CBS New York. TVPassport es primario; EPGShare y el XML previo son respaldos.
+    cbs_mode = "tvpassport-live"
     cbs_extra_logo: str | None = None
+    tvpassport_error: Exception | None = None
+    epgshare_error: Exception | None = None
     try:
-        cbs_payload = request_bytes(s, CBS_SOURCE_URL)
-        cbs_channel, cbs_programmes, cbs_extra_logo = clone_cbs_from_epgshare(
-            cbs_payload, window_start, window_end
+        cbs_channel, cbs_programmes, cbs_mode = build_cbs_from_tvpassport(
+            s, window_start, window_end
         )
-    except Exception as exc:  # noqa: BLE001 - fallback deliberado a caché publicada
-        warn(f"CBS New York: fuente primaria falló: {exc}")
-        previous = clone_previous_channel(
-            args.previous_latam_xml, CBS_ID, CBS_NAME, window_start, window_end
-        )
-        if previous is None:
-            raise RuntimeError(
-                "CBS New York: EPGShare US1 falló y no existe fallback previo utilizable."
-            ) from exc
-        cbs_channel, cbs_programmes = previous
-        cbs_mode = "previous-latam-cache"
+    except Exception as exc:  # noqa: BLE001 - fallback deliberado a EPGShare
+        tvpassport_error = exc
+        warn(f"CBS New York: TVPassport falló: {exc}")
+        try:
+            cbs_payload = request_bytes(s, CBS_SOURCE_URL)
+            cbs_channel, cbs_programmes, cbs_extra_logo = clone_cbs_from_epgshare(
+                cbs_payload, window_start, window_end
+            )
+            cbs_mode = "epgshare-us1-live"
+        except Exception as exc2:  # noqa: BLE001 - fallback a caché publicada
+            epgshare_error = exc2
+            warn(f"CBS New York: EPGShare US1 falló: {exc2}")
+            previous = clone_previous_channel(
+                args.previous_latam_xml, CBS_ID, CBS_NAME, window_start, window_end
+            )
+            if previous is None:
+                raise RuntimeError(
+                    "CBS New York: fallaron TVPassport y EPGShare US1 y no existe "
+                    "fallback previo utilizable. "
+                    f"TVPassport={tvpassport_error}; EPGShare={epgshare_error}"
+                ) from exc2
+            cbs_channel, cbs_programmes = previous
+            cbs_mode = "previous-latam-cache"
     append_channel(root, cbs_channel, cbs_programmes)
     log(f"CBS New York: {len(cbs_programmes)} emisiones; modo={cbs_mode}.")
 
