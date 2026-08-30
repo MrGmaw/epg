@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EPG MrG v0.2.42: STAR TVE exclusivamente desde la parrilla 24 h de GatoTV.
+"""EPG MrG v0.2.43: STAR TVE exclusivamente desde la parrilla 24 h de GatoTV.
 
 Regla horaria:
 
@@ -39,7 +39,7 @@ import requests
 from bs4 import BeautifulSoup
 from lxml import etree
 
-VERSION = "0.2.42"
+VERSION = "0.2.43"
 EXPECTED_INPUT_CHANNELS = 34
 EXPECTED_FINAL_CHANNELS = 35
 MIN_PROGRAMMES = 5
@@ -75,7 +75,7 @@ IGNORED_TITLE_PARTS = {
 }
 
 # Perfiles independientes para maximizar la probabilidad de obtener la vista 24 h.
-# STAR TVE v0.2.42 rechaza cualquier respuesta que solo exponga AM/PM.
+# STAR TVE v0.2.43 rechaza cualquier respuesta que solo exponga AM/PM.
 HTTP_PROFILES: tuple[dict[str, str], ...] = (
     {
         "User-Agent": (
@@ -92,7 +92,7 @@ HTTP_PROFILES: tuple[dict[str, str], ...] = (
         "Accept-Language": "en-GB,en;q=0.9,es;q=0.5",
     },
     {
-        "User-Agent": "EPG-MrG/0.2.42 (+GitHub Actions; XMLTV)",
+        "User-Agent": "EPG-MrG/0.2.43 (+GitHub Actions; XMLTV)",
         "Accept-Language": "es-EC,es;q=0.9,en;q=0.5",
     },
 )
@@ -220,90 +220,107 @@ def parse_row(parts: Sequence[str]) -> RawRow | None:
     return RawRow(first.value, second.value, title, subtitle, first.mode)
 
 
-def parse_gatotv_rows(page: str) -> tuple[list[RawRow], str]:
-    """Extrae la tabla de GatoTV y prefiere incondicionalmente la vista 24 h."""
-    soup = BeautifulSoup(page, "lxml")
-    rows_by_mode: dict[str, list[RawRow]] = {"24h": [], "ampm": []}
-    for row in soup.find_all("tr"):
-        parts = list(row.stripped_strings)
-        parsed = parse_row(parts)
-        if parsed is not None:
-            rows_by_mode[parsed.mode].append(parsed)
-
-    # Algunos cambios de maquetación eliminan <tr>. Respaldo lineal por líneas.
-    if max(len(rows_by_mode["24h"]), len(rows_by_mode["ampm"])) < MIN_PROGRAMMES:
-        lines = [normalize_text(item) for item in soup.stripped_strings if normalize_text(item)]
-        start_at = next(
-            (
-                index
-                for index, value in enumerate(lines)
-                if normalized_key(value) == "horarios de programacion"
-            ),
-            0,
+def _dedupe_rows(rows: Sequence[RawRow]) -> list[RawRow]:
+    seen: set[tuple[str, str, str, str | None, str]] = set()
+    result: list[RawRow] = []
+    for row in rows:
+        key = (
+            row.start.strftime("%H:%M"),
+            row.stop.strftime("%H:%M"),
+            normalized_key(row.title),
+            normalized_key(row.subtitle or "") or None,
+            row.mode,
         )
-        lines = lines[start_at:]
-        index = 0
-        while index < len(lines):
-            first = parse_clock_at(lines, index)
-            if first is None:
-                index += 1
-                continue
-            second = None
-            second_at = -1
-            for cursor in range(first.next_index, min(len(lines), first.next_index + 5)):
-                candidate = parse_clock_at(lines, cursor)
-                if candidate is not None and candidate.mode == first.mode:
-                    second = candidate
-                    second_at = cursor
-                    break
-            if second is None:
-                index += 1
-                continue
-            cursor = second.next_index
-            title_parts: list[str] = []
-            while cursor < len(lines):
-                if parse_clock_at(lines, cursor) is not None:
-                    break
-                key = normalized_key(lines[cursor])
-                if key in {"madrugada", "manana", "tarde", "noche"}:
-                    cursor += 1
-                    continue
-                title_parts.append(lines[cursor])
-                cursor += 1
-            candidate = parse_row(
-                list(lines[index:first.next_index])
-                + list(lines[second_at:second.next_index])
-                + title_parts
-            )
-            if candidate is not None:
-                rows_by_mode[candidate.mode].append(candidate)
-            index = max(cursor, index + 1)
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append(row)
+    return result
 
-    def dedupe(rows: list[RawRow]) -> list[RawRow]:
-        seen: set[tuple[str, str, str, str | None]] = set()
-        result: list[RawRow] = []
-        for row in rows:
-            key = (
-                row.start.strftime("%H:%M"),
-                row.stop.strftime("%H:%M"),
-                normalized_key(row.title),
-                normalized_key(row.subtitle or "") or None,
-            )
-            if key in seen:
-                continue
-            seen.add(key)
-            result.append(row)
-        return result
 
-    rows_24 = dedupe(rows_by_mode["24h"])
-    rows_ampm = dedupe(rows_by_mode["ampm"])
-    if len(rows_24) >= MIN_PROGRAMMES:
-        return rows_24, "24h-canary-only"
-    raise RuntimeError(
-        "GatoTV STAR TVE: no se obtuvo una parrilla 24 h utilizable "
-        f"(24h={len(rows_24)}, ampm_ignorado={len(rows_ampm)})."
+def _looks_like_true_24h_table(rows: Sequence[RawRow]) -> bool:
+    """Distingue una tabla 24 h real de una tabla 12 h cuyo AM/PM quedó oculto.
+
+    GatoTV puede mantener simultáneamente en el DOM la vista AM/PM y la vista
+    24 h. En ciertas respuestas el sufijo AM/PM de la tabla de 12 h queda fuera
+    de ``stripped_strings``; valores como ``4:30`` terminaban pareciendo 04:30
+    en formato 24 h. Esa falsa tabla fue la causa del desfase observado en
+    v0.2.43 (por ejemplo, 4:30 PM "Tiempo sin aire" podía convertirse como
+    04:30 Atlantic/Canary -> 22:30 Ecuador del día anterior).
+
+    Una parrilla diaria 24 h genuina de GatoTV contiene horas de tarde/noche
+    mayores que 12. Si no existe esa evidencia, la tabla es ambigua y se
+    rechaza antes de aplicar cualquier zona horaria.
+    """
+    if len(rows) < MIN_PROGRAMMES:
+        return False
+    if any(row.mode != "24h" for row in rows):
+        return False
+    has_unambiguous_24h_hour = any(
+        row.start.hour >= 13 or row.stop.hour >= 13 for row in rows
     )
+    if not has_unambiguous_24h_hour:
+        return False
 
+    # Una tabla diaria coherente solo debe cruzar de noche a madrugada una vez.
+    starts = [minute_of_day(row.start) for row in rows]
+    rollovers = sum(1 for previous, current in zip(starts, starts[1:]) if current < previous)
+    return rollovers <= 1
+
+
+def _parse_table_rows(table) -> list[RawRow]:
+    rows: list[RawRow] = []
+    for tr in table.find_all("tr"):
+        parsed = parse_row(list(tr.stripped_strings))
+        if parsed is not None:
+            rows.append(parsed)
+    return _dedupe_rows(rows)
+
+
+def parse_gatotv_rows(page: str) -> tuple[list[RawRow], str]:
+    """Extrae solo una tabla 24 h inequívoca de GatoTV.
+
+    No se mezclan filas de distintas representaciones del reloj. Cada tabla
+    HTML se evalúa por separado y solo se acepta una tabla que contenga
+    evidencia inequívoca de formato 24 h (alguna hora >= 13:00), evitando que
+    una vista AM/PM con el meridiano oculto sea interpretada como hora canaria.
+    """
+    soup = BeautifulSoup(page, "lxml")
+    candidates: list[list[RawRow]] = []
+
+    for table in soup.find_all("table"):
+        rows = _parse_table_rows(table)
+        # Si la tabla contiene meridianos explícitos, no es la vista buscada.
+        rows_24 = [row for row in rows if row.mode == "24h"]
+        if len(rows_24) != len(rows):
+            continue
+        if _looks_like_true_24h_table(rows_24):
+            candidates.append(rows_24)
+
+    if candidates:
+        # Preferimos la tabla más completa. En empate, la primera del DOM.
+        best = max(candidates, key=len)
+        return best, "24h-canary-table-only"
+
+    # Respaldo para cambios de maquetación donde no exista <table>: se permite
+    # una única secuencia global solo si sigue teniendo evidencia inequívoca de
+    # reloj 24 h. Nunca se acepta una secuencia compuesta únicamente por 1..12.
+    rows: list[RawRow] = []
+    for tr in soup.find_all("tr"):
+        parsed = parse_row(list(tr.stripped_strings))
+        if parsed is not None:
+            rows.append(parsed)
+    rows = _dedupe_rows(rows)
+    rows_24 = [row for row in rows if row.mode == "24h"]
+    if len(rows_24) == len(rows) and _looks_like_true_24h_table(rows_24):
+        return rows_24, "24h-canary-global-fallback"
+
+    ampm_count = sum(1 for row in rows if row.mode == "ampm")
+    raise RuntimeError(
+        "GatoTV STAR TVE: no se encontró una tabla 24 h inequívoca; "
+        f"filas={len(rows)}, ampm_explicitas={ampm_count}. "
+        "Se rechaza cualquier reloj 1..12 sin meridiano para evitar desfases."
+    )
 
 def minute_of_day(value: dt_time) -> int:
     return value.hour * 60 + value.minute
@@ -334,7 +351,7 @@ def instantiate_rows(rows: Sequence[RawRow], guide_date: date, mode: str) -> lis
 
         if row.mode != "24h":
             raise RuntimeError(
-                f"STAR TVE v0.2.42 rechaza modo horario {row.mode!r}; solo se acepta 24h."
+                f"STAR TVE v0.2.43 rechaza modo horario {row.mode!r}; solo se acepta 24h."
             )
         start_source = datetime.combine(event_date, row.start, tzinfo=SOURCE_TZ)
         stop_source = datetime.combine(stop_date, row.stop, tzinfo=SOURCE_TZ)
@@ -395,7 +412,7 @@ def fetch_and_parse_day(guide_date: date) -> tuple[list[StarProgramme], str]:
         try:
             page = request_page(url, headers)
             rows, mode = parse_gatotv_rows(page)
-            if mode != "24h-canary-only":
+            if not mode.startswith("24h-canary-"):
                 raise RuntimeError(f"modo inesperado: {mode}")
             programmes = instantiate_rows(rows, guide_date, mode)
             if len(programmes) < MIN_PROGRAMMES:
@@ -551,7 +568,7 @@ def programme_key(node: etree._Element) -> tuple[str, str, str, str]:
 def merge_programmes(
     fresh: Sequence[etree._Element], cached: Sequence[etree._Element]
 ) -> list[etree._Element]:
-    # Regla v0.2.42: si existe parrilla fresca suficiente, se publica únicamente
+    # Regla v0.2.43: si existe parrilla fresca suficiente, se publica únicamente
     # esa parrilla. No se mezclan slots de una publicación previa porque una
     # caché antigua puede conservar un programa desplazado una hora. La caché
     # queda exclusivamente como rescate ante una caída total de GatoTV.
@@ -567,7 +584,7 @@ def ensure_expected_input(root: etree._Element) -> None:
     base = [channel_id for channel_id in ids if channel_id != STAR_ID]
     if len(base) != EXPECTED_INPUT_CHANNELS:
         raise RuntimeError(
-            f"v0.2.42 espera {EXPECTED_INPUT_CHANNELS} canales antes de STAR TVE; "
+            f"v0.2.43 espera {EXPECTED_INPUT_CHANNELS} canales antes de STAR TVE; "
             f"obtuvo {len(base)}."
         )
     if len(set(base)) != EXPECTED_INPUT_CHANNELS:
@@ -614,7 +631,7 @@ def update_status(
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
         "date_bridge": "fetch source date + next source date; clip after timezone conversion",
-        "time_view": "24h-canary-only",
+        "time_view": "24h-canary-table-only",
         "ampm_policy": "ignored/rejected for time assignment",
         "modes_used": sorted(modes),
         "loaded_source_days": loaded_source_days,
@@ -658,10 +675,12 @@ def self_test() -> int:
       <tr><td>05:00</td><td>06:05</td><td>Fugitiva</td><td>El plan</td></tr>
       <tr><td>06:05</td><td>07:45</td><td>Tiempo sin aire</td></tr>
       <tr><td>07:45</td><td>08:15</td><td>Flash Moda - Monográficos</td></tr>
+      <tr><td>13:05</td><td>14:00</td><td>El condensador de Fluzo</td></tr>
+      <tr><td>21:20</td><td>22:55</td><td>Sicarius - reposición</td></tr>
     </table></body></html>
     """
     rows, mode = parse_gatotv_rows(sample_24h)
-    assert mode == "24h-canary-only"
+    assert mode == "24h-canary-table-only"
     programmes = instantiate_rows(rows, date(2026, 8, 30), mode)
     assert format_xmltv_datetime(programmes[0].start) == "20260829202500 -0500"
     assert format_xmltv_datetime(programmes[0].stop) == "20260829220000 -0500"
@@ -692,6 +711,33 @@ def self_test() -> int:
     else:
         raise AssertionError("STAR TVE aceptó indebidamente una vista AM/PM")
 
+
+    # Regresión del bug v0.2.43: una tabla AM/PM puede perder el sufijo
+    # meridiano en el DOM y parecer falsamente 24 h. No debe aceptarse.
+    ambiguous_12h = """
+    <html><body><table>
+      <tr><td>04:30</td><td>06:10</td><td>Tiempo sin aire</td></tr>
+      <tr><td>06:10</td><td>07:00</td><td>La promesa</td></tr>
+      <tr><td>07:00</td><td>07:50</td><td>La promesa</td></tr>
+      <tr><td>09:25</td><td>11:00</td><td>Sicarius</td></tr>
+      <tr><td>11:00</td><td>12:00</td><td>Los misterios de laura</td></tr>
+    </table></body></html>
+    """
+    try:
+        parse_gatotv_rows(ambiguous_12h)
+    except RuntimeError as exc:
+        assert "inequívoca" in str(exc)
+    else:
+        raise AssertionError("STAR TVE aceptó una tabla 12 h sin meridiano como si fuera 24 h")
+
+    # Si el HTML trae ambas representaciones ocultas, se selecciona únicamente
+    # la tabla 24 h inequívoca y se ignora la tabla 12 h ambigua.
+    mixed_page = ambiguous_12h.replace("</body></html>", "") + sample_24h.replace("<html><body>", "")
+    mixed_rows, mixed_mode = parse_gatotv_rows(mixed_page)
+    assert mixed_mode == "24h-canary-table-only"
+    assert mixed_rows[0].start == dt_time(2, 25)
+    assert mixed_rows[0].title == "Sicarius, la noche y el silencio"
+
     # Cruce de página: la primera fila 23:45 pertenece al día anterior.
     carry = [
         RawRow(dt_time(23, 45), dt_time(0, 35), "La promesa", None, "24h"),
@@ -700,7 +746,7 @@ def self_test() -> int:
         RawRow(dt_time(1, 14), dt_time(1, 20), "Esto es España", None, "24h"),
         RawRow(dt_time(1, 20), dt_time(2, 20), "El comodín de La 1", None, "24h"),
     ]
-    instantiated = instantiate_rows(carry, date(2026, 8, 31), "24h-canary-only")
+    instantiated = instantiate_rows(carry, date(2026, 8, 31), "24h-canary-table-only")
     assert instantiated[0].start.astimezone(SOURCE_TZ).date() == date(2026, 8, 30)
     assert instantiated[1].start.astimezone(SOURCE_TZ).date() == date(2026, 8, 31)
 
@@ -719,7 +765,7 @@ def self_test() -> int:
         RawRow(dt_time(6, 0), dt_time(7, 0), "Prueba 4", None, "24h"),
         RawRow(dt_time(7, 0), dt_time(8, 0), "Prueba 5", None, "24h"),
     ]
-    winter_programmes = instantiate_rows(winter, date(2026, 12, 1), "24h-canary-only")
+    winter_programmes = instantiate_rows(winter, date(2026, 12, 1), "24h-canary-table-only")
     assert format_xmltv_datetime(winter_programmes[0].start) == "20261130212500 -0500"
 
     # Si existen datos frescos, una caché antigua desplazada una hora no se mezcla.
@@ -738,9 +784,9 @@ def self_test() -> int:
     assert merged[2].get("start") == "20260829230000 -0500"
 
     print(
-        "Self-test STAR TVE v0.2.42 correcto: solo 24h Atlantic/Canary; "
+        "Self-test STAR TVE v0.2.43 correcto: solo 24h Atlantic/Canary; "
         "verano=-6h hacia Ecuador; Sicarius 20:25, Laura 22:00, Fugitiva 23:00; "
-        "AM/PM rechazado; sin offset manual."
+        "tabla 12h ambigua rechazada; AM/PM rechazado; sin offset manual."
     )
     return 0
 
@@ -806,12 +852,12 @@ def main() -> int:
     channel_ids = tuple(node.get("id", "") for node in root.findall("channel"))
     if len(channel_ids) != EXPECTED_FINAL_CHANNELS:
         raise RuntimeError(
-            f"v0.2.42 debe dejar {EXPECTED_FINAL_CHANNELS} canales; obtenidos={len(channel_ids)}"
+            f"v0.2.43 debe dejar {EXPECTED_FINAL_CHANNELS} canales; obtenidos={len(channel_ids)}"
         )
     if channel_ids[-1:] != TARGET_IDS:
         raise RuntimeError(f"STAR TVE no quedó al final: {channel_ids[-1:]}")
     if len(set(channel_ids)) != EXPECTED_FINAL_CHANNELS:
-        raise RuntimeError("v0.2.42 produjo IDs duplicados")
+        raise RuntimeError("v0.2.43 produjo IDs duplicados")
     if any(not node.get("start", "").endswith(" -0500") for node in merged):
         raise RuntimeError("STAR TVE: existe start fuera de America/Guayaquil (-0500)")
     if any(not node.get("stop", "").endswith(" -0500") for node in merged):
@@ -821,7 +867,7 @@ def main() -> int:
     update_status(status_path, len(merged), loaded_source_days, modes, len(cached_programmes))
     update_index(index_path)
     log(
-        f"v0.2.42 aplicada: 35 canales; STAR TVE={len(merged)} emisiones; "
+        f"v0.2.43 aplicada: 35 canales; STAR TVE={len(merged)} emisiones; "
         f"fuente GatoTV 24h; Atlantic/Canary -> America/Guayaquil; AM/PM rechazado; offset manual=0."
     )
     return 0
