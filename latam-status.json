@@ -1,8 +1,8 @@
 {
   "version": "0.2.48",
-  "generated_at": "2026-09-04T08:32:41.704461-05:00",
+  "generated_at": "2026-09-04T18:03:25.872686-05:00",
   "source_commit": "4c432f63911433f6e8dc2a389ceaf4bf6a956852",
-  "github_run_id": "33878549662",
+  "github_run_id": "33927946096",
   "github_run_attempt": "1",
   "base_date": "2026-09-04",
   "window_days": 7,
@@ -41,8 +41,8 @@
     "Clan.es": 485,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 63,
-    "NBC6-Miami.us": 86,
-    "ABC-Miami.us": 86,
+    "NBC6-Miami.us": 115,
+    "ABC-Miami.us": 117,
     "CBS.(WCBS).New.York,.NY.us": 228,
     "OromarTV.ec": 140,
     "TVEStarHD.es": 76
@@ -264,7 +264,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 86,
+        "programmes": 115,
         "window_start": "2026-09-04",
         "window_days": 7
       },
@@ -279,7 +279,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 86,
+        "programmes": 117,
         "window_start": "2026-09-04",
         "window_days": 7
       }
@@ -353,7 +353,7 @@
     },
     "loaded_source_days": 3,
     "programmes": 76,
-    "cached_programmes_available": 50,
+    "cached_programmes_available": 76,
     "cache_policy": "programme cache disabled; fresh GatoTV required",
     "field_validation": {
       "date": "2026-08-30",
