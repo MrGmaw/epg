@@ -1,51 +1,51 @@
 {
   "version": "0.2.48",
-  "generated_at": "2026-09-04T18:03:25.872686-05:00",
+  "generated_at": "2026-09-05T07:42:46.050037-05:00",
   "source_commit": "4c432f63911433f6e8dc2a389ceaf4bf6a956852",
-  "github_run_id": "33927946096",
+  "github_run_id": "33966757752",
   "github_run_attempt": "1",
-  "base_date": "2026-09-04",
+  "base_date": "2026-09-05",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 35,
-  "programmes": 2992,
+  "programmes": 2996,
   "programme_counts": {
-    "Canal.TC.Televisión.ec": 74,
-    "Canal.Gamavisión.ec": 58,
-    "Canal.RTS.ec": 64,
-    "Canal.TVE.Internacional.(Televisión.Española).ec": 55,
+    "Canal.TC.Televisión.ec": 79,
+    "Canal.Gamavisión.ec": 57,
+    "Canal.RTS.ec": 62,
+    "Canal.TVE.Internacional.(Televisión.Española).ec": 60,
     "TeleamazonasQuito.ec": 203,
     "TeleamazonasGuayaquil.ec": 203,
-    "Ecuavisa.ec": 46,
-    "EcuavisaInternacional.ec": 82,
+    "Ecuavisa.ec": 45,
+    "EcuavisaInternacional.ec": 81,
     "TVC.ec": 156,
-    "Canal.CNN.en.Español.ec": 56,
-    "NTN24.co": 44,
-    "CanalRCN.co": 36,
-    "CaracolTV.co": 36,
-    "Canal.Elgourmet.ec": 87,
-    "Canal.History.co": 58,
-    "Canal.History.2.co": 54,
-    "TV.Publica.canal.7.ar": 37,
-    "Telefe.ar": 33,
-    "Deutsche.Welle.cl": 104,
+    "Canal.CNN.en.Español.ec": 64,
+    "NTN24.co": 49,
+    "CanalRCN.co": 35,
+    "CaracolTV.co": 33,
+    "Canal.Elgourmet.ec": 84,
+    "Canal.History.co": 61,
+    "Canal.History.2.co": 47,
+    "TV.Publica.canal.7.ar": 38,
+    "Telefe.ar": 31,
+    "Deutsche.Welle.cl": 115,
     "hgtv.ar": 85,
-    "France24Espanol.fr": 221,
+    "France24Espanol.fr": 229,
     "Antena3-America.co": 33,
-    "Star-Channel.co": 27,
-    "Warner-channel.co": 64,
-    "HBO-Family.co": 27,
-    "Canal24Horas.es": 202,
-    "La1.es": 102,
-    "Clan.es": 485,
+    "Star-Channel.co": 28,
+    "Warner-channel.co": 49,
+    "HBO-Family.co": 29,
+    "Canal24Horas.es": 191,
+    "La1.es": 103,
+    "Clan.es": 484,
     "MakroDigitalTV.ec": 197,
-    "Canal.Ecuador.TV.ec": 63,
-    "NBC6-Miami.us": 115,
-    "ABC-Miami.us": 117,
-    "CBS.(WCBS).New.York,.NY.us": 228,
+    "Canal.Ecuador.TV.ec": 65,
+    "NBC6-Miami.us": 86,
+    "ABC-Miami.us": 87,
+    "CBS.(WCBS).New.York,.NY.us": 224,
     "OromarTV.ec": 140,
-    "TVEStarHD.es": 76
+    "TVEStarHD.es": 71
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
@@ -71,28 +71,28 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-09-04": 33,
-      "2026-09-05": 47,
-      "2026-09-06": 49,
+      "2026-09-05": 46,
+      "2026-09-06": 46,
       "2026-09-07": 29,
       "2026-09-08": 27,
-      "2026-09-09": 20
+      "2026-09-09": 28,
+      "2026-09-10": 18
     },
     "La1.es": {
-      "2026-09-04": 20,
-      "2026-09-05": 21,
-      "2026-09-06": 16,
-      "2026-09-07": 19,
-      "2026-09-08": 21,
-      "2026-09-09": 8
+      "2026-09-05": 23,
+      "2026-09-06": 18,
+      "2026-09-07": 21,
+      "2026-09-08": 20,
+      "2026-09-09": 11,
+      "2026-09-10": 15
     },
     "Clan.es": {
-      "2026-09-04": 78,
-      "2026-09-05": 73,
-      "2026-09-06": 85,
+      "2026-09-05": 72,
+      "2026-09-06": 83,
       "2026-09-07": 88,
       "2026-09-08": 88,
-      "2026-09-09": 78
+      "2026-09-09": 89,
+      "2026-09-10": 68
     }
   },
   "gatotv_source_timezones": {
@@ -142,12 +142,12 @@
     "source": "epgshare_fallback",
     "official_dates": [],
     "fallback_dates": [
-      "2026-09-04",
       "2026-09-05",
-      "2026-09-06"
+      "2026-09-06",
+      "2026-09-07"
     ],
     "official_programmes": 0,
-    "fallback_programmes_kept": 63,
+    "fallback_programmes_kept": 65,
     "fallback_programmes_replaced": 0,
     "official_sources": [],
     "verified_evening_programmes": 0,
@@ -264,8 +264,8 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 115,
-        "window_start": "2026-09-04",
+        "programmes": 86,
+        "window_start": "2026-09-05",
         "window_days": 7
       },
       "ABC-Miami.us": {
@@ -279,8 +279,8 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 117,
-        "window_start": "2026-09-04",
+        "programmes": 87,
+        "window_start": "2026-09-05",
         "window_days": 7
       }
     }
@@ -299,7 +299,7 @@
         ],
         "source_timezone": "America/New_York / explicit XMLTV offset",
         "output_timezone": "America/Guayaquil",
-        "programmes": 228
+        "programmes": 224
       },
       "OromarTV.ec": {
         "mode": "bundled-weekly-fallback",
@@ -348,12 +348,12 @@
       "ampm-runner-geo-table-fallback"
     ],
     "runner_timezone": {
-      "timezone": "America/Chicago",
+      "timezone": "America/Los_Angeles",
       "source": "ipapi"
     },
     "loaded_source_days": 3,
-    "programmes": 76,
-    "cached_programmes_available": 76,
+    "programmes": 71,
+    "cached_programmes_available": 50,
     "cache_policy": "programme cache disabled; fresh GatoTV required",
     "field_validation": {
       "date": "2026-08-30",
