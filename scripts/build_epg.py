@@ -6,8 +6,8 @@ capa conserva ese generador y aplica solamente:
 - corrección UTC -> America/Guayaquil para mi.tv;
 - respaldo resiliente de TVC desde la última ``ec.xml`` válida de ``epg-data``;
 - resiliencia para TC, Gamavisión, RTS, Ecuador TV y Ecuavisa nacional;
-- hotfix v0.2.49: cuarto fallback semanal local SOLO para Gamavisión cuando
-  EPGShare, GatoTV y epg-data no entregan programación utilizable.
+- hotfix v0.2.49: cuarto fallback semanal local para Gamavisión.
+- hotfix v0.2.50: cuarto fallback semanal local para RTS.
 """
 
 from __future__ import annotations
@@ -19,12 +19,14 @@ from pathlib import Path
 
 import build_epg_base as epg
 import gamavision_hotfix
+import rts_hotfix
 import tc_resilient
 import tvc_resilient
 from mitv_utc import parse_mitv_page_utc, self_test as mitv_self_test
 
 # Parche idempotente sobre la capa histórica restaurada por el workflow.
 gamavision_hotfix.install(tc_resilient, epg)
+rts_hotfix.install(tc_resilient, epg)
 
 
 def _output_dir(argv: list[str]) -> Path:
@@ -119,5 +121,6 @@ if __name__ == "__main__":
         tvc_resilient.self_test(epg)
         tc_resilient.self_test(epg)
         gamavision_hotfix.self_test(epg, tc_resilient)
+        rts_hotfix.self_test(epg, tc_resilient)
         raise SystemExit(0)
     raise SystemExit(main())
