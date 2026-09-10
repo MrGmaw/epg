@@ -654,6 +654,16 @@ def write_xml_and_gzip(root: etree._Element, xml_path: Path, gz_path: Path) -> N
             fh.write(data)
 
 
+def repository_version() -> str:
+    """Devuelve la versión global del checkout, no la revisión del componente STAR TVE."""
+    version_path = Path(__file__).resolve().parent.parent / "VERSION"
+    try:
+        value = version_path.read_text(encoding="utf-8").strip()
+    except OSError:
+        return VERSION
+    return value or VERSION
+
+
 def update_status(
     path: Path, programme_count: int, loaded_source_days: int,
     modes: set[str], cache_count: int,
@@ -662,7 +672,7 @@ def update_status(
         status = json.loads(path.read_text(encoding="utf-8"))
     else:
         status = {}
-    status["version"] = VERSION
+    status["version"] = repository_version()
     status["channels"] = EXPECTED_FINAL_CHANNELS
     counts = status.get("programme_counts")
     if not isinstance(counts, dict):

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EPG MrG v0.2.53 - capa resiliente de Telefe y Star Channel sobre LATAM vigente.
+"""EPG MrG v0.2.54 - capa resiliente de Telefe y Star Channel sobre LATAM vigente.
 
 Este archivo conserva el generador `build_latam_resilient.py` inmediatamente anterior
 cargándolo desde el historial Git local y añade únicamente una política adicional:
@@ -26,8 +26,8 @@ from datetime import date
 from types import ModuleType
 from typing import Any, Callable
 
-EPG_MRG_LATAM_FALLBACKS_V053 = True
-VERSION = "0.2.53"
+EPG_MRG_LATAM_FALLBACKS_V054 = True
+VERSION = "0.2.54"
 TELEFE_ID = "Telefe.ar"
 TELEFE_GATOTV_SLUG = "telefe_argentina"
 TELEFE_GATOTV_SOURCE_URL = f"https://www.gatotv.com/canal/{TELEFE_GATOTV_SLUG}"
@@ -61,7 +61,7 @@ def _repo_root() -> Path:
 
 
 def _read_base_bytes_from_git() -> bytes:
-    """Obtiene la última base histórica, saltando wrappers v0.2.52/v0.2.53."""
+    """Obtiene la última base histórica, saltando wrappers v0.2.52/v0.2.53/v0.2.54."""
     override = os.environ.get("EPG_MRG_BASE_LATAM_RESILIENT")
     if override:
         path = Path(override)
@@ -83,12 +83,13 @@ def _read_base_bytes_from_git() -> bytes:
         ).splitlines()
     except (OSError, subprocess.CalledProcessError) as exc:
         raise RuntimeError(
-            "v0.2.53 no pudo consultar el historial Git de build_latam_resilient.py."
+            "v0.2.54 no pudo consultar el historial Git de build_latam_resilient.py."
         ) from exc
 
     excluded_markers = (
         b"EPG_MRG_TELEFE_WRAPPER_V052",
         b"EPG_MRG_LATAM_FALLBACKS_V053",
+        b"EPG_MRG_LATAM_FALLBACKS_V054",
     )
     for commit in commits:
         if not commit.strip():
@@ -104,20 +105,20 @@ def _read_base_bytes_from_git() -> bytes:
         if data and not any(marker in data for marker in excluded_markers):
             return data
     raise RuntimeError(
-        "v0.2.53 no encontró en el historial Git una base estable utilizable de "
+        "v0.2.54 no encontró en el historial Git una base estable utilizable de "
         "scripts/build_latam_resilient.py."
     )
 
 
 def _load_base_module() -> ModuleType:
     data = _read_base_bytes_from_git()
-    cache_dir = Path(tempfile.gettempdir()) / "epg-mrg-v053"
+    cache_dir = Path(tempfile.gettempdir()) / "epg-mrg-v054"
     cache_dir.mkdir(parents=True, exist_ok=True)
     path = cache_dir / "build_latam_resilient_base.py"
     path.write_bytes(data)
-    spec = importlib.util.spec_from_file_location("_epg_mrg_latam_resilient_base_v053", path)
+    spec = importlib.util.spec_from_file_location("_epg_mrg_latam_resilient_base_v054", path)
     if spec is None or spec.loader is None:
-        raise RuntimeError("v0.2.53 no pudo crear el módulo base LATAM.")
+        raise RuntimeError("v0.2.54 no pudo crear el módulo base LATAM.")
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
@@ -325,6 +326,25 @@ def _star_channel_fallback(
 _BASE.ORIGINAL_MITV_SCRAPER = _mitv_with_channel_fallbacks
 
 
+def _set_global_status_version(output_dir: Path) -> None:
+    """Sella latam-status.json con la versión global del repositorio.
+
+    Las capas históricas LATAM pueden conservar su propia versión de componente;
+    el campo raíz ``version`` debe corresponder siempre al archivo VERSION del
+    checkout que ejecuta GitHub Actions.
+    """
+    path = output_dir / "latam-status.json"
+    if not path.is_file():
+        return
+    status = json.loads(path.read_text(encoding="utf-8"))
+    status["version"] = VERSION
+    path.write_text(
+        json.dumps(status, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+
 def _annotate_telefe_status(output_dir: Path) -> None:
     path = output_dir / "latam-status.json"
     if not path.is_file() or TELEFE_LAST_SOURCE_MODE is None:
@@ -431,10 +451,10 @@ def _assert_star_output(output_dir: Path) -> None:
     root = etree.parse(str(xml_path), parser).getroot()
     channels = root.xpath("./channel[@id=$channel_id]", channel_id=STAR_CHANNEL_ID)
     if len(channels) != 1:
-        raise RuntimeError(f"v0.2.53 esperaba exactamente un canal {STAR_CHANNEL_ID}.")
+        raise RuntimeError(f"v0.2.54 esperaba exactamente un canal {STAR_CHANNEL_ID}.")
     programmes = root.xpath("./programme[@channel=$channel_id]", channel_id=STAR_CHANNEL_ID)
     if len(programmes) < STAR_MIN_PROGRAMMES:
-        raise RuntimeError(f"v0.2.53: Star-Channel.co quedó con solo {len(programmes)} emisiones.")
+        raise RuntimeError(f"v0.2.54: Star-Channel.co quedó con solo {len(programmes)} emisiones.")
     for item in programmes:
         if not item.get("start", "").endswith(" -0500"):
             raise RuntimeError(f"Star-Channel.co start no Guayaquil: {item.get('start')}")
@@ -456,11 +476,11 @@ def _assert_telefe_output(output_dir: Path) -> None:
     root = etree.parse(str(xml_path), parser).getroot()
     channels = root.xpath("./channel[@id=$channel_id]", channel_id=TELEFE_ID)
     if len(channels) != 1:
-        raise RuntimeError(f"v0.2.53 esperaba exactamente un canal {TELEFE_ID}.")
+        raise RuntimeError(f"v0.2.54 esperaba exactamente un canal {TELEFE_ID}.")
     programmes = root.xpath("./programme[@channel=$channel_id]", channel_id=TELEFE_ID)
     if len(programmes) < TELEFE_MIN_PROGRAMMES:
         raise RuntimeError(
-            f"v0.2.53: Telefe.ar quedó con solo {len(programmes)} emisiones."
+            f"v0.2.54: Telefe.ar quedó con solo {len(programmes)} emisiones."
         )
     for item in programmes:
         if not item.get("start", "").endswith(" -0500"):
@@ -557,7 +577,7 @@ def self_test() -> None:
         _BASE.latam.scrape_gatotv_channel = real_gatotv
 
     print(
-        "Prueba v0.2.53 correcta: Telefe y Star Channel conservan mi.tv como primario; "
+        "Prueba v0.2.54 correcta: Telefe y Star Channel conservan mi.tv como primario; "
         "Star Channel 1/3 prueba GatoTV Colombia y luego Centro, siempre tabla 24 h, "
         "America/Bogota -> America/Guayaquil, offset manual=0."
     )
@@ -568,6 +588,7 @@ def main() -> int:
     if result == 0:
         # _BASE.main ya hizo sus validaciones heredadas.
         output_dir = _BASE._output_dir(sys.argv[1:])
+        _set_global_status_version(output_dir)
         _annotate_telefe_status(output_dir)
         _annotate_star_status(output_dir)
         _assert_telefe_output(output_dir)
