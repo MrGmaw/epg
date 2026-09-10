@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EPG MrG v0.2.55: añade TVL / Asamblea Nacional al latam.xml.
+"""EPG MrG v0.2.56: añade TVL / Asamblea Nacional al latam.xml.
 
 Fuente primaria oficial:
     https://tvl.asambleanacional.gob.ec/
@@ -31,7 +31,7 @@ import requests
 from bs4 import BeautifulSoup, Tag
 from lxml import etree
 
-VERSION = "0.2.55"
+VERSION = "0.2.56"
 CHANNEL_ID = "AsambleaNacional.ec"
 TARGET_IDS = (CHANNEL_ID,)
 DISPLAY_NAMES = ("Asamblea Nacional TVL", "TVL - Televisión Legislativa")
@@ -510,7 +510,7 @@ def self_test() -> int:
     assert all(p.get("start", "").endswith(" -0500") for p in programmes)
     assert all(p.get("stop", "").endswith(" -0500") for p in programmes)
     print(
-        "Self-test Asamblea Nacional v0.2.55 correcto: parser semanal L-D; "
+        "Self-test Asamblea Nacional v0.2.56 correcto: parser semanal L-D; "
         "09:00-09:45 Chakiñán jueves; America/Guayaquil; offset manual=0."
     )
     return 0
@@ -568,7 +568,12 @@ def main() -> int:
             f"Asamblea Nacional: programación insuficiente ({len(programmes)} emisiones)."
         )
 
-    root.append(make_channel(cached_channel))
+    channel = make_channel(cached_channel)
+    first_programme = root.find("programme")
+    if first_programme is None:
+        root.append(channel)
+    else:
+        root.insert(root.index(first_programme), channel)
     for node in programmes:
         root.append(node)
 
