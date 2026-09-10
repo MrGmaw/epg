@@ -1,12 +1,11 @@
-name: Actualizar EPG Ecuador y Latinoamérica
+name: Actualizar EPG Ecuador
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
+
   # Ecuador continental usa UTC-5 durante todo el año.
-  # 09:17 UTC = 04:17 Ecuador; 21:17 UTC = 16:17 Ecuador.
+  # 09:17 UTC = 04:17 Ecuador.
+  # 21:17 UTC = 16:17 Ecuador.
   schedule:
     - cron: "17 9,21 * * *"
 
@@ -19,56 +18,23 @@ concurrency:
   group: github-pages-epg
   cancel-in-progress: false
 
-env:
-  BASE_GENERATOR_COMMIT: "5a0e7c59d94e8fc20ad83237727b1a49a6246248"
-  GUIDE_DAYS: "7"
-  MITV_LOCAL_DAYS: "2"
-  GATOTV_DAYS: "7"
-
 jobs:
   build:
     name: Generar y publicar EPG
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 20
 
     steps:
       - name: Descargar repositorio
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Verificar base local del repositorio
-        shell: bash
-        run: |
-          set -euo pipefail
-          bash scripts/restore_baseline_from_git.sh
-
       - name: Configurar Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.13"
           cache: pip
-
-      - name: Normalizar fuente primaria DW
-        shell: bash
-        run: |
-          set -euo pipefail
-          python scripts/patch_dw_mitv.py
-          grep -q 'deutsche-welle-espanol' scripts/build_latam_epg.py
-
-      - name: Mostrar versión y huella de generadores
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "VERSION=$(cat VERSION)"
-          sha256sum \
-            scripts/build_latam_epg.py \
-            scripts/build_latam_resilient.py \
-            scripts/add_miami_epg.py \
-            scripts/add_v039_channels.py \
-            scripts/add_star_tve.py \
-            scripts/add_asamblea_epg.py \
-            scripts/patch_dw_mitv.py
 
       - name: Instalar dependencias
         shell: bash
@@ -77,51 +43,6 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
-      - name: Recuperar generador base estable
-        shell: bash
-        run: |
-          set -euo pipefail
-          BASE_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${BASE_GENERATOR_COMMIT}/scripts/build_epg.py"
-          curl \
-            --fail \
-            --location \
-            --silent \
-            --show-error \
-            --retry 4 \
-            --retry-all-errors \
-            --retry-delay 5 \
-            "${BASE_URL}" \
-            --output scripts/build_epg_base.py
-          test -s scripts/build_epg_base.py
-          grep -q 'def parse_mitv_page' scripts/build_epg_base.py
-          grep -q 'def scrape_mitv_range' scripts/build_epg_base.py
-          grep -q 'def parse_gatotv_page' scripts/build_epg_base.py
-          grep -q 'Canal.CNN.en.Español.ec' scripts/build_epg_base.py
-          grep -q 'NTN24.co' scripts/build_epg_base.py
-          python scripts/restore_local_modules.py \
-            scripts/build_epg_base.py \
-            scripts/build_epg.py \
-            scripts/build_latam_epg.py \
-            scripts/build_latam_resilient.py \
-            scripts/add_miami_epg.py \
-            scripts/add_v039_channels.py \
-            scripts/add_star_tve.py \
-            scripts/add_asamblea_epg.py
-          python -m py_compile scripts/*.py
-          python - <<'PYIMPORT'
-          import sys
-          sys.path.insert(0, "scripts")
-          import build_epg_base  # noqa: F401
-          import build_epg  # noqa: F401
-          import build_latam_epg  # noqa: F401
-          import build_latam_resilient  # noqa: F401
-          import add_miami_epg  # noqa: F401
-          import add_v039_channels  # noqa: F401
-          import add_star_tve  # noqa: F401
-          import add_asamblea_epg  # noqa: F401
-          print("Importación real de generadores, Miami, v0.2.39, STAR TVE y Asamblea Nacional correcta.")
-          PYIMPORT
-
       - name: Preparar directorio público
         shell: bash
         run: |
@@ -129,40 +50,11 @@ jobs:
           rm -rf public
           mkdir -p public
 
-      - name: Restaurar caché persistente de logos y EPG
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p public/logos .cache
-          rm -f .cache/previous-ec.xml .cache/previous-latam.xml
-          if ! git show-ref --verify --quiet refs/remotes/origin/epg-data; then
-            git fetch --no-tags origin epg-data:refs/remotes/origin/epg-data || true
-          fi
-          if git cat-file -e origin/epg-data:logos 2>/dev/null; then
-            git archive --format=tar origin/epg-data logos | tar -x -C public
-            echo "Caché de logos restaurada desde epg-data."
-          else
-            echo "No existe caché previa de logos; se realizará descubrimiento inicial."
-          fi
-          if git cat-file -e origin/epg-data:ec.xml 2>/dev/null; then
-            git show origin/epg-data:ec.xml > .cache/previous-ec.xml
-            test -s .cache/previous-ec.xml
-            echo "Caché ec.xml restaurada desde epg-data."
-          else
-            echo "No existe ec.xml previa para respaldo."
-          fi
-          if git cat-file -e origin/epg-data:latam.xml 2>/dev/null; then
-            git show origin/epg-data:latam.xml > .cache/previous-latam.xml
-            test -s .cache/previous-latam.xml
-            echo "Caché LATAM previa restaurada."
-          else
-            echo "No existe latam.xml previa para respaldos."
-          fi
-
       - name: Descargar XMLTV DTD
         shell: bash
         run: |
           set -euo pipefail
+
           curl \
             --fail \
             --location \
@@ -173,269 +65,80 @@ jobs:
             --retry-delay 5 \
             https://raw.githubusercontent.com/XMLTV/xmltv/master/xmltv.dtd \
             --output public/xmltv.dtd
+
           test -s public/xmltv.dtd
 
-      - name: Ejecutar pruebas deterministas
-        shell: bash
-        run: |
-          set -euo pipefail
-          python scripts/build_epg.py --self-test
-          python scripts/build_latam_epg.py --self-test
-          python scripts/build_latam_resilient.py --self-test
-          python scripts/add_miami_epg.py --self-test
-          python scripts/add_v039_channels.py --self-test
-          python scripts/add_star_tve.py --self-test
-          python scripts/add_asamblea_epg.py --self-test
-          python scripts/mitv_logos.py --self-test
-
-      - name: Construir guía principal ec.xml
+      - name: Construir guía combinada
         shell: bash
         env:
           TZ: America/Guayaquil
+          GUIDE_DAYS: "7"
         run: |
           set -euo pipefail
+
           python scripts/build_epg.py \
             --output public \
             --dtd public/xmltv.dtd \
             --days "${GUIDE_DAYS}"
 
-      - name: Detectar, descargar y cachear logos de mi.tv
+      - name: Validar archivos finales
         shell: bash
-        env:
-          TZ: America/Guayaquil
         run: |
           set -euo pipefail
-          python scripts/mitv_logos.py --output public/logos
-          test -s public/logos/manifest.json
 
-      - name: Aplicar logos locales a ec.xml
-        shell: bash
-        run: |
-          set -euo pipefail
-          python scripts/apply_local_logos.py \
-            --xml public/ec.xml \
-            --gz public/ec.xml.gz \
-            --manifest public/logos/manifest.json
-
-      - name: Construir guía seleccionada latam.xml
-        shell: bash
-        env:
-          TZ: America/Guayaquil
-        run: |
-          set -euo pipefail
-          python scripts/build_latam_resilient.py \
-            --source-xml public/ec.xml \
-            --output public \
-            --dtd public/xmltv.dtd \
-            --days "${GUIDE_DAYS}" \
-            --mitv-days "${MITV_LOCAL_DAYS}" \
-            --gatotv-days "${GATOTV_DAYS}" \
-            --logos-manifest public/logos/manifest.json \
-            --previous-latam-xml .cache/previous-latam.xml
-
-      - name: Añadir NBC 6 Miami y ABC Miami
-        shell: bash
-        env:
-          TZ: America/Guayaquil
-        run: |
-          set -euo pipefail
-          python scripts/add_miami_epg.py \
-            --output public \
-            --days "${GUIDE_DAYS}" \
-            --previous-latam-xml .cache/previous-latam.xml
-
-      - name: Añadir CBS New York, Oromar y logos v0.2.39
-        shell: bash
-        env:
-          TZ: America/Guayaquil
-        run: |
-          set -euo pipefail
-          python scripts/add_v039_channels.py \
-            --output public \
-            --days "${GUIDE_DAYS}" \
-            --previous-latam-xml .cache/previous-latam.xml
-          test -s public/logos/OromarTV.ec.png
-          test -s 'public/logos/CBS.(WCBS).New.York,.NY.us.png'
-          test -s public/logos/Antena3-America.co.png
-          test -s public/logos/HBO-Family.co.png
-          test -s public/logos/Warner-channel.co.png
-
-      - name: Añadir STAR TVE
-        shell: bash
-        env:
-          TZ: America/Guayaquil
-        run: |
-          set -euo pipefail
-          python scripts/add_star_tve.py \
-            --output public \
-            --days "${GUIDE_DAYS}" \
-            --previous-latam-xml .cache/previous-latam.xml
-
-      - name: Añadir TVL Asamblea Nacional v0.2.56
-        shell: bash
-        env:
-          TZ: America/Guayaquil
-        run: |
-          set -euo pipefail
-          python scripts/add_asamblea_epg.py \
-            --output public \
-            --days "${GUIDE_DAYS}" \
-            --previous-latam-xml .cache/previous-latam.xml
-
-      - name: Validar archivos finales v0.2.56
-        shell: bash
-        run: |
-          set -euo pipefail
           test -s public/ec.xml
           test -s public/ec.xml.gz
-          test -s public/latam.xml
-          test -s public/latam.xml.gz
           test -s public/xmltv.dtd
           test -s public/status.json
-          test -s public/latam-status.json
-          test -s public/index.html
-          test -s public/logos/manifest.json
+
           gzip -t public/ec.xml.gz
-          gzip -t public/latam.xml.gz
+          cmp public/ec.xml <(gzip -dc public/ec.xml.gz)
+
+          EXPECTED_HEADER_FILE="$(mktemp)"
+          cat > "${EXPECTED_HEADER_FILE}" <<'HEADER'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE tv SYSTEM "xmltv.dtd">
+
+          <tv generator-info-name="none" generator-info-url="none">
+          HEADER
+
+          head -n 4 public/ec.xml | diff -u "${EXPECTED_HEADER_FILE}" -
+
+          grep -q '<channel id="TeleamazonasQuito.ec">' public/ec.xml
+          grep -q '<channel id="TeleamazonasGuayaquil.ec">' public/ec.xml
+          grep -q '<channel id="Ecuavisa.ec">' public/ec.xml
+          grep -q '<channel id="EcuavisaInternacional.ec">' public/ec.xml
+
+          grep -q 'channel="TeleamazonasQuito.ec"' public/ec.xml
+          grep -q 'channel="TeleamazonasGuayaquil.ec"' public/ec.xml
+          grep -q 'channel="Ecuavisa.ec"' public/ec.xml
+          grep -q 'channel="EcuavisaInternacional.ec"' public/ec.xml
+
           python - <<'PY'
-          import gzip
           import json
-          import sys
-          from pathlib import Path
-          from lxml import etree
-
-          sys.path.insert(0, "scripts")
-          import validate_outputs as validate
-          import build_latam_resilient as resilient
-          import add_miami_epg as miami
-          import add_v039_channels as v039
-          import add_star_tve as star
-          import add_asamblea_epg as asamblea
-
-          STAR_ID = star.STAR_ID
-          ASAMBLEA_ID = asamblea.CHANNEL_ID
-          REQUIRED = (
-              "Deutsche.Welle.cl",
-              "Antena3-America.co",
-              "Star-Channel.co",
-              "Warner-channel.co",
-              "HBO-Family.co",
-              *miami.TARGET_IDS,
-              *v039.TARGET_IDS,
-              *star.TARGET_IDS,
-              *asamblea.TARGET_IDS,
-          )
-          validate.LATAM_REQUIRED = (
-              *resilient.EXPECTED_LATAM_IDS,
-              *miami.TARGET_IDS,
-              *v039.TARGET_IDS,
-              *star.TARGET_IDS,
-              *asamblea.TARGET_IDS,
-          )
-          assert len(validate.LATAM_REQUIRED) == 36, validate.LATAM_REQUIRED
-          assert STAR_ID in validate.LATAM_REQUIRED
-          assert ASAMBLEA_ID in validate.LATAM_REQUIRED
-          assert all(channel_id in validate.LATAM_REQUIRED for channel_id in REQUIRED)
-
-          sys.argv = ["validate_outputs.py", "--public", "public"]
-          result = validate.main()
-          if result != 0:
-              raise SystemExit(result)
-
-          parser = etree.XMLParser(
-              resolve_entities=False,
-              load_dtd=False,
-              no_network=True,
-              recover=False,
-              huge_tree=True,
-          )
-          root = etree.parse("public/latam.xml", parser).getroot()
-          ids = tuple(node.get("id", "") for node in root.findall("channel"))
-          assert ids == validate.LATAM_REQUIRED, (len(ids), ids)
-          assert ids[-4:-2] == v039.TARGET_IDS
-          assert ids[-2:-1] == star.TARGET_IDS
-          assert ids[-1:] == asamblea.TARGET_IDS
-
-          for channel_id in REQUIRED:
-              channels = root.xpath("./channel[@id=$channel_id]", channel_id=channel_id)
-              assert len(channels) == 1, channel_id
-              programmes = root.xpath("./programme[@channel=$channel_id]", channel_id=channel_id)
-              assert len(programmes) >= 5, (channel_id, len(programmes))
-              assert all(item.get("start", "").endswith(" -0500") for item in programmes), channel_id
-              assert all(item.get("stop", "").endswith(" -0500") for item in programmes), channel_id
-
-          xml_bytes = Path("public/latam.xml").read_bytes()
-          with gzip.open("public/latam.xml.gz", "rb") as fh:
-              assert fh.read() == xml_bytes, "latam.xml.gz no corresponde a latam.xml"
-
-          status = json.loads(Path("public/latam-status.json").read_text(encoding="utf-8"))
-          version = Path("VERSION").read_text(encoding="utf-8").strip()
-          assert status.get("version") == version, (status.get("version"), version)
-          assert int(status.get("channels", 0)) == 36, status
-
-          asamblea_policy = status.get("asamblea_nacional_epg", {})
-          assert asamblea_policy.get("channel_id") == ASAMBLEA_ID, asamblea_policy
-          assert asamblea_policy.get("source_timezone") == "America/Guayaquil", asamblea_policy
-          assert asamblea_policy.get("output_timezone") == "America/Guayaquil", asamblea_policy
-          assert int(asamblea_policy.get("manual_offset_minutes", -1)) == 0, asamblea_policy
-          assert int(asamblea_policy.get("programmes", 0)) >= 5, asamblea_policy
-
-          print(
-              "Validación v0.2.56 correcta: 36 canales; "
-              "AsambleaNacional.ec presente al final; zona America/Guayaquil; offset manual 0."
-          )
-          PY
-          echo "Estado LATAM:"
-          cat public/latam-status.json
-
-      - name: Sellar artefactos de esta ejecución
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          import gzip
-          import hashlib
-          import json
-          import os
           from pathlib import Path
 
-          public = Path("public")
-          version = Path("VERSION").read_text(encoding="utf-8").strip()
-          status_path = public / "latam-status.json"
-          status = json.loads(status_path.read_text(encoding="utf-8"))
-          expected_sha = os.environ["GITHUB_SHA"]
-          expected_run = os.environ["GITHUB_RUN_ID"]
-          expected_attempt = os.environ["GITHUB_RUN_ATTEMPT"]
-          assert status.get("version") == version, (status.get("version"), version)
-          assert status.get("source_commit") == expected_sha, status.get("source_commit")
-          assert str(status.get("github_run_id")) == expected_run, status.get("github_run_id")
-          assert str(status.get("github_run_attempt")) == expected_attempt, status.get("github_run_attempt")
-          xml_bytes = (public / "latam.xml").read_bytes()
-          with gzip.open(public / "latam.xml.gz", "rb") as fh:
-              assert fh.read() == xml_bytes
-
-          def info(name: str) -> dict[str, object]:
-              data = (public / name).read_bytes()
-              return {"sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)}
-
-          manifest = {
-              "version": version,
-              "source_commit": expected_sha,
-              "github_run_id": expected_run,
-              "github_run_attempt": expected_attempt,
-              "generated_at": status.get("generated_at"),
-              "files": {
-                  name: info(name)
-                  for name in ("latam.xml", "latam.xml.gz", "latam-status.json")
-              },
-          }
-          (public / "publication-manifest.json").write_text(
-              json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
-              encoding="utf-8",
+          status = json.loads(Path("public/status.json").read_text(encoding="utf-8"))
+          required = (
+              "teleamazonas_quito",
+              "teleamazonas_guayaquil",
+              "ecuavisa",
+              "ecuavisa_internacional",
           )
-          print(json.dumps(manifest, ensure_ascii=False, indent=2))
+          for key in required:
+              if int(status.get(key, 0)) <= 0:
+                  raise SystemExit(f"Canal sin programación en status.json: {key}")
+
+          if int(status.get("ecuavisa_internacional_days", 0)) <= 0:
+              raise SystemExit("No se cargó ningún día de Ecuavisa Internacional.")
           PY
-          test -s public/publication-manifest.json
+
+          echo "Cabecera:"
+          head -n 4 public/ec.xml
+          echo "Estado:"
+          cat public/status.json
+          echo "Tamaños:"
+          du -h public/ec.xml public/ec.xml.gz public/xmltv.dtd
 
       - name: Configurar identidad Git
         shell: bash
@@ -447,8 +150,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
           RAW_PARENT="$(mktemp -d)"
           RAW_DIR="${RAW_PARENT}/epg-data"
+
           if git ls-remote --exit-code --heads origin epg-data >/dev/null 2>&1; then
             git worktree add -B epg-data "${RAW_DIR}" origin/epg-data
           else
@@ -459,92 +164,46 @@ jobs:
               git rm -rf . >/dev/null 2>&1 || true
             )
           fi
+
           cp public/ec.xml "${RAW_DIR}/ec.xml"
           cp public/ec.xml.gz "${RAW_DIR}/ec.xml.gz"
-          cp public/latam.xml "${RAW_DIR}/latam.xml"
-          cp public/latam.xml.gz "${RAW_DIR}/latam.xml.gz"
           cp public/xmltv.dtd "${RAW_DIR}/xmltv.dtd"
           cp public/status.json "${RAW_DIR}/status.json"
-          cp public/latam-status.json "${RAW_DIR}/latam-status.json"
-          cp public/publication-manifest.json "${RAW_DIR}/publication-manifest.json"
-          cp VERSION "${RAW_DIR}/VERSION"
-          printf '%s\n' "${GITHUB_SHA}" > "${RAW_DIR}/source-commit.txt"
-          rm -rf "${RAW_DIR}/logos"
-          cp -R public/logos "${RAW_DIR}/logos"
-          cat > "${RAW_DIR}/README.md" <<'EOF'
-          # EPG MrG — archivos generados
 
-          Esta rama contiene las salidas automáticas XMLTV.
+          cat > "${RAW_DIR}/README.md" <<'RAWREADME'
+          # EPG Ecuador — archivos generados
 
-          Guía principal:
+          Esta rama contiene la salida automática de la guía XMLTV.
+
           - `ec.xml`
           - `ec.xml.gz`
+          - `xmltv.dtd`
           - `status.json`
 
-          Guía seleccionada de 36 canales:
-          - `latam.xml`
-          - `latam.xml.gz`
-          - `latam-status.json`
-          - `publication-manifest.json`
+          Incluye Teleamazonas Quito, Teleamazonas Guayaquil, Ecuavisa y Ecuavisa Internacional.
+          RAWREADME
 
-          Trazabilidad:
-          - `VERSION`: versión del código de `main`.
-          - `source-commit.txt`: SHA exacto usado por GitHub Actions.
-
-          Logos locales:
-          - `logos/<tvg-id>.png`
-          - `logos/manifest.json`
-          EOF
           (
             cd "${RAW_DIR}"
-            git add \
-              ec.xml ec.xml.gz \
-              latam.xml latam.xml.gz \
-              xmltv.dtd status.json latam-status.json publication-manifest.json README.md logos \
-              VERSION source-commit.txt
+            git add ec.xml ec.xml.gz xmltv.dtd status.json README.md
+
             if git diff --cached --quiet; then
               echo "La copia Raw no tiene cambios."
               exit 0
             fi
-            VERSION_VALUE="$(cat VERSION)"
-            SHORT_SHA="${GITHUB_SHA::7}"
-            git commit -m "Publicar EPG v${VERSION_VALUE} desde ${SHORT_SHA}"
+
+            git commit -m "Actualizar EPG Ecuador"
             git push origin HEAD:epg-data
           )
+
           git worktree remove "${RAW_DIR}" --force
           rm -rf "${RAW_PARENT}"
 
-      - name: Verificar sincronización de epg-data
-        shell: bash
-        run: |
-          set -euo pipefail
-          git fetch --no-tags --force origin epg-data:refs/remotes/origin/epg-data
-          EXPECTED_VERSION="$(cat VERSION)"
-          PUBLISHED_VERSION="$(git show origin/epg-data:VERSION | tr -d '\r\n')"
-          PUBLISHED_SHA="$(git show origin/epg-data:source-commit.txt | tr -d '\r\n')"
-          PUBLISHED_STATUS_VERSION="$(git show origin/epg-data:latam-status.json | python -c 'import json,sys; print(json.load(sys.stdin)["version"])')"
-          PUBLISHED_STATUS_SHA="$(git show origin/epg-data:latam-status.json | python -c 'import json,sys; print(json.load(sys.stdin)["source_commit"])')"
-          PUBLISHED_RUN_ID="$(git show origin/epg-data:latam-status.json | python -c 'import json,sys; print(json.load(sys.stdin)["github_run_id"])')"
-          PUBLISHED_RUN_ATTEMPT="$(git show origin/epg-data:latam-status.json | python -c 'import json,sys; print(json.load(sys.stdin)["github_run_attempt"])')"
-          test "${PUBLISHED_VERSION}" = "${EXPECTED_VERSION}"
-          test "${PUBLISHED_STATUS_VERSION}" = "${EXPECTED_VERSION}"
-          test "${PUBLISHED_SHA}" = "${GITHUB_SHA}"
-          test "${PUBLISHED_STATUS_SHA}" = "${GITHUB_SHA}"
-          test "${PUBLISHED_RUN_ID}" = "${GITHUB_RUN_ID}"
-          test "${PUBLISHED_RUN_ATTEMPT}" = "${GITHUB_RUN_ATTEMPT}"
-          for FILE in latam.xml latam.xml.gz latam-status.json publication-manifest.json; do
-            LOCAL_HASH="$(sha256sum "public/${FILE}" | awk '{print $1}')"
-            PUBLISHED_HASH="$(git show "origin/epg-data:${FILE}" | sha256sum | awk '{print $1}')"
-            echo "${FILE}: local=${LOCAL_HASH} publicado=${PUBLISHED_HASH}"
-            test "${LOCAL_HASH}" = "${PUBLISHED_HASH}"
-          done
-          echo "epg-data sincronizada con v${EXPECTED_VERSION}."
-
       - name: Configurar GitHub Pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@v5
 
       - name: Preparar artefacto de Pages
-        uses: actions/upload-pages-artifact@v5
+        uses: actions/upload-pages-artifact@v4
         with:
           path: public
 
@@ -552,10 +211,12 @@ jobs:
     name: Desplegar GitHub Pages
     needs: build
     runs-on: ubuntu-latest
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: Publicar GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v4
