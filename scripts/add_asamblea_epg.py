@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EPG MrG v0.2.57: añade TVL / Asamblea Nacional al latam.xml.
+"""EPG MrG v0.2.58: añade TVL / Asamblea Nacional al latam.xml.
 
 Fuente primaria oficial:
     https://tvl.asambleanacional.gob.ec/
@@ -32,7 +32,7 @@ import requests
 from bs4 import BeautifulSoup, Tag
 from lxml import etree
 
-VERSION = "0.2.57"
+VERSION = "0.2.58"
 CHANNEL_ID = "AsambleaNacional.ec"
 TARGET_IDS = (CHANNEL_ID,)
 DISPLAY_NAMES = ("Asamblea Nacional TVL", "TVL - Televisión Legislativa")
@@ -809,7 +809,7 @@ def self_test() -> int:
     assert all(p.get("start", "").endswith(" -0500") for p in programmes)
     assert all(p.get("stop", "").endswith(" -0500") for p in programmes)
     print(
-        "Self-test Asamblea Nacional v0.2.57 correcto: home semanal + fichas oficiales; "
+        "Self-test Asamblea Nacional v0.2.58 correcto: home semanal + fichas oficiales; "
         "Horario/Reprise; resolución de solapamientos por frescura; America/Guayaquil; offset manual=0."
     )
     return 0
