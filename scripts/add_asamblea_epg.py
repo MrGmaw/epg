@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EPG MrG v0.2.56: añade TVL / Asamblea Nacional al latam.xml.
+"""EPG MrG v0.2.57: añade TVL / Asamblea Nacional al latam.xml.
 
 Fuente primaria oficial:
     https://tvl.asambleanacional.gob.ec/
@@ -25,13 +25,14 @@ from dataclasses import dataclass
 from datetime import date, datetime, time as dt_time, timedelta
 from pathlib import Path
 from typing import Iterable
+from urllib.parse import urljoin
 from zoneinfo import ZoneInfo
 
 import requests
 from bs4 import BeautifulSoup, Tag
 from lxml import etree
 
-VERSION = "0.2.56"
+VERSION = "0.2.57"
 CHANNEL_ID = "AsambleaNacional.ec"
 TARGET_IDS = (CHANNEL_ID,)
 DISPLAY_NAMES = ("Asamblea Nacional TVL", "TVL - Televisión Legislativa")
@@ -45,6 +46,41 @@ MIN_TOTAL_WEEKLY_ENTRIES = 20
 MIN_PROGRAMMES = 5
 REQUEST_TIMEOUT = 35
 USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+
+PROGRAM_INDEX_URL = urljoin(SOURCE_URL, "programas")
+# Semillas oficiales: complementan el índice porque el sitio pagina/oculta algunos
+# programas que sí siguen apareciendo en la parrilla semanal.
+PROGRAM_SEED_PATHS = (
+    "programas/tvl-noticias-emision-estelar",
+    "programas/tvl-noticias-emision-central",
+    "programas/asamblea-en-pleno-0",
+    "programas/el-pleno-en-sol-mayor",
+    "programas/expedicion-napa",
+    "programas/ranti-ranti",
+    "programas/kukara-makara",
+    "programas/un-cafe-con",
+    "programas/chakinan",
+    "programas/tercer-debate",
+    "programas/expresarte",
+    "programas/educa-tv",
+    "programas/buen-vivir-ama-la-vida",
+)
+PROGRAM_SEED_URLS = tuple(urljoin(SOURCE_URL, path) for path in PROGRAM_SEED_PATHS)
+MIN_CATALOG_WEEKLY_ENTRIES = 20
+MIN_CATALOG_DAYS = 7
+PROGRAM_REQUEST_TIMEOUT = 20
+
+SPANISH_MONTHS = {
+    "enero": 1, "febrero": 2, "marzo": 3, "abril": 4, "mayo": 5, "junio": 6,
+    "julio": 7, "agosto": 8, "septiembre": 9, "setiembre": 9, "octubre": 10,
+    "noviembre": 11, "diciembre": 12,
+}
+
+_PROGRAM_SLOT_RE = re.compile(
+    r"(lunes\s+a\s+viernes|lunes|martes|miercoles|jueves|viernes|sabado|domingo)"
+    r"\s+de\s+(\d{1,2}:\d{2})\s+a\s+(\d{1,2}:\d{2})",
+    flags=re.IGNORECASE,
+)
 
 WEEKDAY_NAMES = (
     "lunes",
@@ -70,6 +106,15 @@ class ScheduleEntry:
     start: str
     stop: str
     title: str
+
+
+@dataclass(frozen=True)
+class ProgramScheduleCandidate:
+    weekday: int
+    entry: ScheduleEntry
+    updated: date
+    url: str
+    reprise: bool
 
 
 def log(message: str) -> None:
@@ -255,9 +300,10 @@ def session() -> requests.Session:
 
 
 def fetch_weekly_grid() -> dict[int, tuple[ScheduleEntry, ...]]:
+    """Intenta la parrilla semanal completa del home (ruta preferida)."""
     s = session()
     error: Exception | None = None
-    for attempt in range(1, 5):
+    for attempt in range(1, 4):
         try:
             response = s.get(SOURCE_URL, timeout=REQUEST_TIMEOUT)
             response.raise_for_status()
@@ -265,15 +311,252 @@ def fetch_weekly_grid() -> dict[int, tuple[ScheduleEntry, ...]]:
                 raise RuntimeError("respuesta HTML vacía")
             weekly = parse_weekly_grid(response.text)
             log(
-                "Asamblea Nacional TVL: parrilla oficial cargada; "
+                "Asamblea Nacional TVL: parrilla semanal del home cargada; "
                 f"días=7, emisiones_semana={sum(len(v) for v in weekly.values())}."
             )
             return weekly
         except (requests.RequestException, RuntimeError) as exc:
             error = exc
-            if attempt < 4:
-                time.sleep(min(attempt * 2, 6))
-    raise RuntimeError(f"No se pudo obtener la parrilla oficial de TVL: {error}") from error
+            if attempt < 3:
+                time.sleep(attempt)
+    raise RuntimeError(f"No se pudo obtener la parrilla semanal del home TVL: {error}") from error
+
+
+def _ascii_schedule_text(value: str) -> str:
+    value = unicodedata.normalize("NFKD", value or "")
+    value = "".join(ch for ch in value if not unicodedata.combining(ch))
+    value = value.replace("\xa0", " ").lower()
+    return re.sub(r"\s+", " ", value).strip()
+
+
+def _page_updated_date(text: str) -> date:
+    normalized = _ascii_schedule_text(text)
+    match = re.search(
+        r"quito,?\s+(\d{1,2})\s+de\s+([a-z]+)\s+(\d{4})", normalized
+    )
+    if not match:
+        return date(1970, 1, 1)
+    day, month_name, year = match.groups()
+    month = SPANISH_MONTHS.get(month_name)
+    if not month:
+        return date(1970, 1, 1)
+    try:
+        return date(int(year), month, int(day))
+    except ValueError:
+        return date(1970, 1, 1)
+
+
+def _expand_day_expr(expr: str) -> tuple[int, ...]:
+    token = _ascii_schedule_text(expr)
+    if token == "lunes a viernes":
+        return (0, 1, 2, 3, 4)
+    if token not in WEEKDAY_NAMES:
+        return ()
+    return (WEEKDAY_NAMES.index(token),)
+
+
+def _section_candidates(
+    section: str,
+    *,
+    title: str,
+    updated: date,
+    url: str,
+    reprise: bool,
+) -> list[ProgramScheduleCandidate]:
+    normalized = _ascii_schedule_text(section)
+    result: list[ProgramScheduleCandidate] = []
+    seen: set[tuple[int, str, str, str]] = set()
+    for match in _PROGRAM_SLOT_RE.finditer(normalized):
+        day_expr, start, stop = match.groups()
+        try:
+            parse_time(start)
+            parse_time(stop)
+        except ValueError:
+            continue
+        display_title = f"(R) {title}" if reprise else title
+        for weekday in _expand_day_expr(day_expr):
+            key = (weekday, start.zfill(5), stop.zfill(5), display_title)
+            if key in seen:
+                continue
+            seen.add(key)
+            result.append(
+                ProgramScheduleCandidate(
+                    weekday=weekday,
+                    entry=ScheduleEntry(start.zfill(5), stop.zfill(5), display_title),
+                    updated=updated,
+                    url=url,
+                    reprise=reprise,
+                )
+            )
+    return result
+
+
+def parse_program_page(html: str, url: str) -> list[ProgramScheduleCandidate]:
+    """Extrae Horario/Reprise de una ficha oficial de programa TVL."""
+    soup = BeautifulSoup(html, "html.parser")
+    h1 = soup.find("h1")
+    title = clean_title(h1.get_text(" ", strip=True) if isinstance(h1, Tag) else "")
+    if not title:
+        return []
+    text = soup.get_text("\n", strip=True)
+    updated = _page_updated_date(text)
+    marker = re.search(r"programaci[oó]n\s+de\s+la\s+semana", text, flags=re.IGNORECASE)
+    if marker:
+        text = text[: marker.start()]
+    horario = re.search(r"horario\s*:\s*", text, flags=re.IGNORECASE)
+    if not horario:
+        return []
+    body = text[horario.end() :]
+    reprise_match = re.search(r"reprise\s*:\s*", body, flags=re.IGNORECASE)
+    if reprise_match:
+        normal_section = body[: reprise_match.start()]
+        reprise_section = body[reprise_match.end() :]
+    else:
+        normal_section = body
+        reprise_section = ""
+    result = _section_candidates(
+        normal_section, title=title, updated=updated, url=url, reprise=False
+    )
+    if reprise_section:
+        result.extend(
+            _section_candidates(
+                reprise_section, title=title, updated=updated, url=url, reprise=True
+            )
+        )
+    return result
+
+
+def _interval_minutes(entry: ScheduleEntry) -> tuple[int, int]:
+    a = parse_time(entry.start)
+    b = parse_time(entry.stop)
+    start = a.hour * 60 + a.minute
+    stop = b.hour * 60 + b.minute
+    if stop <= start:
+        stop += 24 * 60
+    return start, stop
+
+
+def _overlaps(a: ScheduleEntry, b: ScheduleEntry) -> bool:
+    a0, a1 = _interval_minutes(a)
+    b0, b1 = _interval_minutes(b)
+    return max(a0, b0) < min(a1, b1)
+
+
+def resolve_program_candidates(
+    candidates: Iterable[ProgramScheduleCandidate],
+) -> dict[int, tuple[ScheduleEntry, ...]]:
+    """Resuelve solapamientos priorizando la ficha oficial más recientemente actualizada."""
+    by_day: dict[int, list[ProgramScheduleCandidate]] = defaultdict(list)
+    dedupe: set[tuple[int, str, str, str]] = set()
+    for candidate in candidates:
+        key = (
+            candidate.weekday,
+            candidate.entry.start,
+            candidate.entry.stop,
+            normalize_token(candidate.entry.title),
+        )
+        if key in dedupe:
+            continue
+        dedupe.add(key)
+        by_day[candidate.weekday].append(candidate)
+
+    weekly: dict[int, tuple[ScheduleEntry, ...]] = {}
+    for weekday in range(7):
+        ordered = sorted(
+            by_day.get(weekday, []),
+            key=lambda c: (
+                -c.updated.toordinal(),
+                c.reprise,
+                c.entry.start,
+                c.entry.stop,
+                c.entry.title,
+            ),
+        )
+        accepted: list[ProgramScheduleCandidate] = []
+        for candidate in ordered:
+            if any(_overlaps(candidate.entry, other.entry) for other in accepted):
+                continue
+            accepted.append(candidate)
+        entries = tuple(
+            c.entry
+            for c in sorted(
+                accepted, key=lambda c: (c.entry.start, c.entry.stop, c.entry.title)
+            )
+        )
+        if entries:
+            weekly[weekday] = entries
+    return weekly
+
+
+def _discover_program_urls(s: requests.Session) -> list[str]:
+    urls = set(PROGRAM_SEED_URLS)
+    try:
+        response = s.get(PROGRAM_INDEX_URL, timeout=PROGRAM_REQUEST_TIMEOUT)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, "html.parser")
+        for link in soup.find_all("a", href=True):
+            href = str(link.get("href", "")).strip()
+            absolute = urljoin(PROGRAM_INDEX_URL + "/", href)
+            if absolute.startswith(urljoin(SOURCE_URL, "programas/")):
+                urls.add(absolute.split("#", 1)[0].split("?", 1)[0])
+    except requests.RequestException as exc:
+        warn(f"TVL: no se pudo descubrir el índice de programas; se usarán semillas. Detalle: {exc}")
+    return sorted(urls)
+
+
+def fetch_program_catalog_weekly() -> dict[int, tuple[ScheduleEntry, ...]]:
+    """Reconstruye la semana desde las fichas oficiales server-rendered."""
+    s = session()
+    candidates: list[ProgramScheduleCandidate] = []
+    loaded_pages = 0
+    failed_pages = 0
+    for url in _discover_program_urls(s):
+        last_error: Exception | None = None
+        for attempt in range(1, 3):
+            try:
+                response = s.get(url, timeout=PROGRAM_REQUEST_TIMEOUT)
+                response.raise_for_status()
+                page_candidates = parse_program_page(response.text, url)
+                if page_candidates:
+                    candidates.extend(page_candidates)
+                    loaded_pages += 1
+                break
+            except requests.RequestException as exc:
+                last_error = exc
+                if attempt < 2:
+                    time.sleep(0.5)
+        else:
+            failed_pages += 1
+            warn(f"TVL: ficha no disponible {url}: {last_error}")
+
+    weekly = resolve_program_candidates(candidates)
+    total = sum(len(items) for items in weekly.values())
+    missing = [WEEKDAY_NAMES[i] for i in range(7) if not weekly.get(i)]
+    if len(weekly) < MIN_CATALOG_DAYS or total < MIN_CATALOG_WEEKLY_ENTRIES:
+        raise RuntimeError(
+            "fichas oficiales TVL insuficientes: "
+            f"días={len(weekly)}/7, emisiones_semana={total}, "
+            f"fichas_utiles={loaded_pages}, fichas_fallidas={failed_pages}, faltan={missing or 'ninguno'}"
+        )
+    log(
+        "Asamblea Nacional TVL: semana reconstruida desde fichas oficiales; "
+        f"días=7, emisiones_semana={total}, fichas_utiles={loaded_pages}."
+    )
+    return weekly
+
+
+def fetch_official_weekly() -> tuple[dict[int, tuple[ScheduleEntry, ...]], str, str | None]:
+    grid_error: str | None = None
+    try:
+        return fetch_weekly_grid(), "tvl-official-weekly-grid", None
+    except Exception as exc:  # noqa: BLE001
+        grid_error = str(exc)
+        warn(
+            "Asamblea Nacional TVL: el home no expuso la parrilla; "
+            f"se reconstruirá desde fichas oficiales. Detalle: {exc}"
+        )
+    weekly = fetch_program_catalog_weekly()
+    return weekly, "tvl-official-program-pages", grid_error
 
 
 def format_xmltv(value: datetime) -> str:
@@ -440,7 +723,7 @@ def update_status(
     if not isinstance(sources, dict):
         sources = {}
         status["sources"] = sources
-    sources["asamblea_nacional"] = SOURCE_URL if source_mode == "tvl-official-live" else "epg-data/latam.xml"
+    sources["asamblea_nacional"] = SOURCE_URL if source_mode.startswith("tvl-official") else "epg-data/latam.xml"
     status["asamblea_nacional_epg"] = {
         "version": VERSION,
         "channel_id": CHANNEL_ID,
@@ -449,8 +732,8 @@ def update_status(
         "source_timezone": SOURCE_TIMEZONE,
         "output_timezone": OUTPUT_TIMEZONE,
         "manual_offset_minutes": 0,
-        "schedule_model": "official weekly grid instantiated by local weekday",
-        "cache_policy": "previous epg-data/latam.xml weekly template only when official TVL is unavailable",
+        "schedule_model": ("official weekly grid instantiated by local weekday" if source_mode == "tvl-official-weekly-grid" else "official programme-page schedules aggregated by local weekday" if source_mode == "tvl-official-program-pages" else "previous epg-data weekly template"),
+        "cache_policy": "home weekly grid -> official programme pages -> previous epg-data/latam.xml weekly template",
         "programmes": programme_count,
         "weekly_counts": weekly_counts,
         "live_error": live_error,
@@ -476,7 +759,7 @@ def update_index(path: Path) -> None:
 
 
 def self_test() -> int:
-    # Bootstrap-like markup: el parser no depende de nombres de clases internos.
+    # 1) Parrilla semanal server-rendered (si TVL vuelve a exponerla así).
     tabs = []
     panes = []
     sample_rows = {
@@ -495,11 +778,27 @@ def self_test() -> int:
     html = "<html><body><h2>Programación de la semana</h2>" + "".join(tabs) + '<div class="tab-content">' + "".join(panes) + "</div></body></html>"
     weekly = parse_weekly_grid(html)
     assert len(weekly) == 7, weekly
-    assert any(item.title == "Chakiñán" and item.start == "09:00" for item in weekly[3])
-    assert any(item.title == "Asamblea en Pleno" and item.start == "11:45" for item in weekly[6])
+
+    # 2) Fichas server-rendered: Lunes a Viernes + Reprise + acentos.
+    central_html = """
+    <html><body><div>Quito, 28 de agosto 2026</div>
+    <h1>TVL Noticias Emisión Central</h1>
+    <div>Horario: Lunes a Viernes de 12:00 a 12:30</div>
+    <div>Reprise: Lunes a Viernes de 13:30 a 14:00</div>
+    <h2>Programación de la semana</h2></body></html>
+    """
+    parsed = parse_program_page(central_html, "https://tvl.example/central")
+    assert len(parsed) == 10, parsed
+    assert any(c.weekday == 3 and c.entry.start == "12:00" and c.entry.title == "TVL Noticias Emisión Central" for c in parsed)
+    assert any(c.weekday == 3 and c.entry.start == "13:30" and c.entry.title == "(R) TVL Noticias Emisión Central" for c in parsed)
+
+    # 3) Un cruce se resuelve por la ficha más reciente.
+    old = ProgramScheduleCandidate(5, ScheduleEntry("08:15", "08:45", "Educa TV"), date(2026, 9, 6), "old", False)
+    new = ProgramScheduleCandidate(5, ScheduleEntry("08:00", "08:30", "Chakiñán"), date(2026, 9, 10), "new", False)
+    resolved = resolve_program_candidates([old, new])
+    assert tuple(item.title for item in resolved[5]) == ("Chakiñán",), resolved
 
     programmes = build_programmes_from_weekly(weekly, date(2026, 9, 10), 7)
-    assert len(programmes) >= 20
     thursday = [p for p in programmes if p.get("start", "").startswith("20260910")]
     assert any(
         p.get("start") == "20260910090000 -0500"
@@ -510,8 +809,8 @@ def self_test() -> int:
     assert all(p.get("start", "").endswith(" -0500") for p in programmes)
     assert all(p.get("stop", "").endswith(" -0500") for p in programmes)
     print(
-        "Self-test Asamblea Nacional v0.2.56 correcto: parser semanal L-D; "
-        "09:00-09:45 Chakiñán jueves; America/Guayaquil; offset manual=0."
+        "Self-test Asamblea Nacional v0.2.57 correcto: home semanal + fichas oficiales; "
+        "Horario/Reprise; resolución de solapamientos por frescura; America/Guayaquil; offset manual=0."
     )
     return 0
 
@@ -541,23 +840,23 @@ def main() -> int:
     remove_target(root)
 
     start_date = datetime.now(OUTPUT_TZ).date()
-    source_mode = "tvl-official-live"
+    source_mode = "tvl-official-weekly-grid"
     live_error: str | None = None
     cached_channel: etree._Element | None = None
     try:
-        weekly = fetch_weekly_grid()
+        weekly, source_mode, live_error = fetch_official_weekly()
     except Exception as exc:  # noqa: BLE001 - fallback controlado a epg-data
         live_error = str(exc)
         warn(
-            "Asamblea Nacional TVL: fuente oficial no utilizable; se intentará "
-            f"la última latam.xml válida. Detalle: {exc}"
+            "Asamblea Nacional TVL: todas las rutas oficiales no utilizables; "
+            f"se intentará la última latam.xml válida. Detalle: {exc}"
         )
         try:
             weekly, cached_channel = weekly_from_cache(args.previous_latam_xml)
         except Exception as cache_exc:  # noqa: BLE001
             raise RuntimeError(
                 "Asamblea Nacional (AsambleaNacional.ec) no tiene programación utilizable "
-                "en TVL oficial ni en la última latam.xml válida de epg-data. "
+                "en parrilla TVL, fichas oficiales ni en la última latam.xml válida de epg-data. "
                 f"TVL={live_error}; caché={cache_exc}"
             ) from cache_exc
         source_mode = "epg-data-weekly-cache"
