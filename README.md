@@ -7,19 +7,16 @@ Guía principal:
 - `ec.xml.gz`
 - `status.json`
 
-Guía seleccionada de 35 canales:
+Guía seleccionada de 36 canales:
 - `latam.xml`
 - `latam.xml.gz`
 - `latam-status.json`
-- `publication-manifest.json` (SHA-256 de la salida LATAM de este run)
+- `publication-manifest.json`
 
-Trazabilidad de la publicación:
-- `VERSION`: versión del código de `main` que generó estos archivos.
-- `source-commit.txt`: SHA exacto del commit de `main` usado por GitHub Actions.
+Trazabilidad:
+- `VERSION`: versión del código de `main`.
+- `source-commit.txt`: SHA exacto usado por GitHub Actions.
 
-Logos locales persistentes:
+Logos locales:
 - `logos/<tvg-id>.png`
 - `logos/manifest.json`
-
-Archivo compartido:
-- `xmltv.dtd`

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T07:34:51.273134-05:00",
+  "generated_at": "2026-09-10T11:09:02.346680-05:00",
   "base_date": "2026-09-10",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
@@ -13,16 +13,15 @@
   "cnn_en_espanol_days": 2,
   "ntn24_days": 2,
   "channels": 95,
-  "programmes": 10865,
+  "programmes": 10866,
   "teleamazonas_quito": 206,
   "teleamazonas_guayaquil": 206,
   "ecuavisa": 106,
-  "ecuavisa_internacional": 78,
+  "ecuavisa_internacional": 79,
   "tvc": 156,
   "cnn_en_espanol": 49,
   "ntn24": 38,
-  "tvc_source_mode": "epg-data-cache",
-  "tvc_fallback": "epg-data/ec.xml",
+  "tvc_source_mode": "official",
   "epgshare_resilient_channels": {
     "Canal.TC.Televisión.ec": {
       "name": "TC Televisión",

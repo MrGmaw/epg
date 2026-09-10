@@ -1,15 +1,15 @@
 {
-  "version": "0.2.55",
-  "generated_at": "2026-09-10T07:35:39.799404-05:00",
-  "source_commit": "42b4105c1645d6a9bb4f1b7eb1f428fa92720d5f",
-  "github_run_id": "34477484298",
+  "version": "0.2.57",
+  "generated_at": "2026-09-10T11:09:44.973646-05:00",
+  "source_commit": "d3ab02f1b26b2a680a6066441d9bf171c18c04a4",
+  "github_run_id": "34500136896",
   "github_run_attempt": "1",
   "base_date": "2026-09-10",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
-  "channels": 35,
-  "programmes": 3188,
+  "channels": 36,
+  "programmes": 3245,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 73,
     "Canal.Gamavisión.ec": 170,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 206,
     "TeleamazonasGuayaquil.ec": 206,
     "Ecuavisa.ec": 106,
-    "EcuavisaInternacional.ec": 78,
+    "EcuavisaInternacional.ec": 79,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 49,
     "NTN24.co": 38,
@@ -30,22 +30,23 @@
     "TV.Publica.canal.7.ar": 34,
     "Telefe.ar": 40,
     "Deutsche.Welle.cl": 91,
-    "hgtv.ar": 42,
+    "hgtv.ar": 85,
     "France24Espanol.fr": 208,
     "Antena3-America.co": 35,
     "Star-Channel.co": 30,
     "Warner-channel.co": 59,
     "HBO-Family.co": 28,
-    "Canal24Horas.es": 213,
-    "La1.es": 103,
-    "Clan.es": 470,
+    "Canal24Horas.es": 214,
+    "La1.es": 104,
+    "Clan.es": 481,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 62,
     "NBC6-Miami.us": 90,
     "ABC-Miami.us": 88,
     "CBS.(WCBS).New.York,.NY.us": 219,
     "OromarTV.ec": 140,
-    "TVEStarHD.es": 79
+    "TVEStarHD.es": 83,
+    "AsambleaNacional.ec": 63
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
@@ -57,7 +58,7 @@
     "TV.Publica.canal.7.ar": 3,
     "Telefe.ar": 3,
     "Deutsche.Welle.cl": 3,
-    "hgtv.ar": 2,
+    "hgtv.ar": 3,
     "France24Espanol.fr": 3,
     "Antena3-America.co": 3,
     "Star-Channel.co": 3,
@@ -72,27 +73,27 @@
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
       "2026-09-10": 30,
-      "2026-09-11": 37,
+      "2026-09-11": 34,
       "2026-09-12": 52,
-      "2026-09-13": 47,
+      "2026-09-13": 50,
       "2026-09-14": 30,
-      "2026-09-15": 20
+      "2026-09-15": 21
     },
     "La1.es": {
-      "2026-09-10": 20,
+      "2026-09-10": 19,
       "2026-09-11": 20,
       "2026-09-12": 17,
-      "2026-09-13": 16,
+      "2026-09-13": 15,
       "2026-09-14": 19,
-      "2026-09-15": 16
+      "2026-09-15": 17
     },
     "Clan.es": {
       "2026-09-10": 89,
-      "2026-09-11": 87,
+      "2026-09-11": 92,
       "2026-09-12": 75,
-      "2026-09-13": 68,
+      "2026-09-13": 64,
       "2026-09-14": 88,
-      "2026-09-15": 68
+      "2026-09-15": 78
     }
   },
   "gatotv_source_timezones": {
@@ -197,7 +198,8 @@
       "CBS.(WCBS).New.York,.NY.us": "https://www.tvpassport.com/tv-listings/stations/cbs-wcbs-new-york-ny-hd/4555",
       "OromarTV.ec": "https://americatvlistings.com/es/ec-ECT/oromar-tv"
     },
-    "star_tve": "https://www.gatotv.com/canal/star_tve"
+    "star_tve": "https://www.gatotv.com/canal/star_tve",
+    "asamblea_nacional": "https://tvl.asambleanacional.gob.ec/"
   },
   "mitv_endpoint_time_channels": {
     "Antena3-America.co": {
@@ -377,11 +379,11 @@
       "ampm-runner-geo-table-fallback"
     ],
     "runner_timezone": {
-      "timezone": "America/Los_Angeles",
+      "timezone": "America/Chicago",
       "source": "ipapi"
     },
     "loaded_source_days": 3,
-    "programmes": 79,
+    "programmes": 83,
     "cached_programmes_available": 79,
     "cache_policy": "programme cache disabled; fresh GatoTV required",
     "field_validation": {
@@ -403,5 +405,27 @@
         "fugitiva_ecuador": "2026-08-29 23:00-2026-08-30 00:05 America/Guayaquil"
       }
     }
+  },
+  "asamblea_nacional_epg": {
+    "version": "0.2.57",
+    "channel_id": "AsambleaNacional.ec",
+    "source": "https://tvl.asambleanacional.gob.ec/",
+    "source_mode": "tvl-official-program-pages",
+    "source_timezone": "America/Guayaquil",
+    "output_timezone": "America/Guayaquil",
+    "manual_offset_minutes": 0,
+    "schedule_model": "official programme-page schedules aggregated by local weekday",
+    "cache_policy": "home weekly grid -> official programme pages -> previous epg-data/latam.xml weekly template",
+    "programmes": 63,
+    "weekly_counts": {
+      "lunes": 11,
+      "martes": 10,
+      "miercoles": 12,
+      "jueves": 9,
+      "viernes": 10,
+      "sabado": 4,
+      "domingo": 7
+    },
+    "live_error": "No se pudo obtener la parrilla semanal del home TVL: TVL oficial no entregó una parrilla semanal completa: días=0/7, emisiones_semana=0, faltan=['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo']."
   }
 }
