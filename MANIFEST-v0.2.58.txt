@@ -1,0 +1,5 @@
+VERSION
+.github/workflows/actualizar-epg.yml
+scripts/add_asamblea_epg.py
+RELEASE-v0.2.58.md
+MANIFEST-v0.2.58.txt
