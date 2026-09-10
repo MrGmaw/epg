@@ -1,15 +1,15 @@
 {
   "version": "0.2.55",
-  "generated_at": "2026-09-10T06:43:52.456233-05:00",
-  "source_commit": "99ee90a2b39f82dfb3a0a4df63731ca9f7e55647",
-  "github_run_id": "34472727698",
+  "generated_at": "2026-09-10T06:46:25.289272-05:00",
+  "source_commit": "98263c356e29d352e22b3ab3cb9b870bcbfb4c1a",
+  "github_run_id": "34472767327",
   "github_run_attempt": "1",
   "base_date": "2026-09-10",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 35,
-  "programmes": 3188,
+  "programmes": 3173,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 73,
     "Canal.Gamavisión.ec": 170,
@@ -32,7 +32,7 @@
     "Deutsche.Welle.cl": 91,
     "hgtv.ar": 42,
     "France24Espanol.fr": 208,
-    "Antena3-America.co": 35,
+    "Antena3-America.co": 20,
     "Star-Channel.co": 30,
     "Warner-channel.co": 59,
     "HBO-Family.co": 28,
@@ -50,18 +50,18 @@
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
     "CanalRCN.co": 3,
-    "CaracolTV.co": 3,
+    "CaracolTV.co": 2,
     "Canal.Elgourmet.ec": 3,
     "Canal.History.co": 3,
-    "Canal.History.2.co": 2,
+    "Canal.History.2.co": 3,
     "TV.Publica.canal.7.ar": 3,
     "Telefe.ar": 3,
     "Deutsche.Welle.cl": 3,
     "hgtv.ar": 2,
     "France24Espanol.fr": 3,
-    "Antena3-America.co": 3,
+    "Antena3-America.co": 2,
     "Star-Channel.co": 3,
-    "Warner-channel.co": 2,
+    "Warner-channel.co": 3,
     "HBO-Family.co": 3
   },
   "gatotv_source_days": {
@@ -377,12 +377,12 @@
       "ampm-runner-geo-table-fallback"
     ],
     "runner_timezone": {
-      "timezone": "America/Los_Angeles",
+      "timezone": "America/Phoenix",
       "source": "ipapi"
     },
     "loaded_source_days": 3,
     "programmes": 79,
-    "cached_programmes_available": 54,
+    "cached_programmes_available": 79,
     "cache_policy": "programme cache disabled; fresh GatoTV required",
     "field_validation": {
       "date": "2026-08-30",
