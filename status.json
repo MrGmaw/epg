@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-08T18:23:11.947028-05:00",
-  "base_date": "2026-09-08",
+  "generated_at": "2026-09-09T19:27:49.765570-05:00",
+  "base_date": "2026-09-09",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
     "teleamazonas": "https://www.teleamazonas.com/programacion/",
@@ -13,30 +13,58 @@
   "cnn_en_espanol_days": 2,
   "ntn24_days": 2,
   "channels": 95,
-  "programmes": 10703,
+  "programmes": 11017,
   "teleamazonas_quito": 206,
   "teleamazonas_guayaquil": 206,
-  "ecuavisa": 30,
-  "ecuavisa_internacional": 88,
+  "ecuavisa": 106,
+  "ecuavisa_internacional": 96,
   "tvc": 156,
-  "cnn_en_espanol": 46,
+  "cnn_en_espanol": 49,
   "ntn24": 38,
   "tvc_source_mode": "official",
   "epgshare_resilient_channels": {
     "Canal.TC.Televisión.ec": {
       "name": "TC Televisión",
-      "source": "epgshare",
-      "programmes": 24
+      "source": "gatotv",
+      "programmes": 96,
+      "gatotv": "https://www.gatotv.com/canal/tc_television",
+      "gatotv_days": 4
     },
     "Canal.Gamavisión.ec": {
       "name": "Gamavisión",
-      "source": "epgshare",
-      "programmes": 27
+      "source": "bundled-weekly-grid",
+      "programmes": 170,
+      "fallback": "bundled Gamavisión weekly grid",
+      "fallback_revision": "gatotv-ecuador-week-2026-09-03_09-r1",
+      "fallback_timezone": "America/Guayaquil",
+      "reference_dates": {
+        "0": "2026-09-07",
+        "1": "2026-09-08",
+        "2": "2026-09-09",
+        "3": "2026-09-03",
+        "4": "2026-09-04",
+        "5": "2026-09-05",
+        "6": "2026-09-06"
+      },
+      "manual_offset_minutes": 0
     },
     "Canal.RTS.ec": {
       "name": "RTS",
-      "source": "epgshare",
-      "programmes": 21
+      "source": "bundled-weekly-grid",
+      "programmes": 157,
+      "fallback": "bundled RTS weekly grid",
+      "fallback_revision": "gatotv-ecuador-rts-week-2026-09-r1",
+      "fallback_timezone": "America/Guayaquil",
+      "reference_dates": {
+        "0": "weekday-pattern-2026-09-01_08_09",
+        "1": "2026-09-08",
+        "2": "2026-09-09",
+        "3": "weekday-pattern-2026-09-01_08_09",
+        "4": "weekday-pattern-2026-09-01_08_09",
+        "5": "2026-09-05",
+        "6": "2026-09-06"
+      },
+      "manual_offset_minutes": 0
     },
     "Canal.Ecuador.TV.ec": {
       "name": "Ecuador TV",
@@ -45,10 +73,30 @@
     },
     "Ecuavisa.ec": {
       "name": "Ecuavisa",
-      "source": "epgshare",
-      "programmes": 15
+      "source": "bundled-weekly-grid",
+      "programmes": 106,
+      "fallback": "bundled Ecuavisa weekly grid",
+      "fallback_revision": "ecuavisa-ecuador-week-2026-09-r1",
+      "fallback_timezone": "America/Guayaquil",
+      "reference_dates": {
+        "0": "weekday-pattern-2026-09-07_08 + official anchors",
+        "1": "2026-09-08 + official anchors",
+        "2": "weekday-pattern-2026-09-08 + official anchors (09 page empty)",
+        "3": "weekday-pattern-2026-09-03_08 + official anchors",
+        "4": "weekday-pattern-2026-09-04_08 + official anchors",
+        "5": "2026-09-05",
+        "6": "2026-09-06"
+      },
+      "manual_offset_minutes": 0,
+      "official_anchors": {
+        "Contacto directo en Televistazo": "06:55",
+        "Televistazo II": "13:00",
+        "Televistazo Estelar": "19:00"
+      }
     }
   },
-  "tc_source_mode": "epgshare",
-  "tc_programmes": 24
+  "tc_source_mode": "gatotv",
+  "tc_programmes": 96,
+  "tc_fallback": "https://www.gatotv.com/canal/tc_television",
+  "tc_gatotv_days": 4
 }
