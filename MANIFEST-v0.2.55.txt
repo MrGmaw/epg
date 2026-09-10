@@ -1,0 +1,7 @@
+EPG MrG v0.2.55 — overlay sobre v0.2.54
+
+VERSION
+scripts/add_asamblea_epg.py
+APLICAR-v0.2.55.py
+RELEASE-v0.2.55.md
+MANIFEST-v0.2.55.txt
