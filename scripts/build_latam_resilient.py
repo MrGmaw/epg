@@ -1,209 +1,144 @@
 #!/usr/bin/env python3
-"""Construye LATAM sin STAR TVE y con fuentes resilientes para canales mi.tv.
+"""EPG MrG v0.2.52 - capa resiliente de Telefe sobre el generador LATAM vigente.
 
-Reglas vigentes desde v0.2.35:
-- ``TVEStarHD.es`` permanece completamente excluido.
-- Antena 3, Star Channel, Warner Channel y HBO Family se obtienen desde el
-  endpoint asíncrono de mi.tv, interpretado como UTC y convertido a
-  ``America/Guayaquil`` por ``mitv_utc``.
-- ``Deutsche.Welle.cl`` conserva su tvg-id y posición canónica. Para DW se prueba
-  primero ``deutsche-welle-espanol`` y luego ``deutsche-welle-amerika`` en mi.tv.
-  Si ambos endpoints están vacíos/incompatibles, se usa exclusivamente la señal
-  española ``dw_latinoamerica`` de GatoTV para la misma ventana local.
-- No se aplican offsets manuales.
+Este archivo conserva el generador `build_latam_resilient.py` inmediatamente anterior
+cargándolo desde el historial Git local y añade únicamente una política adicional:
+
+    Telefe.ar: mi.tv -> GatoTV Telefe Argentina (fresco)
+
+GatoTV se interpreta en America/Argentina/Buenos_Aires y el generador común lo
+normaliza a America/Guayaquil. No hay offsets manuales ni parrilla semanal estática.
+
+La carga desde Git evita duplicar ~670 líneas del generador resiliente estable y hace
+que los hotfixes Ecuador v0.2.49-v0.2.51 permanezcan totalmente independientes.
 """
-
 from __future__ import annotations
 
+import importlib.util
 import json
-import sys
-from dataclasses import fields as dataclass_fields, is_dataclass, replace as dataclass_replace
-from datetime import date
+import os
 from pathlib import Path
-from typing import Callable
+import subprocess
+import sys
+import tempfile
+from datetime import date
+from types import ModuleType
+from typing import Any, Callable
 
-from lxml import etree
+EPG_MRG_TELEFE_WRAPPER_V052 = True
+VERSION = "0.2.52"
+TELEFE_ID = "Telefe.ar"
+TELEFE_GATOTV_SLUG = "telefe_argentina"
+TELEFE_GATOTV_SOURCE_URL = f"https://www.gatotv.com/canal/{TELEFE_GATOTV_SLUG}"
+TELEFE_SOURCE_TIMEZONE = "America/Argentina/Buenos_Aires"
+TELEFE_OUTPUT_TIMEZONE = "America/Guayaquil"
+TELEFE_MIN_PROGRAMMES = 5
 
-import build_latam_epg as latam
-import mitv_utc
-
-STAR_TVE_ID = "TVEStarHD.es"
-ANTENA3_ID = "Antena3-America.co"
-STAR_CHANNEL_ID = "Star-Channel.co"
-WARNER_CHANNEL_ID = "Warner-channel.co"
-HBO_FAMILY_ID = "HBO-Family.co"
-DW_ID = "Deutsche.Welle.cl"
-DW_OLD_SLUG = "deutsche-welle"
-DW_PRIMARY_SLUG = "deutsche-welle-espanol"
-DW_ALTERNATE_SLUG = "deutsche-welle-amerika"
-DW_OLD_SOURCE_URL = "https://mi.tv/cl/canales/deutsche-welle"
-DW_PRIMARY_SOURCE_URL = f"https://mi.tv/cl/canales/{DW_PRIMARY_SLUG}"
-DW_ALTERNATE_SOURCE_URL = f"https://mi.tv/cl/canales/{DW_ALTERNATE_SLUG}"
-DW_GATOTV_SLUG = "dw_latinoamerica"
-DW_GATOTV_SOURCE_URL = f"https://www.gatotv.com/canal/{DW_GATOTV_SLUG}"
-DW_MITV_CANDIDATES = (DW_PRIMARY_SLUG, DW_ALTERNATE_SLUG)
-ADDED_MITV_IDS = frozenset({ANTENA3_ID, STAR_CHANNEL_ID, WARNER_CHANNEL_ID, HBO_FAMILY_ID})
-REQUIRED_PROGRAMME_IDS = (
-    DW_ID,
-    ANTENA3_ID,
-    STAR_CHANNEL_ID,
-    WARNER_CHANNEL_ID,
-    HBO_FAMILY_ID,
-)
-EXPECTED_CHANNELS = 30
-EXPECTED_LATAM_IDS: tuple[str, ...] = (
-    "Canal.TC.Televisión.ec",
-    "Canal.Gamavisión.ec",
-    "Canal.RTS.ec",
-    "Canal.TVE.Internacional.(Televisión.Española).ec",
-    "TeleamazonasQuito.ec",
-    "TeleamazonasGuayaquil.ec",
-    "Ecuavisa.ec",
-    "EcuavisaInternacional.ec",
-    "TVC.ec",
-    "Canal.CNN.en.Español.ec",
-    "NTN24.co",
-    "CanalRCN.co",
-    "CaracolTV.co",
-    "Canal.Elgourmet.ec",
-    "Canal.History.co",
-    "Canal.History.2.co",
-    "TV.Publica.canal.7.ar",
-    "Telefe.ar",
-    DW_ID,
-    "hgtv.ar",
-    "France24Espanol.fr",
-    ANTENA3_ID,
-    STAR_CHANNEL_ID,
-    WARNER_CHANNEL_ID,
-    HBO_FAMILY_ID,
-    "Canal24Horas.es",
-    "La1.es",
-    "Clan.es",
-    "MakroDigitalTV.ec",
-    "Canal.Ecuador.TV.ec",
-)
-ADDED_MITV_CHANNELS: tuple[latam.MitvChannel, ...] = (
-    latam.MitvChannel(
-        "co",
-        "antena3",
-        ANTENA3_ID,
-        ("Antena 3", "Antena3"),
-        "https://mi.tv/co/canales/antena3",
-    ),
-    latam.MitvChannel(
-        "co",
-        "fox",
-        STAR_CHANNEL_ID,
-        ("Star Channel", "STAR Channel"),
-        "https://mi.tv/co/canales/fox",
-    ),
-    latam.MitvChannel(
-        "co",
-        "warner",
-        WARNER_CHANNEL_ID,
-        ("Warner Channel", "Warner"),
-        "https://mi.tv/co/canales/warner",
-    ),
-    latam.MitvChannel(
-        "co",
-        "hbo-family",
-        HBO_FAMILY_ID,
-        ("HBO Family",),
-        "https://mi.tv/co/canales/hbo-family",
-    ),
-)
-
-# Se guarda la función real de mitv_utc antes de sustituir el símbolo global que
-# build_latam_epg usa en tiempo de ejecución. Así el wrapper nunca se llama a sí
-# mismo y configure_channels() es idempotente.
-ORIGINAL_MITV_SCRAPER: Callable = mitv_utc.scrape_mitv_channel
-
-DW_LAST_SOURCE_MODE: str | None = None
-DW_LAST_SOURCE_URL: str | None = None
-DW_LAST_SOURCE_TIMEZONE: str | None = None
-DW_LAST_LOADED_DAYS = 0
-DW_LAST_DAILY_COUNTS: dict[str, int] = {}
-DW_LAST_MITV_ERRORS: list[str] = []
+TELEFE_LAST_SOURCE_MODE: str | None = None
+TELEFE_LAST_SOURCE_URL: str | None = None
+TELEFE_LAST_SOURCE_TIMEZONE: str | None = None
+TELEFE_LAST_LOADED_DAYS = 0
+TELEFE_LAST_DAILY_COUNTS: dict[str, int] = {}
+TELEFE_LAST_MITV_ERROR: str | None = None
 
 
-def _arg_path(argv: list[str], name: str, default: Path) -> Path:
-    prefix = name + "="
-    for index, value in enumerate(argv):
-        if value == name and index + 1 < len(argv):
-            return Path(argv[index + 1])
-        if value.startswith(prefix):
-            return Path(value.split("=", 1)[1])
-    return default
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parent.parent
 
 
-def _output_dir(argv: list[str]) -> Path:
-    return _arg_path(argv, "--output", Path("public"))
+def _read_base_bytes_from_git() -> bytes:
+    """Obtiene la última versión histórica que no sea este wrapper v0.2.52."""
+    override = os.environ.get("EPG_MRG_BASE_LATAM_RESILIENT")
+    if override:
+        path = Path(override)
+        data = path.read_bytes()
+        if not data:
+            raise RuntimeError(f"Base LATAM de prueba vacía: {path}")
+        return data
 
-
-def _replace_dw_mitv_config(config: latam.MitvChannel) -> latam.MitvChannel:
-    """Normaliza solo el slug/URL primario de DW, preservando demás campos."""
-    if is_dataclass(config):
-        updates: dict[str, object] = {}
-        for field in dataclass_fields(config):
-            value = getattr(config, field.name)
-            if field.name == "slug":
-                updates[field.name] = DW_PRIMARY_SLUG
-            elif value == DW_OLD_SOURCE_URL:
-                updates[field.name] = DW_PRIMARY_SOURCE_URL
-        if not updates:
-            raise RuntimeError("No se pudo identificar el slug de DW en MitvChannel.")
-        return dataclass_replace(config, **updates)
-
-    if hasattr(config, "_asdict") and hasattr(config, "_replace"):
-        values = config._asdict()
-        updates = {}
-        for name, value in values.items():
-            if name == "slug":
-                updates[name] = DW_PRIMARY_SLUG
-            elif value == DW_OLD_SOURCE_URL:
-                updates[name] = DW_PRIMARY_SOURCE_URL
-        if not updates:
-            raise RuntimeError("No se pudo identificar el slug de DW en MitvChannel.")
-        return config._replace(**updates)
-
+    root = _repo_root()
     try:
-        values = list(config)
-    except TypeError as exc:
-        raise RuntimeError("Tipo MitvChannel no soportado para normalizar DW.") from exc
-    if len(values) < 2:
-        raise RuntimeError("MitvChannel de DW no contiene suficientes campos.")
-    values[1] = DW_PRIMARY_SLUG
-    if len(values) >= 5 and values[4] == DW_OLD_SOURCE_URL:
-        values[4] = DW_PRIMARY_SOURCE_URL
-    return latam.MitvChannel(*values)
+        commits = subprocess.check_output(
+            [
+                "git", "log", "--format=%H", "--all", "--",
+                "scripts/build_latam_resilient.py",
+            ],
+            cwd=root,
+            text=True,
+            stderr=subprocess.STDOUT,
+        ).splitlines()
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise RuntimeError(
+            "v0.2.52 no pudo consultar el historial Git de build_latam_resilient.py."
+        ) from exc
 
-
-def _dw_gatotv_config() -> latam.GatoTvChannel:
-    """Configuración de respaldo para la señal DW en español de Latinoamérica."""
-    return latam.GatoTvChannel(
-        DW_GATOTV_SLUG,
-        DW_ID,
-        ("DW (Latinoamérica)", "Deutsche Welle Español", "DW Español"),
-        "https://www.dw.com/es/",
+    current_marker = b"EPG_MRG_TELEFE_WRAPPER_V052"
+    for commit in commits:
+        if not commit.strip():
+            continue
+        try:
+            data = subprocess.check_output(
+                ["git", "show", f"{commit}:scripts/build_latam_resilient.py"],
+                cwd=root,
+                stderr=subprocess.DEVNULL,
+            )
+        except (OSError, subprocess.CalledProcessError):
+            continue
+        if data and current_marker not in data:
+            return data
+    raise RuntimeError(
+        "v0.2.52 no encontró en el historial Git una base anterior utilizable de "
+        "scripts/build_latam_resilient.py."
     )
 
 
-def scrape_mitv_with_dw_fallback(
+def _load_base_module() -> ModuleType:
+    data = _read_base_bytes_from_git()
+    cache_dir = Path(tempfile.gettempdir()) / "epg-mrg-v052"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    path = cache_dir / "build_latam_resilient_base.py"
+    path.write_bytes(data)
+    spec = importlib.util.spec_from_file_location("_epg_mrg_latam_resilient_base_v052", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("v0.2.52 no pudo crear el módulo base LATAM.")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+_BASE = _load_base_module()
+_REAL_MITV_SCRAPER: Callable[..., Any] = _BASE.ORIGINAL_MITV_SCRAPER
+
+
+def _telefe_gatotv_config():
+    """Telefe Argentina: tabla 24 h del país de origen, nunca offset manual."""
+    return _BASE.latam.GatoTvChannel(
+        TELEFE_GATOTV_SLUG,
+        TELEFE_ID,
+        ("Telefe", "Telefé", "Telefe Argentina", "Telefé Argentina"),
+        "https://telefe.com/",
+        source_timezone=TELEFE_SOURCE_TIMEZONE,
+        prefer_ampm_local=False,
+    )
+
+
+def _mitv_with_telefe_fallback(
     *,
     country: str,
     slug: str,
     channel_id: str,
     start_date: date,
-    local_days: int = mitv_utc.MITV_LOCAL_MAX_DAYS,
-    pause_seconds: float = mitv_utc.MITV_REQUEST_PAUSE_SECONDS,
+    local_days: int = 2,
+    pause_seconds: float = 0.0,
 ):
-    """Usa mi.tv normalmente; DW prueba dos IDs y después GatoTV Latinoamérica."""
-    global DW_LAST_SOURCE_MODE, DW_LAST_SOURCE_URL, DW_LAST_SOURCE_TIMEZONE
-    global DW_LAST_LOADED_DAYS, DW_LAST_DAILY_COUNTS, DW_LAST_MITV_ERRORS
+    """Mantiene mi.tv para todos; solo Telefe cae a GatoTV si mi.tv es insuficiente."""
+    global TELEFE_LAST_SOURCE_MODE, TELEFE_LAST_SOURCE_URL
+    global TELEFE_LAST_SOURCE_TIMEZONE, TELEFE_LAST_LOADED_DAYS
+    global TELEFE_LAST_DAILY_COUNTS, TELEFE_LAST_MITV_ERROR
 
-    if channel_id != DW_ID:
-        return ORIGINAL_MITV_SCRAPER(
+    if channel_id != TELEFE_ID:
+        return _REAL_MITV_SCRAPER(
             country=country,
             slug=slug,
             channel_id=channel_id,
@@ -212,273 +147,132 @@ def scrape_mitv_with_dw_fallback(
             pause_seconds=pause_seconds,
         )
 
-    DW_LAST_SOURCE_MODE = None
-    DW_LAST_SOURCE_URL = None
-    DW_LAST_SOURCE_TIMEZONE = None
-    DW_LAST_LOADED_DAYS = 0
-    DW_LAST_DAILY_COUNTS = {}
-    DW_LAST_MITV_ERRORS = []
+    TELEFE_LAST_SOURCE_MODE = None
+    TELEFE_LAST_SOURCE_URL = None
+    TELEFE_LAST_SOURCE_TIMEZONE = None
+    TELEFE_LAST_LOADED_DAYS = 0
+    TELEFE_LAST_DAILY_COUNTS = {}
+    TELEFE_LAST_MITV_ERROR = None
 
-    # Aunque la configuración venga de una versión antigua, la política v0.2.35
-    # prueba explícitamente los dos IDs que mi.tv mantiene para DW en Chile.
-    for index, candidate_slug in enumerate(DW_MITV_CANDIDATES):
-        try:
-            programmes, loaded_days = ORIGINAL_MITV_SCRAPER(
-                country="cl",
-                slug=candidate_slug,
-                channel_id=channel_id,
-                start_date=start_date,
-                local_days=local_days,
-                pause_seconds=pause_seconds,
-            )
-        except RuntimeError as exc:
-            message = f"{candidate_slug}: {exc}"
-            DW_LAST_MITV_ERRORS.append(message)
-            if index + 1 < len(DW_MITV_CANDIDATES):
-                latam.epg.warn(
-                    f"DW: mi.tv {candidate_slug} no entregó parrilla utilizable; "
-                    f"se probará {DW_MITV_CANDIDATES[index + 1]}."
-                )
-            continue
-
-        DW_LAST_SOURCE_MODE = (
-            "mi-tv-primary" if candidate_slug == DW_PRIMARY_SLUG else "mi-tv-alternate"
+    try:
+        programmes, loaded_days = _REAL_MITV_SCRAPER(
+            country=country,
+            slug=slug,
+            channel_id=channel_id,
+            start_date=start_date,
+            local_days=local_days,
+            pause_seconds=pause_seconds,
         )
-        DW_LAST_SOURCE_URL = f"https://mi.tv/cl/canales/{candidate_slug}"
-        DW_LAST_SOURCE_TIMEZONE = "UTC"
-        DW_LAST_LOADED_DAYS = loaded_days
-        latam.epg.log(
-            f"DW: fuente seleccionada={DW_LAST_SOURCE_MODE}; slug={candidate_slug}; "
-            f"fechas_fuente={loaded_days}; UTC->America/Guayaquil; ajuste_manual=0min."
+    except RuntimeError as exc:
+        TELEFE_LAST_MITV_ERROR = str(exc)
+        _BASE.latam.epg.warn(
+            "Telefe.ar: mi.tv no cubrió la ventana local solicitada; "
+            f"se probará GatoTV fresco {TELEFE_GATOTV_SOURCE_URL}. Detalle: {exc}"
+        )
+    else:
+        TELEFE_LAST_SOURCE_MODE = "mi-tv-primary"
+        TELEFE_LAST_SOURCE_URL = f"https://mi.tv/{country}/canales/{slug}"
+        TELEFE_LAST_SOURCE_TIMEZONE = "UTC"
+        TELEFE_LAST_LOADED_DAYS = int(loaded_days)
+        _BASE.latam.epg.log(
+            f"Telefe.ar: mi.tv primario utilizable; días_fuente={loaded_days}; "
+            "UTC->America/Guayaquil; ajuste_manual=0min."
         )
         return programmes, loaded_days
 
-    latam.epg.warn(
-        "DW: los dos IDs de mi.tv Chile quedaron sin parrilla utilizable; "
-        f"se usará GatoTV {DW_GATOTV_SOURCE_URL} para la misma ventana local."
-    )
     try:
-        programmes, loaded_days, daily_counts = latam.scrape_gatotv_channel(
-            _dw_gatotv_config(),
+        programmes, loaded_days, daily_counts = _BASE.latam.scrape_gatotv_channel(
+            _telefe_gatotv_config(),
             start_date,
             local_days,
         )
     except RuntimeError as exc:
-        details = "; ".join(DW_LAST_MITV_ERRORS) or "sin detalle"
         raise RuntimeError(
-            "Deutsche.Welle.cl: fallaron ambos IDs de mi.tv y el respaldo "
-            f"GatoTV. mi.tv=[{details}]; GatoTV={exc}"
+            "Telefe.ar: mi.tv quedó incompleto y GatoTV Telefe Argentina tampoco "
+            f"entregó programación utilizable. mi.tv={TELEFE_LAST_MITV_ERROR}; "
+            f"GatoTV={exc}"
         ) from exc
 
-    if loaded_days < 1 or len(programmes) < 5:
+    if int(loaded_days) < 1 or len(programmes) < TELEFE_MIN_PROGRAMMES:
         raise RuntimeError(
-            "Deutsche.Welle.cl: GatoTV devolvió programación insuficiente "
-            f"({len(programmes)} emisiones; días={loaded_days})."
+            "Telefe.ar: GatoTV devolvió programación insuficiente después del fallo "
+            f"de mi.tv ({len(programmes)} emisiones; días={loaded_days})."
         )
 
-    DW_LAST_SOURCE_MODE = "gatotv-live"
-    DW_LAST_SOURCE_URL = DW_GATOTV_SOURCE_URL
-    DW_LAST_SOURCE_TIMEZONE = "America/Guayaquil"
-    DW_LAST_LOADED_DAYS = loaded_days
-    DW_LAST_DAILY_COUNTS = dict(daily_counts)
-    latam.epg.log(
-        f"DW: respaldo GatoTV activo; emisiones={len(programmes)}; "
-        f"días={loaded_days}; reloj=America/Guayaquil; ajuste_manual=0min."
+    TELEFE_LAST_SOURCE_MODE = "gatotv-live"
+    TELEFE_LAST_SOURCE_URL = TELEFE_GATOTV_SOURCE_URL
+    TELEFE_LAST_SOURCE_TIMEZONE = TELEFE_SOURCE_TIMEZONE
+    TELEFE_LAST_LOADED_DAYS = int(loaded_days)
+    TELEFE_LAST_DAILY_COUNTS = dict(daily_counts)
+    _BASE.latam.epg.log(
+        f"Telefe.ar: respaldo GatoTV activo; emisiones={len(programmes)}; "
+        f"días={loaded_days}; {TELEFE_SOURCE_TIMEZONE}->{TELEFE_OUTPUT_TIMEZONE}; "
+        "ajuste_manual=0min."
     )
-    # build_latam_epg espera el contrato de mi.tv: (programmes, loaded_days).
+    # Contrato esperado por build_latam_epg para los canales mi.tv.
     return programmes, loaded_days
 
 
-def configure_channels() -> None:
-    """Retira STAR TVE, normaliza DW y añade los cuatro canales mi.tv extra."""
-    latam.GATOTV_CHANNELS = tuple(
-        config for config in latam.GATOTV_CHANNELS if config.channel_id != STAR_TVE_ID
-    )
-
-    patched_mitv_channels: list[latam.MitvChannel] = []
-    dw_matches = 0
-    for config in latam.MITV_CHANNELS:
-        if config.channel_id == DW_ID:
-            config = _replace_dw_mitv_config(config)
-            dw_matches += 1
-        patched_mitv_channels.append(config)
-    if dw_matches != 1:
-        raise RuntimeError(
-            f"Se esperaba exactamente una configuración mi.tv para {DW_ID}; "
-            f"obtenidas={dw_matches}."
-        )
-
-    latam.MITV_CHANNELS = tuple(
-        config for config in patched_mitv_channels if config.channel_id not in ADDED_MITV_IDS
-    ) + ADDED_MITV_CHANNELS
-
-    # Intercepta solamente DW. El resto sigue llamando a mitv_utc sin cambios.
-    latam.scrape_mitv_channel = scrape_mitv_with_dw_fallback
-
-    latam.LATAM_CHANNEL_IDS = (
-        *latam.BASE_CHANNEL_IDS,
-        *(config.channel_id for config in latam.MITV_CHANNELS),
-        *(config.channel_id for config in latam.GATOTV_CHANNELS),
-        latam.MAKRODIGITAL_ID,
-        latam.ECUADOR_TV_ID,
-    )
-
-    if STAR_TVE_ID in latam.LATAM_CHANNEL_IDS:
-        raise RuntimeError("STAR TVE reapareció en LATAM_CHANNEL_IDS.")
-    if any(config.channel_id == STAR_TVE_ID for config in latam.GATOTV_CHANNELS):
-        raise RuntimeError("STAR TVE reapareció en GATOTV_CHANNELS.")
-    if len(latam.LATAM_CHANNEL_IDS) != EXPECTED_CHANNELS:
-        raise RuntimeError(
-            f"La guía debe contener {EXPECTED_CHANNELS} canales; "
-            f"obtenidos={len(latam.LATAM_CHANNEL_IDS)}."
-        )
-    if len(set(latam.LATAM_CHANNEL_IDS)) != EXPECTED_CHANNELS:
-        raise RuntimeError("La guía LATAM contiene IDs duplicados.")
-    if tuple(latam.LATAM_CHANNEL_IDS) != EXPECTED_LATAM_IDS:
-        raise RuntimeError(
-            "El orden/identidad de LATAM_CHANNEL_IDS no coincide con los 30 IDs "
-            "canónicos de v0.2.38 antes de añadir Miami."
-        )
-    for channel_id in ADDED_MITV_IDS:
-        if channel_id not in latam.LATAM_CHANNEL_IDS:
-            raise RuntimeError(f"Falta el nuevo canal {channel_id}.")
-
-    dw_configs = [config for config in latam.MITV_CHANNELS if config.channel_id == DW_ID]
-    if len(dw_configs) != 1 or dw_configs[0].slug != DW_PRIMARY_SLUG:
-        raise RuntimeError("La configuración primaria de Deutsche.Welle.cl no es la esperada.")
+# El wrapper DW de la base llama a ORIGINAL_MITV_SCRAPER; al sustituirlo aquí,
+# Telefe obtiene su fallback sin alterar la lógica especial de DW.
+_BASE.ORIGINAL_MITV_SCRAPER = _mitv_with_telefe_fallback
 
 
-def _clean_and_annotate_status(output_dir: Path) -> None:
-    """Limpia STAR TVE y registra la fuente que realmente produjo DW."""
-    status_path = output_dir / "latam-status.json"
-    if not status_path.is_file():
+def _annotate_telefe_status(output_dir: Path) -> None:
+    path = output_dir / "latam-status.json"
+    if not path.is_file() or TELEFE_LAST_SOURCE_MODE is None:
         return
-
-    status = json.loads(status_path.read_text(encoding="utf-8"))
-    for key in list(status):
-        if key.startswith("star_tve_"):
-            status.pop(key, None)
-
-    for key in (
-        "programme_counts",
-        "gatotv_source_days",
-        "gatotv_daily_counts",
-        "gatotv_source_timezones",
-        "gatotv_ampm_local_preferred",
-    ):
-        value = status.get(key)
-        if isinstance(value, dict):
-            value.pop(STAR_TVE_ID, None)
-
-    sources = status.get("sources")
-    if isinstance(sources, dict):
-        gato_tv = sources.get("gato_tv")
-        if isinstance(gato_tv, dict):
-            gato_tv.pop(STAR_TVE_ID, None)
-
-    status["channels"] = EXPECTED_CHANNELS
-    status.pop("mitv_local_time_channels", None)
-    status["mitv_endpoint_time_channels"] = {
-        ANTENA3_ID: {
-            "source": "https://mi.tv/co/canales/antena3",
-            "endpoint_timezone": "UTC",
-            "output_timezone": "America/Guayaquil",
-            "conversion": "UTC->America/Guayaquil",
-        },
-        STAR_CHANNEL_ID: {
-            "source": "https://mi.tv/co/canales/fox",
-            "endpoint_timezone": "UTC",
-            "output_timezone": "America/Guayaquil",
-            "conversion": "UTC->America/Guayaquil",
-        },
-        WARNER_CHANNEL_ID: {
-            "source": "https://mi.tv/co/canales/warner",
-            "endpoint_timezone": "UTC",
-            "output_timezone": "America/Guayaquil",
-            "conversion": "UTC->America/Guayaquil",
-        },
-        HBO_FAMILY_ID: {
-            "source": "https://mi.tv/co/canales/hbo-family",
-            "endpoint_timezone": "UTC",
-            "output_timezone": "America/Guayaquil",
-            "conversion": "UTC->America/Guayaquil",
-        },
-    }
-
-    if isinstance(sources, dict):
-        mi_tv_sources = sources.get("mi_tv")
-        if isinstance(mi_tv_sources, dict):
-            mi_tv_sources[ANTENA3_ID] = "https://mi.tv/co/canales/antena3"
-            mi_tv_sources[STAR_CHANNEL_ID] = "https://mi.tv/co/canales/fox"
-            mi_tv_sources[WARNER_CHANNEL_ID] = "https://mi.tv/co/canales/warner"
-            mi_tv_sources[HBO_FAMILY_ID] = "https://mi.tv/co/canales/hbo-family"
-
-    if DW_LAST_SOURCE_MODE is None or DW_LAST_SOURCE_URL is None:
-        raise RuntimeError("DW terminó la generación sin registrar una fuente efectiva.")
-
-    status["dw_source_policy"] = {
-        "mode": DW_LAST_SOURCE_MODE,
-        "source": DW_LAST_SOURCE_URL,
-        "source_timezone": DW_LAST_SOURCE_TIMEZONE,
-        "output_timezone": "America/Guayaquil",
+    status = json.loads(path.read_text(encoding="utf-8"))
+    status["telefe_hotfix_version"] = VERSION
+    status["telefe_source_policy"] = {
+        "mode": TELEFE_LAST_SOURCE_MODE,
+        "source": TELEFE_LAST_SOURCE_URL,
+        "source_timezone": TELEFE_LAST_SOURCE_TIMEZONE,
+        "output_timezone": TELEFE_OUTPUT_TIMEZONE,
         "manual_offset_minutes": 0,
-        "loaded_days": DW_LAST_LOADED_DAYS,
-        "mi_tv_candidates": [
-            DW_PRIMARY_SOURCE_URL,
-            DW_ALTERNATE_SOURCE_URL,
-        ],
-        "gatotv_fallback": DW_GATOTV_SOURCE_URL,
-        "mi_tv_errors": list(DW_LAST_MITV_ERRORS),
+        "loaded_days": TELEFE_LAST_LOADED_DAYS,
+        "mi_tv_error": TELEFE_LAST_MITV_ERROR,
+        "gatotv_fallback": TELEFE_GATOTV_SOURCE_URL,
+        "gatotv_source_timezone": TELEFE_SOURCE_TIMEZONE,
+        "daily_counts": dict(TELEFE_LAST_DAILY_COUNTS),
     }
 
-    if DW_LAST_SOURCE_MODE.startswith("mi-tv-"):
-        status["mitv_endpoint_time_channels"][DW_ID] = {
-            "source": DW_LAST_SOURCE_URL,
-            "endpoint_timezone": "UTC",
-            "output_timezone": "America/Guayaquil",
-            "conversion": "UTC->America/Guayaquil",
-        }
+    if TELEFE_LAST_SOURCE_MODE == "gatotv-live":
+        sources = status.get("sources")
         if isinstance(sources, dict):
             mi_tv = sources.get("mi_tv")
             if isinstance(mi_tv, dict):
-                mi_tv[DW_ID] = DW_LAST_SOURCE_URL
-    elif DW_LAST_SOURCE_MODE == "gatotv-live":
-        mitv_days = status.get("mitv_source_days")
-        if isinstance(mitv_days, dict):
-            mitv_days.pop(DW_ID, None)
-        gatotv_days = status.get("gatotv_source_days")
-        if isinstance(gatotv_days, dict):
-            gatotv_days[DW_ID] = DW_LAST_LOADED_DAYS
-        daily_counts = status.get("gatotv_daily_counts")
-        if isinstance(daily_counts, dict):
-            daily_counts[DW_ID] = dict(DW_LAST_DAILY_COUNTS)
-        source_tzs = status.get("gatotv_source_timezones")
-        if isinstance(source_tzs, dict):
-            source_tzs[DW_ID] = "America/Guayaquil"
-        ampm_flags = status.get("gatotv_ampm_local_preferred")
-        if isinstance(ampm_flags, dict):
-            ampm_flags[DW_ID] = False
-        if isinstance(sources, dict):
-            mi_tv = sources.get("mi_tv")
-            if isinstance(mi_tv, dict):
-                mi_tv.pop(DW_ID, None)
+                mi_tv.pop(TELEFE_ID, None)
             gato_tv = sources.get("gato_tv")
             if isinstance(gato_tv, dict):
-                gato_tv[DW_ID] = DW_GATOTV_SOURCE_URL
+                gato_tv[TELEFE_ID] = TELEFE_GATOTV_SOURCE_URL
+        mitv_days = status.get("mitv_source_days")
+        if isinstance(mitv_days, dict):
+            mitv_days.pop(TELEFE_ID, None)
+        gatotv_days = status.get("gatotv_source_days")
+        if isinstance(gatotv_days, dict):
+            gatotv_days[TELEFE_ID] = TELEFE_LAST_LOADED_DAYS
+        daily = status.get("gatotv_daily_counts")
+        if isinstance(daily, dict):
+            daily[TELEFE_ID] = dict(TELEFE_LAST_DAILY_COUNTS)
+        tzs = status.get("gatotv_source_timezones")
+        if isinstance(tzs, dict):
+            tzs[TELEFE_ID] = TELEFE_SOURCE_TIMEZONE
+        ampm = status.get("gatotv_ampm_local_preferred")
+        if isinstance(ampm, dict):
+            ampm[TELEFE_ID] = False
 
-    status_path.write_text(
+    path.write_text(
         json.dumps(status, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
         newline="\n",
     )
 
 
-def _assert_output(output_dir: Path) -> None:
-    """Guardia final: 30 canales base, programación útil y fuentes trazables."""
-    xml_path = output_dir / "latam.xml"
-    if not xml_path.is_file():
-        raise RuntimeError("No se generó latam.xml.")
+def _assert_telefe_output(output_dir: Path) -> None:
+    from lxml import etree
 
+    xml_path = output_dir / "latam.xml"
     parser = etree.XMLParser(
         resolve_entities=False,
         load_dtd=False,
@@ -487,226 +281,105 @@ def _assert_output(output_dir: Path) -> None:
         huge_tree=True,
     )
     root = etree.parse(str(xml_path), parser).getroot()
-
-    if root.xpath("./channel[@id=$channel_id]", channel_id=STAR_TVE_ID):
-        raise RuntimeError("latam.xml todavía contiene STAR TVE.")
-    if root.xpath("./programme[@channel=$channel_id]", channel_id=STAR_TVE_ID):
-        raise RuntimeError("latam.xml todavía contiene emisiones STAR TVE.")
-
-    channel_ids = [node.get("id", "") for node in root.findall("channel")]
-    if len(channel_ids) != EXPECTED_CHANNELS or len(set(channel_ids)) != EXPECTED_CHANNELS:
+    channels = root.xpath("./channel[@id=$channel_id]", channel_id=TELEFE_ID)
+    if len(channels) != 1:
+        raise RuntimeError(f"v0.2.52 esperaba exactamente un canal {TELEFE_ID}.")
+    programmes = root.xpath("./programme[@channel=$channel_id]", channel_id=TELEFE_ID)
+    if len(programmes) < TELEFE_MIN_PROGRAMMES:
         raise RuntimeError(
-            f"latam.xml debe contener {EXPECTED_CHANNELS} canales únicos; "
-            f"obtenidos={len(channel_ids)}."
+            f"v0.2.52: Telefe.ar quedó con solo {len(programmes)} emisiones."
         )
-    if tuple(channel_ids) != EXPECTED_LATAM_IDS:
-        raise RuntimeError(
-            "latam.xml contiene 30 canales base, pero su orden/identidad no coincide "
-            "con la secuencia canónica de v0.2.38."
-        )
-
-    for channel_id in REQUIRED_PROGRAMME_IDS:
-        if channel_id not in channel_ids:
-            raise RuntimeError(f"latam.xml no contiene {channel_id}.")
-        programmes = root.xpath("./programme[@channel=$channel_id]", channel_id=channel_id)
-        if len(programmes) < 5:
-            raise RuntimeError(
-                f"latam.xml contiene programación insuficiente para {channel_id}: "
-                f"{len(programmes)} emisiones."
-            )
-        for programme in programmes:
-            if not programme.get("start", "").endswith(" -0500"):
-                raise RuntimeError(f"Hora no Guayaquil en {channel_id}: {programme.get('start')}")
-            if not programme.get("stop", "").endswith(" -0500"):
-                raise RuntimeError(f"Hora no Guayaquil en {channel_id}: {programme.get('stop')}")
-
-    status_path = output_dir / "latam-status.json"
-    status = json.loads(status_path.read_text(encoding="utf-8"))
-    if int(status.get("channels", 0)) != EXPECTED_CHANNELS:
-        raise RuntimeError("latam-status.json no informa 30 canales base.")
-    counts = status.get("programme_counts", {})
-    for channel_id in REQUIRED_PROGRAMME_IDS:
-        if int(counts.get(channel_id, 0)) < 5:
-            raise RuntimeError(f"latam-status.json no registra programación de {channel_id}.")
-
-    endpoint_modes = status.get("mitv_endpoint_time_channels", {})
-    expected_sources = {
-        ANTENA3_ID: "https://mi.tv/co/canales/antena3",
-        STAR_CHANNEL_ID: "https://mi.tv/co/canales/fox",
-        WARNER_CHANNEL_ID: "https://mi.tv/co/canales/warner",
-        HBO_FAMILY_ID: "https://mi.tv/co/canales/hbo-family",
-    }
-    for channel_id, source_url in expected_sources.items():
-        mode = endpoint_modes.get(channel_id, {})
-        if mode.get("source") != source_url:
-            raise RuntimeError(f"Fuente mi.tv inesperada para {channel_id}.")
-        if (
-            mode.get("endpoint_timezone") != "UTC"
-            or mode.get("output_timezone") != "America/Guayaquil"
-            or mode.get("conversion") != "UTC->America/Guayaquil"
-        ):
-            raise RuntimeError(f"Política horaria inesperada para {channel_id}: {mode!r}")
-
-    dw_policy = status.get("dw_source_policy", {})
-    mode = dw_policy.get("mode")
-    source = dw_policy.get("source")
-    expected_dw_sources = {
-        "mi-tv-primary": DW_PRIMARY_SOURCE_URL,
-        "mi-tv-alternate": DW_ALTERNATE_SOURCE_URL,
-        "gatotv-live": DW_GATOTV_SOURCE_URL,
-    }
-    if mode not in expected_dw_sources or source != expected_dw_sources[mode]:
-        raise RuntimeError(f"Fuente efectiva inesperada para DW: {dw_policy!r}")
-    expected_tz = "America/Guayaquil" if mode == "gatotv-live" else "UTC"
-    if dw_policy.get("source_timezone") != expected_tz:
-        raise RuntimeError(f"Zona fuente inesperada para DW: {dw_policy!r}")
-    if dw_policy.get("output_timezone") != "America/Guayaquil":
-        raise RuntimeError(f"Zona destino inesperada para DW: {dw_policy!r}")
-    if int(dw_policy.get("manual_offset_minutes", -999)) != 0:
-        raise RuntimeError(f"DW no debe usar offset manual: {dw_policy!r}")
-
-
-def _sample_page(times_and_titles: list[tuple[str, str]]) -> str:
-    items = "\n".join(
-        """
-        <li><a><div class="content">
-          <span class="time">{clock}</span>
-          <h2>{title}</h2>
-          <p class="synopsis">Prueba endpoint UTC de mi.tv</p>
-        </div></a></li>
-        """.format(clock=clock, title=title)
-        for clock, title in times_and_titles
-    )
-    return f'<div id="listings"><ul>{items}</ul></div>'
+    for item in programmes:
+        if not item.get("start", "").endswith(" -0500"):
+            raise RuntimeError(f"Telefe.ar start no Guayaquil: {item.get('start')}")
+        if not item.get("stop", "").endswith(" -0500"):
+            raise RuntimeError(f"Telefe.ar stop no Guayaquil: {item.get('stop')}")
 
 
 def self_test() -> None:
-    global ORIGINAL_MITV_SCRAPER
+    """Ejecuta pruebas heredadas y verifica la nueva ruta Telefe -> GatoTV."""
+    global _REAL_MITV_SCRAPER
 
-    configure_channels()
-    assert len(latam.LATAM_CHANNEL_IDS) == EXPECTED_CHANNELS
-    assert tuple(latam.LATAM_CHANNEL_IDS) == EXPECTED_LATAM_IDS
-    assert STAR_TVE_ID not in latam.LATAM_CHANNEL_IDS
-    assert ANTENA3_ID in latam.LATAM_CHANNEL_IDS
-    assert STAR_CHANNEL_ID in latam.LATAM_CHANNEL_IDS
-    assert WARNER_CHANNEL_ID in latam.LATAM_CHANNEL_IDS
-    assert HBO_FAMILY_ID in latam.LATAM_CHANNEL_IDS
-    dw_configs = [config for config in latam.MITV_CHANNELS if config.channel_id == DW_ID]
-    assert len(dw_configs) == 1
-    assert dw_configs[0].slug == DW_PRIMARY_SLUG
-    assert latam.scrape_mitv_channel is scrape_mitv_with_dw_fallback
+    # Primero todas las regresiones históricas del generador resiliente.
+    _BASE.self_test()
 
-    sample = _sample_page(
-        [
-            ("3:00pm", "Programa 1"),
-            ("4:00pm", "Programa 2"),
-            ("5:00pm", "Programa 3"),
-            ("6:00pm", "Programa 4"),
-            ("7:00pm", "Programa 5"),
-            ("8:00pm", "Programa 6"),
-        ]
-    )
-    programmes = mitv_utc.parse_mitv_page_utc(
-        sample, date(2026, 8, 21), ANTENA3_ID
-    )
-    assert programmes[0].start.isoformat() == "2026-08-21T10:00:00-05:00"
-    assert programmes[0].stop.isoformat() == "2026-08-21T11:00:00-05:00"
-    assert programmes[0].channel_id == ANTENA3_ID
+    real_scraper = _REAL_MITV_SCRAPER
+    real_gatotv = _BASE.latam.scrape_gatotv_channel
+    seen: list[str] = []
 
-    programmes_star = mitv_utc.parse_mitv_page_utc(
-        sample, date(2026, 8, 21), STAR_CHANNEL_ID
-    )
-    assert programmes_star[0].start.isoformat() == "2026-08-21T10:00:00-05:00"
-
-    programmes_warner = mitv_utc.parse_mitv_page_utc(
-        sample, date(2026, 8, 21), WARNER_CHANNEL_ID
-    )
-    assert programmes_warner[0].start.isoformat() == "2026-08-21T10:00:00-05:00"
-
-    programmes_hbo = mitv_utc.parse_mitv_page_utc(
-        sample, date(2026, 8, 21), HBO_FAMILY_ID
-    )
-    assert programmes_hbo[0].start.isoformat() == "2026-08-21T10:00:00-05:00"
-
-    # Prueba 1: slug primario falla y el ID alternativo de mi.tv funciona.
-    real_mitv = ORIGINAL_MITV_SCRAPER
-    real_gatotv = latam.scrape_gatotv_channel
-    calls: list[str] = []
-
-    def fake_mitv(**kwargs):
-        candidate = kwargs["slug"]
-        calls.append(candidate)
-        if candidate == DW_PRIMARY_SLUG:
-            raise RuntimeError("0/3 simulado")
+    def fail_telefe(**kwargs):
+        seen.append(kwargs["channel_id"])
+        if kwargs["channel_id"] == TELEFE_ID:
+            raise RuntimeError(
+                "mi.tv Telefe.ar: no se obtuvo programación suficiente "
+                "(fechas UTC cargadas: 1/3)."
+            )
         return [object()] * 8, 2
 
+    def fake_gatotv(config, start_date, days):
+        assert config.channel_id == TELEFE_ID
+        assert config.slug == TELEFE_GATOTV_SLUG
+        assert config.source_timezone == TELEFE_SOURCE_TIMEZONE
+        assert config.prefer_ampm_local is False
+        assert days == 2
+        return [object()] * 12, 2, {
+            "2026-09-09": 6,
+            "2026-09-10": 6,
+        }
+
     try:
-        ORIGINAL_MITV_SCRAPER = fake_mitv
-        result, loaded = scrape_mitv_with_dw_fallback(
-            country="cl",
-            slug=DW_PRIMARY_SLUG,
-            channel_id=DW_ID,
-            start_date=date(2026, 8, 26),
+        _REAL_MITV_SCRAPER = fail_telefe
+        _BASE.latam.scrape_gatotv_channel = fake_gatotv
+        programmes, loaded = _mitv_with_telefe_fallback(
+            country="ar",
+            slug="telefe",
+            channel_id=TELEFE_ID,
+            start_date=date(2026, 9, 9),
             local_days=2,
             pause_seconds=0,
         )
-        assert len(result) == 8 and loaded == 2
-        assert calls == [DW_PRIMARY_SLUG, DW_ALTERNATE_SLUG]
-        assert DW_LAST_SOURCE_MODE == "mi-tv-alternate"
-        assert DW_LAST_SOURCE_URL == DW_ALTERNATE_SOURCE_URL
-
-        # Prueba 2: ambos IDs mi.tv fallan y entra GatoTV Latinoamérica.
-        calls.clear()
-
-        def all_mitv_fail(**kwargs):
-            calls.append(kwargs["slug"])
-            raise RuntimeError("0/3 simulado")
-
-        def fake_gatotv(config, start_date, days):
-            assert config.channel_id == DW_ID
-            assert config.slug == DW_GATOTV_SLUG
-            assert days == 2
-            return [object()] * 10, 2, {
-                "2026-08-26": 5,
-                "2026-08-27": 5,
-            }
-
-        ORIGINAL_MITV_SCRAPER = all_mitv_fail
-        latam.scrape_gatotv_channel = fake_gatotv
-        result, loaded = scrape_mitv_with_dw_fallback(
-            country="cl",
-            slug=DW_PRIMARY_SLUG,
-            channel_id=DW_ID,
-            start_date=date(2026, 8, 26),
-            local_days=2,
-            pause_seconds=0,
-        )
-        assert len(result) == 10 and loaded == 2
-        assert calls == [DW_PRIMARY_SLUG, DW_ALTERNATE_SLUG]
-        assert DW_LAST_SOURCE_MODE == "gatotv-live"
-        assert DW_LAST_SOURCE_URL == DW_GATOTV_SOURCE_URL
-        assert DW_LAST_SOURCE_TIMEZONE == "America/Guayaquil"
-        assert DW_LAST_DAILY_COUNTS == {"2026-08-26": 5, "2026-08-27": 5}
+        assert len(programmes) == 12
+        assert loaded == 2
+        assert seen == [TELEFE_ID]
+        assert TELEFE_LAST_SOURCE_MODE == "gatotv-live"
+        assert TELEFE_LAST_SOURCE_URL == TELEFE_GATOTV_SOURCE_URL
+        assert TELEFE_LAST_SOURCE_TIMEZONE == TELEFE_SOURCE_TIMEZONE
+        assert TELEFE_LAST_DAILY_COUNTS == {"2026-09-09": 6, "2026-09-10": 6}
     finally:
-        ORIGINAL_MITV_SCRAPER = real_mitv
-        latam.scrape_gatotv_channel = real_gatotv
+        _REAL_MITV_SCRAPER = real_scraper
+        _BASE.latam.scrape_gatotv_channel = real_gatotv
 
     print(
-        "Prueba v0.2.38 correcta: 30 canales base; STAR TVE excluido; DW="
-        "mi.tv espanol -> mi.tv amerika -> GatoTV dw_latinoamerica; "
-        "Antena 3/Star Channel/Warner/HBO Family conservan UTC -> "
-        "America/Guayaquil; offsets manuales=0."
+        "Prueba v0.2.52 correcta: Telefe.ar conserva mi.tv como primario; si mi.tv "
+        "queda incompleto entra GatoTV telefe_argentina fresco, reloj "
+        "America/Argentina/Buenos_Aires -> America/Guayaquil, offset manual=0."
     )
 
 
 def main() -> int:
-    configure_channels()
-    result = latam.main()
+    result = _BASE.main()
     if result == 0:
-        output_dir = _output_dir(sys.argv[1:])
-        _clean_and_annotate_status(output_dir)
-        _assert_output(output_dir)
+        # _BASE.main ya hizo sus validaciones heredadas.
+        output_dir = _BASE._output_dir(sys.argv[1:])
+        _annotate_telefe_status(output_dir)
+        _assert_telefe_output(output_dir)
     return result
+
+
+# Reexporta la API que consume el validador final del workflow.
+for _name in (
+    "EXPECTED_LATAM_IDS",
+    "EXPECTED_CHANNELS",
+    "REQUIRED_PROGRAMME_IDS",
+    "STAR_TVE_ID",
+    "ANTENA3_ID",
+    "STAR_CHANNEL_ID",
+    "WARNER_CHANNEL_ID",
+    "HBO_FAMILY_ID",
+    "DW_ID",
+):
+    if hasattr(_BASE, _name):
+        globals()[_name] = getattr(_BASE, _name)
 
 
 if __name__ == "__main__":
@@ -715,6 +388,6 @@ if __name__ == "__main__":
         raise SystemExit(0)
     try:
         raise SystemExit(main())
-    except (etree.XMLSyntaxError, OSError, RuntimeError, ValueError, json.JSONDecodeError) as exc:
+    except (OSError, RuntimeError, ValueError, json.JSONDecodeError, _BASE.etree.XMLSyntaxError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr, flush=True)
         raise SystemExit(1)
