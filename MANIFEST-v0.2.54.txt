@@ -1,0 +1,11 @@
+EPG MrG v0.2.54 — overlay sobre v0.2.53
+
+Archivos:
+VERSION
+scripts/build_latam_resilient.py
+scripts/add_star_tve.py
+RELEASE-v0.2.54.md
+MANIFEST-v0.2.54.txt
+
+Corrección: latam-status.json.version siempre refleja VERSION global del repositorio.
+No cambia horarios, fuentes ni fallbacks.
