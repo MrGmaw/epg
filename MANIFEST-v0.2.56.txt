@@ -1,0 +1,13 @@
+EPG MrG v0.2.56 — overlay directo sobre el repositorio actual
+
+REEMPLAZAR:
+- VERSION
+- .github/workflows/actualizar-epg.yml
+- scripts/add_asamblea_epg.py
+
+INFORMATIVOS:
+- RELEASE-v0.2.56.md
+- MANIFEST-v0.2.56.txt
+
+No requiere instalador local.
+No contiene __pycache__ ni .pyc.
