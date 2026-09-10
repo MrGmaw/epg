@@ -1,0 +1,9 @@
+EPG MrG v0.2.57 — overlay directo sobre v0.2.56
+
+REEMPLAZAR:
+VERSION
+.github/workflows/actualizar-epg.yml
+scripts/add_asamblea_epg.py
+
+NO requiere instalador local.
+Después de subir a main: Actions -> Actualizar EPG Ecuador y Latinoamérica -> Run workflow.
