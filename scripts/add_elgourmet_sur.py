@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EPG MrG v0.2.61: añade El Gourmet Sur desde mi.tv Argentina.
+"""EPG MrG v0.2.62: añade El Gourmet Sur desde mi.tv Argentina.
 
 Fuente de programación:
     https://mi.tv/ar/canales/el-gourmet
@@ -339,6 +339,16 @@ def add_channel(
     status = json.loads(status_path.read_text(encoding="utf-8"))
     status["version"] = _repo_version()
     status["channels"] = EXPECTED_FINAL_CHANNELS
+
+    # ``validate_outputs.py`` exige que cada canal incluido en LATAM tenga su
+    # conteo global en ``programme_counts``.  El bloque específico
+    # ``elgourmet_sur_epg["programmes"]`` no sustituye este mapa global.
+    counts = status.get("programme_counts")
+    if not isinstance(counts, dict):
+        counts = {}
+        status["programme_counts"] = counts
+    counts[CHANNEL_ID] = int(programme_count)
+
     sources = status.setdefault("sources", {})
     if isinstance(sources, dict):
         mi_tv = sources.setdefault("mi_tv", {})
@@ -411,7 +421,7 @@ def self_test() -> None:
     assert OUTPUT_TIMEZONE == "America/Guayaquil"
     assert MANUAL_OFFSET_MINUTES == 0
     print(
-        "Prueba v0.2.61 correcta: Canal.Elgourmet.ar se inserta como canal 37, "
+        "Prueba v0.2.62 correcta: Canal.Elgourmet.ar se inserta como canal 37, "
         "mi.tv Argentina UTC->America/Guayaquil, logo local y offset manual 0."
     )
 
