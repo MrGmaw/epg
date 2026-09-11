@@ -68,6 +68,7 @@ jobs:
             scripts/add_v039_channels.py \
             scripts/add_star_tve.py \
             scripts/add_asamblea_epg.py \
+            scripts/add_elgourmet_sur.py \
             scripts/patch_dw_mitv.py
 
       - name: Instalar dependencias
@@ -106,7 +107,8 @@ jobs:
             scripts/add_miami_epg.py \
             scripts/add_v039_channels.py \
             scripts/add_star_tve.py \
-            scripts/add_asamblea_epg.py
+            scripts/add_asamblea_epg.py \
+            scripts/add_elgourmet_sur.py
           python -m py_compile scripts/*.py
           python - <<'PYIMPORT'
           import sys
@@ -119,7 +121,8 @@ jobs:
           import add_v039_channels  # noqa: F401
           import add_star_tve  # noqa: F401
           import add_asamblea_epg  # noqa: F401
-          print("Importación real de generadores, Miami, v0.2.39, STAR TVE y Asamblea Nacional correcta.")
+          import add_elgourmet_sur  # noqa: F401
+          print("Importación real de generadores, Miami, v0.2.39, STAR TVE, Asamblea Nacional y El Gourmet Sur correcta.")
           PYIMPORT
 
       - name: Preparar directorio público
@@ -186,6 +189,7 @@ jobs:
           python scripts/add_v039_channels.py --self-test
           python scripts/add_star_tve.py --self-test
           python scripts/add_asamblea_epg.py --self-test
+          python scripts/add_elgourmet_sur.py --self-test
           python scripts/mitv_logos.py --self-test
 
       - name: Construir guía principal ec.xml
@@ -271,7 +275,7 @@ jobs:
             --days "${GUIDE_DAYS}" \
             --previous-latam-xml .cache/previous-latam.xml
 
-      - name: Añadir TVL Asamblea Nacional v0.2.58
+      - name: Añadir TVL Asamblea Nacional v0.2.59
         shell: bash
         env:
           TZ: America/Guayaquil
@@ -282,7 +286,20 @@ jobs:
             --days "${GUIDE_DAYS}" \
             --previous-latam-xml .cache/previous-latam.xml
 
-      - name: Validar archivos finales v0.2.58
+      - name: Añadir El Gourmet Sur v0.2.59
+        shell: bash
+        env:
+          TZ: America/Guayaquil
+        run: |
+          set -euo pipefail
+          python scripts/add_elgourmet_sur.py \
+            --output public \
+            --days "${GUIDE_DAYS}" \
+            --previous-latam-xml .cache/previous-latam.xml \
+            --logos-manifest public/logos/manifest.json
+          test -s public/logos/Canal.Elgourmet.ar.png
+
+      - name: Validar archivos finales v0.2.59
         shell: bash
         run: |
           set -euo pipefail
@@ -311,9 +328,11 @@ jobs:
           import add_v039_channels as v039
           import add_star_tve as star
           import add_asamblea_epg as asamblea
+          import add_elgourmet_sur as gourmet_sur
 
           STAR_ID = star.STAR_ID
           ASAMBLEA_ID = asamblea.CHANNEL_ID
+          GOURMET_SUR_ID = gourmet_sur.CHANNEL_ID
           REQUIRED = (
               "Deutsche.Welle.cl",
               "Antena3-America.co",
@@ -324,6 +343,7 @@ jobs:
               *v039.TARGET_IDS,
               *star.TARGET_IDS,
               *asamblea.TARGET_IDS,
+              *gourmet_sur.TARGET_IDS,
           )
           validate.LATAM_REQUIRED = (
               *resilient.EXPECTED_LATAM_IDS,
@@ -331,10 +351,12 @@ jobs:
               *v039.TARGET_IDS,
               *star.TARGET_IDS,
               *asamblea.TARGET_IDS,
+              *gourmet_sur.TARGET_IDS,
           )
-          assert len(validate.LATAM_REQUIRED) == 36, validate.LATAM_REQUIRED
+          assert len(validate.LATAM_REQUIRED) == 37, validate.LATAM_REQUIRED
           assert STAR_ID in validate.LATAM_REQUIRED
           assert ASAMBLEA_ID in validate.LATAM_REQUIRED
+          assert GOURMET_SUR_ID in validate.LATAM_REQUIRED
           assert all(channel_id in validate.LATAM_REQUIRED for channel_id in REQUIRED)
 
           sys.argv = ["validate_outputs.py", "--public", "public"]
@@ -352,9 +374,10 @@ jobs:
           root = etree.parse("public/latam.xml", parser).getroot()
           ids = tuple(node.get("id", "") for node in root.findall("channel"))
           assert ids == validate.LATAM_REQUIRED, (len(ids), ids)
-          assert ids[-4:-2] == v039.TARGET_IDS
-          assert ids[-2:-1] == star.TARGET_IDS
-          assert ids[-1:] == asamblea.TARGET_IDS
+          assert ids[-5:-3] == v039.TARGET_IDS
+          assert ids[-3:-2] == star.TARGET_IDS
+          assert ids[-2:-1] == asamblea.TARGET_IDS
+          assert ids[-1:] == gourmet_sur.TARGET_IDS
 
           for channel_id in REQUIRED:
               channels = root.xpath("./channel[@id=$channel_id]", channel_id=channel_id)
@@ -371,7 +394,7 @@ jobs:
           status = json.loads(Path("public/latam-status.json").read_text(encoding="utf-8"))
           version = Path("VERSION").read_text(encoding="utf-8").strip()
           assert status.get("version") == version, (status.get("version"), version)
-          assert int(status.get("channels", 0)) == 36, status
+          assert int(status.get("channels", 0)) == 37, status
 
           asamblea_policy = status.get("asamblea_nacional_epg", {})
           assert asamblea_policy.get("channel_id") == ASAMBLEA_ID, asamblea_policy
@@ -380,9 +403,24 @@ jobs:
           assert int(asamblea_policy.get("manual_offset_minutes", -1)) == 0, asamblea_policy
           assert int(asamblea_policy.get("programmes", 0)) >= 5, asamblea_policy
 
+          gourmet_policy = status.get("elgourmet_sur_epg", {})
+          assert gourmet_policy.get("channel_id") == GOURMET_SUR_ID, gourmet_policy
+          assert gourmet_policy.get("source") == "https://mi.tv/ar/canales/el-gourmet", gourmet_policy
+          assert gourmet_policy.get("source_timezone") == "UTC", gourmet_policy
+          assert gourmet_policy.get("output_timezone") == "America/Guayaquil", gourmet_policy
+          assert int(gourmet_policy.get("manual_offset_minutes", -1)) == 0, gourmet_policy
+          assert int(gourmet_policy.get("programmes", 0)) >= 5, gourmet_policy
+          assert str(gourmet_policy.get("logo_url", "")).endswith("/Canal.Elgourmet.ar.png"), gourmet_policy
+          logo = Path("public/logos/Canal.Elgourmet.ar.png")
+          assert logo.is_file() and logo.stat().st_size > 0, logo
+          channel = root.xpath("./channel[@id=$channel_id]", channel_id=GOURMET_SUR_ID)[0]
+          icons = channel.findall("icon")
+          assert len(icons) == 1 and icons[0].get("src", "").endswith("/Canal.Elgourmet.ar.png"), GOURMET_SUR_ID
+
           print(
-              "Validación v0.2.58 correcta: 36 canales; "
-              "AsambleaNacional.ec presente al final; zona America/Guayaquil; offset manual 0."
+              "Validación v0.2.59 correcta: 37 canales; AsambleaNacional.ec y "
+              "Canal.Elgourmet.ar presentes al final; El Gourmet Sur desde mi.tv Argentina; "
+              "logo local; UTC->America/Guayaquil; offset manual 0."
           )
           PY
           echo "Estado LATAM:"
@@ -481,7 +519,7 @@ jobs:
           - `ec.xml.gz`
           - `status.json`
 
-          Guía seleccionada de 36 canales:
+          Guía seleccionada de 37 canales:
           - `latam.xml`
           - `latam.xml.gz`
           - `latam-status.json`
