@@ -1,0 +1,12 @@
+EPG MrG v0.2.59 — overlay directo sobre v0.2.58
+
+VERSION
+.github/workflows/actualizar-epg.yml
+scripts/add_elgourmet_sur.py
+RELEASE-v0.2.59.md
+MANIFEST-v0.2.59.txt
+
+Canal añadido: Canal.Elgourmet.ar (El Gourmet Sur)
+Fuente: https://mi.tv/ar/canales/el-gourmet
+Logo local: https://mrgmaw.github.io/epg/logos/Canal.Elgourmet.ar.png
+Canales finales esperados: 37
