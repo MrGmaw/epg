@@ -275,7 +275,7 @@ jobs:
             --days "${GUIDE_DAYS}" \
             --previous-latam-xml .cache/previous-latam.xml
 
-      - name: Añadir TVL Asamblea Nacional v0.2.59
+      - name: Añadir TVL Asamblea Nacional v0.2.60
         shell: bash
         env:
           TZ: America/Guayaquil
@@ -286,7 +286,7 @@ jobs:
             --days "${GUIDE_DAYS}" \
             --previous-latam-xml .cache/previous-latam.xml
 
-      - name: Añadir El Gourmet Sur v0.2.59
+      - name: Añadir El Gourmet Sur v0.2.60
         shell: bash
         env:
           TZ: America/Guayaquil
@@ -299,7 +299,7 @@ jobs:
             --logos-manifest public/logos/manifest.json
           test -s public/logos/Canal.Elgourmet.ar.png
 
-      - name: Validar archivos finales v0.2.59
+      - name: Validar archivos finales v0.2.60
         shell: bash
         run: |
           set -euo pipefail
@@ -329,6 +329,7 @@ jobs:
           import add_star_tve as star
           import add_asamblea_epg as asamblea
           import add_elgourmet_sur as gourmet_sur
+          import mitv_logos as base_logos
 
           STAR_ID = star.STAR_ID
           ASAMBLEA_ID = asamblea.CHANNEL_ID
@@ -358,6 +359,28 @@ jobs:
           assert ASAMBLEA_ID in validate.LATAM_REQUIRED
           assert GOURMET_SUR_ID in validate.LATAM_REQUIRED
           assert all(channel_id in validate.LATAM_REQUIRED for channel_id in REQUIRED)
+
+          # El Gourmet Sur se añade como capa posterior al generador base de logos.
+          # Sincronizar validate_outputs con los targets que mitv_logos.py realmente
+          # generó en este run; el logo nuevo se valida explícitamente más abajo.
+          if hasattr(validate, "MITV_LOGO_IDS"):
+              generated_base_ids = tuple(
+                  getattr(target, "channel_id", None)
+                  for target in getattr(base_logos, "TARGETS", ())
+              )
+              generated_base_ids = tuple(
+                  channel_id
+                  for channel_id in generated_base_ids
+                  if channel_id and channel_id != GOURMET_SUR_ID
+              )
+              if generated_base_ids:
+                  validate.MITV_LOGO_IDS = generated_base_ids
+              else:
+                  validate.MITV_LOGO_IDS = tuple(
+                      channel_id
+                      for channel_id in validate.MITV_LOGO_IDS
+                      if channel_id != GOURMET_SUR_ID
+                  )
 
           sys.argv = ["validate_outputs.py", "--public", "public"]
           result = validate.main()
@@ -413,12 +436,21 @@ jobs:
           assert str(gourmet_policy.get("logo_url", "")).endswith("/Canal.Elgourmet.ar.png"), gourmet_policy
           logo = Path("public/logos/Canal.Elgourmet.ar.png")
           assert logo.is_file() and logo.stat().st_size > 0, logo
+          assert logo.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"), logo
+          logo_manifest = json.loads(
+              Path("public/logos/manifest.json").read_text(encoding="utf-8")
+          )
+          logo_entry = logo_manifest.get("channels", {}).get(GOURMET_SUR_ID, {})
+          assert logo_entry.get("available") is True, (GOURMET_SUR_ID, logo_entry)
+          assert str(logo_entry.get("local_url", "")).endswith(
+              "/Canal.Elgourmet.ar.png"
+          ), (GOURMET_SUR_ID, logo_entry)
           channel = root.xpath("./channel[@id=$channel_id]", channel_id=GOURMET_SUR_ID)[0]
           icons = channel.findall("icon")
           assert len(icons) == 1 and icons[0].get("src", "").endswith("/Canal.Elgourmet.ar.png"), GOURMET_SUR_ID
 
           print(
-              "Validación v0.2.59 correcta: 37 canales; AsambleaNacional.ec y "
+              "Validación v0.2.60 correcta: 37 canales; AsambleaNacional.ec y "
               "Canal.Elgourmet.ar presentes al final; El Gourmet Sur desde mi.tv Argentina; "
               "logo local; UTC->America/Guayaquil; offset manual 0."
           )
