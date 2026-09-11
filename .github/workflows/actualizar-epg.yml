@@ -275,7 +275,7 @@ jobs:
             --days "${GUIDE_DAYS}" \
             --previous-latam-xml .cache/previous-latam.xml
 
-      - name: Añadir TVL Asamblea Nacional v0.2.60
+      - name: Añadir TVL Asamblea Nacional v0.2.61
         shell: bash
         env:
           TZ: America/Guayaquil
@@ -286,7 +286,7 @@ jobs:
             --days "${GUIDE_DAYS}" \
             --previous-latam-xml .cache/previous-latam.xml
 
-      - name: Añadir El Gourmet Sur v0.2.60
+      - name: Añadir El Gourmet Sur v0.2.61
         shell: bash
         env:
           TZ: America/Guayaquil
@@ -299,7 +299,7 @@ jobs:
             --logos-manifest public/logos/manifest.json
           test -s public/logos/Canal.Elgourmet.ar.png
 
-      - name: Validar archivos finales v0.2.60
+      - name: Validar archivos finales v0.2.61
         shell: bash
         run: |
           set -euo pipefail
@@ -366,7 +366,7 @@ jobs:
           if hasattr(validate, "MITV_LOGO_IDS"):
               generated_base_ids = tuple(
                   getattr(target, "channel_id", None)
-                  for target in getattr(base_logos, "TARGETS", ())
+                  for target in getattr(base_logos, "LOGO_TARGETS", ())
               )
               generated_base_ids = tuple(
                   channel_id
@@ -450,7 +450,7 @@ jobs:
           assert len(icons) == 1 and icons[0].get("src", "").endswith("/Canal.Elgourmet.ar.png"), GOURMET_SUR_ID
 
           print(
-              "Validación v0.2.60 correcta: 37 canales; AsambleaNacional.ec y "
+              "Validación v0.2.61 correcta: 37 canales; AsambleaNacional.ec y "
               "Canal.Elgourmet.ar presentes al final; El Gourmet Sur desde mi.tv Argentina; "
               "logo local; UTC->America/Guayaquil; offset manual 0."
           )
