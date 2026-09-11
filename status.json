@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T08:33:45.462030-05:00",
+  "generated_at": "2026-09-11T18:15:21.666085-05:00",
   "base_date": "2026-09-11",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
@@ -9,15 +9,15 @@
     "cnn_en_espanol": "https://mi.tv/co/canales/cnn-en-espanol",
     "ntn24": "https://mi.tv/co/canales/nuestra-tele-noticias-24hs"
   },
-  "ecuavisa_internacional_days": 4,
+  "ecuavisa_internacional_days": 5,
   "cnn_en_espanol_days": 2,
   "ntn24_days": 2,
   "channels": 95,
-  "programmes": 10783,
+  "programmes": 10799,
   "teleamazonas_quito": 206,
   "teleamazonas_guayaquil": 206,
   "ecuavisa": 106,
-  "ecuavisa_internacional": 82,
+  "ecuavisa_internacional": 98,
   "tvc": 156,
   "cnn_en_espanol": 55,
   "ntn24": 44,
