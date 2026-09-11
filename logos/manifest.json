@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T04:09:03.865387-05:00",
+  "generated_at": "2026-09-11T04:57:38.014897-05:00",
   "public_base_url": "https://mrgmaw.github.io/epg/logos",
   "targets": 13,
   "available": 13,
@@ -184,6 +184,23 @@
       "width": 960,
       "height": 896,
       "sha256": "50085946db5fa31ef1a7f8145960a59e0b8fd81ec51cd222f60c36d99a410756"
+    },
+    "Canal.Elgourmet.ar": {
+      "page_url": "https://mi.tv/ar/canales/el-gourmet",
+      "local_url": "https://mrgmaw.github.io/epg/logos/Canal.Elgourmet.ar.png",
+      "available": true,
+      "source": "discovered",
+      "source_url": "https://cdn.mitvstatic.com/channels/ar_el-gourmet_m.png",
+      "width": 250,
+      "height": 250,
+      "sha256": "4b89810a6d744b718a0a41f6ad9aa8b1dbd7925d55c3f9f099646820cb872205"
+    }
+  },
+  "extensions": {
+    "Canal.Elgourmet.ar": {
+      "available": true,
+      "local_url": "https://mrgmaw.github.io/epg/logos/Canal.Elgourmet.ar.png",
+      "source": "discovered"
     }
   }
 }

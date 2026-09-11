@@ -1,15 +1,15 @@
 {
-  "version": "0.2.59",
-  "generated_at": "2026-09-11T04:08:50.224363-05:00",
-  "source_commit": "a59582716d4684c8933c7973ad8b37f89d558791",
-  "github_run_id": "34582627369",
+  "version": "0.2.62",
+  "generated_at": "2026-09-11T04:56:43.844363-05:00",
+  "source_commit": "e199767484d6a526cc93f24646d61c9d9bd819c7",
+  "github_run_id": "34586556558",
   "github_run_attempt": "1",
   "base_date": "2026-09-11",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
-  "channels": 36,
-  "programmes": 3272,
+  "channels": 37,
+  "programmes": 3249,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 72,
     "Canal.Gamavisión.ec": 170,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 206,
     "TeleamazonasGuayaquil.ec": 206,
     "Ecuavisa.ec": 106,
-    "EcuavisaInternacional.ec": 82,
+    "EcuavisaInternacional.ec": 80,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 57,
     "NTN24.co": 44,
@@ -36,17 +36,18 @@
     "Star-Channel.co": 28,
     "Warner-channel.co": 63,
     "HBO-Family.co": 29,
-    "Canal24Horas.es": 214,
-    "La1.es": 103,
-    "Clan.es": 488,
+    "Canal24Horas.es": 213,
+    "La1.es": 102,
+    "Clan.es": 469,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 63,
     "NBC6-Miami.us": 87,
     "ABC-Miami.us": 88,
     "CBS.(WCBS).New.York,.NY.us": 219,
     "OromarTV.ec": 140,
-    "TVEStarHD.es": 81,
-    "AsambleaNacional.ec": 63
+    "TVEStarHD.es": 77,
+    "AsambleaNacional.ec": 63,
+    "Canal.Elgourmet.ar": 86
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
@@ -63,7 +64,8 @@
     "Antena3-America.co": 3,
     "Star-Channel.co": 3,
     "Warner-channel.co": 3,
-    "HBO-Family.co": 3
+    "HBO-Family.co": 3,
+    "Canal.Elgourmet.ar": 3
   },
   "gatotv_source_days": {
     "Canal24Horas.es": 6,
@@ -72,28 +74,28 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-09-11": 32,
+      "2026-09-11": 37,
       "2026-09-12": 52,
-      "2026-09-13": 51,
-      "2026-09-14": 29,
-      "2026-09-15": 29,
-      "2026-09-16": 21
+      "2026-09-13": 47,
+      "2026-09-14": 30,
+      "2026-09-15": 30,
+      "2026-09-16": 20
     },
     "La1.es": {
-      "2026-09-11": 21,
-      "2026-09-12": 18,
-      "2026-09-13": 18,
-      "2026-09-14": 18,
+      "2026-09-11": 22,
+      "2026-09-12": 19,
+      "2026-09-13": 19,
+      "2026-09-14": 19,
       "2026-09-15": 20,
       "2026-09-16": 8
     },
     "Clan.es": {
-      "2026-09-11": 89,
-      "2026-09-12": 74,
+      "2026-09-11": 87,
+      "2026-09-12": 75,
       "2026-09-13": 68,
-      "2026-09-14": 87,
-      "2026-09-15": 87,
-      "2026-09-16": 83
+      "2026-09-14": 88,
+      "2026-09-15": 88,
+      "2026-09-16": 68
     }
   },
   "gatotv_source_timezones": {
@@ -182,7 +184,8 @@
       "Antena3-America.co": "https://mi.tv/co/canales/antena3",
       "Star-Channel.co": "https://mi.tv/co/canales/fox",
       "Warner-channel.co": "https://mi.tv/co/canales/warner",
-      "HBO-Family.co": "https://mi.tv/co/canales/hbo-family"
+      "HBO-Family.co": "https://mi.tv/co/canales/hbo-family",
+      "Canal.Elgourmet.ar": "https://mi.tv/ar/canales/el-gourmet"
     },
     "gato_tv": {
       "Canal24Horas.es": "https://www.gatotv.com/canal/24_horas_tve",
@@ -379,12 +382,12 @@
       "ampm-runner-geo-table-fallback"
     ],
     "runner_timezone": {
-      "timezone": "America/New_York",
+      "timezone": "America/Phoenix",
       "source": "ipapi"
     },
     "loaded_source_days": 3,
-    "programmes": 81,
-    "cached_programmes_available": 55,
+    "programmes": 77,
+    "cached_programmes_available": 81,
     "cache_policy": "programme cache disabled; fresh GatoTV required",
     "field_validation": {
       "date": "2026-08-30",
@@ -427,5 +430,21 @@
       "domingo": 7
     },
     "live_error": "No se pudo obtener la parrilla semanal del home TVL: TVL oficial no entregó una parrilla semanal completa: días=0/7, emisiones_semana=0, faltan=['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo']."
+  },
+  "elgourmet_sur_epg": {
+    "version": "0.2.59",
+    "channel_id": "Canal.Elgourmet.ar",
+    "display_name": "El Gourmet Sur",
+    "source": "https://mi.tv/ar/canales/el-gourmet",
+    "source_mode": "mi-tv-fresh",
+    "source_timezone": "UTC",
+    "output_timezone": "America/Guayaquil",
+    "manual_offset_minutes": 0,
+    "loaded_source_days": 3,
+    "programmes": 86,
+    "mi_tv_error": null,
+    "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.Elgourmet.ar.png",
+    "logo_source": "discovered",
+    "logo_source_url": "https://cdn.mitvstatic.com/channels/ar_el-gourmet_m.png"
   }
 }
