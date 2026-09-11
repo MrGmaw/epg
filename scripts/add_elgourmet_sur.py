@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EPG MrG v0.2.59: añade El Gourmet Sur desde mi.tv Argentina.
+"""EPG MrG v0.2.61: añade El Gourmet Sur desde mi.tv Argentina.
 
 Fuente de programación:
     https://mi.tv/ar/canales/el-gourmet
@@ -171,13 +171,49 @@ def _refresh_logo(output_dir: Path, manifest_path: Path) -> tuple[str, dict[str,
         channels = {}
         manifest["channels"] = channels
     channels[CHANNEL_ID] = record
-    available = [cid for cid, item in channels.items() if isinstance(item, dict) and item.get("available")]
-    missing = [cid for cid, item in channels.items() if not (isinstance(item, dict) and item.get("available"))]
+
+    # IMPORTANTE: ``targets``/``available``/``missing`` pertenecen al generador
+    # base ``mitv_logos.py``.  El Gourmet Sur se añade después como extensión y
+    # no debe cambiar esos contadores; ``validate_outputs.py`` comprueba que
+    # sigan describiendo exactamente los 13 targets base de mi.tv.
+    base_targets = tuple(getattr(mitv_logos, "LOGO_TARGETS", ()))
+    base_ids = tuple(
+        target.channel_id
+        for target in base_targets
+        if getattr(target, "channel_id", None)
+    )
+    if not base_ids:
+        # Compatibilidad defensiva con revisiones antiguas del módulo.
+        base_count = int(manifest.get("targets", 0) or 0)
+        if base_count <= 0:
+            base_count = max(0, len(channels) - 1)
+        base_ids = tuple(
+            cid for cid in channels if cid != CHANNEL_ID
+        )[:base_count]
+
+    base_available = [
+        cid
+        for cid in base_ids
+        if isinstance(channels.get(cid), dict) and channels[cid].get("available")
+    ]
+    base_missing = [
+        cid
+        for cid in base_ids
+        if not (isinstance(channels.get(cid), dict) and channels[cid].get("available"))
+    ]
+
     manifest["generated_at"] = datetime.now(epg.TZ).isoformat()
     manifest["public_base_url"] = mitv_logos.PUBLIC_LOGO_BASE
-    manifest["targets"] = len(channels)
-    manifest["available"] = len(available)
-    manifest["missing"] = missing
+    manifest["targets"] = len(base_ids)
+    manifest["available"] = len(base_available)
+    manifest["missing"] = base_missing
+    extensions = manifest.setdefault("extensions", {})
+    if isinstance(extensions, dict):
+        extensions[CHANNEL_ID] = {
+            "available": bool(record.get("available")),
+            "local_url": record.get("local_url"),
+            "source": record.get("source"),
+        }
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     manifest_path.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
@@ -375,7 +411,7 @@ def self_test() -> None:
     assert OUTPUT_TIMEZONE == "America/Guayaquil"
     assert MANUAL_OFFSET_MINUTES == 0
     print(
-        "Prueba v0.2.59 correcta: Canal.Elgourmet.ar se inserta como canal 37, "
+        "Prueba v0.2.61 correcta: Canal.Elgourmet.ar se inserta como canal 37, "
         "mi.tv Argentina UTC->America/Guayaquil, logo local y offset manual 0."
     )
 
