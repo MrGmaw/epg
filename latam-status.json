@@ -1,15 +1,15 @@
 {
   "version": "0.2.62",
-  "generated_at": "2026-09-11T04:56:43.844363-05:00",
+  "generated_at": "2026-09-11T04:59:26.965499-05:00",
   "source_commit": "e199767484d6a526cc93f24646d61c9d9bd819c7",
-  "github_run_id": "34586556558",
+  "github_run_id": "34586871007",
   "github_run_attempt": "1",
   "base_date": "2026-09-11",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 37,
-  "programmes": 3249,
+  "programmes": 3264,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 72,
     "Canal.Gamavisión.ec": 170,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 206,
     "TeleamazonasGuayaquil.ec": 206,
     "Ecuavisa.ec": 106,
-    "EcuavisaInternacional.ec": 80,
+    "EcuavisaInternacional.ec": 82,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 57,
     "NTN24.co": 44,
@@ -36,16 +36,16 @@
     "Star-Channel.co": 28,
     "Warner-channel.co": 63,
     "HBO-Family.co": 29,
-    "Canal24Horas.es": 213,
-    "La1.es": 102,
-    "Clan.es": 469,
+    "Canal24Horas.es": 214,
+    "La1.es": 103,
+    "Clan.es": 480,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 63,
     "NBC6-Miami.us": 87,
     "ABC-Miami.us": 88,
     "CBS.(WCBS).New.York,.NY.us": 219,
     "OromarTV.ec": 140,
-    "TVEStarHD.es": 77,
+    "TVEStarHD.es": 81,
     "AsambleaNacional.ec": 63,
     "Canal.Elgourmet.ar": 86
   },
@@ -74,28 +74,28 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-09-11": 37,
+      "2026-09-11": 34,
       "2026-09-12": 52,
-      "2026-09-13": 47,
+      "2026-09-13": 50,
       "2026-09-14": 30,
       "2026-09-15": 30,
-      "2026-09-16": 20
+      "2026-09-16": 21
     },
     "La1.es": {
       "2026-09-11": 22,
-      "2026-09-12": 19,
-      "2026-09-13": 19,
+      "2026-09-12": 18,
+      "2026-09-13": 18,
       "2026-09-14": 19,
-      "2026-09-15": 20,
+      "2026-09-15": 21,
       "2026-09-16": 8
     },
     "Clan.es": {
-      "2026-09-11": 87,
+      "2026-09-11": 92,
       "2026-09-12": 75,
-      "2026-09-13": 68,
+      "2026-09-13": 64,
       "2026-09-14": 88,
       "2026-09-15": 88,
-      "2026-09-16": 68
+      "2026-09-16": 78
     }
   },
   "gatotv_source_timezones": {
@@ -325,7 +325,7 @@
     "manual_offset_minutes": 0,
     "channels": {
       "CBS.(WCBS).New.York,.NY.us": {
-        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=8",
+        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=9",
         "source": "https://www.tvpassport.com/tv-listings/stations/cbs-wcbs-new-york-ny-hd/4555",
         "fallback_sources": [
           "https://epgshare01.online/epgshare01/epg_ripper_US1.xml.gz",
@@ -382,12 +382,12 @@
       "ampm-runner-geo-table-fallback"
     ],
     "runner_timezone": {
-      "timezone": "America/Phoenix",
+      "timezone": "America/Chicago",
       "source": "ipapi"
     },
     "loaded_source_days": 3,
-    "programmes": 77,
-    "cached_programmes_available": 81,
+    "programmes": 81,
+    "cached_programmes_available": 77,
     "cache_policy": "programme cache disabled; fresh GatoTV required",
     "field_validation": {
       "date": "2026-08-30",
@@ -429,7 +429,7 @@
       "sabado": 4,
       "domingo": 7
     },
-    "live_error": "No se pudo obtener la parrilla semanal del home TVL: TVL oficial no entregó una parrilla semanal completa: días=0/7, emisiones_semana=0, faltan=['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo']."
+    "live_error": "No se pudo obtener la parrilla semanal del home TVL: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"
   },
   "elgourmet_sur_epg": {
     "version": "0.2.59",
