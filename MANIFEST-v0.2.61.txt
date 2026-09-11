@@ -1,0 +1,11 @@
+Overlay directo sobre v0.2.60
+
+Reemplazar:
+- VERSION
+- .github/workflows/actualizar-epg.yml
+- scripts/add_elgourmet_sur.py
+
+Corrección:
+- Canal.Elgourmet.ar continúa dentro de manifest["channels"].
+- El contador manifest["targets"] conserva los 13 targets base de mitv_logos.py.
+- El Gourmet Sur se registra adicionalmente en manifest["extensions"].
