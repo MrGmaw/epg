@@ -275,7 +275,7 @@ jobs:
             --days "${GUIDE_DAYS}" \
             --previous-latam-xml .cache/previous-latam.xml
 
-      - name: Añadir TVL Asamblea Nacional v0.2.61
+      - name: Añadir TVL Asamblea Nacional v0.2.62
         shell: bash
         env:
           TZ: America/Guayaquil
@@ -286,7 +286,7 @@ jobs:
             --days "${GUIDE_DAYS}" \
             --previous-latam-xml .cache/previous-latam.xml
 
-      - name: Añadir El Gourmet Sur v0.2.61
+      - name: Añadir El Gourmet Sur v0.2.62
         shell: bash
         env:
           TZ: America/Guayaquil
@@ -299,7 +299,7 @@ jobs:
             --logos-manifest public/logos/manifest.json
           test -s public/logos/Canal.Elgourmet.ar.png
 
-      - name: Validar archivos finales v0.2.61
+      - name: Validar archivos finales v0.2.62
         shell: bash
         run: |
           set -euo pipefail
@@ -426,6 +426,9 @@ jobs:
           assert int(asamblea_policy.get("manual_offset_minutes", -1)) == 0, asamblea_policy
           assert int(asamblea_policy.get("programmes", 0)) >= 5, asamblea_policy
 
+          programme_counts = status.get("programme_counts", {})
+          assert int(programme_counts.get(GOURMET_SUR_ID, 0)) >= 5, programme_counts
+
           gourmet_policy = status.get("elgourmet_sur_epg", {})
           assert gourmet_policy.get("channel_id") == GOURMET_SUR_ID, gourmet_policy
           assert gourmet_policy.get("source") == "https://mi.tv/ar/canales/el-gourmet", gourmet_policy
@@ -450,7 +453,7 @@ jobs:
           assert len(icons) == 1 and icons[0].get("src", "").endswith("/Canal.Elgourmet.ar.png"), GOURMET_SUR_ID
 
           print(
-              "Validación v0.2.61 correcta: 37 canales; AsambleaNacional.ec y "
+              "Validación v0.2.62 correcta: 37 canales; AsambleaNacional.ec y "
               "Canal.Elgourmet.ar presentes al final; El Gourmet Sur desde mi.tv Argentina; "
               "logo local; UTC->America/Guayaquil; offset manual 0."
           )
