@@ -1,59 +1,59 @@
 {
   "version": "0.2.62",
-  "generated_at": "2026-09-11T18:16:12.276794-05:00",
+  "generated_at": "2026-09-12T07:51:28.469311-05:00",
   "source_commit": "e199767484d6a526cc93f24646d61c9d9bd819c7",
-  "github_run_id": "34657321338",
+  "github_run_id": "34694770158",
   "github_run_attempt": "1",
-  "base_date": "2026-09-11",
+  "base_date": "2026-09-12",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 37,
-  "programmes": 3266,
+  "programmes": 3326,
   "programme_counts": {
-    "Canal.TC.Televisión.ec": 72,
+    "Canal.TC.Televisión.ec": 79,
     "Canal.Gamavisión.ec": 170,
     "Canal.RTS.ec": 157,
-    "Canal.TVE.Internacional.(Televisión.Española).ec": 56,
+    "Canal.TVE.Internacional.(Televisión.Española).ec": 64,
     "TeleamazonasQuito.ec": 206,
     "TeleamazonasGuayaquil.ec": 206,
     "Ecuavisa.ec": 106,
-    "EcuavisaInternacional.ec": 98,
+    "EcuavisaInternacional.ec": 82,
     "TVC.ec": 156,
-    "Canal.CNN.en.Español.ec": 55,
-    "NTN24.co": 44,
+    "Canal.CNN.en.Español.ec": 65,
+    "NTN24.co": 49,
     "CanalRCN.co": 36,
-    "CaracolTV.co": 35,
-    "Canal.Elgourmet.ec": 87,
-    "Canal.History.co": 51,
-    "Canal.History.2.co": 54,
-    "TV.Publica.canal.7.ar": 38,
-    "Telefe.ar": 33,
-    "Deutsche.Welle.cl": 102,
+    "CaracolTV.co": 31,
+    "Canal.Elgourmet.ec": 84,
+    "Canal.History.co": 56,
+    "Canal.History.2.co": 56,
+    "TV.Publica.canal.7.ar": 37,
+    "Telefe.ar": 31,
+    "Deutsche.Welle.cl": 114,
     "hgtv.ar": 85,
-    "France24Espanol.fr": 219,
-    "Antena3-America.co": 35,
-    "Star-Channel.co": 28,
-    "Warner-channel.co": 64,
-    "HBO-Family.co": 29,
-    "Canal24Horas.es": 213,
-    "La1.es": 102,
-    "Clan.es": 469,
+    "France24Espanol.fr": 229,
+    "Antena3-America.co": 46,
+    "Star-Channel.co": 29,
+    "Warner-channel.co": 66,
+    "HBO-Family.co": 27,
+    "Canal24Horas.es": 212,
+    "La1.es": 98,
+    "Clan.es": 487,
     "MakroDigitalTV.ec": 197,
-    "Canal.Ecuador.TV.ec": 63,
-    "NBC6-Miami.us": 115,
-    "ABC-Miami.us": 117,
-    "CBS.(WCBS).New.York,.NY.us": 219,
+    "Canal.Ecuador.TV.ec": 65,
+    "NBC6-Miami.us": 84,
+    "ABC-Miami.us": 88,
+    "CBS.(WCBS).New.York,.NY.us": 224,
     "OromarTV.ec": 140,
-    "TVEStarHD.es": 77,
+    "TVEStarHD.es": 76,
     "AsambleaNacional.ec": 63,
-    "Canal.Elgourmet.ar": 86
+    "Canal.Elgourmet.ar": 85
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
     "CanalRCN.co": 3,
     "CaracolTV.co": 3,
-    "Canal.Elgourmet.ec": 2,
+    "Canal.Elgourmet.ec": 3,
     "Canal.History.co": 3,
     "Canal.History.2.co": 3,
     "TV.Publica.canal.7.ar": 3,
@@ -74,28 +74,28 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-09-11": 37,
-      "2026-09-12": 52,
-      "2026-09-13": 47,
-      "2026-09-14": 30,
-      "2026-09-15": 30,
-      "2026-09-16": 20
+      "2026-09-12": 53,
+      "2026-09-13": 51,
+      "2026-09-14": 29,
+      "2026-09-15": 29,
+      "2026-09-16": 29,
+      "2026-09-17": 21
     },
     "La1.es": {
-      "2026-09-11": 23,
-      "2026-09-12": 19,
-      "2026-09-13": 18,
-      "2026-09-14": 19,
+      "2026-09-12": 18,
+      "2026-09-13": 17,
+      "2026-09-14": 18,
       "2026-09-15": 20,
-      "2026-09-16": 8
+      "2026-09-16": 9,
+      "2026-09-17": 16
     },
     "Clan.es": {
-      "2026-09-11": 87,
-      "2026-09-12": 75,
+      "2026-09-12": 74,
       "2026-09-13": 68,
-      "2026-09-14": 88,
-      "2026-09-15": 88,
-      "2026-09-16": 68
+      "2026-09-14": 87,
+      "2026-09-15": 87,
+      "2026-09-16": 88,
+      "2026-09-17": 83
     }
   },
   "gatotv_source_timezones": {
@@ -145,12 +145,12 @@
     "source": "epgshare_fallback",
     "official_dates": [],
     "fallback_dates": [
-      "2026-09-11",
       "2026-09-12",
-      "2026-09-13"
+      "2026-09-13",
+      "2026-09-14"
     ],
     "official_programmes": 0,
-    "fallback_programmes_kept": 63,
+    "fallback_programmes_kept": 65,
     "fallback_programmes_replaced": 0,
     "official_sources": [],
     "verified_evening_programmes": 0,
@@ -298,8 +298,8 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 115,
-        "window_start": "2026-09-11",
+        "programmes": 84,
+        "window_start": "2026-09-12",
         "window_days": 7
       },
       "ABC-Miami.us": {
@@ -313,8 +313,8 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 117,
-        "window_start": "2026-09-11",
+        "programmes": 88,
+        "window_start": "2026-09-12",
         "window_days": 7
       }
     }
@@ -325,7 +325,7 @@
     "manual_offset_minutes": 0,
     "channels": {
       "CBS.(WCBS).New.York,.NY.us": {
-        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=8",
+        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=9",
         "source": "https://www.tvpassport.com/tv-listings/stations/cbs-wcbs-new-york-ny-hd/4555",
         "fallback_sources": [
           "https://epgshare01.online/epgshare01/epg_ripper_US1.xml.gz",
@@ -333,7 +333,7 @@
         ],
         "source_timezone": "America/New_York / explicit XMLTV offset",
         "output_timezone": "America/Guayaquil",
-        "programmes": 219
+        "programmes": 224
       },
       "OromarTV.ec": {
         "mode": "bundled-weekly-fallback",
@@ -382,12 +382,12 @@
       "ampm-runner-geo-table-fallback"
     ],
     "runner_timezone": {
-      "timezone": "America/Los_Angeles",
+      "timezone": "America/New_York",
       "source": "ipapi"
     },
     "loaded_source_days": 3,
-    "programmes": 77,
-    "cached_programmes_available": 81,
+    "programmes": 76,
+    "cached_programmes_available": 51,
     "cache_policy": "programme cache disabled; fresh GatoTV required",
     "field_validation": {
       "date": "2026-08-30",
@@ -441,7 +441,7 @@
     "output_timezone": "America/Guayaquil",
     "manual_offset_minutes": 0,
     "loaded_source_days": 3,
-    "programmes": 86,
+    "programmes": 85,
     "mi_tv_error": null,
     "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.Elgourmet.ar.png",
     "logo_source": "discovered",
