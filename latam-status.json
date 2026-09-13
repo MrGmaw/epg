@@ -1,8 +1,8 @@
 {
   "version": "0.2.63",
-  "generated_at": "2026-09-13T16:31:07.139389-05:00",
+  "generated_at": "2026-09-13T18:09:41.716410-05:00",
   "source_commit": "dc9b7051b32ade25a04974d89f36692afe2a984e",
-  "github_run_id": "34784002638",
+  "github_run_id": "34788839440",
   "github_run_attempt": "1",
   "base_date": "2026-09-13",
   "window_days": 7,
@@ -41,8 +41,8 @@
     "Clan.es": 499,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 66,
-    "NBC6-Miami.us": 85,
-    "ABC-Miami.us": 91,
+    "NBC6-Miami.us": 115,
+    "ABC-Miami.us": 121,
     "CBS.(WCBS).New.York,.NY.us": 223,
     "OromarTV.ec": 140,
     "TVEStarHD.es": 48,
@@ -315,7 +315,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 85,
+        "programmes": 115,
         "window_start": "2026-09-13",
         "window_days": 7
       },
@@ -330,7 +330,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 91,
+        "programmes": 121,
         "window_start": "2026-09-13",
         "window_days": 7
       }
