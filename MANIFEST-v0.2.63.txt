@@ -1,0 +1,5 @@
+Overlay directo sobre v0.2.62.
+Reemplazar/añadir:
+- VERSION
+- .github/workflows/actualizar-epg.yml
+- scripts/add_espn_ec.py
