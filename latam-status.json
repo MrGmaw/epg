@@ -1,15 +1,15 @@
 {
-  "version": "0.2.62",
-  "generated_at": "2026-09-13T08:48:47.853998-05:00",
-  "source_commit": "e199767484d6a526cc93f24646d61c9d9bd819c7",
-  "github_run_id": "34760832312",
+  "version": "0.2.63",
+  "generated_at": "2026-09-13T15:15:20.778798-05:00",
+  "source_commit": "dc9b7051b32ade25a04974d89f36692afe2a984e",
+  "github_run_id": "34780104771",
   "github_run_attempt": "1",
   "base_date": "2026-09-13",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
-  "channels": 37,
-  "programmes": 3262,
+  "channels": 44,
+  "programmes": 3274,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 72,
     "Canal.Gamavisión.ec": 170,
@@ -27,10 +27,10 @@
     "Canal.Elgourmet.ec": 87,
     "Canal.History.co": 57,
     "Canal.History.2.co": 60,
-    "TV.Publica.canal.7.ar": 18,
+    "TV.Publica.canal.7.ar": 31,
     "Telefe.ar": 35,
     "Deutsche.Welle.cl": 105,
-    "hgtv.ar": 86,
+    "hgtv.ar": 85,
     "France24Espanol.fr": 217,
     "Antena3-America.co": 42,
     "Star-Channel.co": 31,
@@ -47,16 +47,23 @@
     "OromarTV.ec": 140,
     "TVEStarHD.es": 48,
     "AsambleaNacional.ec": 63,
-    "Canal.Elgourmet.ar": 87
+    "Canal.Elgourmet.ar": 87,
+    "Canal.ESPN.ec": 72,
+    "Canal.ESPN2.ec": 74,
+    "Canal.ESPN3.ec": 68,
+    "Canal.ESPN4.ec": 120,
+    "Canal.ESPN5.ec": 68,
+    "Canal.ESPN6.ec": 64,
+    "Canal.ESPN7.ec": 65
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
     "CanalRCN.co": 3,
     "CaracolTV.co": 3,
     "Canal.Elgourmet.ec": 3,
-    "Canal.History.co": 2,
-    "Canal.History.2.co": 2,
-    "TV.Publica.canal.7.ar": 2,
+    "Canal.History.co": 3,
+    "Canal.History.2.co": 3,
+    "TV.Publica.canal.7.ar": 3,
     "Telefe.ar": 3,
     "Deutsche.Welle.cl": 3,
     "hgtv.ar": 3,
@@ -203,7 +210,16 @@
       "OromarTV.ec": "https://americatvlistings.com/es/ec-ECT/oromar-tv"
     },
     "star_tve": "https://www.gatotv.com/canal/star_tve",
-    "asamblea_nacional": "https://tvl.asambleanacional.gob.ec/"
+    "asamblea_nacional": "https://tvl.asambleanacional.gob.ec/",
+    "gatotv": {
+      "Canal.ESPN.ec": "https://www.gatotv.com/canal/espn_ecuador",
+      "Canal.ESPN2.ec": "https://www.gatotv.com/canal/espn_2_ecuador",
+      "Canal.ESPN3.ec": "https://www.gatotv.com/canal/espn_3_ecuador",
+      "Canal.ESPN4.ec": "https://www.gatotv.com/canal/espn_4_ecuador",
+      "Canal.ESPN5.ec": "https://www.gatotv.com/canal/espn_5_ecuador",
+      "Canal.ESPN6.ec": "https://www.gatotv.com/canal/espn_6_ecuador",
+      "Canal.ESPN7.ec": "https://www.gatotv.com/canal/espn_7_ecuador"
+    }
   },
   "mitv_endpoint_time_channels": {
     "Antena3-America.co": {
@@ -447,5 +463,149 @@
     "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.Elgourmet.ar.png",
     "logo_source": "discovered",
     "logo_source_url": "https://cdn.mitvstatic.com/channels/ar_el-gourmet_m.png"
+  },
+  "espn_ec_epg": {
+    "version": "0.2.63",
+    "channels": [
+      "Canal.ESPN.ec",
+      "Canal.ESPN2.ec",
+      "Canal.ESPN3.ec",
+      "Canal.ESPN4.ec",
+      "Canal.ESPN5.ec",
+      "Canal.ESPN6.ec",
+      "Canal.ESPN7.ec"
+    ],
+    "source": "GatoTV Ecuador",
+    "output_timezone": "America/Guayaquil",
+    "manual_offset_minutes": 0,
+    "programmes_total": 531,
+    "channel_status": {
+      "Canal.ESPN.ec": {
+        "channel_id": "Canal.ESPN.ec",
+        "display_name": "ESPN 1",
+        "source": "https://www.gatotv.com/canal/espn_ecuador",
+        "source_mode": "gatotv-fresh",
+        "source_timezone_24h": "America/Guayaquil",
+        "ampm_timezone_policy": "runner-public-IP timezone (dynamic)",
+        "output_timezone": "America/Guayaquil",
+        "manual_offset_minutes": 0,
+        "loaded_source_days": 4,
+        "modes_used": [
+          "ampm-runner-geo-table-fallback"
+        ],
+        "programmes": 72,
+        "gatotv_error": null,
+        "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN.ec.png",
+        "logo_source": "wikimedia-commons"
+      },
+      "Canal.ESPN2.ec": {
+        "channel_id": "Canal.ESPN2.ec",
+        "display_name": "ESPN 2",
+        "source": "https://www.gatotv.com/canal/espn_2_ecuador",
+        "source_mode": "gatotv-fresh",
+        "source_timezone_24h": "America/Guayaquil",
+        "ampm_timezone_policy": "runner-public-IP timezone (dynamic)",
+        "output_timezone": "America/Guayaquil",
+        "manual_offset_minutes": 0,
+        "loaded_source_days": 4,
+        "modes_used": [
+          "ampm-runner-geo-table-fallback"
+        ],
+        "programmes": 74,
+        "gatotv_error": null,
+        "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN2.ec.png",
+        "logo_source": "wikimedia-commons"
+      },
+      "Canal.ESPN3.ec": {
+        "channel_id": "Canal.ESPN3.ec",
+        "display_name": "ESPN 3",
+        "source": "https://www.gatotv.com/canal/espn_3_ecuador",
+        "source_mode": "gatotv-fresh",
+        "source_timezone_24h": "America/Guayaquil",
+        "ampm_timezone_policy": "runner-public-IP timezone (dynamic)",
+        "output_timezone": "America/Guayaquil",
+        "manual_offset_minutes": 0,
+        "loaded_source_days": 4,
+        "modes_used": [
+          "ampm-runner-geo-table-fallback"
+        ],
+        "programmes": 68,
+        "gatotv_error": null,
+        "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN3.ec.png",
+        "logo_source": "wikimedia-commons"
+      },
+      "Canal.ESPN4.ec": {
+        "channel_id": "Canal.ESPN4.ec",
+        "display_name": "ESPN 4",
+        "source": "https://www.gatotv.com/canal/espn_4_ecuador",
+        "source_mode": "gatotv-fresh",
+        "source_timezone_24h": "America/Guayaquil",
+        "ampm_timezone_policy": "runner-public-IP timezone (dynamic)",
+        "output_timezone": "America/Guayaquil",
+        "manual_offset_minutes": 0,
+        "loaded_source_days": 6,
+        "modes_used": [
+          "ampm-runner-geo-table-fallback"
+        ],
+        "programmes": 120,
+        "gatotv_error": null,
+        "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN4.ec.png",
+        "logo_source": "wikimedia-commons"
+      },
+      "Canal.ESPN5.ec": {
+        "channel_id": "Canal.ESPN5.ec",
+        "display_name": "ESPN 5",
+        "source": "https://www.gatotv.com/canal/espn_5_ecuador",
+        "source_mode": "gatotv-fresh",
+        "source_timezone_24h": "America/Guayaquil",
+        "ampm_timezone_policy": "runner-public-IP timezone (dynamic)",
+        "output_timezone": "America/Guayaquil",
+        "manual_offset_minutes": 0,
+        "loaded_source_days": 4,
+        "modes_used": [
+          "ampm-runner-geo-table-fallback"
+        ],
+        "programmes": 68,
+        "gatotv_error": null,
+        "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN5.ec.png",
+        "logo_source": "wikimedia-commons"
+      },
+      "Canal.ESPN6.ec": {
+        "channel_id": "Canal.ESPN6.ec",
+        "display_name": "ESPN 6",
+        "source": "https://www.gatotv.com/canal/espn_6_ecuador",
+        "source_mode": "gatotv-fresh",
+        "source_timezone_24h": "America/Guayaquil",
+        "ampm_timezone_policy": "runner-public-IP timezone (dynamic)",
+        "output_timezone": "America/Guayaquil",
+        "manual_offset_minutes": 0,
+        "loaded_source_days": 4,
+        "modes_used": [
+          "ampm-runner-geo-table-fallback"
+        ],
+        "programmes": 64,
+        "gatotv_error": null,
+        "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN6.ec.png",
+        "logo_source": "wikimedia-commons"
+      },
+      "Canal.ESPN7.ec": {
+        "channel_id": "Canal.ESPN7.ec",
+        "display_name": "ESPN 7",
+        "source": "https://www.gatotv.com/canal/espn_7_ecuador",
+        "source_mode": "gatotv-fresh",
+        "source_timezone_24h": "America/Guayaquil",
+        "ampm_timezone_policy": "runner-public-IP timezone (dynamic)",
+        "output_timezone": "America/Guayaquil",
+        "manual_offset_minutes": 0,
+        "loaded_source_days": 4,
+        "modes_used": [
+          "ampm-runner-geo-table-fallback"
+        ],
+        "programmes": 65,
+        "gatotv_error": null,
+        "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN7.ec.png",
+        "logo_source": "wikimedia-commons"
+      }
+    }
   }
 }
