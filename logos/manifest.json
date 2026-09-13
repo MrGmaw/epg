@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-13T15:16:33.768232-05:00",
+  "generated_at": "2026-09-13T16:32:09.722874-05:00",
   "public_base_url": "https://mrgmaw.github.io/epg/logos",
   "targets": 13,
   "available": 13,
@@ -198,49 +198,49 @@
     "Canal.ESPN.ec": {
       "available": true,
       "local_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN.ec.png",
-      "source": "wikimedia-commons",
+      "source": "cache",
       "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/ESPN_wordmark.svg/960px-ESPN_wordmark.svg.png",
       "sha256": "a00882a6629bbc3a64ab07bddfcad31c22005fa9b9a6a3bd52d0d51e8f95ee2b"
     },
     "Canal.ESPN2.ec": {
       "available": true,
       "local_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN2.ec.png",
-      "source": "wikimedia-commons",
+      "source": "cache",
       "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/ESPN2_logo.svg/960px-ESPN2_logo.svg.png",
       "sha256": "884126da40e0675e7a65f3a1bc9c135db9f7cff8c7be4e34016734166ddca467"
     },
     "Canal.ESPN3.ec": {
       "available": true,
       "local_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN3.ec.png",
-      "source": "wikimedia-commons",
+      "source": "cache",
       "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/ESPN3_logo.svg/960px-ESPN3_logo.svg.png",
       "sha256": "9400b5bcbce6d5e467aa810d9d3e987c0f7ca0f022dcf3083259c608f28b41b5"
     },
     "Canal.ESPN4.ec": {
       "available": true,
       "local_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN4.ec.png",
-      "source": "wikimedia-commons",
+      "source": "cache",
       "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/ESPN_4_logo.svg/960px-ESPN_4_logo.svg.png",
       "sha256": "69bc00e492c1490aaee1da41d8319b65340f4482a4f838bd02453a5e560cd711"
     },
     "Canal.ESPN5.ec": {
       "available": true,
       "local_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN5.ec.png",
-      "source": "wikimedia-commons",
+      "source": "cache",
       "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/ESPN_5_logo.svg/960px-ESPN_5_logo.svg.png",
       "sha256": "62dde50a7350663ea9148388f1ec12973a9528e6d1345b6cfe9cf6c4a7100203"
     },
     "Canal.ESPN6.ec": {
       "available": true,
       "local_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN6.ec.png",
-      "source": "wikimedia-commons",
+      "source": "cache",
       "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/ESPN_6_logo.svg/500px-ESPN_6_logo.svg.png",
       "sha256": "c05fdaa5c340e70e458ae5daeb3e2bc8c24a90574d02058d4782c13b4a735231"
     },
     "Canal.ESPN7.ec": {
       "available": true,
       "local_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN7.ec.png",
-      "source": "wikimedia-commons",
+      "source": "cache",
       "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/ESPN_7_logo.svg/960px-ESPN_7_logo.svg.png",
       "sha256": "babd3f18d86c2653b1d77e853bc6c6152b1081df8113c9f599fe6ce8c21753c9"
     }
@@ -254,37 +254,37 @@
     "Canal.ESPN.ec": {
       "available": true,
       "local_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN.ec.png",
-      "source": "wikimedia-commons"
+      "source": "cache"
     },
     "Canal.ESPN2.ec": {
       "available": true,
       "local_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN2.ec.png",
-      "source": "wikimedia-commons"
+      "source": "cache"
     },
     "Canal.ESPN3.ec": {
       "available": true,
       "local_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN3.ec.png",
-      "source": "wikimedia-commons"
+      "source": "cache"
     },
     "Canal.ESPN4.ec": {
       "available": true,
       "local_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN4.ec.png",
-      "source": "wikimedia-commons"
+      "source": "cache"
     },
     "Canal.ESPN5.ec": {
       "available": true,
       "local_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN5.ec.png",
-      "source": "wikimedia-commons"
+      "source": "cache"
     },
     "Canal.ESPN6.ec": {
       "available": true,
       "local_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN6.ec.png",
-      "source": "wikimedia-commons"
+      "source": "cache"
     },
     "Canal.ESPN7.ec": {
       "available": true,
       "local_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN7.ec.png",
-      "source": "wikimedia-commons"
+      "source": "cache"
     }
   }
 }

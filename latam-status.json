@@ -1,15 +1,15 @@
 {
   "version": "0.2.63",
-  "generated_at": "2026-09-13T15:15:20.778798-05:00",
+  "generated_at": "2026-09-13T16:31:07.139389-05:00",
   "source_commit": "dc9b7051b32ade25a04974d89f36692afe2a984e",
-  "github_run_id": "34780104771",
+  "github_run_id": "34784002638",
   "github_run_attempt": "1",
   "base_date": "2026-09-13",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 44,
-  "programmes": 3274,
+  "programmes": 3286,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 72,
     "Canal.Gamavisión.ec": 170,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 207,
     "TeleamazonasGuayaquil.ec": 207,
     "Ecuavisa.ec": 106,
-    "EcuavisaInternacional.ec": 77,
+    "EcuavisaInternacional.ec": 76,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 60,
     "NTN24.co": 46,
@@ -36,9 +36,9 @@
     "Star-Channel.co": 31,
     "Warner-channel.co": 65,
     "HBO-Family.co": 25,
-    "Canal24Horas.es": 189,
-    "La1.es": 99,
-    "Clan.es": 489,
+    "Canal24Horas.es": 191,
+    "La1.es": 100,
+    "Clan.es": 499,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 66,
     "NBC6-Miami.us": 85,
@@ -81,28 +81,28 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-09-13": 50,
-      "2026-09-14": 30,
-      "2026-09-15": 30,
-      "2026-09-16": 30,
-      "2026-09-17": 30,
+      "2026-09-13": 51,
+      "2026-09-14": 29,
+      "2026-09-15": 29,
+      "2026-09-16": 29,
+      "2026-09-17": 29,
       "2026-09-18": 24
     },
     "La1.es": {
       "2026-09-13": 17,
-      "2026-09-14": 20,
-      "2026-09-15": 22,
-      "2026-09-16": 10,
-      "2026-09-17": 19,
+      "2026-09-14": 19,
+      "2026-09-15": 21,
+      "2026-09-16": 9,
+      "2026-09-17": 18,
       "2026-09-18": 16
     },
     "Clan.es": {
-      "2026-09-13": 64,
-      "2026-09-14": 88,
-      "2026-09-15": 88,
-      "2026-09-16": 89,
-      "2026-09-17": 90,
-      "2026-09-18": 75
+      "2026-09-13": 68,
+      "2026-09-14": 87,
+      "2026-09-15": 87,
+      "2026-09-16": 88,
+      "2026-09-17": 89,
+      "2026-09-18": 80
     }
   },
   "gatotv_source_timezones": {
@@ -399,7 +399,7 @@
       "ampm-runner-geo-table-fallback"
     ],
     "runner_timezone": {
-      "timezone": "America/Chicago",
+      "timezone": "America/New_York",
       "source": "ipapi"
     },
     "loaded_source_days": 2,
@@ -496,7 +496,7 @@
         "programmes": 72,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN.ec.png",
-        "logo_source": "wikimedia-commons"
+        "logo_source": "cache"
       },
       "Canal.ESPN2.ec": {
         "channel_id": "Canal.ESPN2.ec",
@@ -514,7 +514,7 @@
         "programmes": 74,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN2.ec.png",
-        "logo_source": "wikimedia-commons"
+        "logo_source": "cache"
       },
       "Canal.ESPN3.ec": {
         "channel_id": "Canal.ESPN3.ec",
@@ -532,7 +532,7 @@
         "programmes": 68,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN3.ec.png",
-        "logo_source": "wikimedia-commons"
+        "logo_source": "cache"
       },
       "Canal.ESPN4.ec": {
         "channel_id": "Canal.ESPN4.ec",
@@ -550,7 +550,7 @@
         "programmes": 120,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN4.ec.png",
-        "logo_source": "wikimedia-commons"
+        "logo_source": "cache"
       },
       "Canal.ESPN5.ec": {
         "channel_id": "Canal.ESPN5.ec",
@@ -568,7 +568,7 @@
         "programmes": 68,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN5.ec.png",
-        "logo_source": "wikimedia-commons"
+        "logo_source": "cache"
       },
       "Canal.ESPN6.ec": {
         "channel_id": "Canal.ESPN6.ec",
@@ -586,7 +586,7 @@
         "programmes": 64,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN6.ec.png",
-        "logo_source": "wikimedia-commons"
+        "logo_source": "cache"
       },
       "Canal.ESPN7.ec": {
         "channel_id": "Canal.ESPN7.ec",
@@ -604,7 +604,7 @@
         "programmes": 65,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN7.ec.png",
-        "logo_source": "wikimedia-commons"
+        "logo_source": "cache"
       }
     }
   }
