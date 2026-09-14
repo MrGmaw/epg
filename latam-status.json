@@ -1,15 +1,15 @@
 {
   "version": "0.2.63",
-  "generated_at": "2026-09-14T10:54:14.922780-05:00",
+  "generated_at": "2026-09-14T18:52:47.595427-05:00",
   "source_commit": "dc9b7051b32ade25a04974d89f36692afe2a984e",
-  "github_run_id": "34865017932",
+  "github_run_id": "34910721123",
   "github_run_attempt": "1",
   "base_date": "2026-09-14",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 44,
-  "programmes": 3259,
+  "programmes": 3277,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 71,
     "Canal.Gamavisión.ec": 170,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 206,
     "TeleamazonasGuayaquil.ec": 206,
     "Ecuavisa.ec": 106,
-    "EcuavisaInternacional.ec": 69,
+    "EcuavisaInternacional.ec": 86,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 52,
     "NTN24.co": 42,
@@ -37,12 +37,12 @@
     "Warner-channel.co": 69,
     "HBO-Family.co": 26,
     "Canal24Horas.es": 192,
-    "La1.es": 101,
+    "La1.es": 102,
     "Clan.es": 508,
     "MakroDigitalTV.ec": 197,
     "Canal.Ecuador.TV.ec": 66,
-    "NBC6-Miami.us": 86,
-    "ABC-Miami.us": 91,
+    "NBC6-Miami.us": 116,
+    "ABC-Miami.us": 122,
     "CBS.(WCBS).New.York,.NY.us": 228,
     "OromarTV.ec": 140,
     "TVEStarHD.es": 21,
@@ -53,7 +53,7 @@
     "Canal.ESPN3.ec": 63,
     "Canal.ESPN4.ec": 115,
     "Canal.ESPN5.ec": 77,
-    "Canal.ESPN6.ec": 67,
+    "Canal.ESPN6.ec": 66,
     "Canal.ESPN7.ec": 61
   },
   "mitv_source_days": {
@@ -92,7 +92,7 @@
       "2026-09-14": 19,
       "2026-09-15": 18,
       "2026-09-16": 17,
-      "2026-09-17": 18,
+      "2026-09-17": 19,
       "2026-09-18": 17,
       "2026-09-19": 12
     },
@@ -315,7 +315,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 86,
+        "programmes": 116,
         "window_start": "2026-09-14",
         "window_days": 7
       },
@@ -330,7 +330,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 91,
+        "programmes": 122,
         "window_start": "2026-09-14",
         "window_days": 7
       }
@@ -478,7 +478,7 @@
     "source": "GatoTV Ecuador",
     "output_timezone": "America/Guayaquil",
     "manual_offset_minutes": 0,
-    "programmes_total": 536,
+    "programmes_total": 535,
     "channel_status": {
       "Canal.ESPN.ec": {
         "channel_id": "Canal.ESPN.ec",
@@ -583,7 +583,7 @@
         "modes_used": [
           "ampm-runner-geo-table-fallback"
         ],
-        "programmes": 67,
+        "programmes": 66,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN6.ec.png",
         "logo_source": "cache"
