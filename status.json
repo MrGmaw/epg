@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-13T18:09:00.093341-05:00",
-  "base_date": "2026-09-13",
+  "generated_at": "2026-09-14T10:53:28.002323-05:00",
+  "base_date": "2026-09-14",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
     "teleamazonas": "https://www.teleamazonas.com/programacion/",
@@ -13,20 +13,20 @@
   "cnn_en_espanol_days": 2,
   "ntn24_days": 2,
   "channels": 95,
-  "programmes": 11047,
-  "teleamazonas_quito": 207,
-  "teleamazonas_guayaquil": 207,
+  "programmes": 9962,
+  "teleamazonas_quito": 206,
+  "teleamazonas_guayaquil": 206,
   "ecuavisa": 106,
-  "ecuavisa_internacional": 76,
+  "ecuavisa_internacional": 69,
   "tvc": 156,
-  "cnn_en_espanol": 60,
-  "ntn24": 46,
+  "cnn_en_espanol": 52,
+  "ntn24": 42,
   "tvc_source_mode": "official",
   "epgshare_resilient_channels": {
     "Canal.TC.Televisión.ec": {
       "name": "TC Televisión",
       "source": "epgshare",
-      "programmes": 72
+      "programmes": 71
     },
     "Canal.Gamavisión.ec": {
       "name": "Gamavisión",
@@ -53,5 +53,5 @@
     }
   },
   "tc_source_mode": "epgshare",
-  "tc_programmes": 72
+  "tc_programmes": 71
 }
