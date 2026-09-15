@@ -1,0 +1,3 @@
+VERSION
+scripts/add_star_tve.py
+RELEASE-v0.2.65.md
