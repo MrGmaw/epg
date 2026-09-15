@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EPG MrG v0.2.64: STAR TVE resiliente: GatoTV + AmericaTVGuide + caché exacta.
+"""EPG MrG v0.2.65: STAR TVE resiliente: GatoTV + AmericaTVListings + Jina Reader + caché exacta.
 
 Regla horaria validada el 30-08-2026 contra la vista localizada de GatoTV
 para Ecuador:
@@ -15,9 +15,12 @@ para Ecuador:
   -> 13:25-14:20 America/Guayaquil, "España entre el cielo y la tierra";
   20:20-20:50 -> 14:20-14:50 "Seguridad vital".
 - Para cubrir la noche ecuatoriana se consulta también la fecha siguiente.
-- Si GatoTV falla, AmericaTVGuide Colombia (GMT-5) es fallback fresco.
-- La latam.xml previa solo puede rellenar huecos o rescatar fechas exactas todavía vigentes;
-  nunca se desplaza por weekday ni se aplica offset manual.
+- Si GatoTV falla, AmericaTVListings Colombia (GMT-5) es fallback fresco.
+- Si AmericaTVListings bloquea al runner, se prueba la misma URL a través de Jina Reader.
+- La latam.xml previa solo puede rellenar huecos de fechas exactas todavía vigentes.
+- Los días sin ninguna fuente ni caché se publican explícitamente como
+  "Programación temporalmente no disponible"; STAR TVE nunca tumba todo el build.
+- Nunca se desplaza una parrilla por weekday ni se aplica offset manual.
 """
 from __future__ import annotations
 
@@ -41,21 +44,22 @@ import requests
 from bs4 import BeautifulSoup
 from lxml import etree
 
-VERSION = "0.2.64"
+VERSION = "0.2.65"
 EXPECTED_INPUT_CHANNELS = 34
 EXPECTED_FINAL_CHANNELS = 35
 MIN_PROGRAMMES = 5
 STAR_ID = "TVEStarHD.es"
 STAR_NAME = "STAR TVE"
 STAR_SOURCE_BASE = "https://www.gatotv.com/canal/star_tve"
-STAR_FALLBACK_URL = "https://americatvguide.com/es/colombia/c/star-tve-hd"
+STAR_FALLBACK_URL = "https://americatvlistings.com/es/co-COT/star-tve-hd"
+STAR_FALLBACK_READER_URL = f"https://r.jina.ai/{STAR_FALLBACK_URL}"
 STAR_ICON = "https://i.imgur.com/zsCZHMh.png"
 STAR_WEBSITE = "https://www.rtve.es/"
 TARGET_IDS = (STAR_ID,)
 
 OUTPUT_TZ = ZoneInfo("America/Guayaquil")
 SOURCE_TZ_24H = ZoneInfo("Atlantic/Canary")
-SOURCE_TZ_ATVG = ZoneInfo("America/Bogota")
+SOURCE_TZ_ATVL = ZoneInfo("America/Bogota")
 REQUEST_TIMEOUT = 35
 TIMEZONE_DISCOVERY_TIMEOUT = 12
 RUNNER_TZ_ENV = "STAR_TVE_GATOTV_TIMEZONE"
@@ -467,11 +471,16 @@ def request_page(url: str, headers: dict[str, str]) -> str:
 
 
 
-DATE_HEADING_RE = re.compile(r"(?:Hoy|Mañana|Manana)\s*-\s*(\d{1,2})/(\d{1,2})/(\d{2,4})", re.I)
-ATVG_EVENT_RE = re.compile(r"^(\d{1,2}:\d{2})\s+(.+?)$")
+ATVL_DATE_RE = re.compile(r"\b(\d{1,2})/(\d{1,2})/(\d{2,4})\b")
+ATVL_DAY_HEADING_RE = re.compile(
+    r"(?im)^(?:lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)\s*,?\s*"
+    r"(\d{1,2}/\d{1,2}/\d{2,4})\b"
+)
+ATVL_TIME_RE = re.compile(r"(?<!\d)(\d{1,2}:\d{2})(?!\d)")
 
-def _parse_atvg_heading_date(text: str) -> date | None:
-    match = DATE_HEADING_RE.search(normalize_text(text))
+
+def _parse_atvl_date(value: str) -> date | None:
+    match = ATVL_DATE_RE.search(value)
     if not match:
         return None
     day, month, year = (int(part) for part in match.groups())
@@ -482,45 +491,89 @@ def _parse_atvg_heading_date(text: str) -> date | None:
     except ValueError:
         return None
 
-def parse_americatvguide_page(page: str) -> tuple[list[StarProgramme], int]:
-    """Parsea la guía Star TVE de AmericaTVGuide Colombia (GMT-5).
 
-    La página agrupa cada día de TV con el último programa de la noche anterior
-    al principio (por ejemplo 23:55 -> 00:20). Detectamos ese rollover y asignamos
-    las fechas civiles correctas antes de inferir stops con el siguiente inicio.
-    """
-    soup = BeautifulSoup(page, "html.parser")
-    groups: list[tuple[date, list[tuple[dt_time, str]]]] = []
-    current_date: date | None = None
-    current_rows: list[tuple[dt_time, str]] | None = None
-    for tag in soup.find_all(["h2", "h3", "h4", "h5", "h6", "a"]):
-        text = normalize_text(tag.get_text(" ", strip=True))
-        if not text:
-            continue
-        heading_date = _parse_atvg_heading_date(text)
-        if heading_date is not None:
-            current_date = heading_date
-            current_rows = []
-            groups.append((current_date, current_rows))
-            continue
-        if tag.name != "a" or current_date is None or current_rows is None:
-            continue
-        match = ATVG_EVENT_RE.match(text)
-        if not match:
-            continue
+def _visible_atvl_text(page: str) -> str:
+    """Normaliza HTML directo o Markdown/texto de Jina Reader."""
+    lower = page[:1000].lower()
+    if "<html" in lower or "<body" in lower or "</a>" in page:
+        soup = BeautifulSoup(page, "html.parser")
+        value = soup.get_text("\n", strip=True)
+    else:
+        value = page
+        # Markdown: conserva el texto visible de los enlaces.
+        value = re.sub(r"!\[[^\]]*\]\([^)]*\)", " ", value)
+        value = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", value)
+        value = re.sub(r"^\s*#+\s*", "", value, flags=re.M)
+    value = html.unescape(value).replace("\xa0", " ")
+    return value
+
+
+def _parse_atvl_block(guide_date: date, block: str) -> list[tuple[dt_time, str]]:
+    # AmericaTVListings puede poner toda la parrilla en una sola línea. Se parte
+    # por cada HH:MM y el texto hasta el siguiente HH:MM se toma como título.
+    compact = re.sub(r"\s+", " ", block).strip()
+    matches = list(ATVL_TIME_RE.finditer(compact))
+    rows: list[tuple[dt_time, str]] = []
+    for idx, match in enumerate(matches):
         try:
-            when = datetime.strptime(match.group(1), "%H:%M").time()
+            clock = datetime.strptime(match.group(1), "%H:%M").time()
         except ValueError:
             continue
-        title = normalize_text(match.group(2))
-        if title:
-            current_rows.append((when, title))
+        stop_pos = matches[idx + 1].start() if idx + 1 < len(matches) else len(compact)
+        title = compact[match.end():stop_pos].strip(" -–—|·")
+        title = re.sub(r"\b\d{1,3}%\b.*$", "", title).strip()
+        title = re.sub(r"\b(?:No results found|No se encontraron resultados)\b.*$", "", title, flags=re.I).strip()
+        title = normalize_text(title)
+        if not title:
+            continue
+        # Evita capturar encabezados/controles al final del bloque.
+        lowered = normalized_key(title)
+        if lowered in {"tv channel", "tv canal", "guia tv", "tv guide"}:
+            continue
+        rows.append((clock, title))
+    return rows
+
+
+def parse_americatvlistings_page(page: str) -> tuple[list[StarProgramme], int]:
+    """Parsea Star TVE HD de AmericaTVListings Colombia (GMT-5).
+
+    Acepta tanto el HTML original como la salida Markdown/texto de Jina Reader.
+    Cada sección fechada puede comenzar con el último programa de la noche
+    anterior; detectamos el primer rollover y asignamos la fecha civil correcta.
+    """
+    text_page = _visible_atvl_text(page)
+    headings = list(ATVL_DAY_HEADING_RE.finditer(text_page))
+    groups: list[tuple[date, list[tuple[dt_time, str]]]] = []
+    for idx, heading in enumerate(headings):
+        guide_date = _parse_atvl_date(heading.group(1))
+        if guide_date is None:
+            continue
+        block_end = headings[idx + 1].start() if idx + 1 < len(headings) else len(text_page)
+        block = text_page[heading.end():block_end]
+        rows = _parse_atvl_block(guide_date, block)
+        if len(rows) >= MIN_PROGRAMMES:
+            groups.append((guide_date, rows))
+
+    # Fallback para HTML donde el día/fecha no quedó al inicio de línea.
+    if not groups:
+        loose = list(re.finditer(
+            r"(?:lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)[^\n]{0,20}"
+            r"(\d{1,2}/\d{1,2}/\d{2,4})",
+            text_page,
+            flags=re.I,
+        ))
+        for idx, heading in enumerate(loose):
+            guide_date = _parse_atvl_date(heading.group(1))
+            if guide_date is None:
+                continue
+            block_end = loose[idx + 1].start() if idx + 1 < len(loose) else len(text_page)
+            rows = _parse_atvl_block(guide_date, text_page[heading.end():block_end])
+            if len(rows) >= MIN_PROGRAMMES:
+                groups.append((guide_date, rows))
 
     starts: list[tuple[datetime, str, date]] = []
     loaded_groups = 0
     for guide_date, rows in groups:
-        if len(rows) < MIN_PROGRAMMES:
-            continue
         loaded_groups += 1
         rollover = None
         for idx in range(1, len(rows)):
@@ -531,7 +584,7 @@ def parse_americatvguide_page(page: str) -> tuple[list[StarProgramme], int]:
             civil_date = guide_date
             if rollover is not None and idx < rollover:
                 civil_date = guide_date - timedelta(days=1)
-            local = datetime.combine(civil_date, clock, tzinfo=SOURCE_TZ_ATVG)
+            local = datetime.combine(civil_date, clock, tzinfo=SOURCE_TZ_ATVL)
             starts.append((local.astimezone(OUTPUT_TZ), title, guide_date))
 
     dedup: dict[tuple[str, str], tuple[datetime, str, date]] = {}
@@ -547,45 +600,60 @@ def parse_americatvguide_page(page: str) -> tuple[list[StarProgramme], int]:
                 stop = start + timedelta(hours=1)
         else:
             stop = start + timedelta(hours=1)
-        result.append(StarProgramme(start, stop, title, None, source_date, "americatvguide-colombia-gmt5"))
+        result.append(StarProgramme(start, stop, title, None, source_date, "americatvlistings-colombia-gmt5"))
     if loaded_groups < 1 or len(result) < MIN_PROGRAMMES:
         raise RuntimeError(
-            f"AmericaTVGuide sin parrilla suficiente: días={loaded_groups}, emisiones={len(result)}"
+            f"AmericaTVListings sin parrilla suficiente: días={loaded_groups}, emisiones={len(result)}"
         )
     return result, loaded_groups
 
-def scrape_americatvguide(start_date: date, days: int) -> tuple[list[StarProgramme], int, set[str]]:
+
+def _request_atvl(url: str, *, reader: bool = False) -> str:
     headers = {
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-                      "(KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+        "User-Agent": (
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+        ),
         "Accept-Language": "es-CO,es;q=0.9,en;q=0.5",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Cache-Control": "no-cache",
     }
-    last_error: Exception | None = None
-    page = ""
-    for attempt in range(1, 4):
-        try:
-            response = requests.get(STAR_FALLBACK_URL, headers=headers, timeout=REQUEST_TIMEOUT)
-            response.raise_for_status()
-            if not response.content:
-                raise RuntimeError("respuesta vacía")
-            response.encoding = response.apparent_encoding or "utf-8"
-            page = response.text
-            break
-        except Exception as exc:  # noqa: BLE001
-            last_error = exc
-            if attempt < 3:
-                time.sleep(2)
-    if not page:
-        raise RuntimeError(f"no se pudo descargar {STAR_FALLBACK_URL}: {last_error}")
-    items, loaded_groups = parse_americatvguide_page(page)
+    if reader:
+        headers.update({
+            "Accept": "text/plain",
+            "X-No-Cache": "true",
+            "X-Engine": "browser",
+            "X-Timeout": "25",
+        })
+    else:
+        headers["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT + (15 if reader else 0))
+    response.raise_for_status()
+    if not response.content:
+        raise RuntimeError("respuesta vacía")
+    response.encoding = response.apparent_encoding or "utf-8"
+    return response.text
+
+
+def scrape_americatvlistings(start_date: date, days: int) -> tuple[list[StarProgramme], int, set[str], str]:
+    errors: list[str] = []
+    candidates = (
+        (STAR_FALLBACK_URL, False, "americatvlistings-direct-colombia-gmt5"),
+        (STAR_FALLBACK_READER_URL, True, "americatvlistings-via-jina-reader-colombia-gmt5"),
+    )
     window_start = datetime.combine(start_date, dt_time.min, tzinfo=OUTPUT_TZ)
     window_end = window_start + timedelta(days=days)
-    filtered = [item for item in items if item.stop > window_start and item.start < window_end]
-    if len(filtered) < MIN_PROGRAMMES:
-        raise RuntimeError(f"AmericaTVGuide solo produjo {len(filtered)} emisiones dentro de la ventana")
-    return filtered, loaded_groups, {"americatvguide-colombia-gmt5-fallback"}
+    for url, reader, mode in candidates:
+        try:
+            page = _request_atvl(url, reader=reader)
+            items, loaded_groups = parse_americatvlistings_page(page)
+            filtered = [item for item in items if item.stop > window_start and item.start < window_end]
+            if len(filtered) < MIN_PROGRAMMES:
+                raise RuntimeError(f"solo {len(filtered)} emisiones dentro de la ventana")
+            return filtered, loaded_groups, {mode}, url
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"{mode}: {exc}")
+    raise RuntimeError("; ".join(errors))
+
 
 def merge_fresh_with_exact_cache(
     fresh: Sequence[etree._Element], cached: Sequence[etree._Element]
@@ -619,6 +687,62 @@ def merge_fresh_with_exact_cache(
             result.append(copy.deepcopy(node))
             existing.add(key)
     return sorted(result, key=lambda node: (node.get("start", ""), node.get("stop", ""), programme_key(node)[2]))
+
+
+def make_unavailable_programmes(start_date: date, days: int) -> list[StarProgramme]:
+    """Genera bloques transparentes para días sin ninguna parrilla verificable."""
+    result: list[StarProgramme] = []
+    count = max(days, MIN_PROGRAMMES)
+    for offset in range(count):
+        day = start_date + timedelta(days=offset)
+        start = datetime.combine(day, dt_time.min, tzinfo=OUTPUT_TZ)
+        stop = start + timedelta(days=1)
+        result.append(StarProgramme(
+            start=start,
+            stop=stop,
+            title="Programación temporalmente no disponible",
+            subtitle="STAR TVE: fuentes externas sin respuesta verificable",
+            source_date=day,
+            mode="degraded-unavailable-placeholder",
+        ))
+    return result
+
+
+def fill_uncovered_days_with_placeholders(
+    nodes: Sequence[etree._Element], start_date: date, days: int
+) -> tuple[list[etree._Element], int]:
+    """Añade un bloque transparente solo a días completamente sin emisiones."""
+    result = [copy.deepcopy(node) for node in nodes]
+    covered: set[date] = set()
+    for node in result:
+        try:
+            start = parse_xmltv_datetime(node.get("start", "")).astimezone(OUTPUT_TZ)
+            stop = parse_xmltv_datetime(node.get("stop", "")).astimezone(OUTPUT_TZ)
+        except ValueError:
+            continue
+        for offset in range(days):
+            day = start_date + timedelta(days=offset)
+            day_start = datetime.combine(day, dt_time.min, tzinfo=OUTPUT_TZ)
+            day_end = day_start + timedelta(days=1)
+            if stop > day_start and start < day_end:
+                covered.add(day)
+    added = 0
+    for offset in range(days):
+        day = start_date + timedelta(days=offset)
+        if day in covered:
+            continue
+        item = StarProgramme(
+            start=datetime.combine(day, dt_time.min, tzinfo=OUTPUT_TZ),
+            stop=datetime.combine(day + timedelta(days=1), dt_time.min, tzinfo=OUTPUT_TZ),
+            title="Programación temporalmente no disponible",
+            subtitle="STAR TVE: día sin parrilla fresca ni caché exacta",
+            source_date=day,
+            mode="degraded-uncovered-day-placeholder",
+        )
+        result.append(make_programme(item))
+        added += 1
+    result.sort(key=lambda node: (node.get("start", ""), node.get("stop", ""), programme_key(node)[2]))
+    return result, added
 
 
 def fetch_and_parse_day(guide_date: date) -> tuple[list[StarProgramme], str]:
@@ -850,6 +974,7 @@ def update_status(
         "source": effective_source,
         "primary_source": STAR_SOURCE_BASE,
         "fallback_source": STAR_FALLBACK_URL,
+        "fallback_reader_source": STAR_FALLBACK_READER_URL,
         # Campos legacy que todavía exige el validador inline del workflow v0.2.44.
         # NO describen la ruta horaria efectiva de v0.2.48; véase effective_* abajo.
         "source_timezones": {"24h": "Atlantic/Canary", "ampm": "America/New_York"},
@@ -881,7 +1006,7 @@ def update_status(
         "loaded_source_days": loaded_source_days,
         "programmes": programme_count,
         "cached_programmes_available": cache_count,
-        "cache_policy": "fresh source preferred; previous latam used only for exact-date non-overlapping gaps or final exact-date rescue",
+        "cache_policy": "fresh source preferred; exact-date cache fills gaps; uncovered days use explicit unavailable placeholders",
         "field_validation": {
             "date": "2026-08-30",
             "source_24h_slot": "2026-08-30 19:25-20:20 Atlantic/Canary",
@@ -1006,40 +1131,67 @@ def self_test() -> int:
     else:
         raise AssertionError("STAR TVE aceptó una tabla 12 h sin meridiano")
 
-    sample_atvg = """
+    sample_atvl = """
     <html><body>
-      <h5>Hoy - 15/9/26 - Martes</h5>
-      <a>23:55 Flash Moda Monográficos</a><a>00:20 Flash Moda Monográficos</a>
-      <a>01:10 Un país para reírlo</a><a>02:10 Viaje al centro de la tele</a>
-      <a>18:10 Acacias 38</a><a>19:05 La promesa</a><a>20:00 Los misterios de Laura</a>
-      <a>21:10 Hope! Estamos a tiempo</a><a>22:10 Salón de té La Moderna</a><a>23:10 Seis hermanas</a>
-      <h5>Mañana - 16/9/26 - Miércoles</h5>
-      <a>23:10 Seis hermanas</a><a>00:10 Flash Moda Monográficos</a>
-      <a>00:35 Flash Moda Monográficos</a><a>01:05 Comerse el mundo</a>
-      <a>18:10 Acacias 38</a><a>19:00 La promesa</a><a>20:00 Víctor Ros</a>
-      <a>21:20 En primicia</a><a>22:10 Salón de té La Moderna</a><a>23:10 Seis hermanas</a>
+      <h2>martes, 15/09/26, AmericaTVListings.com</h2>
+      <div>00:00 <a>Seis hermanas</a> 00:55 <a>Flash Moda Monográficos</a>
+      01:20 <a>Flash Moda Monográficos</a> 01:42 <a>Flash Moda Monográficos</a>
+      02:10 <a>Un país para reírlo</a> 03:10 <a>Viaje al centro de la tele</a>
+      18:05 <a>Salón de té La Moderna</a> 19:10 <a>Acacias 38</a>
+      20:05 <a>La promesa</a> 21:00 <a>Los misterios de Laura</a>
+      22:10 <a>Hope! Estamos a tiempo</a> 23:10 <a>Salón de té La Moderna</a></div>
+      <h2>miércoles, 16/09/26, AmericaTVListings.com</h2>
+      <div>23:10 <a>Salón de té La Moderna</a> 00:10 <a>Seis hermanas</a>
+      01:10 <a>Flash Moda Monográficos</a> 01:35 <a>Flash Moda Monográficos</a>
+      02:05 <a>Comerse el mundo</a> 03:05 <a>Viaje al centro de la tele</a>
+      19:10 <a>Acacias 38</a> 20:00 <a>La promesa</a> 21:00 <a>Víctor Ros</a>
+      22:20 <a>En primicia</a> 23:10 <a>Salón de té La Moderna</a></div>
     </body></html>
     """
-    atvg_items, atvg_days = parse_americatvguide_page(sample_atvg)
-    assert atvg_days == 2
-    acacias_today = next(item for item in atvg_items if item.title == "Acacias 38" and item.start.date() == date(2026, 9, 15))
-    assert format_xmltv_datetime(acacias_today.start) == "20260915181000 -0500"
-    laura = next(item for item in atvg_items if item.title == "Los misterios de Laura")
-    assert format_xmltv_datetime(laura.start) == "20260915200000 -0500"
-    assert format_xmltv_datetime(laura.stop) == "20260915211000 -0500"
+    atvl_items, atvl_days = parse_americatvlistings_page(sample_atvl)
+    assert atvl_days == 2
+    acacias_today = next(item for item in atvl_items if item.title == "Acacias 38" and item.start.date() == date(2026, 9, 15))
+    assert format_xmltv_datetime(acacias_today.start) == "20260915191000 -0500"
+    laura = next(item for item in atvl_items if item.title == "Los misterios de Laura")
+    assert format_xmltv_datetime(laura.start) == "20260915210000 -0500"
+    assert format_xmltv_datetime(laura.stop) == "20260915221000 -0500"
+
+    # Mismo contenido aproximando la salida Markdown de Jina Reader.
+    sample_reader = """
+    # TV guide: Star TVE HD, Colombia
+    ## TV Schedule
+    martes, 15/09/26, [AmericaTVListings.com](https://americatvlistings.com/)
+    00:00 [Seis hermanas](x) 00:55 [Flash Moda Monográficos](x) 01:20 [Flash Moda Monográficos](x)
+    01:42 [Flash Moda Monográficos](x) 02:10 [Un país para reírlo](x) 03:10 [Viaje al centro de la tele](x)
+    18:05 [Salón de té La Moderna](x) 19:10 [Acacias 38](x) 20:05 [La promesa](x)
+    21:00 [Los misterios de Laura](x) 22:10 [Hope! Estamos a tiempo](x) 23:10 [Salón de té La Moderna](x)
+    miércoles, 16/09/26, [AmericaTVListings.com](https://americatvlistings.com/)
+    23:10 [Salón de té La Moderna](x) 00:10 [Seis hermanas](x) 01:10 [Flash Moda Monográficos](x)
+    01:35 [Flash Moda Monográficos](x) 02:05 [Comerse el mundo](x) 03:05 [Viaje al centro de la tele](x)
+    19:10 [Acacias 38](x) 20:00 [La promesa](x) 21:00 [Víctor Ros](x) 22:20 [En primicia](x)
+    23:10 [Salón de té La Moderna](x)
+    """
+    reader_items, reader_days = parse_americatvlistings_page(sample_reader)
+    assert reader_days == 2
+    assert any(item.title == "Los misterios de Laura" for item in reader_items)
 
     stale = etree.Element(
         "programme", start="20260917100000 -0500", stop="20260917110000 -0500", channel=STAR_ID
     )
     etree.SubElement(stale, "title", lang="es").text = "Caché exacta futura"
-    fresh = [make_programme(item) for item in atvg_items if item.start.date() == date(2026, 9, 15)]
+    fresh = [make_programme(item) for item in atvl_items if item.start.date() == date(2026, 9, 15)]
     merged = merge_fresh_with_exact_cache(fresh, [stale])
     assert any("Caché exacta futura" in " ".join(node.xpath("./title/text()")) for node in merged)
 
+    placeholders = [make_programme(item) for item in make_unavailable_programmes(date(2026, 9, 15), 7)]
+    assert len(placeholders) >= 5
+    assert all(node.get("start", "").endswith(" -0500") for node in placeholders)
+
     print(
-        "Self-test STAR TVE v0.2.64 correcto: GatoTV sigue primario; "
-        "AmericaTVGuide Colombia GMT-5 funciona como fallback fresco; "
-        "caché previa solo rellena fechas exactas no solapadas; offset manual=0."
+        "Self-test STAR TVE v0.2.65 correcto: GatoTV primario; "
+        "AmericaTVListings Colombia GMT-5 directo/Jina Reader como fallback fresco; "
+        "caché exacta para huecos; placeholders transparentes si todas las fuentes fallan; "
+        "offset manual=0."
     )
     return 0
 
@@ -1078,42 +1230,51 @@ def main() -> int:
     effective_source = STAR_SOURCE_BASE
     gatotv_error: Exception | None = None
     fallback_error: Exception | None = None
+    loaded_source_days = 0
+    modes: set[str] = set()
+    merged: list[etree._Element] = []
     try:
         fresh_items, loaded_source_days, modes = scrape_star(start_date, args.days)
         fresh_nodes = [make_programme(item) for item in fresh_items]
         merged = merge_programmes(fresh_nodes, cached_programmes)
     except Exception as exc:  # noqa: BLE001
         gatotv_error = exc
-        warn(f"STAR TVE: GatoTV no disponible; se prueba AmericaTVGuide Colombia: {exc}")
+        warn(f"STAR TVE: GatoTV no disponible; se prueba AmericaTVListings Colombia: {exc}")
         try:
-            fresh_items, loaded_source_days, modes = scrape_americatvguide(start_date, args.days)
-            effective_source = STAR_FALLBACK_URL
+            fresh_items, loaded_source_days, modes, effective_source = scrape_americatvlistings(start_date, args.days)
             fresh_nodes = [make_programme(item) for item in fresh_items]
             merged = merge_fresh_with_exact_cache(fresh_nodes, cached_programmes)
             if len(merged) > len(fresh_nodes):
                 modes.add("previous-latam-exact-date-gap-fill")
         except Exception as exc2:  # noqa: BLE001
             fallback_error = exc2
-            if len(cached_programmes) >= MIN_PROGRAMMES:
+            if cached_programmes:
                 effective_source = "previous-latam.xml exact-date cache"
-                loaded_source_days = 0
                 modes = {"previous-latam-exact-date-rescue"}
                 merged = merge_fresh_with_exact_cache([], cached_programmes)
                 warn(
-                    "STAR TVE: GatoTV y AmericaTVGuide fallaron; se conserva únicamente "
-                    "la programación de fechas exactas todavía vigente en latam.xml previa."
+                    "STAR TVE: fuentes frescas no disponibles; se conserva la caché de fechas "
+                    "exactas y se marcarán explícitamente los días sin cobertura."
                 )
             else:
-                raise RuntimeError(
-                    f"STAR TVE v{VERSION}: fallaron GatoTV y AmericaTVGuide y la caché exacta "
-                    f"no alcanza {MIN_PROGRAMMES} emisiones. GatoTV={gatotv_error}; "
-                    f"AmericaTVGuide={fallback_error}; caché={len(cached_programmes)}"
-                ) from exc2
+                effective_source = "degraded-unavailable-placeholder"
+                modes = {"degraded-unavailable-placeholder"}
+                merged = [make_programme(item) for item in make_unavailable_programmes(start_date, args.days)]
+                warn(
+                    "STAR TVE: GatoTV, AmericaTVListings directo/Jina y caché no están disponibles; "
+                    "se publican placeholders transparentes para no abortar todo el EPG. "
+                    f"GatoTV={gatotv_error}; AmericaTVListings={fallback_error}"
+                )
 
+    merged, placeholder_days = fill_uncovered_days_with_placeholders(merged, start_date, args.days)
+    if placeholder_days:
+        modes.add("degraded-uncovered-day-placeholder")
     if len(merged) < MIN_PROGRAMMES:
-        raise RuntimeError(
-            f"STAR TVE v{VERSION}: programación insuficiente tras fallbacks; emisiones={len(merged)}."
-        )
+        # Defensa final: nunca abortar por una fuente externa de STAR TVE.
+        effective_source = "degraded-unavailable-placeholder"
+        modes.add("degraded-unavailable-placeholder")
+        merged = [make_programme(item) for item in make_unavailable_programmes(start_date, max(args.days, 7))]
+        loaded_source_days = 0
 
     channel = make_channel(cached_channel)
     append_channel(root, channel)
@@ -1139,8 +1300,8 @@ def main() -> int:
     update_index(index_path)
     log(
         f"v{VERSION} aplicada: 35 canales; STAR TVE={len(merged)} emisiones; "
-        f"fuente efectiva={effective_source}; GatoTV primario / AmericaTVGuide Colombia fallback / "
-        "caché exacta último recurso; offset manual=0."
+        f"fuente efectiva={effective_source}; GatoTV primario / AmericaTVListings directo/Jina fallback / "
+        "caché exacta / placeholder transparente último recurso; offset manual=0."
     )
     return 0
 
