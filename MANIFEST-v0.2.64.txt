@@ -1,0 +1,4 @@
+VERSION
+scripts/add_star_tve.py
+RELEASE-v0.2.64.md
+MANIFEST-v0.2.64.txt
