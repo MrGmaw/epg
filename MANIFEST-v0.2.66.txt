@@ -1,0 +1,4 @@
+VERSION
+.github/workflows/actualizar-epg.yml
+scripts/add_makrodigital_api.py
+RELEASE-v0.2.66.md
