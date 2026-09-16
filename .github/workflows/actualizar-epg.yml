@@ -70,6 +70,7 @@ jobs:
             scripts/add_asamblea_epg.py \
             scripts/add_elgourmet_sur.py \
             scripts/add_espn_ec.py \
+            scripts/add_makrodigital_api.py \
             scripts/patch_dw_mitv.py
 
       - name: Instalar dependencias
@@ -110,7 +111,8 @@ jobs:
             scripts/add_star_tve.py \
             scripts/add_asamblea_epg.py \
             scripts/add_elgourmet_sur.py \
-            scripts/add_espn_ec.py
+            scripts/add_espn_ec.py \
+            scripts/add_makrodigital_api.py
           python -m py_compile scripts/*.py
           python - <<'PYIMPORT'
           import sys
@@ -125,7 +127,8 @@ jobs:
           import add_asamblea_epg  # noqa: F401
           import add_elgourmet_sur  # noqa: F401
           import add_espn_ec  # noqa: F401
-          print("Importación real de generadores, Miami, v0.2.39, STAR TVE, Asamblea Nacional, El Gourmet Sur y ESPN 1-7 Ecuador correcta.")
+          import add_makrodigital_api  # noqa: F401
+          print("Importación real de generadores, Miami, v0.2.39, STAR TVE, Asamblea Nacional, El Gourmet Sur, ESPN 1-7 Ecuador y MakroDigital API correcta.")
           PYIMPORT
 
       - name: Preparar directorio público
@@ -194,6 +197,7 @@ jobs:
           python scripts/add_asamblea_epg.py --self-test
           python scripts/add_elgourmet_sur.py --self-test
           python scripts/add_espn_ec.py --self-test
+          python scripts/add_makrodigital_api.py --self-test
           python scripts/mitv_logos.py --self-test
 
       - name: Construir guía principal ec.xml
@@ -240,6 +244,16 @@ jobs:
             --gatotv-days "${GATOTV_DAYS}" \
             --logos-manifest public/logos/manifest.json \
             --previous-latam-xml .cache/previous-latam.xml
+
+      - name: Actualizar MakroDigital desde API dinámica oficial v0.2.66
+        shell: bash
+        env:
+          TZ: America/Guayaquil
+        run: |
+          set -euo pipefail
+          python scripts/add_makrodigital_api.py \
+            --output public \
+            --days "${GUIDE_DAYS}"
 
       - name: Añadir NBC 6 Miami y ABC Miami
         shell: bash
@@ -325,7 +339,7 @@ jobs:
             test -s "public/logos/${logo}.png"
           done
 
-      - name: Validar archivos finales v0.2.63
+      - name: Validar archivos finales v0.2.66
         shell: bash
         run: |
           set -euo pipefail
@@ -356,12 +370,14 @@ jobs:
           import add_asamblea_epg as asamblea
           import add_elgourmet_sur as gourmet_sur
           import add_espn_ec as espn_ec
+          import add_makrodigital_api as makro_api
           import mitv_logos as base_logos
 
           STAR_ID = star.STAR_ID
           ASAMBLEA_ID = asamblea.CHANNEL_ID
           GOURMET_SUR_ID = gourmet_sur.CHANNEL_ID
           ESPN_IDS = espn_ec.TARGET_IDS
+          MAKRO_ID = makro_api.CHANNEL_ID
           REQUIRED = (
               "Deutsche.Welle.cl",
               "Antena3-America.co",
@@ -389,6 +405,7 @@ jobs:
           assert ASAMBLEA_ID in validate.LATAM_REQUIRED
           assert GOURMET_SUR_ID in validate.LATAM_REQUIRED
           assert all(channel_id in validate.LATAM_REQUIRED for channel_id in ESPN_IDS)
+          assert MAKRO_ID in validate.LATAM_REQUIRED
           assert all(channel_id in validate.LATAM_REQUIRED for channel_id in REQUIRED)
 
           # El Gourmet Sur se añade como capa posterior al generador base de logos.
@@ -460,6 +477,16 @@ jobs:
 
           programme_counts = status.get("programme_counts", {})
           assert int(programme_counts.get(GOURMET_SUR_ID, 0)) >= 5, programme_counts
+          assert int(programme_counts.get(MAKRO_ID, 0)) >= 5, programme_counts
+
+          makro_policy = status.get("makrodigital", {})
+          assert makro_policy.get("channel_id") == MAKRO_ID, makro_policy
+          assert makro_policy.get("source") == makro_api.API_URL, makro_policy
+          assert makro_policy.get("source_timezone") == "UTC", makro_policy
+          assert makro_policy.get("target_timezone") == "America/Guayaquil", makro_policy
+          assert int(makro_policy.get("manual_offset_minutes", -1)) == 0, makro_policy
+          assert int(makro_policy.get("programmes", 0)) >= 5, makro_policy
+          assert makro_policy.get("mode") == "official-dynamic-api-primary+weekly-fallback", makro_policy
 
           for channel_id in ESPN_IDS:
               assert int(programme_counts.get(channel_id, 0)) >= 5, (channel_id, programme_counts)
@@ -512,9 +539,8 @@ jobs:
               assert len(icons) == 1 and icons[0].get("src", "").endswith(f"/{channel_id}.png"), channel_id
 
           print(
-              "Validación v0.2.63 correcta: 44 canales; ESPN 1-7 Ecuador añadidos al final; "
-              "GatoTV Ecuador; logos locales; 24h America/Guayaquil / AMPM runner dinámico; "
-              "offset manual 0."
+              "Validación v0.2.66 correcta: 44 canales; MakroDigital API dinámica oficial; "
+              "ESPN 1-7 Ecuador; logos locales; offsets manuales 0."
           )
           PY
           echo "Estado LATAM:"
