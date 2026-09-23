@@ -1,17 +1,17 @@
 {
   "version": "0.2.67",
-  "generated_at": "2026-09-22T22:23:57.247897-05:00",
-  "source_commit": "0035f59be27bb66ba22e9ef495fc12b9ae32db04",
-  "github_run_id": "35814089732",
+  "generated_at": "2026-09-22T22:26:41.866998-05:00",
+  "source_commit": "1346b5c954905fed5f8eedb6a170811bdd237ef8",
+  "github_run_id": "35814120524",
   "github_run_attempt": "1",
   "base_date": "2026-09-22",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 44,
-  "programmes": 3264,
+  "programmes": 3365,
   "programme_counts": {
-    "Canal.TC.Televisión.ec": 66,
+    "Canal.TC.Televisión.ec": 153,
     "Canal.Gamavisión.ec": 170,
     "Canal.RTS.ec": 157,
     "Canal.TVE.Internacional.(Televisión.Española).ec": 57,
@@ -38,12 +38,12 @@
     "HBO-Family.co": 30,
     "Canal24Horas.es": 212,
     "La1.es": 97,
-    "Clan.es": 500,
+    "Clan.es": 509,
     "MakroDigitalTV.ec": 202,
     "Canal.Ecuador.TV.ec": 64,
     "NBC6-Miami.us": 114,
     "ABC-Miami.us": 124,
-    "CBS.(WCBS).New.York,.NY.us": 213,
+    "CBS.(WCBS).New.York,.NY.us": 223,
     "OromarTV.ec": 140,
     "TVEStarHD.es": 25,
     "AsambleaNacional.ec": 63,
@@ -81,28 +81,28 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-09-22": 30,
-      "2026-09-23": 30,
-      "2026-09-24": 29,
-      "2026-09-25": 34,
+      "2026-09-22": 29,
+      "2026-09-23": 29,
+      "2026-09-24": 28,
+      "2026-09-25": 32,
       "2026-09-26": 51,
-      "2026-09-27": 41
+      "2026-09-27": 43
     },
     "La1.es": {
-      "2026-09-22": 20,
-      "2026-09-23": 18,
-      "2026-09-24": 19,
-      "2026-09-25": 18,
-      "2026-09-26": 14,
+      "2026-09-22": 19,
+      "2026-09-23": 17,
+      "2026-09-24": 18,
+      "2026-09-25": 17,
+      "2026-09-26": 13,
       "2026-09-27": 13
     },
     "Clan.es": {
-      "2026-09-22": 94,
-      "2026-09-23": 96,
-      "2026-09-24": 92,
-      "2026-09-25": 94,
-      "2026-09-26": 75,
-      "2026-09-27": 54
+      "2026-09-22": 93,
+      "2026-09-23": 95,
+      "2026-09-24": 91,
+      "2026-09-25": 92,
+      "2026-09-26": 74,
+      "2026-09-27": 64
     }
   },
   "gatotv_source_timezones": {
@@ -257,6 +257,7 @@
     "makrodigital_official": "https://makrodigitaltelevision.com/admin/api/getData-test.php",
     "makrodigital_dynamic_api": "https://makrodigitaltelevision.com/admin/api/getData-test.php",
     "makrodigital_weekly_fallback": "https://makrodigitaltelevision.com/programacion/",
+    "tc_television_official": "https://tctelevision.com/programacion/",
     "epgshare_miami": {
       "NBC6-Miami.us": "https://epgshare01.online/epgshare01/epg_ripper_US_LOCALS1.xml.gz",
       "ABC-Miami.us": "https://epgshare01.online/epgshare01/epg_ripper_US_LOCALS1.xml.gz"
@@ -352,6 +353,119 @@
     "gatotv_errors": [],
     "daily_counts": {}
   },
+  "tc_television_epg": {
+    "version": "0.2.67",
+    "channel_id": "Canal.TC.Televisión.ec",
+    "source": "https://tctelevision.com/programacion/",
+    "source_timezone": "America/Guayaquil",
+    "output_timezone": "America/Guayaquil",
+    "manual_offset_minutes": 0,
+    "mode": "official-rendered-primary+existing-latam-fallback",
+    "renderer": "selenium-chrome-headless",
+    "official_dates": [
+      "2026-09-22",
+      "2026-09-23",
+      "2026-09-24",
+      "2026-09-25",
+      "2026-09-26",
+      "2026-09-27",
+      "2026-09-28"
+    ],
+    "fallback_dates": [],
+    "official_programmes": 153,
+    "fallback_programmes_kept": 0,
+    "replaced_programmes": 66,
+    "programmes": 153,
+    "daily": {
+      "2026-09-22": {
+        "scraped_programmes": 21,
+        "span_hours": 23.0,
+        "accepted": true
+      },
+      "2026-09-23": {
+        "scraped_programmes": 21,
+        "span_hours": 23.0,
+        "accepted": true
+      },
+      "2026-09-24": {
+        "scraped_programmes": 21,
+        "span_hours": 23.0,
+        "accepted": true
+      },
+      "2026-09-25": {
+        "scraped_programmes": 21,
+        "span_hours": 23.0,
+        "accepted": true
+      },
+      "2026-09-26": {
+        "scraped_programmes": 24,
+        "span_hours": 13.5,
+        "accepted": true
+      },
+      "2026-09-27": {
+        "scraped_programmes": 24,
+        "span_hours": 23.5,
+        "accepted": true
+      },
+      "2026-09-28": {
+        "scraped_programmes": 21,
+        "span_hours": 23.0,
+        "accepted": true
+      }
+    },
+    "attempts": [
+      {
+        "target_date": "2026-09-22",
+        "parsed_date": "2026-09-22",
+        "programmes": 21,
+        "mode": "rendered-text",
+        "clicked": false
+      },
+      {
+        "target_date": "2026-09-23",
+        "parsed_date": "2026-09-23",
+        "programmes": 21,
+        "mode": "rendered-text",
+        "clicked": true
+      },
+      {
+        "target_date": "2026-09-24",
+        "parsed_date": "2026-09-24",
+        "programmes": 21,
+        "mode": "rendered-text",
+        "clicked": true
+      },
+      {
+        "target_date": "2026-09-25",
+        "parsed_date": "2026-09-25",
+        "programmes": 21,
+        "mode": "rendered-text",
+        "clicked": true
+      },
+      {
+        "target_date": "2026-09-26",
+        "parsed_date": "2026-09-26",
+        "programmes": 24,
+        "mode": "rendered-text",
+        "clicked": true
+      },
+      {
+        "target_date": "2026-09-27",
+        "parsed_date": "2026-09-27",
+        "programmes": 24,
+        "mode": "rendered-text",
+        "clicked": true
+      },
+      {
+        "target_date": "2026-09-28",
+        "parsed_date": "2026-09-28",
+        "programmes": 21,
+        "mode": "rendered-text",
+        "clicked": true
+      }
+    ],
+    "errors": []
+  },
   "miami_epg": {
     "provider": "EPGShare US_LOCALS1",
     "source": "https://epgshare01.online/epgshare01/epg_ripper_US_LOCALS1.xml.gz",
@@ -398,7 +512,7 @@
     "manual_offset_minutes": 0,
     "channels": {
       "CBS.(WCBS).New.York,.NY.us": {
-        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=8",
+        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=9",
         "source": "https://www.tvpassport.com/tv-listings/stations/cbs-wcbs-new-york-ny-hd/4555",
         "fallback_sources": [
           "https://epgshare01.online/epgshare01/epg_ripper_US1.xml.gz",
@@ -406,7 +520,7 @@
         ],
         "source_timezone": "America/New_York / explicit XMLTV offset",
         "output_timezone": "America/Guayaquil",
-        "programmes": 213
+        "programmes": 223
       },
       "OromarTV.ec": {
         "mode": "bundled-weekly-fallback",
@@ -459,12 +573,12 @@
       "degraded-uncovered-day-placeholder"
     ],
     "runner_timezone": {
-      "timezone": "America/Chicago",
+      "timezone": "America/New_York",
       "source": "ipapi"
     },
     "loaded_source_days": 1,
     "programmes": 25,
-    "cached_programmes_available": 22,
+    "cached_programmes_available": 25,
     "cache_policy": "fresh source preferred; exact-date cache fills gaps; uncovered days use explicit unavailable placeholders",
     "field_validation": {
       "date": "2026-08-30",
