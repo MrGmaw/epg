@@ -1,15 +1,15 @@
 {
   "version": "0.2.68",
-  "generated_at": "2026-09-22T22:46:04.593550-05:00",
-  "source_commit": "885bec586ec138c20d2c77f0d5e72acd9d93c0e5",
-  "github_run_id": "35815519368",
+  "generated_at": "2026-09-22T22:48:52.754424-05:00",
+  "source_commit": "75ff6f7c274b72aac1433c71e1e7e3c4601deb8b",
+  "github_run_id": "35815579170",
   "github_run_attempt": "1",
   "base_date": "2026-09-22",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 44,
-  "programmes": 3312,
+  "programmes": 3365,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 162,
     "Canal.Gamavisión.ec": 170,
@@ -27,9 +27,9 @@
     "Canal.Elgourmet.ec": 91,
     "Canal.History.co": 57,
     "Canal.History.2.co": 56,
-    "TV.Publica.canal.7.ar": 20,
+    "TV.Publica.canal.7.ar": 36,
     "Telefe.ar": 37,
-    "Deutsche.Welle.cl": 51,
+    "Deutsche.Welle.cl": 97,
     "hgtv.ar": 85,
     "France24Espanol.fr": 206,
     "Antena3-America.co": 35,
@@ -38,12 +38,12 @@
     "HBO-Family.co": 30,
     "Canal24Horas.es": 212,
     "La1.es": 97,
-    "Clan.es": 509,
+    "Clan.es": 500,
     "MakroDigitalTV.ec": 202,
     "Canal.Ecuador.TV.ec": 64,
     "NBC6-Miami.us": 114,
     "ABC-Miami.us": 124,
-    "CBS.(WCBS).New.York,.NY.us": 223,
+    "CBS.(WCBS).New.York,.NY.us": 212,
     "OromarTV.ec": 140,
     "TVEStarHD.es": 25,
     "AsambleaNacional.ec": 63,
@@ -60,12 +60,12 @@
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
     "CanalRCN.co": 3,
     "CaracolTV.co": 3,
-    "Canal.Elgourmet.ec": 2,
+    "Canal.Elgourmet.ec": 3,
     "Canal.History.co": 3,
     "Canal.History.2.co": 3,
-    "TV.Publica.canal.7.ar": 2,
+    "TV.Publica.canal.7.ar": 3,
     "Telefe.ar": 3,
-    "Deutsche.Welle.cl": 2,
+    "Deutsche.Welle.cl": 3,
     "hgtv.ar": 3,
     "France24Espanol.fr": 3,
     "Antena3-America.co": 3,
@@ -81,28 +81,28 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-09-22": 29,
-      "2026-09-23": 29,
-      "2026-09-24": 28,
-      "2026-09-25": 32,
+      "2026-09-22": 30,
+      "2026-09-23": 30,
+      "2026-09-24": 29,
+      "2026-09-25": 34,
       "2026-09-26": 51,
-      "2026-09-27": 43
+      "2026-09-27": 41
     },
     "La1.es": {
-      "2026-09-22": 19,
-      "2026-09-23": 17,
-      "2026-09-24": 18,
-      "2026-09-25": 17,
-      "2026-09-26": 13,
+      "2026-09-22": 20,
+      "2026-09-23": 18,
+      "2026-09-24": 19,
+      "2026-09-25": 18,
+      "2026-09-26": 14,
       "2026-09-27": 13
     },
     "Clan.es": {
-      "2026-09-22": 93,
-      "2026-09-23": 95,
-      "2026-09-24": 91,
-      "2026-09-25": 92,
-      "2026-09-26": 74,
-      "2026-09-27": 64
+      "2026-09-22": 94,
+      "2026-09-23": 96,
+      "2026-09-24": 92,
+      "2026-09-25": 94,
+      "2026-09-26": 75,
+      "2026-09-27": 54
     }
   },
   "gatotv_source_timezones": {
@@ -316,7 +316,7 @@
     "source_timezone": "UTC",
     "output_timezone": "America/Guayaquil",
     "manual_offset_minutes": 0,
-    "loaded_days": 2,
+    "loaded_days": 3,
     "mi_tv_candidates": [
       "https://mi.tv/cl/canales/deutsche-welle-espanol",
       "https://mi.tv/cl/canales/deutsche-welle-amerika"
@@ -354,7 +354,7 @@
     "daily_counts": {}
   },
   "tc_television_epg": {
-    "version": "0.2.67",
+    "version": "0.2.68",
     "channel_id": "Canal.TC.Televisión.ec",
     "source": "https://tctelevision.com/programacion/",
     "source_timezone": "America/Guayaquil",
@@ -512,7 +512,7 @@
     "manual_offset_minutes": 0,
     "channels": {
       "CBS.(WCBS).New.York,.NY.us": {
-        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=9",
+        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=8",
         "source": "https://www.tvpassport.com/tv-listings/stations/cbs-wcbs-new-york-ny-hd/4555",
         "fallback_sources": [
           "https://epgshare01.online/epgshare01/epg_ripper_US1.xml.gz",
@@ -520,7 +520,7 @@
         ],
         "source_timezone": "America/New_York / explicit XMLTV offset",
         "output_timezone": "America/Guayaquil",
-        "programmes": 223
+        "programmes": 212
       },
       "OromarTV.ec": {
         "mode": "bundled-weekly-fallback",
@@ -573,12 +573,12 @@
       "degraded-uncovered-day-placeholder"
     ],
     "runner_timezone": {
-      "timezone": "America/New_York",
+      "timezone": "America/Chicago",
       "source": "ipapi"
     },
     "loaded_source_days": 1,
     "programmes": 25,
-    "cached_programmes_available": 22,
+    "cached_programmes_available": 25,
     "cache_policy": "fresh source preferred; exact-date cache fills gaps; uncovered days use explicit unavailable placeholders",
     "field_validation": {
       "date": "2026-08-30",
