@@ -1,15 +1,15 @@
 {
   "version": "0.2.68",
-  "generated_at": "2026-09-22T22:48:52.754424-05:00",
+  "generated_at": "2026-09-22T22:52:22.259555-05:00",
   "source_commit": "75ff6f7c274b72aac1433c71e1e7e3c4601deb8b",
-  "github_run_id": "35815579170",
+  "github_run_id": "35815981841",
   "github_run_attempt": "1",
   "base_date": "2026-09-22",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 44,
-  "programmes": 3365,
+  "programmes": 3374,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 162,
     "Canal.Gamavisión.ec": 170,
@@ -38,12 +38,12 @@
     "HBO-Family.co": 30,
     "Canal24Horas.es": 212,
     "La1.es": 97,
-    "Clan.es": 500,
+    "Clan.es": 509,
     "MakroDigitalTV.ec": 202,
     "Canal.Ecuador.TV.ec": 64,
     "NBC6-Miami.us": 114,
     "ABC-Miami.us": 124,
-    "CBS.(WCBS).New.York,.NY.us": 212,
+    "CBS.(WCBS).New.York,.NY.us": 213,
     "OromarTV.ec": 140,
     "TVEStarHD.es": 25,
     "AsambleaNacional.ec": 63,
@@ -81,28 +81,28 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-09-22": 30,
-      "2026-09-23": 30,
-      "2026-09-24": 29,
-      "2026-09-25": 34,
+      "2026-09-22": 29,
+      "2026-09-23": 29,
+      "2026-09-24": 28,
+      "2026-09-25": 32,
       "2026-09-26": 51,
-      "2026-09-27": 41
+      "2026-09-27": 43
     },
     "La1.es": {
-      "2026-09-22": 20,
-      "2026-09-23": 18,
-      "2026-09-24": 19,
-      "2026-09-25": 18,
-      "2026-09-26": 14,
+      "2026-09-22": 19,
+      "2026-09-23": 17,
+      "2026-09-24": 18,
+      "2026-09-25": 17,
+      "2026-09-26": 13,
       "2026-09-27": 13
     },
     "Clan.es": {
-      "2026-09-22": 94,
-      "2026-09-23": 96,
-      "2026-09-24": 92,
-      "2026-09-25": 94,
-      "2026-09-26": 75,
-      "2026-09-27": 54
+      "2026-09-22": 93,
+      "2026-09-23": 95,
+      "2026-09-24": 91,
+      "2026-09-25": 92,
+      "2026-09-26": 74,
+      "2026-09-27": 64
     }
   },
   "gatotv_source_timezones": {
@@ -520,7 +520,7 @@
         ],
         "source_timezone": "America/New_York / explicit XMLTV offset",
         "output_timezone": "America/Guayaquil",
-        "programmes": 212
+        "programmes": 213
       },
       "OromarTV.ec": {
         "mode": "bundled-weekly-fallback",
@@ -573,7 +573,7 @@
       "degraded-uncovered-day-placeholder"
     ],
     "runner_timezone": {
-      "timezone": "America/Chicago",
+      "timezone": "America/New_York",
       "source": "ipapi"
     },
     "loaded_source_days": 1,
