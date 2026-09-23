@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-'''Normaliza DW y activa la capa TC oficial de EPG MrG v0.2.67.
+'''Normaliza DW y activa la capa TC oficial de EPG MrG v0.2.68.
 
 Mantiene el parche seguro del slug primario de DW. Además instala, de forma
 idempotente y durante el workflow, un pequeño hook en add_makrodigital_api.py
@@ -24,11 +24,11 @@ TARGETS = (
 )
 
 TC_HOOK_TARGET = Path("scripts/add_makrodigital_api.py")
-TC_HOOK_MARKER = "# EPG-MRG-TC-OFFICIAL-v0.2.67"
+TC_HOOK_MARKER = "# EPG-MRG-TC-OFFICIAL-v0.2.68"
 TC_MAIN_MARKER = 'if __name__ == "__main__":\n    raise SystemExit(main())'
 
 TC_HOOK = r'''
-# EPG-MRG-TC-OFFICIAL-v0.2.67
+# EPG-MRG-TC-OFFICIAL-v0.2.68
 # Capa posterior: MakroDigital termina primero y luego TC sustituye únicamente
 # los días que pudo leer completos desde https://tctelevision.com/programacion/.
 _TC_ORIGINAL_MAIN = main
@@ -51,7 +51,7 @@ def main() -> int:
     tc_merge = tc_result["merge"]
     tc_build = tc_result["build"]
     print(
-        "TC v0.2.67: "
+        "TC v0.2.68: "
         f"oficiales={tc_merge['official_programmes']}; "
         f"reemplazadas={tc_merge['replaced_programmes']}; "
         f"finales={tc_merge['final_programmes']}; "
@@ -94,7 +94,7 @@ def patch_tc_hook(path: Path = TC_HOOK_TARGET) -> bool:
 
     text = path.read_text(encoding="utf-8")
     if TC_HOOK_MARKER in text:
-        print("TC v0.2.67: hook ya presente; no se duplica.")
+        print("TC v0.2.68: hook ya presente; no se duplica.")
         return False
 
     if TC_MAIN_MARKER not in text:
@@ -114,11 +114,11 @@ def patch_tc_hook(path: Path = TC_HOOK_TARGET) -> bool:
     check = path.read_text(encoding="utf-8")
     if TC_HOOK_MARKER not in check:
         raise RuntimeError(
-            "No fue posible instalar el hook TC v0.2.67."
+            "No fue posible instalar el hook TC v0.2.68."
         )
 
     print(
-        "TC v0.2.67: hook oficial instalado en "
+        "TC v0.2.68: hook oficial instalado en "
         "add_makrodigital_api.py (después de MakroDigital)."
     )
     return True

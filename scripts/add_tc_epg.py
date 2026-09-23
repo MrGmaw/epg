@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EPG MrG v0.2.67 - TC Televisión desde la parrilla oficial renderizada.
+"""EPG MrG v0.2.68 - TC Televisión desde la parrilla oficial renderizada.
 
 Fuente primaria:
   https://tctelevision.com/programacion/
@@ -29,7 +29,7 @@ from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
 from lxml import etree
 
-VERSION = "0.2.67"
+VERSION = "0.2.68"
 CHANNEL_ID = "Canal.TC.Televisión.ec"
 TARGET_IDS = (CHANNEL_ID,)
 OFFICIAL_URL = "https://tctelevision.com/programacion/"
@@ -79,6 +79,7 @@ WEEKDAY_ALIASES = {
 
 TIME_RE = re.compile(
     r"(?<!\d)(?P<hour>[01]?\d|2[0-3])\s*(?P<sep>[:hH])\s*(?P<minute>[0-5]\d)"
+    r"(?::(?P<second>[0-5]\d))?"
     r"(?:\s*(?P<ampm>[AaPp]\.?[Mm]\.?))?(?!\d)"
 )
 DATE_RE = re.compile(
@@ -760,7 +761,7 @@ def apply(output_dir: Path, days: int) -> dict[str, Any]:
 
     if not xml_path.is_file() or not status_path.is_file():
         raise RuntimeError(
-            "TC v0.2.67 requiere latam.xml y latam-status.json existentes."
+            "TC v0.2.68 requiere latam.xml y latam-status.json existentes."
         )
 
     parser = etree.XMLParser(
@@ -820,7 +821,7 @@ def apply(output_dir: Path, days: int) -> dict[str, Any]:
 
     if not build_info["official_dates"]:
         print(
-            "ADVERTENCIA TC v0.2.67: no se aceptó ningún día oficial; "
+            "ADVERTENCIA TC v0.2.68: no se aceptó ningún día oficial; "
             "se conserva íntegramente el fallback ya presente."
         )
 
@@ -837,23 +838,25 @@ def self_test() -> None:
     martes, 22 septiembre 2026
     Programación del
     martes, 22 septiembre 2026
-    00:00 Encuentro con la verdad
-    01:00 Cuatro cuartos
-    03:30 Educa
-    04:30 Hechizada
-    05:15 Mi Bella Genio
-    05:40 DespierTC
-    07:00 El Noticiero I
-    08:30 Entre ellas
-    10:00 De casa en casa
-    11:30 Caminos de amor
-    12:00 El Noticiero II
-    14:00 Después de El Noticiero
-    15:00 Hilos de vida
-    16:15 Soy el mejor
-    19:00 El Noticiero III
-    20:30 Novela estelar
-    22:00 Programa nocturno
+    00:00:00 Encuentro con la verdad
+    01:00:00 Cuatro cuartos
+    03:30:00 Educa
+    04:30:00 Hechizada
+    05:15:00 Mi Bella Genio
+    05:40:00 DespierTC
+    07:00:00 El Noticiero I
+    08:30:00 Entre ellas
+    10:00:00 De casa en casa
+    11:30:00 Caminos de amor
+    12:00:00 El Noticiero II
+    14:00:00 Después de El Noticiero
+    15:00:00 Hilos de vida
+    16:15:00 Contra viento y marea
+    17:30:00 Soy el mejor
+    19:00:00 El Noticiero III
+    21:00:00 Luz de luna 4 la despedida
+    22:00:00 El ultimo verano
+    23:00:00 Alerta roja
     Rendición de cuentas 2025
     """
 
@@ -863,8 +866,9 @@ def self_test() -> None:
         expected_date=expected,
     )
     assert parsed_date == expected, parsed_date
-    assert len(rows) == 17, rows
+    assert len(rows) == 19, rows
     assert rows[6][1] == "El Noticiero I", rows[6]
+    assert dict(rows)[time(22, 0)] == "El ultimo verano", rows
 
     built, info = build_programmes(
         {expected: rows},
@@ -872,7 +876,7 @@ def self_test() -> None:
         days=1,
     )
     assert info["official_dates"] == ["2026-09-22"], info
-    assert len(built) == 17, built
+    assert len(built) == 19, built
     assert built[0].start.strftime("%H:%M") == "00:00"
     assert (
         built[-1].stop.strftime("%Y-%m-%d %H:%M")
@@ -908,11 +912,13 @@ def self_test() -> None:
     ]
     assert "Fallback viejo" not in titles
     assert "El Noticiero I" in titles
-    assert merged["official_programmes"] == 17
-    assert merged["final_programmes"] == 17
+    assert "El ultimo verano" in titles
+    assert "00" not in titles
+    assert merged["official_programmes"] == 19
+    assert merged["final_programmes"] == 19
 
     print(
-        "Prueba TC v0.2.67 correcta: parser de parrilla oficial "
+        "Prueba TC v0.2.68 correcta: parser de parrilla oficial "
         "renderizada, America/Guayaquil, overlay por día y "
         "fallback preservado."
     )
@@ -937,7 +943,7 @@ def main() -> int:
     merge = result["merge"]
     build = result["build"]
     print(
-        "TC v0.2.67: "
+        "TC v0.2.68: "
         f"oficiales={merge['official_programmes']}; "
         f"reemplazadas={merge['replaced_programmes']}; "
         f"finales={merge['final_programmes']}; "
