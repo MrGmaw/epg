@@ -251,8 +251,13 @@ def _make_driver():
         "--user-agent=Mozilla/5.0 (X11; Linux x86_64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36"
     )
+    options.set_capability("goog:loggingPrefs", {"performance": "ALL"})
     driver = webdriver.Chrome(options=options)
     driver.set_page_load_timeout(PAGE_TIMEOUT_SECONDS)
+    try:
+        driver.execute_cdp_cmd("Network.enable", {})
+    except Exception:
+        pass
     return driver
 
 
@@ -319,6 +324,87 @@ def _click_weekday(driver, target_date: date) -> bool:
     return True
 
 
+def _probe_network_source(driver) -> list[dict[str, Any]]:
+    """Diagnóstico: identifica la respuesta XHR/fetch que alimenta la parrilla.
+
+    Solo imprime metadatos de respuestas públicas; no modifica la EPG ni usa
+    estos valores para generar horarios. La finalidad es descubrir el endpoint
+    real que contiene las tarjetas de /programas.
+    """
+    signatures = (
+        "Noticias 7 Estelar",
+        "Ficción Latina",
+        "Fanático",
+        "Un Café con JJ",
+        "Estas Secretarias",
+    )
+    candidates: list[dict[str, Any]] = []
+    try:
+        entries = driver.get_log("performance")
+    except Exception as exc:
+        print(f"ECUADORTV_NETWORK_PROBE_ERROR get_log: {type(exc).__name__}: {exc}")
+        return candidates
+
+    for entry in entries:
+        try:
+            msg = json.loads(entry.get("message", "{}"))["message"]
+        except Exception:
+            continue
+        if msg.get("method") != "Network.responseReceived":
+            continue
+        params = msg.get("params") or {}
+        resource_type = str(params.get("type") or "")
+        response = params.get("response") or {}
+        mime = str(response.get("mimeType") or "")
+        url = str(response.get("url") or "")
+        if resource_type not in {"XHR", "Fetch"} and "json" not in mime.lower():
+            continue
+        request_id = params.get("requestId")
+        if not request_id:
+            continue
+        try:
+            body_obj = driver.execute_cdp_cmd("Network.getResponseBody", {"requestId": request_id})
+            body = str((body_obj or {}).get("body") or "")
+        except Exception:
+            continue
+        if not body or len(body) > 4_000_000:
+            continue
+
+        folded_body = _fold(body)
+        matched = [sig for sig in signatures if _fold(sig) in folded_body]
+        time_tokens = sorted(set(re.findall(r"(?<!\\d)(?:[01]?\\d|2[0-3]):[0-5]\\d(?!\\d)", body)))
+        # Candidato fuerte: contiene títulos vistos hoy. Candidato genérico:
+        # contiene varias horas y vocabulario de programación.
+        generic = len(time_tokens) >= 3 and any(word in folded_body for word in ("program", "horario", "schedule"))
+        if not matched and not generic:
+            continue
+        item = {
+            "url": url,
+            "type": resource_type,
+            "mime": mime,
+            "matched": matched,
+            "times": time_tokens[:20],
+            "body_chars": len(body),
+        }
+        candidates.append(item)
+
+    # Deduplicar por URL y dejar lo más útil primero.
+    by_url: dict[str, dict[str, Any]] = {}
+    for item in candidates:
+        prev = by_url.get(item["url"])
+        if prev is None or len(item["matched"]) > len(prev["matched"]):
+            by_url[item["url"]] = item
+    final = sorted(by_url.values(), key=lambda x: (-len(x["matched"]), -len(x["times"]), x["url"]))[:20]
+    for item in final:
+        print(
+            "ECUADORTV_NETWORK_CANDIDATE "
+            + json.dumps(item, ensure_ascii=False, sort_keys=True)
+        )
+    if not final:
+        print("ECUADORTV_NETWORK_CANDIDATE none")
+    return final
+
+
 def scrape_official(base_date: date, days: int) -> tuple[dict[date, list[ParsedRow]], dict[str, Any]]:
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support.ui import WebDriverWait
@@ -335,6 +421,7 @@ def scrape_official(base_date: date, days: int) -> tuple[dict[date, list[ParsedR
             lambda d: "program" in _fold(d.find_element(By.TAG_NAME, "body").text)
         )
         time_module.sleep(POST_LOAD_SECONDS)
+        _probe_network_source(driver)
 
         # La página abre por defecto el día vigente; base_date es la fecha local
         # usada por la generación del EPG.
