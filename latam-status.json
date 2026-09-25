@@ -1,8 +1,8 @@
 {
   "version": "0.2.70",
-  "generated_at": "2026-09-24T20:10:13.971230-05:00",
-  "source_commit": "3d5ee00f45a65e7e36a044e27fea5894ef92bbbe",
-  "github_run_id": "36080746438",
+  "generated_at": "2026-09-24T20:29:41.647110-05:00",
+  "source_commit": "3afe8b93b6b9c64d065ea1949675c01fb5077db4",
+  "github_run_id": "36082178769",
   "github_run_attempt": "1",
   "base_date": "2026-09-24",
   "window_days": 7,
@@ -43,7 +43,7 @@
     "Canal.Ecuador.TV.ec": 81,
     "NBC6-Miami.us": 101,
     "ABC-Miami.us": 122,
-    "CBS.(WCBS).New.York,.NY.us": 210,
+    "CBS.(WCBS).New.York,.NY.us": 221,
     "OromarTV.ec": 140,
     "TVEStarHD.es": 82,
     "AsambleaNacional.ec": 63,
@@ -641,7 +641,7 @@
     "manual_offset_minutes": 0,
     "channels": {
       "CBS.(WCBS).New.York,.NY.us": {
-        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=8",
+        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=9",
         "source": "https://www.tvpassport.com/tv-listings/stations/cbs-wcbs-new-york-ny-hd/4555",
         "fallback_sources": [
           "https://epgshare01.online/epgshare01/epg_ripper_US1.xml.gz",
@@ -649,7 +649,7 @@
         ],
         "source_timezone": "America/New_York / explicit XMLTV offset",
         "output_timezone": "America/Guayaquil",
-        "programmes": 210
+        "programmes": 221
       },
       "OromarTV.ec": {
         "mode": "bundled-weekly-fallback",
