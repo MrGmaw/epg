@@ -673,14 +673,22 @@ def _write_xml(
     xml_path: Path,
     gz_path: Path,
 ) -> None:
-    doctype = tree.docinfo.doctype or '<!DOCTYPE tv SYSTEM "xmltv.dtd">'
-    data = etree.tostring(
-        tree,
+    # validate_outputs.py exige una cabecera canónica byte por byte.
+    # lxml serializa una declaración XML equivalente pero no idéntica,
+    # así que construimos manualmente el prefijo esperado por el proyecto.
+    root = tree.getroot()
+    payload = etree.tostring(
+        root,
         encoding="UTF-8",
-        xml_declaration=True,
+        xml_declaration=False,
         pretty_print=True,
-        doctype=doctype,
     )
+    exact_header = (
+        b'<?xml version="1.0" encoding="UTF-8"?>\n'
+        b'<!DOCTYPE tv SYSTEM "xmltv.dtd">\n'
+        b'\n'
+    )
+    data = exact_header + payload
     xml_path.write_bytes(data)
     with gz_path.open("wb") as raw:
         with gzip.GzipFile(

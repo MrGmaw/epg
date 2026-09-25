@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EPG MrG v0.2.69 - Ecuador TV desde su parrilla oficial.
+"""EPG MrG v0.2.70 - Ecuador TV desde su parrilla oficial.
 
 Fuente primaria:
   https://www.ecuadortv.ec/programas
@@ -33,7 +33,7 @@ from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
 from lxml import etree
 
-VERSION = "0.2.69"
+VERSION = "0.2.70"
 CHANNEL_ID = "Canal.Ecuador.TV.ec"
 TARGET_IDS = (CHANNEL_ID,)
 OFFICIAL_URL = "https://www.ecuadortv.ec/programas"
@@ -614,14 +614,22 @@ def merge_into_tree(
 
 
 def _write_xml(tree: etree._ElementTree, xml_path: Path, gz_path: Path) -> None:
-    doctype = tree.docinfo.doctype or '<!DOCTYPE tv SYSTEM "xmltv.dtd">'
-    data = etree.tostring(
-        tree,
+    # validate_outputs.py exige una cabecera canónica byte por byte.
+    # lxml usa comillas simples en la declaración XML y omite la línea en
+    # blanco tras el DOCTYPE, por lo que no debemos delegarle esa cabecera.
+    root = tree.getroot()
+    payload = etree.tostring(
+        root,
         encoding="UTF-8",
-        xml_declaration=True,
+        xml_declaration=False,
         pretty_print=True,
-        doctype=doctype,
     )
+    exact_header = (
+        b'<?xml version="1.0" encoding="UTF-8"?>\n'
+        b'<!DOCTYPE tv SYSTEM "xmltv.dtd">\n'
+        b'\n'
+    )
+    data = exact_header + payload
     xml_path.write_bytes(data)
     with gz_path.open("wb") as raw:
         with gzip.GzipFile(filename="", mode="wb", fileobj=raw, compresslevel=9, mtime=0) as gz:
@@ -742,7 +750,7 @@ def apply(output_dir: Path, days: int) -> dict[str, Any]:
             status = json.loads(path.read_text(encoding="utf-8"))
             break
     if status is None:
-        raise RuntimeError("Ecuador TV v0.2.69 requiere status.json o latam-status.json existente.")
+        raise RuntimeError("Ecuador TV v0.2.70 requiere status.json o latam-status.json existente.")
 
     base_date = _read_base_date(status)
     scraped, source_info = scrape_official(base_date, days)
