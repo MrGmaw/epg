@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
-"""EPG MrG v0.2.70 - Ecuador TV desde su parrilla oficial.
+"""EPG MrG v0.2.71 - Ecuador TV desde la API oficial real.
 
-Fuente primaria:
-  https://www.ecuadortv.ec/programas
+Fuente primaria descubierta desde la propia página /programas:
+  https://www.ecuadortv.ec/api/schedule/today
 
-Estrategia:
-1. Intenta leer con Selenium/Chrome la parrilla semanal renderizada de Ecuador TV.
-2. Solo sustituye un día completo cuando la lectura parece suficientemente completa
-   y, en días laborables, confirma el bloque oficial Noticias 7 Estelar 19:00-20:00.
-3. Si un día no puede leerse de forma fiable, conserva la parrilla previa y aplica
-   únicamente los bloques de Noticias 7 cuyo horario fijo publica Ecuador TV en su
-   propia ficha oficial. Esto evita que una fuente secundaria sobrescriba, por
-   ejemplo, Noticias 7 Estelar con "Esta es mi canción".
+La página https://www.ecuadortv.ec/programas obtiene de ese endpoint la parrilla
+que muestra al usuario. Esta versión deja de inferir horarios desde el DOM y deja
+de insertar bloques manuales. Solo reemplaza el día local actual cuando la API
+oficial devuelve una parrilla suficientemente completa y coherente. Los demás
+días permanecen como estaban en la guía base.
 
-Se actualizan tanto ec.xml como latam.xml cuando existen.
+Se actualizan ec.xml y latam.xml cuando existen.
 """
 
 from __future__ import annotations
@@ -22,7 +19,6 @@ import copy
 import gzip
 import json
 import re
-import time as time_module
 import unicodedata
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
@@ -30,56 +26,43 @@ from pathlib import Path
 from typing import Any, Iterable
 from zoneinfo import ZoneInfo
 
-from bs4 import BeautifulSoup
+import requests
 from lxml import etree
 
-VERSION = "0.2.70"
+VERSION = "0.2.71"
 CHANNEL_ID = "Canal.Ecuador.TV.ec"
-TARGET_IDS = (CHANNEL_ID,)
+API_URL = "https://www.ecuadortv.ec/api/schedule/today"
 OFFICIAL_URL = "https://www.ecuadortv.ec/programas"
-NEWS_URL = "https://www.ecuadortv.ec/programas/noticias-7"
 OUTPUT_TIMEZONE = "America/Guayaquil"
 SOURCE_TIMEZONE = "America/Guayaquil"
-MANUAL_OFFSET_MINUTES = 0
+REQUEST_TIMEOUT_SECONDS = 35
 MIN_PROGRAMMES_PER_DAY = 8
-MIN_SPAN_HOURS = 9.0
-PAGE_TIMEOUT_SECONDS = 45
-POST_LOAD_SECONDS = 3.0
+MIN_SPAN_HOURS = 8.0
 
 EC_TZ = ZoneInfo(OUTPUT_TIMEZONE)
 
-WEEKDAY_NAMES = (
-    "lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"
+TITLE_KEY_WORDS = (
+    "title", "titulo", "título", "name", "nombre", "program", "programme",
+    "programa", "show", "content", "contenido",
 )
-WEEKDAY_ALIASES = {
-    0: ("lunes", "lun"),
-    1: ("martes", "mar"),
-    2: ("miércoles", "miercoles", "mié", "mie"),
-    3: ("jueves", "jue"),
-    4: ("viernes", "vie"),
-    5: ("sábado", "sabado", "sáb", "sab"),
-    6: ("domingo", "dom"),
-}
-
-TIME_TOKEN = r"(?:[01]?\d|2[0-3])\s*[:hH]\s*[0-5]\d(?:\s*:\s*[0-5]\d)?"
-TIME_RE = re.compile(rf"(?<!\d)(?P<token>{TIME_TOKEN})(?!\d)")
-RANGE_RE = re.compile(
-    rf"(?<!\d)(?P<start>{TIME_TOKEN})\s*(?:-|–|—|a)\s*(?P<stop>{TIME_TOKEN})(?!\d)",
-    re.IGNORECASE,
+START_KEY_WORDS = (
+    "start", "inicio", "starts", "desde", "time", "hora", "hour", "air",
+    "emision", "emisión", "schedule", "slot",
+)
+STOP_KEY_WORDS = (
+    "stop", "end", "ends", "fin", "hasta", "final",
+)
+IGNORE_TITLE_WORDS = (
+    "image", "imagen", "thumbnail", "poster", "logo", "url", "slug", "link",
+    "category", "categoria", "categoría", "classification", "clasificacion",
+    "clasificación", "rating", "type", "tipo", "description", "descripcion",
+    "descripción",
 )
 
-SECTION_END_MARKERS = (
-    "rendicion de cuentas",
-    "politica de privacidad",
-    "politicas de privacidad",
-    "codigo deontologico",
-    "contactanos",
-    "© copyright",
+CLOCK_RE = re.compile(
+    r"(?<!\d)(?P<h>[01]?\d|2[0-3])\s*[:hH.]\s*(?P<m>[0-5]\d)(?:\s*:\s*[0-5]\d)?(?!\d)"
 )
-NOISE_LINES = {
-    "programación", "programacion", "programas", "en vivo", "inicio", "menu", "menú",
-    "lunes", "martes", "miércoles", "miercoles", "jueves", "viernes", "sábado", "sabado", "domingo",
-}
+FOUR_DIGIT_RE = re.compile(r"^(?P<h>[01]?\d|2[0-3])(?P<m>[0-5]\d)$")
 
 
 @dataclass(frozen=True, order=True)
@@ -87,7 +70,7 @@ class Programme:
     start: datetime
     stop: datetime
     title: str
-    source: str = "official"
+    source: str = "ecuadortv-api"
 
 
 @dataclass(frozen=True)
@@ -95,6 +78,7 @@ class ParsedRow:
     start: time
     title: str
     stop: time | None = None
+    score: int = 0
 
 
 def repository_version() -> str:
@@ -106,12 +90,12 @@ def repository_version() -> str:
     return value or VERSION
 
 
-def _plain(value: str) -> str:
+def _plain(value: Any) -> str:
     value = unicodedata.normalize("NFKC", str(value or ""))
     return re.sub(r"\s+", " ", value).strip()
 
 
-def _fold(value: str) -> str:
+def _fold(value: Any) -> str:
     value = _plain(value).lower()
     return "".join(
         ch for ch in unicodedata.normalize("NFD", value)
@@ -119,116 +103,340 @@ def _fold(value: str) -> str:
     )
 
 
-def _parse_clock(value: str) -> time | None:
-    text = _plain(value).lower().replace("h", ":")
-    parts = [part.strip() for part in text.split(":")]
-    try:
-        if len(parts) < 2:
-            return None
-        hour = int(parts[0])
-        minute = int(parts[1])
-        second = int(parts[2]) if len(parts) >= 3 else 0
-        return time(hour, minute, second)
-    except (TypeError, ValueError):
-        return None
+def _key_tokens(path: str) -> tuple[str, ...]:
+    # Conserva la semántica de camelCase/PascalCase: startHour -> start, hour.
+    raw = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", str(path or ""))
+    return tuple(token for token in re.split(r"[^a-z0-9]+", _fold(raw)) if token)
 
 
-def _plausible_title(value: str) -> bool:
+def _contains_any(path: str, words: Iterable[str]) -> bool:
+    folded = _fold(path)
+    return any(_fold(word) in folded for word in words)
+
+
+def _has_stop_hint(path: str) -> bool:
+    folded = _fold(path)
+    tokens = set(_key_tokens(path))
+    if tokens.intersection({"stop", "end", "ends", "fin", "hasta", "final"}):
+        return True
+    return any(marker in folded for marker in ("endtime", "end_time", "stoptime", "stop_time", "finhora", "hora_fin"))
+
+
+def _has_start_hint(path: str) -> bool:
+    folded = _fold(path)
+    if _has_stop_hint(path):
+        return False
+    tokens = set(_key_tokens(path))
+    if tokens.intersection({"start", "starts", "inicio", "desde", "time", "hora", "hour", "air", "emision", "schedule", "slot"}):
+        return True
+    return any(marker in folded for marker in ("starttime", "start_time", "startat", "iniciohora", "hora_inicio"))
+
+
+def _looks_like_url(value: str) -> bool:
+    folded = value.lower()
+    return folded.startswith(("http://", "https://", "//", "data:")) or "/uploads/" in folded
+
+
+def _plausible_title(value: Any) -> bool:
     text = _plain(value).strip(" -–—|:")
     folded = _fold(text)
-    if not text or len(text) < 2 or len(text) > 160:
+    if not text or len(text) < 2 or len(text) > 180:
         return False
-    if folded in {_fold(item) for item in NOISE_LINES}:
+    if _looks_like_url(text):
         return False
-    if re.fullmatch(r"(?:lunes|martes|miercoles|jueves|viernes|sabado|domingo)", folded):
+    if CLOCK_RE.fullmatch(text):
         return False
-    if RANGE_RE.fullmatch(text) or TIME_RE.fullmatch(text):
+    if re.fullmatch(r"\d+", text):
         return False
-    if re.fullmatch(r"\d{1,2}(?:/|-|\.)\d{1,2}(?:/|-|\.)20\d{2}", text):
+    if folded in {"programacion", "programación", "schedule", "ecuador tv", "ecuadortv"}:
         return False
     return True
 
 
-def _schedule_section(body_text: str) -> str:
-    text = body_text.replace("\r\n", "\n").replace("\r", "\n")
-    lines = [line.strip() for line in text.splitlines()]
-
-    # Preferimos el último encabezado "Programación" de la página, porque el
-    # menú superior puede contener la misma palabra antes de la parrilla real.
-    starts = [
-        idx for idx, line in enumerate(lines)
-        if _fold(line) in {"programacion", "programacion de hoy", "parrilla", "programacion semanal"}
-        or _fold(line).startswith("programacion del")
-    ]
-    if starts:
-        lines = lines[starts[-1]:]
-
-    cut = len(lines)
-    for idx, line in enumerate(lines[1:], start=1):
-        folded = _fold(line)
-        if any(marker in folded for marker in SECTION_END_MARKERS):
-            cut = idx
-            break
-    return "\n".join(lines[:cut])
+def _flatten_dict(
+    obj: dict[str, Any], prefix: str = "", *, depth: int = 0, max_depth: int = 4
+) -> dict[str, Any]:
+    """Aplana diccionarios anidados, pero no mezcla listas de registros."""
+    out: dict[str, Any] = {}
+    for key, value in obj.items():
+        path = f"{prefix}.{key}" if prefix else str(key)
+        if isinstance(value, dict) and depth < max_depth:
+            out.update(_flatten_dict(value, path, depth=depth + 1, max_depth=max_depth))
+        elif isinstance(value, list):
+            # Listas escalares pequeñas pueden representar [hora, minuto].
+            if len(value) <= 4 and all(not isinstance(item, (dict, list)) for item in value):
+                out[path] = value
+        elif not isinstance(value, (dict, list)):
+            out[path] = value
+    return out
 
 
-def extract_rows_from_visible_text(body_text: str) -> list[ParsedRow]:
-    section = _schedule_section(body_text)
-    lines = [_plain(line) for line in section.splitlines() if _plain(line)]
-    rows: list[ParsedRow] = []
+def _walk_dicts(obj: Any) -> Iterable[dict[str, Any]]:
+    if isinstance(obj, dict):
+        yield obj
+        for value in obj.values():
+            yield from _walk_dicts(value)
+    elif isinstance(obj, list):
+        for value in obj:
+            yield from _walk_dicts(value)
 
-    for idx, line in enumerate(lines):
-        range_match = RANGE_RE.search(line)
-        if range_match:
-            start = _parse_clock(range_match.group("start"))
-            stop = _parse_clock(range_match.group("stop"))
-            span = range_match.span()
-        else:
-            single = TIME_RE.search(line)
-            if not single:
-                continue
-            start = _parse_clock(single.group("token"))
-            stop = None
-            span = single.span()
 
-        if start is None:
+def _parse_datetime_string(value: str) -> datetime | None:
+    text = _plain(value)
+    if "T" not in text and not re.search(r"\d{4}-\d{2}-\d{2}\s+\d", text):
+        return None
+    candidate = text.replace("Z", "+00:00")
+    try:
+        dt = datetime.fromisoformat(candidate)
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=EC_TZ)
+    return dt.astimezone(EC_TZ)
+
+
+def _parse_clock_value(value: Any, *, key: str = "", allow_numeric: bool = True) -> time | None:
+    """Interpreta formatos habituales de APIs de parrilla.
+
+    Acepta HH:MM, HHhMM, HH.MM, HHMM, ISO datetime, [HH, MM], epoch y minutos
+    desde medianoche cuando la clave semántica indica que se trata de un inicio/fin.
+    """
+    folded_key = _fold(key)
+
+    if isinstance(value, (list, tuple)) and 1 <= len(value) <= 3:
+        try:
+            hour = int(value[0])
+            minute = int(value[1]) if len(value) >= 2 else 0
+            second = int(value[2]) if len(value) >= 3 else 0
+            if 0 <= hour <= 23 and 0 <= minute <= 59 and 0 <= second <= 59:
+                return time(hour, minute, second)
+        except (TypeError, ValueError):
+            return None
+
+    if isinstance(value, str):
+        text = _plain(value)
+        dt = _parse_datetime_string(text)
+        if dt is not None:
+            return dt.timetz().replace(tzinfo=None)
+
+        match = CLOCK_RE.search(text)
+        if match:
+            return time(int(match.group("h")), int(match.group("m")))
+
+        compact = re.sub(r"\s+", "", text)
+        if _contains_any(folded_key, START_KEY_WORDS + STOP_KEY_WORDS):
+            m4 = FOUR_DIGIT_RE.fullmatch(compact)
+            if m4:
+                return time(int(m4.group("h")), int(m4.group("m")))
+            if compact.isdigit() and 1 <= len(compact) <= 2:
+                hour = int(compact)
+                if 0 <= hour <= 23:
+                    return time(hour, 0)
+
+    if allow_numeric and isinstance(value, (int, float)) and not isinstance(value, bool):
+        number = float(value)
+        # Unix epoch seconds / milliseconds.
+        if number >= 1_000_000_000:
+            try:
+                seconds = number / 1000.0 if number >= 10_000_000_000 else number
+                return datetime.fromtimestamp(seconds, tz=EC_TZ).time().replace(tzinfo=None)
+            except (OverflowError, OSError, ValueError):
+                pass
+
+        # Solo interpretar números pequeños si la clave realmente parece horaria.
+        if _has_start_hint(folded_key) or _has_stop_hint(folded_key):
+            ivalue = int(number)
+            if number == ivalue:
+                if 0 <= ivalue <= 23:
+                    return time(ivalue, 0)
+                # Claves explícitas de hora (hora/hour/time) suelen usar HHMM.
+                explicit_clock_key = any(token in set(_key_tokens(folded_key)) for token in {"hora", "hour", "time"})
+                if explicit_clock_key and 100 <= ivalue <= 2359:
+                    hour, minute = divmod(ivalue, 100)
+                    if 0 <= hour <= 23 and 0 <= minute <= 59:
+                        return time(hour, minute)
+                # En start/inicio/slot numérico, 0..1439 se trata como minutos desde medianoche.
+                if 24 <= ivalue <= 1439:
+                    return time(ivalue // 60, ivalue % 60)
+                # Para valores mayores, admitir HHMM entero como respaldo.
+                if 100 <= ivalue <= 2359:
+                    hour, minute = divmod(ivalue, 100)
+                    if 0 <= hour <= 23 and 0 <= minute <= 59:
+                        return time(hour, minute)
+    return None
+
+
+def _composite_clock(flat: dict[str, Any], *, kind: str) -> list[tuple[int, time, str]]:
+    """Detecta estructuras como start.hour + start.minute o hora + minuto."""
+    results: list[tuple[int, time, str]] = []
+    norm = {".".join(_key_tokens(path)): value for path, value in flat.items()}
+    for path, value in flat.items():
+        fpath = ".".join(_key_tokens(path))
+        tokens = _key_tokens(path)
+        if not tokens:
+            continue
+        last = tokens[-1]
+        if last not in {"hour", "hora", "hours", "horas"}:
+            continue
+        if kind == "stop" and not _has_stop_hint(fpath):
+            continue
+        if kind == "start" and _has_stop_hint(fpath):
+            continue
+        try:
+            hour = int(value)
+        except (TypeError, ValueError):
+            continue
+        if not 0 <= hour <= 23:
             continue
 
-        before = line[:span[0]].strip(" -–—|:")
-        after = line[span[1]:].strip(" -–—|:")
-        title = ""
-        if _plausible_title(after):
-            title = after
-        elif _plausible_title(before):
-            title = before
-        else:
-            for jump in (1, 2, 3):
-                if idx + jump < len(lines) and _plausible_title(lines[idx + jump]):
-                    title = lines[idx + jump]
+        prefix = re.sub(r"(?:hour|hora|hours|horas)$", "", fpath).rstrip("._-")
+        minute = 0
+        for suffix in ("minute", "minutes", "minuto", "minutos", "min"):
+            for sep in (".", "_", "-"):
+                candidate = f"{prefix}{sep}{suffix}" if prefix else suffix
+                if candidate in norm:
+                    try:
+                        minute = int(norm[candidate])
+                    except (TypeError, ValueError):
+                        minute = 0
                     break
-            if not title and idx > 0 and _plausible_title(lines[idx - 1]):
-                title = lines[idx - 1]
-
-        if title:
-            rows.append(ParsedRow(start=start, stop=stop, title=_plain(title)))
-
-    # Un inicio de hora debe representar una sola emisión en la vista del día.
-    unique: dict[time, ParsedRow] = {}
-    for row in rows:
-        unique.setdefault(row.start, row)
-    return sorted(unique.values(), key=lambda item: item.start)
+            else:
+                continue
+            break
+        if 0 <= minute <= 59:
+            base = 160 if kind == "start" else 155
+            if (_has_start_hint(fpath) if kind == "start" else _has_stop_hint(fpath)):
+                base += 20
+            results.append((base, time(hour, minute), path))
+    return results
 
 
-def extract_rows_from_html(html: str) -> list[ParsedRow]:
-    soup = BeautifulSoup(html, "html.parser")
-    return extract_rows_from_visible_text(soup.get_text("\n", strip=True))
+def _time_candidates(flat: dict[str, Any], *, kind: str) -> list[tuple[int, time, str]]:
+    results = _composite_clock(flat, kind=kind)
+    for path, value in flat.items():
+        folded = _fold(path)
+        is_stop = _has_stop_hint(folded)
+        is_start = _has_start_hint(folded)
+        tokens = _key_tokens(path)
+        if tokens and tokens[-1] in {"minute", "minutes", "minuto", "minutos", "min", "second", "seconds", "segundo", "segundos"}:
+            continue
+
+        if kind == "start":
+            if is_stop:
+                continue
+            if not is_start:
+                continue
+            score = 80
+            if any(token in folded for token in ("start", "inicio", "desde")):
+                score += 30
+            if any(token in folded for token in ("hora", "time", "slot")):
+                score += 10
+        else:
+            if not is_stop:
+                continue
+            score = 85
+            if any(token in folded for token in ("stop", "end", "fin", "hasta")):
+                score += 30
+
+        parsed = _parse_clock_value(value, key=path)
+        if parsed is not None:
+            results.append((score, parsed, path))
+
+    # Deduplicar y dejar primero el candidato semánticamente más fuerte.
+    best: dict[time, tuple[int, time, str]] = {}
+    for item in results:
+        prev = best.get(item[1])
+        if prev is None or item[0] > prev[0]:
+            best[item[1]] = item
+    return sorted(best.values(), key=lambda item: (-item[0], item[1]))
 
 
-def _weekday_click_matches(text: str, weekday: int) -> bool:
-    folded = _fold(text)
-    tokens = re.findall(r"[a-z]+", folded)
-    aliases = {_fold(value) for value in WEEKDAY_ALIASES[weekday]}
-    return any(token in aliases for token in tokens)
+def _title_candidates(flat: dict[str, Any]) -> list[tuple[int, str, str]]:
+    candidates: list[tuple[int, str, str]] = []
+    for path, value in flat.items():
+        if not isinstance(value, str) or not _plausible_title(value):
+            continue
+        folded_path = _fold(path)
+        if _contains_any(folded_path, IGNORE_TITLE_WORDS):
+            continue
+        tokens = _key_tokens(path)
+        last = tokens[-1] if tokens else ""
+
+        score = 0
+        if last in {"title", "titulo", "name", "nombre"}:
+            score += 120
+        if any(word in folded_path for word in ("program", "programme", "programa", "show")):
+            score += 50
+        if _contains_any(folded_path, TITLE_KEY_WORDS):
+            score += 25
+        if last in {"text", "label"}:
+            score += 10
+        if score <= 0:
+            continue
+        candidates.append((score, _plain(value), path))
+
+    # Evita que un nombre de contenedor genérico desplace al título real.
+    candidates.sort(key=lambda item: (-item[0], len(item[1]), item[1]))
+    return candidates
+
+
+def extract_rows_from_json(payload: Any) -> tuple[list[ParsedRow], dict[str, Any]]:
+    """Extrae la parrilla sin asumir un único esquema JSON.
+
+    La API es pública pero su estructura interna no forma parte de un contrato
+    documentado. Por eso se usan nombres semánticos de claves y varios formatos
+    horarios, manteniendo validaciones estrictas antes de tocar la EPG.
+    """
+    found: list[tuple[int, ParsedRow, dict[str, Any]]] = []
+    scanned = 0
+
+    for record in _walk_dicts(payload):
+        scanned += 1
+        flat = _flatten_dict(record)
+        titles = _title_candidates(flat)
+        starts = _time_candidates(flat, kind="start")
+        if not titles or not starts:
+            continue
+        stops = _time_candidates(flat, kind="stop")
+
+        title_score, title, title_path = titles[0]
+        start_score, start, start_path = starts[0]
+        stop = stops[0][1] if stops else None
+        score = title_score + start_score + (15 if stop is not None else 0)
+        row = ParsedRow(start=start, stop=stop, title=title, score=score)
+        found.append((score, row, {
+            "title_key": title_path,
+            "start_key": start_path,
+            "stop_key": stops[0][2] if stops else None,
+        }))
+
+    # Una hora puede aparecer en diccionarios padre/hijo. Elegimos el registro
+    # con mayor confianza y evitamos duplicados por hora+título.
+    best_by_pair: dict[tuple[time, str], tuple[int, ParsedRow, dict[str, Any]]] = {}
+    for item in found:
+        key = (item[1].start, _fold(item[1].title))
+        prev = best_by_pair.get(key)
+        if prev is None or item[0] > prev[0]:
+            best_by_pair[key] = item
+
+    # En una parrilla lineal debe haber un único programa principal por hora de
+    # inicio. Si la API incluye metadatos duplicados, gana el candidato más fuerte.
+    best_by_start: dict[time, tuple[int, ParsedRow, dict[str, Any]]] = {}
+    for item in best_by_pair.values():
+        start = item[1].start
+        prev = best_by_start.get(start)
+        if prev is None or item[0] > prev[0]:
+            best_by_start[start] = item
+
+    selected = sorted(best_by_start.values(), key=lambda item: item[1].start)
+    rows = [item[1] for item in selected]
+    diagnostics = {
+        "dicts_scanned": scanned,
+        "candidate_records": len(found),
+        "selected_rows": len(rows),
+        "selected_keys": [item[2] for item in selected[:12]],
+    }
+    return rows, diagnostics
 
 
 def _make_driver():
@@ -236,231 +444,43 @@ def _make_driver():
         from selenium import webdriver
         from selenium.webdriver.chrome.options import Options
     except ImportError as exc:
-        raise RuntimeError(
-            "Ecuador TV oficial requiere selenium; instala requirements.txt."
-        ) from exc
+        raise RuntimeError("Fallback de Ecuador TV requiere selenium.") from exc
 
     options = Options()
     options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")
-    options.add_argument("--window-size=1440,2400")
+    options.add_argument("--window-size=1280,1600")
     options.add_argument("--lang=es-EC")
     options.add_argument(
         "--user-agent=Mozilla/5.0 (X11; Linux x86_64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36"
     )
-    options.set_capability("goog:loggingPrefs", {"performance": "ALL"})
     driver = webdriver.Chrome(options=options)
-    driver.set_page_load_timeout(PAGE_TIMEOUT_SECONDS)
-    try:
-        driver.execute_cdp_cmd("Network.enable", {})
-    except Exception:
-        pass
+    driver.set_page_load_timeout(45)
     return driver
 
 
-def _page_body_text(driver) -> str:
-    from selenium.webdriver.common.by import By
-    return driver.find_element(By.TAG_NAME, "body").text
-
-
-def _capture_schedule(driver) -> tuple[list[ParsedRow], str]:
-    rows = extract_rows_from_visible_text(_page_body_text(driver))
-    mode = "rendered-text"
-    if len(rows) < MIN_PROGRAMMES_PER_DAY:
-        html_rows = extract_rows_from_html(driver.page_source)
-        if len(html_rows) > len(rows):
-            rows = html_rows
-            mode = "rendered-html"
-    return rows, mode
-
-
-def _click_weekday(driver, target_date: date) -> bool:
-    from selenium.webdriver.common.by import By
-    from selenium.webdriver.support.ui import WebDriverWait
-
-    selectors = "button, a, [role='button'], [role='tab'], [onclick]"
-    elements = driver.find_elements(By.CSS_SELECTOR, selectors)
-    candidate = None
-    for element in elements:
-        try:
-            if not element.is_displayed():
-                continue
-            label = _plain(
-                element.text
-                or element.get_attribute("aria-label")
-                or element.get_attribute("title")
-                or ""
-            )
-            if _weekday_click_matches(label, target_date.weekday()):
-                candidate = element
-                break
-        except Exception:
-            continue
-    if candidate is None:
-        return False
-
-    before = _schedule_section(_page_body_text(driver))
-    try:
-        driver.execute_script("arguments[0].click();", candidate)
-    except Exception:
-        try:
-            candidate.click()
-        except Exception:
-            return False
-
-    def changed(drv) -> bool:
-        try:
-            return _schedule_section(_page_body_text(drv)) != before
-        except Exception:
-            return False
-
-    try:
-        WebDriverWait(driver, 8).until(changed)
-    except Exception:
-        time_module.sleep(1.2)
-    return True
-
-
-def _probe_network_source(driver) -> list[dict[str, Any]]:
-    """Diagnóstico: identifica la respuesta XHR/fetch que alimenta la parrilla.
-
-    Solo imprime metadatos de respuestas públicas; no modifica la EPG ni usa
-    estos valores para generar horarios. La finalidad es descubrir el endpoint
-    real que contiene las tarjetas de /programas.
-    """
-    signatures = (
-        "Noticias 7 Estelar",
-        "Ficción Latina",
-        "Fanático",
-        "Un Café con JJ",
-        "Estas Secretarias",
-    )
-    candidates: list[dict[str, Any]] = []
-    try:
-        entries = driver.get_log("performance")
-    except Exception as exc:
-        print(f"ECUADORTV_NETWORK_PROBE_ERROR get_log: {type(exc).__name__}: {exc}")
-        return candidates
-
-    for entry in entries:
-        try:
-            msg = json.loads(entry.get("message", "{}"))["message"]
-        except Exception:
-            continue
-        if msg.get("method") != "Network.responseReceived":
-            continue
-        params = msg.get("params") or {}
-        resource_type = str(params.get("type") or "")
-        response = params.get("response") or {}
-        mime = str(response.get("mimeType") or "")
-        url = str(response.get("url") or "")
-        if resource_type not in {"XHR", "Fetch"} and "json" not in mime.lower():
-            continue
-        request_id = params.get("requestId")
-        if not request_id:
-            continue
-        try:
-            body_obj = driver.execute_cdp_cmd("Network.getResponseBody", {"requestId": request_id})
-            body = str((body_obj or {}).get("body") or "")
-        except Exception:
-            continue
-        if not body or len(body) > 4_000_000:
-            continue
-
-        folded_body = _fold(body)
-        matched = [sig for sig in signatures if _fold(sig) in folded_body]
-        time_tokens = sorted(set(re.findall(r"(?<!\\d)(?:[01]?\\d|2[0-3]):[0-5]\\d(?!\\d)", body)))
-        # Candidato fuerte: contiene títulos vistos hoy. Candidato genérico:
-        # contiene varias horas y vocabulario de programación.
-        generic = len(time_tokens) >= 3 and any(word in folded_body for word in ("program", "horario", "schedule"))
-        if not matched and not generic:
-            continue
-        item = {
-            "url": url,
-            "type": resource_type,
-            "mime": mime,
-            "matched": matched,
-            "times": time_tokens[:20],
-            "body_chars": len(body),
-        }
-        candidates.append(item)
-
-    # Deduplicar por URL y dejar lo más útil primero.
-    by_url: dict[str, dict[str, Any]] = {}
-    for item in candidates:
-        prev = by_url.get(item["url"])
-        if prev is None or len(item["matched"]) > len(prev["matched"]):
-            by_url[item["url"]] = item
-    final = sorted(by_url.values(), key=lambda x: (-len(x["matched"]), -len(x["times"]), x["url"]))[:20]
-    for item in final:
-        print(
-            "ECUADORTV_NETWORK_CANDIDATE "
-            + json.dumps(item, ensure_ascii=False, sort_keys=True)
-        )
-    if not final:
-        print("ECUADORTV_NETWORK_CANDIDATE none")
-    return final
-
-
-def scrape_official(base_date: date, days: int) -> tuple[dict[date, list[ParsedRow]], dict[str, Any]]:
-    from selenium.webdriver.common.by import By
-    from selenium.webdriver.support.ui import WebDriverWait
-
-    collected: dict[date, list[ParsedRow]] = {}
-    attempts: list[dict[str, Any]] = []
-    errors: list[str] = []
+def _fetch_api_with_browser() -> Any:
+    """Fallback: usa el mismo origen/navegador, pero sigue leyendo la API real."""
     driver = None
-
     try:
         driver = _make_driver()
         driver.get(OFFICIAL_URL)
-        WebDriverWait(driver, 25).until(
-            lambda d: "program" in _fold(d.find_element(By.TAG_NAME, "body").text)
-        )
-        time_module.sleep(POST_LOAD_SECONDS)
-        _probe_network_source(driver)
-
-        # La página abre por defecto el día vigente; base_date es la fecha local
-        # usada por la generación del EPG.
-        rows, mode = _capture_schedule(driver)
-        collected[base_date] = rows
-        attempts.append({
-            "target_date": base_date.isoformat(),
-            "programmes": len(rows),
-            "mode": mode,
-            "clicked": False,
-        })
-
-        for offset in range(days):
-            target = base_date + timedelta(days=offset)
-            if target == base_date:
-                continue
-            try:
-                clicked = _click_weekday(driver, target)
-                if not clicked:
-                    attempts.append({
-                        "target_date": target.isoformat(),
-                        "programmes": 0,
-                        "mode": "weekday-tab-not-found",
-                        "clicked": False,
-                    })
-                    continue
-                time_module.sleep(0.8)
-                rows, mode = _capture_schedule(driver)
-                collected[target] = rows
-                attempts.append({
-                    "target_date": target.isoformat(),
-                    "programmes": len(rows),
-                    "mode": mode,
-                    "clicked": True,
-                })
-            except Exception as exc:
-                errors.append(f"{target.isoformat()}: {type(exc).__name__}: {exc}")
-    except Exception as exc:
-        errors.append(f"carga oficial: {type(exc).__name__}: {exc}")
+        script = r"""
+        const done = arguments[arguments.length - 1];
+        fetch('/api/schedule/today', {credentials: 'same-origin', cache: 'no-store'})
+          .then(async r => {
+            const text = await r.text();
+            done({ok: r.ok, status: r.status, text});
+          })
+          .catch(e => done({ok: false, status: 0, text: String(e)}));
+        """
+        result = driver.execute_async_script(script)
+        if not isinstance(result, dict) or not result.get("ok"):
+            raise RuntimeError(f"fetch navegador falló: {result!r}")
+        return json.loads(str(result.get("text") or ""))
     finally:
         if driver is not None:
             try:
@@ -468,7 +488,50 @@ def scrape_official(base_date: date, days: int) -> tuple[dict[date, list[ParsedR
             except Exception:
                 pass
 
-    return collected, {"attempts": attempts, "errors": errors[-20:]}
+
+def fetch_official_api() -> tuple[Any, dict[str, Any]]:
+    errors: list[str] = []
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36"
+        ),
+        "Accept": "application/json, text/plain, */*",
+        "Referer": OFFICIAL_URL,
+        "Origin": "https://www.ecuadortv.ec",
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+    }
+
+    try:
+        response = requests.get(API_URL, headers=headers, timeout=REQUEST_TIMEOUT_SECONDS)
+        response.raise_for_status()
+        payload = response.json()
+        return payload, {
+            "method": "requests",
+            "http_status": response.status_code,
+            "content_type": response.headers.get("content-type", ""),
+            "body_chars": len(response.text),
+            "errors": errors,
+        }
+    except Exception as exc:
+        errors.append(f"requests: {type(exc).__name__}: {exc}")
+
+    try:
+        payload = _fetch_api_with_browser()
+        return payload, {
+            "method": "browser-fetch",
+            "http_status": 200,
+            "content_type": "application/json",
+            "body_chars": len(json.dumps(payload, ensure_ascii=False)),
+            "errors": errors,
+        }
+    except Exception as exc:
+        errors.append(f"browser-fetch: {type(exc).__name__}: {exc}")
+        raise RuntimeError(
+            "Ecuador TV: no se pudo obtener la API oficial /api/schedule/today. "
+            + " | ".join(errors)
+        ) from exc
 
 
 def _rows_span_hours(rows: list[ParsedRow]) -> float:
@@ -479,91 +542,62 @@ def _rows_span_hours(rows: list[ParsedRow]) -> float:
     return round((last - first).total_seconds() / 3600.0, 2)
 
 
-def _has_estelar(rows: list[ParsedRow]) -> bool:
-    for row in rows:
-        if row.start == time(19, 0) and "noticias 7 estelar" in _fold(row.title):
-            return True
-    return False
-
-
-def _rows_are_complete(day: date, rows: list[ParsedRow]) -> tuple[bool, float, str]:
+def _validate_rows(rows: list[ParsedRow]) -> tuple[bool, float, str]:
     rows = sorted(rows, key=lambda item: item.start)
     span = _rows_span_hours(rows)
     if len(rows) < MIN_PROGRAMMES_PER_DAY:
         return False, span, "too-few-programmes"
     if span < MIN_SPAN_HOURS:
         return False, span, "span-too-short"
-    # Este ancla es la corrección que motivó v0.2.69 y también funciona como
-    # comprobación de que estamos leyendo la vista correcta del día laborable.
-    if day.weekday() < 5 and not _has_estelar(rows):
-        return False, span, "missing-noticias-7-estelar-1900"
+    if len({row.start for row in rows}) != len(rows):
+        return False, span, "duplicate-start-times"
     return True, span, "accepted"
 
 
-def build_programmes(
-    scraped: dict[date, list[ParsedRow]], *, base_date: date, days: int
-) -> tuple[list[Programme], dict[str, Any]]:
-    accepted: dict[date, list[ParsedRow]] = {}
-    daily: dict[str, dict[str, Any]] = {}
-
-    for offset in range(days):
-        day = base_date + timedelta(days=offset)
-        rows = sorted(scraped.get(day, []), key=lambda item: item.start)
-        ok, span, reason = _rows_are_complete(day, rows)
-        daily[day.isoformat()] = {
-            "scraped_programmes": len(rows),
-            "span_hours": span,
-            "accepted": ok,
-            "reason": reason,
+def build_programmes(rows: list[ParsedRow], *, day: date) -> tuple[list[Programme], dict[str, Any]]:
+    rows = sorted(rows, key=lambda item: item.start)
+    ok, span, reason = _validate_rows(rows)
+    if not ok:
+        return [], {
+            "official_dates": [],
+            "daily": {
+                day.isoformat(): {
+                    "api_programmes": len(rows),
+                    "span_hours": span,
+                    "accepted": False,
+                    "reason": reason,
+                }
+            },
         }
-        if ok:
-            accepted[day] = rows
 
     programmes: list[Programme] = []
-    for day, rows in sorted(accepted.items()):
-        for idx, row in enumerate(rows):
-            start = datetime.combine(day, row.start, tzinfo=EC_TZ)
-            if row.stop is not None:
-                stop = datetime.combine(day, row.stop, tzinfo=EC_TZ)
-                if stop <= start:
-                    stop += timedelta(days=1)
-            elif idx + 1 < len(rows):
-                stop = datetime.combine(day, rows[idx + 1].start, tzinfo=EC_TZ)
-            else:
-                stop = datetime.combine(day + timedelta(days=1), time.min, tzinfo=EC_TZ)
-            if stop > start:
-                programmes.append(Programme(start=start, stop=stop, title=row.title))
+    for idx, row in enumerate(rows):
+        start = datetime.combine(day, row.start, tzinfo=EC_TZ)
+        if row.stop is not None:
+            stop = datetime.combine(day, row.stop, tzinfo=EC_TZ)
+            if stop <= start:
+                stop += timedelta(days=1)
+        elif idx + 1 < len(rows):
+            stop = datetime.combine(day, rows[idx + 1].start, tzinfo=EC_TZ)
+            if stop <= start:
+                stop += timedelta(days=1)
+        else:
+            stop = datetime.combine(day + timedelta(days=1), time.min, tzinfo=EC_TZ)
+        if stop <= start:
+            continue
+        programmes.append(Programme(start=start, stop=stop, title=row.title))
 
     return programmes, {
-        "official_dates": [day.isoformat() for day in sorted(accepted)],
-        "daily": daily,
+        "official_dates": [day.isoformat()],
+        "daily": {
+            day.isoformat(): {
+                "api_programmes": len(rows),
+                "span_hours": span,
+                "accepted": True,
+                "reason": "accepted",
+            }
+        },
     }
-
-
-def fixed_news_for_day(day: date) -> list[Programme]:
-    """Horarios publicados por Ecuador TV en la ficha oficial de Noticias 7."""
-    slots: list[tuple[time, time, str]] = []
-    if day.weekday() < 5:
-        slots.extend([
-            (time(7, 0), time(8, 30), "Noticias 7 Matinal"),
-            (time(12, 0), time(12, 3), "Micro Informativo"),
-            (time(12, 30), time(13, 30), "Noticias 7 Central"),
-            (time(19, 0), time(20, 0), "Noticias 7 Estelar"),
-        ])
-    else:
-        if day.weekday() == 6:
-            slots.append((time(10, 30), time(11, 0), "Noticias 7 Internacional"))
-        slots.append((time(11, 0), time(11, 15), "Noticias 7 Resumen Nacional"))
-
-    return [
-        Programme(
-            start=datetime.combine(day, start, tzinfo=EC_TZ),
-            stop=datetime.combine(day, stop, tzinfo=EC_TZ),
-            title=title,
-            source="official-fixed-news",
-        )
-        for start, stop, title in slots
-    ]
 
 
 def parse_xmltv_datetime(value: str) -> datetime:
@@ -594,34 +628,6 @@ def _make_programme(item: Programme) -> etree._Element:
 
 def _overlap(start: datetime, stop: datetime, cut_start: datetime, cut_stop: datetime) -> bool:
     return stop > cut_start and start < cut_stop
-
-
-def _replace_interval(root: etree._Element, item: Programme) -> int:
-    removed = 0
-    existing = list(root.xpath("./programme[@channel=$cid]", cid=CHANNEL_ID))
-    for node in existing:
-        interval = _programme_interval(node)
-        if interval is None:
-            continue
-        start, stop = interval
-        start = start.astimezone(EC_TZ)
-        stop = stop.astimezone(EC_TZ)
-        if not _overlap(start, stop, item.start, item.stop):
-            continue
-
-        root.remove(node)
-        removed += 1
-        if start < item.start:
-            left = copy.deepcopy(node)
-            left.set("stop", xmltv_stamp(item.start))
-            root.append(left)
-        if stop > item.stop:
-            right = copy.deepcopy(node)
-            right.set("start", xmltv_stamp(item.stop))
-            root.append(right)
-
-    root.append(_make_programme(item))
-    return removed
 
 
 def _replace_full_day(root: etree._Element, day: date, programmes: list[Programme]) -> int:
@@ -663,8 +669,6 @@ def merge_into_tree(
     official: list[Programme],
     *,
     official_dates: Iterable[str],
-    base_date: date,
-    days: int,
 ) -> dict[str, Any]:
     accepted = {date.fromisoformat(value) for value in official_dates}
     by_day: dict[date, list[Programme]] = {}
@@ -672,38 +676,24 @@ def merge_into_tree(
         by_day.setdefault(item.start.date(), []).append(item)
 
     replaced = 0
-    fixed_inserted = 0
-    full_inserted = 0
-    fallback_dates: list[str] = []
-
-    for offset in range(days):
-        day = base_date + timedelta(days=offset)
-        if day in accepted:
-            items = sorted(by_day.get(day, []), key=lambda item: item.start)
-            replaced += _replace_full_day(root, day, items)
-            full_inserted += len(items)
-        else:
-            fallback_dates.append(day.isoformat())
-            for item in fixed_news_for_day(day):
-                replaced += _replace_interval(root, item)
-                fixed_inserted += 1
+    inserted = 0
+    for day in sorted(accepted):
+        items = sorted(by_day.get(day, []), key=lambda item: item.start)
+        replaced += _replace_full_day(root, day, items)
+        inserted += len(items)
 
     _sort_programmes(root)
     final_nodes = root.xpath("./programme[@channel=$cid]", cid=CHANNEL_ID)
     return {
         "replaced_programmes": replaced,
-        "official_full_programmes": full_inserted,
-        "official_fixed_programmes": fixed_inserted,
+        "official_api_programmes": inserted,
         "final_programmes": len(final_nodes),
-        "fallback_dates": fallback_dates,
         "total_programmes": len(root.findall("programme")),
     }
 
 
 def _write_xml(tree: etree._ElementTree, xml_path: Path, gz_path: Path) -> None:
-    # validate_outputs.py exige una cabecera canónica byte por byte.
-    # lxml usa comillas simples en la declaración XML y omite la línea en
-    # blanco tras el DOCTYPE, por lo que no debemos delegarle esa cabecera.
+    # validate_outputs.py exige esta cabecera exacta byte por byte.
     root = tree.getroot()
     payload = etree.tostring(
         root,
@@ -721,6 +711,8 @@ def _write_xml(tree: etree._ElementTree, xml_path: Path, gz_path: Path) -> None:
     with gz_path.open("wb") as raw:
         with gzip.GzipFile(filename="", mode="wb", fileobj=raw, compresslevel=9, mtime=0) as gz:
             gz.write(data)
+    if gzip.decompress(gz_path.read_bytes()) != data:
+        raise RuntimeError(f"{gz_path}: GZIP no coincide con XML.")
 
 
 def _read_base_date(status: dict[str, Any]) -> date:
@@ -738,6 +730,7 @@ def _update_status(
     *,
     base_date: date,
     source_info: dict[str, Any],
+    parse_info: dict[str, Any],
     build_info: dict[str, Any],
     merge_info: dict[str, Any],
 ) -> None:
@@ -749,38 +742,26 @@ def _update_status(
     status["ecuador_tv_epg"] = {
         "version": VERSION,
         "channel_id": CHANNEL_ID,
-        "source": OFFICIAL_URL,
-        "news_schedule_source": NEWS_URL,
+        "source": API_URL,
+        "source_page": OFFICIAL_URL,
         "source_timezone": SOURCE_TIMEZONE,
         "output_timezone": OUTPUT_TIMEZONE,
-        "manual_offset_minutes": MANUAL_OFFSET_MINUTES,
-        "mode": "official-rendered-primary+official-news-fixed-fallback+existing-guide",
-        "renderer": "selenium-chrome-headless",
+        "mode": "official-api-today+existing-guide-other-days",
+        "fetch_method": source_info.get("method"),
+        "http_status": source_info.get("http_status"),
+        "body_chars": source_info.get("body_chars"),
         "official_dates": list(build_info["official_dates"]),
-        "fixed_fallback_dates": list(merge_info["fallback_dates"]),
-        "official_full_programmes": int(merge_info["official_full_programmes"]),
-        "official_fixed_programmes": int(merge_info["official_fixed_programmes"]),
+        "official_api_programmes": int(merge_info["official_api_programmes"]),
         "replaced_programmes": int(merge_info["replaced_programmes"]),
         "programmes": int(merge_info["final_programmes"]),
         "daily": build_info["daily"],
-        "attempts": list(source_info.get("attempts", [])),
+        "parser": parse_info,
         "errors": list(source_info.get("errors", [])),
-        "verified_fixed_slots": {
-            "weekdays": [
-                "07:00-08:30 Noticias 7 Matinal",
-                "12:00-12:03 Micro Informativo",
-                "12:30-13:30 Noticias 7 Central",
-                "19:00-20:00 Noticias 7 Estelar",
-            ],
-            "saturday": ["11:00-11:15 Noticias 7 Resumen Nacional"],
-            "sunday": [
-                "10:30-11:00 Noticias 7 Internacional",
-                "11:00-11:15 Noticias 7 Resumen Nacional",
-            ],
-        },
     }
-    status.setdefault("sources", {})["ecuador_tv_official"] = OFFICIAL_URL
-    status["sources"]["ecuador_tv_noticias_7"] = NEWS_URL
+    status.setdefault("sources", {})["ecuador_tv_official_api"] = API_URL
+    status["sources"]["ecuador_tv_official_page"] = OFFICIAL_URL
+    # Retirar claves del parche provisional si existen.
+    status["sources"].pop("ecuador_tv_noticias_7", None)
     status_path.write_text(json.dumps(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
@@ -790,8 +771,8 @@ def _patch_one(
     status_name: str,
     *,
     base_date: date,
-    days: int,
     source_info: dict[str, Any],
+    parse_info: dict[str, Any],
     build_info: dict[str, Any],
     official: list[Programme],
 ) -> dict[str, Any] | None:
@@ -812,8 +793,6 @@ def _patch_one(
         root,
         official,
         official_dates=build_info["official_dates"],
-        base_date=base_date,
-        days=days,
     )
     if merge_info["final_programmes"] < 5:
         raise RuntimeError(f"{xml_name}: Ecuador TV quedó con programación insuficiente ({merge_info['final_programmes']}).")
@@ -823,6 +802,7 @@ def _patch_one(
         status_path,
         base_date=base_date,
         source_info=source_info,
+        parse_info=parse_info,
         build_info=build_info,
         merge_info=merge_info,
     )
@@ -837,11 +817,25 @@ def apply(output_dir: Path, days: int) -> dict[str, Any]:
             status = json.loads(path.read_text(encoding="utf-8"))
             break
     if status is None:
-        raise RuntimeError("Ecuador TV v0.2.70 requiere status.json o latam-status.json existente.")
+        raise RuntimeError("Ecuador TV v0.2.71 requiere status.json o latam-status.json existente.")
 
     base_date = _read_base_date(status)
-    scraped, source_info = scrape_official(base_date, days)
-    official, build_info = build_programmes(scraped, base_date=base_date, days=days)
+    payload, source_info = fetch_official_api()
+    rows, parse_info = extract_rows_from_json(payload)
+    official, build_info = build_programmes(rows, day=base_date)
+
+    preview = [f"{row.start.strftime('%H:%M')} {row.title}" for row in rows]
+    print("ECUADORTV_API_SOURCE " + API_URL)
+    print("ECUADORTV_API_FETCH " + json.dumps(source_info, ensure_ascii=False, sort_keys=True))
+    print("ECUADORTV_API_PARSER " + json.dumps(parse_info, ensure_ascii=False, sort_keys=True))
+    print("ECUADORTV_API_ROWS " + json.dumps(preview, ensure_ascii=False))
+
+    if not build_info["official_dates"]:
+        day_info = build_info["daily"].get(base_date.isoformat(), {})
+        raise RuntimeError(
+            "Ecuador TV: la API oficial respondió, pero la parrilla no superó la validación: "
+            + json.dumps(day_info, ensure_ascii=False, sort_keys=True)
+        )
 
     results: dict[str, Any] = {}
     for xml_name, status_name in (("ec.xml", "status.json"), ("latam.xml", "latam-status.json")):
@@ -850,8 +844,8 @@ def apply(output_dir: Path, days: int) -> dict[str, Any]:
             xml_name,
             status_name,
             base_date=base_date,
-            days=days,
             source_info=source_info,
+            parse_info=parse_info,
             build_info=build_info,
             official=official,
         )
@@ -859,57 +853,58 @@ def apply(output_dir: Path, days: int) -> dict[str, Any]:
             results[xml_name] = merge
 
     if not results:
-        raise RuntimeError("No se encontró ec.xml ni latam.xml para aplicar Ecuador TV v0.2.69.")
-
-    if not build_info["official_dates"]:
-        print(
-            "ADVERTENCIA Ecuador TV v0.2.69: no se aceptó un día completo desde la vista renderizada; "
-            "se conservaron los demás programas y se aplicaron los horarios fijos oficiales de Noticias 7."
-        )
+        raise RuntimeError("No se encontró ec.xml ni latam.xml para aplicar Ecuador TV v0.2.71.")
 
     return {
         "base_date": base_date.isoformat(),
         "source": source_info,
+        "parser": parse_info,
         "build": build_info,
         "outputs": results,
     }
 
 
 def self_test() -> None:
-    fixture = """
-    Programación
-    Lunes Martes Miércoles Jueves Viernes Sábado Domingo
-    05:00 - 06:00 Ecuador en movimiento
-    06:00 - 07:00 Educa
-    07:00 - 08:30 Noticias 7 Matinal
-    08:30 - 10:00 Café TV
-    10:00 - 11:00 Somos cultura
-    11:00 - 12:00 Ecuador diverso
-    12:00 - 12:03 Micro Informativo
-    12:03 - 12:30 Conexión
-    12:30 - 13:30 Noticias 7 Central
-    13:30 - 15:00 Serie nacional
-    15:00 - 17:00 Cine
-    17:00 - 18:00 Magazine
-    18:00 - 19:00 Esta es mi canción
-    19:00 - 20:00 Noticias 7 Estelar
-    20:00 - 21:00 Amor Profundo
-    21:00 - 22:00 Fanático
-    22:00 - 23:00 Documental
-    23:00 - 23:59 Cine ecuatoriano
-    """
-    rows = extract_rows_from_visible_text(fixture)
-    assert len(rows) == 18, rows
-    assert dict((r.start, r.title) for r in rows)[time(19, 0)] == "Noticias 7 Estelar"
+    # Variantes de esquema deliberadamente distintas: la API puede cambiar
+    # nombres de claves sin que debamos volver a leer el DOM.
+    fixture = {
+        "data": {
+            "schedule": [
+                {"program": {"title": "Ecuador en movimiento"}, "start": "05h00"},
+                {"program": {"name": "Educa"}, "start_time": "06:00:00"},
+                {"titulo": "Noticias 7 Matinal", "inicio": 420},
+                {"nombre": "Café TV", "hora": 830},
+                {"show": {"title": "Somos cultura"}, "start": {"hour": 10, "minute": 0}},
+                {"programa": {"nombre": "Ecuador diverso"}, "inicio": {"hora": 11, "minuto": 0}},
+                {"title": "Noticias 7 Central", "start": [12, 30]},
+                {"title": "Serie nacional", "startAt": "2026-09-24T13:30:00-05:00"},
+                {"title": "Cine", "start": 900},
+                {"title": "Magazine", "start": 1020},
+                {"title": "Esta es mi canción", "start": 1080},
+                {"title": "Noticias 7 Estelar", "start": 1140, "end": 1200},
+                {"title": "Ficción Latina", "start": "2000"},
+                {"title": "Fanático", "start": {"hour": 21, "minute": 0}},
+                {"title": "Un Café con JJ", "start": "22h00"},
+                {"title": "Estas Secretarias", "start": {"hour": 22, "minute": 30}},
+            ]
+        }
+    }
+    rows, info = extract_rows_from_json(fixture)
+    mapping = {row.start.strftime("%H:%M"): row.title for row in rows}
+    assert mapping["19:00"] == "Noticias 7 Estelar", mapping
+    assert mapping["20:00"] == "Ficción Latina", mapping
+    assert mapping["21:00"] == "Fanático", mapping
+    assert mapping["22:00"] == "Un Café con JJ", mapping
+    assert mapping["22:30"] == "Estas Secretarias", mapping
+    assert info["selected_rows"] >= 12, info
 
-    day = date(2026, 9, 24)  # jueves
-    built, info = build_programmes({day: rows}, base_date=day, days=1)
-    assert info["official_dates"] == ["2026-09-24"], info
-    assert any(p.title == "Noticias 7 Estelar" and p.start.hour == 19 for p in built)
+    day = date(2026, 9, 24)
+    programmes, build = build_programmes(rows, day=day)
+    assert build["official_dates"] == ["2026-09-24"], build
+    assert any(p.title == "Noticias 7 Estelar" and p.start.hour == 19 and p.stop.hour == 20 for p in programmes)
 
-    # Prueba crítica del fallback: un bloque viejo 18:30-20:00 debe partirse en
-    # 18:30-19:00 y sustituirse 19:00-20:00 por Noticias 7 Estelar.
-    root = etree.Element("tv")
+    # Verifica que el reemplazo sea del día oficial completo, sin bloques manuales.
+    root = etree.Element("tv", **{"generator-info-name": "none", "generator-info-url": "none"})
     etree.SubElement(root, "channel", id=CHANNEL_ID)
     old = etree.SubElement(
         root, "programme",
@@ -918,42 +913,19 @@ def self_test() -> None:
         channel=CHANNEL_ID,
     )
     etree.SubElement(old, "title", lang="es").text = "Esta es mi canción"
-    old2 = etree.SubElement(
-        root, "programme",
-        start="20260924200000 -0500",
-        stop="20260924210000 -0500",
-        channel=CHANNEL_ID,
+    merge = merge_into_tree(root, programmes, official_dates=build["official_dates"])
+    at_19 = root.xpath(
+        "./programme[@channel=$cid and @start='20260924190000 -0500']",
+        cid=CHANNEL_ID,
     )
-    etree.SubElement(old2, "title", lang="es").text = "Programa siguiente"
-
-    merge = merge_into_tree(
-        root,
-        [],
-        official_dates=[],
-        base_date=day,
-        days=1,
-    )
-    nodes = root.xpath("./programme[@channel=$cid]", cid=CHANNEL_ID)
-    at_19 = [n for n in nodes if n.get("start") == "20260924190000 -0500"]
-    assert len(at_19) == 1, [(n.get("start"), n.findtext("title")) for n in nodes]
-    assert at_19[0].get("stop") == "20260924200000 -0500"
+    assert len(at_19) == 1
     assert at_19[0].findtext("title") == "Noticias 7 Estelar"
-    assert not any(
-        n.findtext("title") == "Esta es mi canción"
-        and n.get("start") <= "20260924190000 -0500" < n.get("stop")
-        for n in nodes
-    )
-    assert merge["official_fixed_programmes"] == 4, merge
-
-    weekend = fixed_news_for_day(date(2026, 9, 27))
-    assert [(p.start.strftime("%H:%M"), p.title) for p in weekend] == [
-        ("10:30", "Noticias 7 Internacional"),
-        ("11:00", "Noticias 7 Resumen Nacional"),
-    ]
+    assert merge["official_api_programmes"] == len(programmes)
 
     print(
-        "Prueba Ecuador TV v0.2.69 correcta: parser oficial, validación de Noticias 7 Estelar 19:00, "
-        "overlay de horarios fijos y partición segura de programas previos."
+        "Prueba Ecuador TV v0.2.71 correcta: API oficial, parser JSON flexible, "
+        "19:00 Noticias 7 Estelar, 20:00 Ficción Latina, 21:00 Fanático, "
+        "22:00 Un Café con JJ y 22:30 Estas Secretarias."
     )
 
 
@@ -971,8 +943,8 @@ def main() -> int:
         raise SystemExit("--days debe ser >= 1")
     result = apply(Path(args.output), args.days)
     print(
-        "Ecuador TV v0.2.69: "
-        f"fechas oficiales={result['build']['official_dates']}; "
+        "Ecuador TV v0.2.71: "
+        f"fuente={API_URL}; fechas oficiales={result['build']['official_dates']}; "
         f"salidas={list(result['outputs'])}"
     )
     return 0
