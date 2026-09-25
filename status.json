@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T19:39:56.530905-05:00",
+  "generated_at": "2026-09-24T20:03:26.497052-05:00",
   "base_date": "2026-09-24",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
@@ -7,17 +7,19 @@
     "ecuavisa_internacional": "https://www.gatotv.com/canal/ecuavisa_internacional",
     "tvc": "https://www.tvc.com.ec/programacion/",
     "cnn_en_espanol": "https://mi.tv/co/canales/cnn-en-espanol",
-    "ntn24": "https://mi.tv/co/canales/nuestra-tele-noticias-24hs"
+    "ntn24": "https://mi.tv/co/canales/nuestra-tele-noticias-24hs",
+    "ecuador_tv_official": "https://www.ecuadortv.ec/programas",
+    "ecuador_tv_noticias_7": "https://www.ecuadortv.ec/programas/noticias-7"
   },
   "ecuavisa_internacional_days": 5,
   "cnn_en_espanol_days": 2,
   "ntn24_days": 2,
   "channels": 95,
-  "programmes": 10418,
+  "programmes": 10439,
   "teleamazonas_quito": 198,
   "teleamazonas_guayaquil": 200,
   "ecuavisa": 106,
-  "ecuavisa_internacional": 97,
+  "ecuavisa_internacional": 99,
   "tvc": 156,
   "cnn_en_espanol": 49,
   "ntn24": 38,
@@ -53,5 +55,138 @@
     }
   },
   "tc_source_mode": "epgshare",
-  "tc_programmes": 70
+  "tc_programmes": 70,
+  "version": "0.2.70",
+  "programme_counts": {
+    "Canal.Ecuador.TV.ec": 103
+  },
+  "ecuador_tv_epg": {
+    "version": "0.2.70",
+    "channel_id": "Canal.Ecuador.TV.ec",
+    "source": "https://www.ecuadortv.ec/programas",
+    "news_schedule_source": "https://www.ecuadortv.ec/programas/noticias-7",
+    "source_timezone": "America/Guayaquil",
+    "output_timezone": "America/Guayaquil",
+    "manual_offset_minutes": 0,
+    "mode": "official-rendered-primary+official-news-fixed-fallback+existing-guide",
+    "renderer": "selenium-chrome-headless",
+    "official_dates": [],
+    "fixed_fallback_dates": [
+      "2026-09-24",
+      "2026-09-25",
+      "2026-09-26",
+      "2026-09-27",
+      "2026-09-28",
+      "2026-09-29",
+      "2026-09-30"
+    ],
+    "official_full_programmes": 0,
+    "official_fixed_programmes": 23,
+    "replaced_programmes": 13,
+    "programmes": 103,
+    "daily": {
+      "2026-09-24": {
+        "scraped_programmes": 1,
+        "span_hours": 0.0,
+        "accepted": false,
+        "reason": "too-few-programmes"
+      },
+      "2026-09-25": {
+        "scraped_programmes": 1,
+        "span_hours": 0.0,
+        "accepted": false,
+        "reason": "too-few-programmes"
+      },
+      "2026-09-26": {
+        "scraped_programmes": 1,
+        "span_hours": 0.0,
+        "accepted": false,
+        "reason": "too-few-programmes"
+      },
+      "2026-09-27": {
+        "scraped_programmes": 1,
+        "span_hours": 0.0,
+        "accepted": false,
+        "reason": "too-few-programmes"
+      },
+      "2026-09-28": {
+        "scraped_programmes": 1,
+        "span_hours": 0.0,
+        "accepted": false,
+        "reason": "too-few-programmes"
+      },
+      "2026-09-29": {
+        "scraped_programmes": 1,
+        "span_hours": 0.0,
+        "accepted": false,
+        "reason": "too-few-programmes"
+      },
+      "2026-09-30": {
+        "scraped_programmes": 1,
+        "span_hours": 0.0,
+        "accepted": false,
+        "reason": "too-few-programmes"
+      }
+    },
+    "attempts": [
+      {
+        "target_date": "2026-09-24",
+        "programmes": 1,
+        "mode": "rendered-text",
+        "clicked": false
+      },
+      {
+        "target_date": "2026-09-25",
+        "programmes": 1,
+        "mode": "rendered-text",
+        "clicked": true
+      },
+      {
+        "target_date": "2026-09-26",
+        "programmes": 1,
+        "mode": "rendered-text",
+        "clicked": true
+      },
+      {
+        "target_date": "2026-09-27",
+        "programmes": 1,
+        "mode": "rendered-text",
+        "clicked": true
+      },
+      {
+        "target_date": "2026-09-28",
+        "programmes": 1,
+        "mode": "rendered-text",
+        "clicked": true
+      },
+      {
+        "target_date": "2026-09-29",
+        "programmes": 1,
+        "mode": "rendered-text",
+        "clicked": true
+      },
+      {
+        "target_date": "2026-09-30",
+        "programmes": 1,
+        "mode": "rendered-text",
+        "clicked": true
+      }
+    ],
+    "errors": [],
+    "verified_fixed_slots": {
+      "weekdays": [
+        "07:00-08:30 Noticias 7 Matinal",
+        "12:00-12:03 Micro Informativo",
+        "12:30-13:30 Noticias 7 Central",
+        "19:00-20:00 Noticias 7 Estelar"
+      ],
+      "saturday": [
+        "11:00-11:15 Noticias 7 Resumen Nacional"
+      ],
+      "sunday": [
+        "10:30-11:00 Noticias 7 Internacional",
+        "11:00-11:15 Noticias 7 Resumen Nacional"
+      ]
+    }
+  }
 }
