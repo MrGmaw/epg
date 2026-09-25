@@ -1,17 +1,17 @@
 {
   "version": "0.2.70",
-  "generated_at": "2026-09-24T20:29:41.647110-05:00",
-  "source_commit": "3afe8b93b6b9c64d065ea1949675c01fb5077db4",
-  "github_run_id": "36082178769",
+  "generated_at": "2026-09-24T20:34:47.150363-05:00",
+  "source_commit": "335f4134e1ab88ef735b6fa82a83d3885fc0a979",
+  "github_run_id": "36082223484",
   "github_run_attempt": "1",
   "base_date": "2026-09-24",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 44,
-  "programmes": 3334,
+  "programmes": 3325,
   "programme_counts": {
-    "Canal.TC.Televisión.ec": 120,
+    "Canal.TC.Televisión.ec": 111,
     "Canal.Gamavisión.ec": 170,
     "Canal.RTS.ec": 157,
     "Canal.TVE.Internacional.(Televisión.Española).ec": 55,
@@ -43,7 +43,7 @@
     "Canal.Ecuador.TV.ec": 81,
     "NBC6-Miami.us": 101,
     "ABC-Miami.us": 122,
-    "CBS.(WCBS).New.York,.NY.us": 221,
+    "CBS.(WCBS).New.York,.NY.us": 211,
     "OromarTV.ec": 140,
     "TVEStarHD.es": 82,
     "AsambleaNacional.ec": 63,
@@ -374,10 +374,10 @@
       "2026-09-29",
       "2026-09-30"
     ],
-    "official_programmes": 120,
+    "official_programmes": 111,
     "fallback_programmes_kept": 0,
     "replaced_programmes": 70,
-    "programmes": 120,
+    "programmes": 111,
     "daily": {
       "2026-09-24": {
         "scraped_programmes": 21,
@@ -390,8 +390,8 @@
         "accepted": true
       },
       "2026-09-26": {
-        "scraped_programmes": 33,
-        "span_hours": 23.5,
+        "scraped_programmes": 24,
+        "span_hours": 13.5,
         "accepted": true
       },
       "2026-09-27": {
@@ -433,7 +433,7 @@
       {
         "target_date": "2026-09-26",
         "parsed_date": "2026-09-26",
-        "programmes": 33,
+        "programmes": 24,
         "mode": "rendered-text",
         "clicked": true
       },
@@ -641,7 +641,7 @@
     "manual_offset_minutes": 0,
     "channels": {
       "CBS.(WCBS).New.York,.NY.us": {
-        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=9",
+        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=8",
         "source": "https://www.tvpassport.com/tv-listings/stations/cbs-wcbs-new-york-ny-hd/4555",
         "fallback_sources": [
           "https://epgshare01.online/epgshare01/epg_ripper_US1.xml.gz",
@@ -649,7 +649,7 @@
         ],
         "source_timezone": "America/New_York / explicit XMLTV offset",
         "output_timezone": "America/Guayaquil",
-        "programmes": 221
+        "programmes": 211
       },
       "OromarTV.ec": {
         "mode": "bundled-weekly-fallback",
