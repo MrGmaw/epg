@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-24T21:18:45.887638-05:00",
-  "base_date": "2026-09-24",
+  "generated_at": "2026-09-25T09:36:04.876900-05:00",
+  "base_date": "2026-09-25",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
     "teleamazonas": "https://www.teleamazonas.com/programacion/",
@@ -11,24 +11,24 @@
     "ecuador_tv_official_api": "https://www.ecuadortv.ec/api/schedule/today",
     "ecuador_tv_official_page": "https://www.ecuadortv.ec/programas"
   },
-  "ecuavisa_internacional_days": 5,
+  "ecuavisa_internacional_days": 4,
   "cnn_en_espanol_days": 2,
   "ntn24_days": 2,
   "channels": 95,
-  "programmes": 10424,
+  "programmes": 10735,
   "teleamazonas_quito": 198,
   "teleamazonas_guayaquil": 200,
   "ecuavisa": 106,
-  "ecuavisa_internacional": 100,
+  "ecuavisa_internacional": 80,
   "tvc": 156,
-  "cnn_en_espanol": 49,
-  "ntn24": 38,
+  "cnn_en_espanol": 55,
+  "ntn24": 44,
   "tvc_source_mode": "official",
   "epgshare_resilient_channels": {
     "Canal.TC.Televisión.ec": {
       "name": "TC Televisión",
       "source": "epgshare",
-      "programmes": 70
+      "programmes": 72
     },
     "Canal.Gamavisión.ec": {
       "name": "Gamavisión",
@@ -45,7 +45,7 @@
     "Canal.Ecuador.TV.ec": {
       "name": "Ecuador TV",
       "source": "epgshare",
-      "programmes": 62
+      "programmes": 63
     },
     "Ecuavisa.ec": {
       "name": "Ecuavisa",
@@ -55,10 +55,10 @@
     }
   },
   "tc_source_mode": "epgshare",
-  "tc_programmes": 70,
+  "tc_programmes": 72,
   "version": "0.2.71",
   "programme_counts": {
-    "Canal.Ecuador.TV.ec": 87
+    "Canal.Ecuador.TV.ec": 86
   },
   "ecuador_tv_epg": {
     "version": "0.2.71",
@@ -70,25 +70,25 @@
     "mode": "official-api-today+existing-guide-other-days",
     "fetch_method": "requests",
     "http_status": 200,
-    "body_chars": 26090,
+    "body_chars": 23938,
     "official_dates": [
-      "2026-09-24"
+      "2026-09-25"
     ],
-    "official_api_programmes": 26,
+    "official_api_programmes": 24,
     "replaced_programmes": 23,
-    "programmes": 87,
+    "programmes": 86,
     "daily": {
-      "2026-09-24": {
-        "api_programmes": 26,
-        "span_hours": 23.75,
+      "2026-09-25": {
+        "api_programmes": 24,
+        "span_hours": 23.5,
         "accepted": true,
         "reason": "accepted"
       }
     },
     "parser": {
-      "dicts_scanned": 105,
-      "candidate_records": 26,
-      "selected_rows": 26,
+      "dicts_scanned": 97,
+      "candidate_records": 24,
+      "selected_rows": 24,
       "selected_keys": [
         {
           "title_key": "programDetails.name",
