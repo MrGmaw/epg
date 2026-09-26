@@ -1,17 +1,17 @@
 {
   "version": "0.2.71",
-  "generated_at": "2026-09-25T09:36:54.699540-05:00",
+  "generated_at": "2026-09-25T18:58:00.511114-05:00",
   "source_commit": "7ee951c6fc28d5e163fe716e39d00363be7c051a",
-  "github_run_id": "36148510981",
+  "github_run_id": "36202946784",
   "github_run_attempt": "1",
   "base_date": "2026-09-25",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 44,
-  "programmes": 3134,
+  "programmes": 3148,
   "programme_counts": {
-    "Canal.TC.Televisión.ec": 90,
+    "Canal.TC.Televisión.ec": 99,
     "Canal.Gamavisión.ec": 170,
     "Canal.RTS.ec": 157,
     "Canal.TVE.Internacional.(Televisión.Española).ec": 50,
@@ -23,26 +23,26 @@
     "Canal.CNN.en.Español.ec": 55,
     "NTN24.co": 44,
     "CanalRCN.co": 35,
-    "CaracolTV.co": 37,
+    "CaracolTV.co": 38,
     "Canal.Elgourmet.ec": 87,
     "Canal.History.co": 57,
     "Canal.History.2.co": 56,
-    "TV.Publica.canal.7.ar": 39,
+    "TV.Publica.canal.7.ar": 40,
     "Telefe.ar": 31,
     "Deutsche.Welle.cl": 104,
     "hgtv.ar": 85,
     "France24Espanol.fr": 222,
     "Antena3-America.co": 35,
     "Star-Channel.co": 28,
-    "Warner-channel.co": 56,
+    "Warner-channel.co": 59,
     "HBO-Family.co": 28,
     "Canal24Horas.es": 180,
     "La1.es": 95,
     "Clan.es": 387,
     "MakroDigitalTV.ec": 202,
     "Canal.Ecuador.TV.ec": 64,
-    "NBC6-Miami.us": 72,
-    "ABC-Miami.us": 91,
+    "NBC6-Miami.us": 101,
+    "ABC-Miami.us": 121,
     "CBS.(WCBS).New.York,.NY.us": 220,
     "OromarTV.ec": 140,
     "TVEStarHD.es": 53,
@@ -372,10 +372,10 @@
       "2026-09-30",
       "2026-10-01"
     ],
-    "official_programmes": 90,
+    "official_programmes": 99,
     "fallback_programmes_kept": 0,
     "replaced_programmes": 72,
-    "programmes": 90,
+    "programmes": 99,
     "daily": {
       "2026-09-25": {
         "scraped_programmes": 21,
@@ -383,8 +383,8 @@
         "accepted": true
       },
       "2026-09-26": {
-        "scraped_programmes": 24,
-        "span_hours": 13.5,
+        "scraped_programmes": 33,
+        "span_hours": 23.5,
         "accepted": true
       },
       "2026-09-27": {
@@ -424,7 +424,7 @@
       {
         "target_date": "2026-09-26",
         "parsed_date": "2026-09-26",
-        "programmes": 24,
+        "programmes": 33,
         "mode": "rendered-text",
         "clicked": true
       },
@@ -576,7 +576,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 72,
+        "programmes": 101,
         "window_start": "2026-09-25",
         "window_days": 7
       },
@@ -591,7 +591,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 91,
+        "programmes": 121,
         "window_start": "2026-09-25",
         "window_days": 7
       }
@@ -669,7 +669,7 @@
     },
     "loaded_source_days": 2,
     "programmes": 53,
-    "cached_programmes_available": 56,
+    "cached_programmes_available": 53,
     "cache_policy": "fresh source preferred; exact-date cache fills gaps; uncovered days use explicit unavailable placeholders",
     "field_validation": {
       "date": "2026-08-30",
