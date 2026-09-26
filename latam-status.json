@@ -1,24 +1,24 @@
 {
   "version": "0.2.71",
-  "generated_at": "2026-09-26T08:45:23.477145-05:00",
+  "generated_at": "2026-09-26T18:37:54.068650-05:00",
   "source_commit": "7ee951c6fc28d5e163fe716e39d00363be7c051a",
-  "github_run_id": "36246146397",
+  "github_run_id": "36279980819",
   "github_run_attempt": "1",
   "base_date": "2026-09-26",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 44,
-  "programmes": 3279,
+  "programmes": 3263,
   "programme_counts": {
-    "Canal.TC.Televisión.ec": 78,
+    "Canal.TC.Televisión.ec": 65,
     "Canal.Gamavisión.ec": 170,
     "Canal.RTS.ec": 157,
     "Canal.TVE.Internacional.(Televisión.Española).ec": 54,
     "TeleamazonasQuito.ec": 198,
     "TeleamazonasGuayaquil.ec": 200,
     "Ecuavisa.ec": 106,
-    "EcuavisaInternacional.ec": 83,
+    "EcuavisaInternacional.ec": 98,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 63,
     "NTN24.co": 49,
@@ -27,7 +27,7 @@
     "Canal.Elgourmet.ec": 84,
     "Canal.History.co": 59,
     "Canal.History.2.co": 55,
-    "TV.Publica.canal.7.ar": 40,
+    "TV.Publica.canal.7.ar": 39,
     "Telefe.ar": 32,
     "Deutsche.Welle.cl": 115,
     "hgtv.ar": 85,
@@ -36,25 +36,25 @@
     "Star-Channel.co": 29,
     "Warner-channel.co": 57,
     "HBO-Family.co": 27,
-    "Canal24Horas.es": 209,
-    "La1.es": 103,
-    "Clan.es": 481,
+    "Canal24Horas.es": 205,
+    "La1.es": 97,
+    "Clan.es": 474,
     "MakroDigitalTV.ec": 201,
     "Canal.Ecuador.TV.ec": 39,
-    "NBC6-Miami.us": 73,
-    "ABC-Miami.us": 91,
+    "NBC6-Miami.us": 98,
+    "ABC-Miami.us": 122,
     "CBS.(WCBS).New.York,.NY.us": 220,
     "OromarTV.ec": 140,
-    "TVEStarHD.es": 62,
+    "TVEStarHD.es": 59,
     "AsambleaNacional.ec": 63,
     "Canal.Elgourmet.ar": 85,
-    "Canal.ESPN.ec": 63,
-    "Canal.ESPN2.ec": 67,
+    "Canal.ESPN.ec": 61,
+    "Canal.ESPN2.ec": 65,
     "Canal.ESPN3.ec": 51,
-    "Canal.ESPN4.ec": 106,
-    "Canal.ESPN5.ec": 67,
-    "Canal.ESPN6.ec": 60,
-    "Canal.ESPN7.ec": 62
+    "Canal.ESPN4.ec": 104,
+    "Canal.ESPN5.ec": 65,
+    "Canal.ESPN6.ec": 57,
+    "Canal.ESPN7.ec": 64
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
@@ -82,27 +82,27 @@
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
       "2026-09-26": 51,
-      "2026-09-27": 52,
+      "2026-09-27": 49,
       "2026-09-28": 30,
       "2026-09-29": 29,
       "2026-09-30": 30,
-      "2026-10-01": 21
+      "2026-10-01": 20
     },
     "La1.es": {
-      "2026-09-26": 22,
-      "2026-09-27": 18,
-      "2026-09-28": 20,
-      "2026-09-29": 21,
-      "2026-09-30": 10,
-      "2026-10-01": 16
+      "2026-09-26": 21,
+      "2026-09-27": 16,
+      "2026-09-28": 19,
+      "2026-09-29": 20,
+      "2026-09-30": 11,
+      "2026-10-01": 15
     },
     "Clan.es": {
-      "2026-09-26": 74,
-      "2026-09-27": 69,
+      "2026-09-26": 73,
+      "2026-09-27": 72,
       "2026-09-28": 88,
       "2026-09-29": 88,
       "2026-09-30": 89,
-      "2026-10-01": 78
+      "2026-10-01": 68
     }
   },
   "gatotv_source_timezones": {
@@ -374,19 +374,19 @@
       "2026-10-01",
       "2026-10-02"
     ],
-    "official_programmes": 78,
+    "official_programmes": 65,
     "fallback_programmes_kept": 0,
     "replaced_programmes": 51,
-    "programmes": 78,
+    "programmes": 65,
     "daily": {
       "2026-09-26": {
-        "scraped_programmes": 33,
-        "span_hours": 23.5,
+        "scraped_programmes": 22,
+        "span_hours": 10.0,
         "accepted": true
       },
       "2026-09-27": {
-        "scraped_programmes": 24,
-        "span_hours": 23.5,
+        "scraped_programmes": 22,
+        "span_hours": 22.5,
         "accepted": true
       },
       "2026-09-28": {
@@ -419,14 +419,14 @@
       {
         "target_date": "2026-09-26",
         "parsed_date": "2026-09-26",
-        "programmes": 33,
+        "programmes": 22,
         "mode": "rendered-text",
         "clicked": false
       },
       {
         "target_date": "2026-09-27",
         "parsed_date": "2026-09-27",
-        "programmes": 24,
+        "programmes": 22,
         "mode": "rendered-text",
         "clicked": true
       },
@@ -577,7 +577,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 73,
+        "programmes": 98,
         "window_start": "2026-09-26",
         "window_days": 7
       },
@@ -592,7 +592,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 91,
+        "programmes": 122,
         "window_start": "2026-09-26",
         "window_days": 7
       }
@@ -665,12 +665,12 @@
       "degraded-uncovered-day-placeholder"
     ],
     "runner_timezone": {
-      "timezone": "America/Chicago",
+      "timezone": "America/Phoenix",
       "source": "ipapi"
     },
     "loaded_source_days": 2,
-    "programmes": 62,
-    "cached_programmes_available": 29,
+    "programmes": 59,
+    "cached_programmes_available": 62,
     "cache_policy": "fresh source preferred; exact-date cache fills gaps; uncovered days use explicit unavailable placeholders",
     "field_validation": {
       "date": "2026-08-30",
@@ -744,7 +744,7 @@
     "source": "GatoTV Ecuador",
     "output_timezone": "America/Guayaquil",
     "manual_offset_minutes": 0,
-    "programmes_total": 476,
+    "programmes_total": 467,
     "channel_status": {
       "Canal.ESPN.ec": {
         "channel_id": "Canal.ESPN.ec",
@@ -759,7 +759,7 @@
         "modes_used": [
           "ampm-runner-geo-table-fallback"
         ],
-        "programmes": 63,
+        "programmes": 61,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN.ec.png",
         "logo_source": "cache"
@@ -777,7 +777,7 @@
         "modes_used": [
           "ampm-runner-geo-table-fallback"
         ],
-        "programmes": 67,
+        "programmes": 65,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN2.ec.png",
         "logo_source": "cache"
@@ -813,7 +813,7 @@
         "modes_used": [
           "ampm-runner-geo-table-fallback"
         ],
-        "programmes": 106,
+        "programmes": 104,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN4.ec.png",
         "logo_source": "cache"
@@ -831,7 +831,7 @@
         "modes_used": [
           "ampm-runner-geo-table-fallback"
         ],
-        "programmes": 67,
+        "programmes": 65,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN5.ec.png",
         "logo_source": "cache"
@@ -849,7 +849,7 @@
         "modes_used": [
           "ampm-runner-geo-table-fallback"
         ],
-        "programmes": 60,
+        "programmes": 57,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN6.ec.png",
         "logo_source": "cache"
@@ -867,7 +867,7 @@
         "modes_used": [
           "ampm-runner-geo-table-fallback"
         ],
-        "programmes": 62,
+        "programmes": 64,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN7.ec.png",
         "logo_source": "cache"
