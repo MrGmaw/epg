@@ -15168,7 +15168,7 @@
   <programme start="20260930000000 -0500" stop="20260930003000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Fashion Forward</title>
   </programme>
-  <programme start="20260930000000 -0500" stop="20260930055000 -0500" channel="Ecuavisa.ec"><title lang="es">Telenovela</title></programme><programme start="20260930000000 -0500" stop="20260930010000 -0500" channel="TVC.ec"><title lang="es">NCIS Los Angeles</title></programme><programme start="20260930000000 -0500" stop="20260930013000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">CSI</title></programme><programme start="20260930000000 -0500" stop="20260930013000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">CSI</title></programme><programme start="20260930000200 -0500" stop="20260930002600 -0500" channel="Canal.Discovery.Kids.(Ecuador).ec">
+  <programme start="20260930000000 -0500" stop="20260930055000 -0500" channel="Ecuavisa.ec"><title lang="es">Telenovela</title></programme><programme start="20260930000000 -0500" stop="20260930023000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">En Contacto</title></programme><programme start="20260930000000 -0500" stop="20260930010000 -0500" channel="TVC.ec"><title lang="es">NCIS Los Angeles</title></programme><programme start="20260930000000 -0500" stop="20260930013000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">CSI</title></programme><programme start="20260930000000 -0500" stop="20260930013000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">CSI</title></programme><programme start="20260930000200 -0500" stop="20260930002600 -0500" channel="Canal.Discovery.Kids.(Ecuador).ec">
     <title lang="es">Mini beat power rockers</title>
     <sub-title lang="es">La planta cancionívora / Sigan al líder / Ritmo de gol / Carlos invisible / Nuestra primera</sub-title>
   </programme>
@@ -15421,7 +15421,7 @@
   <programme start="20260930003000 -0500" stop="20260930010000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Cóctel de noticias</title>
   </programme>
-  <programme start="20260930003000 -0500" stop="20260930010000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Así pasa</title></programme><programme start="20260930003100 -0500" stop="20260930004300 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
+  <programme start="20260930003100 -0500" stop="20260930004300 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
     <title lang="es">Escandalosos</title>
   </programme>
   <programme start="20260930003200 -0500" stop="20260930003600 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
@@ -15744,7 +15744,7 @@
   <programme start="20260930010000 -0500" stop="20260930013000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">¡Hola! TV Iconos</title>
   </programme>
-  <programme start="20260930010000 -0500" stop="20260930020000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Sí Se Puede</title></programme><programme start="20260930010000 -0500" stop="20260930030000 -0500" channel="NTN24.co"><title lang="es">La tarde</title><desc lang="es">La franja de actualidad que revisa la agenda informativa de la región y el mundo, destacando las noticias relevantes junto con los personajes más influyentes.</desc></programme><programme start="20260930010000 -0500" stop="20260930020000 -0500" channel="TVC.ec"><title lang="es">The Walking Dead</title></programme><programme start="20260930010100 -0500" stop="20260930010500 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20260930010000 -0500" stop="20260930030000 -0500" channel="NTN24.co"><title lang="es">La tarde</title><desc lang="es">La franja de actualidad que revisa la agenda informativa de la región y el mundo, destacando las noticias relevantes junto con los personajes más influyentes.</desc></programme><programme start="20260930010000 -0500" stop="20260930020000 -0500" channel="TVC.ec"><title lang="es">The Walking Dead</title></programme><programme start="20260930010100 -0500" stop="20260930010500 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Cierra tus ojos</title>
   </programme>
   <programme start="20260930010200 -0500" stop="20260930012400 -0500" channel="Canal.A&amp;E.(Ecuador).ec">
@@ -16455,7 +16455,7 @@
   <programme start="20260930020000 -0500" stop="20260930023000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las reinas del shopping</title>
   </programme>
-  <programme start="20260930020000 -0500" stop="20260930040000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20260930020000 -0500" stop="20260930030000 -0500" channel="TVC.ec"><title lang="es">NCIS New Orleans</title></programme><programme start="20260930020100 -0500" stop="20260930035100 -0500" channel="Canal.Space.(Ecuador).ec">
+  <programme start="20260930020000 -0500" stop="20260930030000 -0500" channel="TVC.ec"><title lang="es">NCIS New Orleans</title></programme><programme start="20260930020100 -0500" stop="20260930035100 -0500" channel="Canal.Space.(Ecuador).ec">
     <title lang="es">La leyenda de Tarzan</title>
   </programme>
   <programme start="20260930020100 -0500" stop="20260930025000 -0500" channel="Canal.TLC.(Ecuador).ec">
@@ -16802,7 +16802,7 @@
   <programme start="20260930023000 -0500" stop="20260930030000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las reinas del shopping</title>
   </programme>
-  <programme start="20260930023100 -0500" stop="20260930024300 -0500" channel="Canal.Discovery.Kids.(Ecuador).ec">
+  <programme start="20260930023000 -0500" stop="20260930033000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">3 Familias</title></programme><programme start="20260930023100 -0500" stop="20260930024300 -0500" channel="Canal.Discovery.Kids.(Ecuador).ec">
     <title lang="es">Ba da Bean</title>
     <sub-title lang="es">El desorden de Cosa</sub-title>
   </programme>
@@ -17469,7 +17469,7 @@
   <programme start="20260930033000 -0500" stop="20260930040000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Coronas y palacios</title>
   </programme>
-  <programme start="20260930033500 -0500" stop="20260930034000 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20260930033000 -0500" stop="20260930040000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Así pasa</title></programme><programme start="20260930033500 -0500" stop="20260930034000 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Mona &amp; Sketch</title>
   </programme>
   <programme start="20260930033500 -0500" stop="20260930035500 -0500" channel="Canal.Nick.Jr..(Ecuador).ec">
@@ -17761,7 +17761,7 @@
   <programme start="20260930040000 -0500" stop="20260930043000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">La lista VIP</title>
   </programme>
-  <programme start="20260930040000 -0500" stop="20260930050000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo al amanecer</title></programme><programme start="20260930040000 -0500" stop="20260930050000 -0500" channel="NTN24.co"><title lang="es">El informativo USA</title><desc lang="es">Un espacio enfocado en la actualidad política, económica y social de los Estados Unidos con una perspectiva dirigida a la audiencia hispanohablante.</desc></programme><programme start="20260930040000 -0500" stop="20260930050000 -0500" channel="TVC.ec"><title lang="es">Educa</title></programme><programme start="20260930040000 -0500" stop="20260930043000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Yo Soy Tu Madre</title></programme><programme start="20260930040000 -0500" stop="20260930043000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Yo Soy Tu Madre</title></programme><programme start="20260930040500 -0500" stop="20260930050000 -0500" channel="Canal.AXN.(Ecuador).ec">
+  <programme start="20260930040000 -0500" stop="20260930050000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Sí Se Puede</title></programme><programme start="20260930040000 -0500" stop="20260930050000 -0500" channel="NTN24.co"><title lang="es">El informativo USA</title><desc lang="es">Un espacio enfocado en la actualidad política, económica y social de los Estados Unidos con una perspectiva dirigida a la audiencia hispanohablante.</desc></programme><programme start="20260930040000 -0500" stop="20260930050000 -0500" channel="TVC.ec"><title lang="es">Educa</title></programme><programme start="20260930040000 -0500" stop="20260930043000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Yo Soy Tu Madre</title></programme><programme start="20260930040000 -0500" stop="20260930043000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Yo Soy Tu Madre</title></programme><programme start="20260930040500 -0500" stop="20260930050000 -0500" channel="Canal.AXN.(Ecuador).ec">
     <title lang="es">SWAT</title>
     <sub-title lang="es">Good for Nothing</sub-title>
   </programme>
@@ -18363,7 +18363,7 @@
   <programme start="20260930050000 -0500" stop="20260930053000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">¡Hola! TV Iconos</title>
   </programme>
-  <programme start="20260930050000 -0500" stop="20260930053000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Contacto Directo</title></programme><programme start="20260930050000 -0500" stop="20260930060000 -0500" channel="NTN24.co"><title lang="es">El punto clave de la noticia</title><desc lang="es">Un programa que repasa los hechos más destacados de la agenda de noticias nacional e internacional.</desc></programme><programme start="20260930050000 -0500" stop="20260930054500 -0500" channel="TVC.ec"><title lang="es">TVC Noticias Reprise</title></programme><programme start="20260930050000 -0500" stop="20260930053000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20260930050000 -0500" stop="20260930053000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20260930050300 -0500" stop="20260930050800 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20260930050000 -0500" stop="20260930070000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20260930050000 -0500" stop="20260930060000 -0500" channel="NTN24.co"><title lang="es">El punto clave de la noticia</title><desc lang="es">Un programa que repasa los hechos más destacados de la agenda de noticias nacional e internacional.</desc></programme><programme start="20260930050000 -0500" stop="20260930054500 -0500" channel="TVC.ec"><title lang="es">TVC Noticias Reprise</title></programme><programme start="20260930050000 -0500" stop="20260930053000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20260930050000 -0500" stop="20260930053000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20260930050300 -0500" stop="20260930050800 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Bienvenidos a la isla</title>
   </programme>
   <programme start="20260930050500 -0500" stop="20260930051900 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
@@ -18637,7 +18637,7 @@
   <programme start="20260930053000 -0500" stop="20260930060000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">¡Hola! TV Iconos</title>
   </programme>
-  <programme start="20260930053000 -0500" stop="20260930073000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20260930053000 -0500" stop="20260930055500 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">El Chavo del 8</title></programme><programme start="20260930053000 -0500" stop="20260930055500 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chavo del 8</title></programme><programme start="20260930053200 -0500" stop="20260930060000 -0500" channel="Canal.Discovery.Home.&amp;.Health.(Ecuador).ec">
+  <programme start="20260930053000 -0500" stop="20260930055500 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">El Chavo del 8</title></programme><programme start="20260930053000 -0500" stop="20260930055500 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chavo del 8</title></programme><programme start="20260930053200 -0500" stop="20260930060000 -0500" channel="Canal.Discovery.Home.&amp;.Health.(Ecuador).ec">
     <title lang="es">Cake Boss</title>
     <sub-title lang="es">Un pedido especial</sub-title>
   </programme>
@@ -19578,7 +19578,7 @@
   <programme start="20260930070000 -0500" stop="20260930073000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Programa Pagado</title>
   </programme>
-  <programme start="20260930070000 -0500" stop="20260930080000 -0500" channel="NTN24.co"><title lang="es">El informativo 2</title><desc lang="es">Un programa que aborda lo más destacado de la agenda de noticias nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20260930070000 -0500" stop="20260930080000 -0500" channel="TVC.ec"><title lang="es">TVC Noticias Primera Emisión</title></programme><programme start="20260930070000 -0500" stop="20260930073000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas Emisión Matinal</title></programme><programme start="20260930070000 -0500" stop="20260930073000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas Emisión Matinal</title></programme><programme start="20260930070100 -0500" stop="20260930070800 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20260930070000 -0500" stop="20260930080000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo al amanecer</title></programme><programme start="20260930070000 -0500" stop="20260930080000 -0500" channel="NTN24.co"><title lang="es">El informativo 2</title><desc lang="es">Un programa que aborda lo más destacado de la agenda de noticias nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20260930070000 -0500" stop="20260930080000 -0500" channel="TVC.ec"><title lang="es">TVC Noticias Primera Emisión</title></programme><programme start="20260930070000 -0500" stop="20260930073000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas Emisión Matinal</title></programme><programme start="20260930070000 -0500" stop="20260930073000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas Emisión Matinal</title></programme><programme start="20260930070100 -0500" stop="20260930070800 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Charlie &amp; los números y otras historias</title>
     <sub-title lang="es">Charlie conoce el número diez</sub-title>
   </programme>
@@ -19783,7 +19783,7 @@
   <programme start="20260930073000 -0500" stop="20260930080000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Top de estilo</title>
   </programme>
-  <programme start="20260930073000 -0500" stop="20260930093000 -0500" channel="Ecuavisa.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20260930073000 -0500" stop="20260930110000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">En Contacto</title></programme><programme start="20260930073000 -0500" stop="20260930080000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Entrevistas en 24 Horas</title></programme><programme start="20260930073000 -0500" stop="20260930080000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Entrevistas en 24 Horas</title></programme><programme start="20260930073200 -0500" stop="20260930074400 -0500" channel="Canal.Discovery.Kids.(Ecuador).ec">
+  <programme start="20260930073000 -0500" stop="20260930093000 -0500" channel="Ecuavisa.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20260930073000 -0500" stop="20260930080000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Entrevistas en 24 Horas</title></programme><programme start="20260930073000 -0500" stop="20260930080000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Entrevistas en 24 Horas</title></programme><programme start="20260930073200 -0500" stop="20260930074400 -0500" channel="Canal.Discovery.Kids.(Ecuador).ec">
     <title lang="es">Super Wish</title>
     <sub-title lang="es">El llamado de la cera</sub-title>
   </programme>
@@ -20057,7 +20057,7 @@
   <programme start="20260930080000 -0500" stop="20260930083000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Programa Pagado</title>
   </programme>
-  <programme start="20260930080000 -0500" stop="20260930090000 -0500" channel="NTN24.co"><title lang="es">El punto clave de la noticia</title><desc lang="es">Un programa que repasa los hechos más destacados de la agenda de noticias nacional e internacional.</desc></programme><programme start="20260930080000 -0500" stop="20260930093000 -0500" channel="TVC.ec"><title lang="es">TVC En La Comunidad</title></programme><programme start="20260930080000 -0500" stop="20260930093000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas Guayaquil II</title></programme><programme start="20260930080000 -0500" stop="20260930093000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas Quito</title></programme><programme start="20260930080500 -0500" stop="20260930081100 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20260930080000 -0500" stop="20260930083000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Contacto Directo</title></programme><programme start="20260930080000 -0500" stop="20260930090000 -0500" channel="NTN24.co"><title lang="es">El punto clave de la noticia</title><desc lang="es">Un programa que repasa los hechos más destacados de la agenda de noticias nacional e internacional.</desc></programme><programme start="20260930080000 -0500" stop="20260930093000 -0500" channel="TVC.ec"><title lang="es">TVC En La Comunidad</title></programme><programme start="20260930080000 -0500" stop="20260930093000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas Guayaquil II</title></programme><programme start="20260930080000 -0500" stop="20260930093000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas Quito</title></programme><programme start="20260930080500 -0500" stop="20260930081100 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Choopies y otras historias</title>
   </programme>
   <programme start="20260930080500 -0500" stop="20260930083000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
@@ -20347,7 +20347,7 @@
   <programme start="20260930083000 -0500" stop="20260930090000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Programa Pagado</title>
   </programme>
-  <programme start="20260930083100 -0500" stop="20260930104800 -0500" channel="Canal.TCM.(Ecuador).ec">
+  <programme start="20260930083000 -0500" stop="20260930103000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20260930083100 -0500" stop="20260930104800 -0500" channel="Canal.TCM.(Ecuador).ec">
     <title lang="es">Los tres mosqueteros</title>
   </programme>
   <programme start="20260930083200 -0500" stop="20260930083700 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
@@ -21558,7 +21558,7 @@
   <programme start="20260930103000 -0500" stop="20260930110000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Tendencias SXXI</title>
   </programme>
-  <programme start="20260930103100 -0500" stop="20260930103400 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20260930103000 -0500" stop="20260930140000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">En Contacto</title></programme><programme start="20260930103100 -0500" stop="20260930103400 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Giggle Wiggle</title>
     <sub-title lang="es">Nick el pollito</sub-title>
   </programme>
@@ -21878,7 +21878,7 @@
   <programme start="20260930110000 -0500" stop="20260930113000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Especiales Realeza</title>
   </programme>
-  <programme start="20260930110000 -0500" stop="20260930120000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20260930110000 -0500" stop="20260930120000 -0500" channel="TVC.ec"><title lang="es">Perdóname</title></programme><programme start="20260930110300 -0500" stop="20260930110600 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20260930110000 -0500" stop="20260930120000 -0500" channel="TVC.ec"><title lang="es">Perdóname</title></programme><programme start="20260930110300 -0500" stop="20260930110600 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">El mundo de Charlie</title>
     <sub-title lang="es">Soy un niño grande</sub-title>
   </programme>
@@ -22508,7 +22508,7 @@
   <programme start="20260930120000 -0500" stop="20260930123000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Código royal</title>
   </programme>
-  <programme start="20260930120000 -0500" stop="20260930133000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los hackers de la farándula</title></programme><programme start="20260930120000 -0500" stop="20260930140000 -0500" channel="NTN24.co"><title lang="es">El informativo 1</title><desc lang="es">Un programa que aborda los hechos más destacados respecto del acontecer nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20260930120000 -0500" stop="20260930130000 -0500" channel="TVC.ec"><title lang="es">El Privilegio de Amar</title></programme><programme start="20260930120000 -0500" stop="20260930130000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Por amar sin ley</title></programme><programme start="20260930120000 -0500" stop="20260930130000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Por Amar Sin Ley</title></programme><programme start="20260930120300 -0500" stop="20260930122800 -0500" channel="Canal.Warner.TV.(Ecuador).ec">
+  <programme start="20260930120000 -0500" stop="20260930140000 -0500" channel="NTN24.co"><title lang="es">El informativo 1</title><desc lang="es">Un programa que aborda los hechos más destacados respecto del acontecer nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20260930120000 -0500" stop="20260930130000 -0500" channel="TVC.ec"><title lang="es">El Privilegio de Amar</title></programme><programme start="20260930120000 -0500" stop="20260930130000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Por amar sin ley</title></programme><programme start="20260930120000 -0500" stop="20260930130000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Por Amar Sin Ley</title></programme><programme start="20260930120300 -0500" stop="20260930122800 -0500" channel="Canal.Warner.TV.(Ecuador).ec">
     <title lang="es">Two and a Half Men</title>
     <sub-title lang="es">La humillacion es un medio visual</sub-title>
     <desc lang="es">Charlie Harper (Charlie Sheen) es un soltero que vive de escribir música para comerciales lo que le permite tener una vida hedonista. Pero todo esto cambia cuando su hermano Alan (Jon Cryer) y su hijo Jake (Angus T. Jones) se mudan a vivir con él en su casa en las playas de Malibu.</desc>
@@ -23265,7 +23265,7 @@
   <programme start="20260930133000 -0500" stop="20260930140000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las consejeras de estilo</title>
   </programme>
-  <programme start="20260930133000 -0500" stop="20260930153000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20260930133500 -0500" stop="20260930140000 -0500" channel="Canal.Nickelodeon.(Ecuador).ec">
+  <programme start="20260930133500 -0500" stop="20260930140000 -0500" channel="Canal.Nickelodeon.(Ecuador).ec">
     <title lang="es">Henry Danger</title>
     <sub-title lang="es">T5-E34 Cita en la cueva</sub-title>
     <desc lang="es">Henry Hart (Jace Norman), de 13 años, consigue un trabajo a tiempo parcial como Kid Danger, el compañero en formación del superhéroe Capitán Man (Cooper Barnes). Después de prometer mantener en secreto su nueva identidad, Henry debe vivir una doble vida.</desc>
@@ -23516,7 +23516,7 @@
   <programme start="20260930140000 -0500" stop="20260930143000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Sí, quiero</title>
   </programme>
-  <programme start="20260930140000 -0500" stop="20260930153000 -0500" channel="Ecuavisa.ec"><title lang="es">Háckers del espectáculo</title></programme><programme start="20260930140000 -0500" stop="20260930160000 -0500" channel="NTN24.co"><title lang="es">Club de Prensa</title><desc lang="es">Junto a Juan Carlos Iragorri, desde Washington, se reúnen en la mesa los más reconocidos periodistas y corresponsales internacionales acreditados en la capital política de EE.UU para discutir sobre los eventos noticiosos más actuales.</desc></programme><programme start="20260930140000 -0500" stop="20260930150000 -0500" channel="TVC.ec"><title lang="es">Rosario</title></programme><programme start="20260930140100 -0500" stop="20260930140600 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20260930140000 -0500" stop="20260930153000 -0500" channel="Ecuavisa.ec"><title lang="es">Háckers del espectáculo</title></programme><programme start="20260930140000 -0500" stop="20260930150000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20260930140000 -0500" stop="20260930160000 -0500" channel="NTN24.co"><title lang="es">Club de Prensa</title><desc lang="es">Junto a Juan Carlos Iragorri, desde Washington, se reúnen en la mesa los más reconocidos periodistas y corresponsales internacionales acreditados en la capital política de EE.UU para discutir sobre los eventos noticiosos más actuales.</desc></programme><programme start="20260930140000 -0500" stop="20260930150000 -0500" channel="TVC.ec"><title lang="es">Rosario</title></programme><programme start="20260930140100 -0500" stop="20260930140600 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">El parque mágico del abuelo Joe</title>
   </programme>
   <programme start="20260930140500 -0500" stop="20260930142000 -0500" channel="Canal.Discovery.Kids.(Ecuador).ec">
@@ -24014,7 +24014,7 @@
   <programme start="20260930150000 -0500" stop="20260930153000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Tendencias SXXI</title>
   </programme>
-  <programme start="20260930150000 -0500" stop="20260930160000 -0500" channel="TVC.ec"><title lang="es">Rosa de Guadalupe</title></programme><programme start="20260930150000 -0500" stop="20260930171000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Copa Mundial Femenina</title><desc lang="es">COREA DEL NORTE VS. COLOMBIA</desc></programme><programme start="20260930150000 -0500" stop="20260930171000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Copa Mundial Femenina</title><desc lang="es">COREA DEL NORTE VS. COLOMBIA</desc></programme><programme start="20260930150100 -0500" stop="20260930171800 -0500" channel="Canal.Warner.TV.(Ecuador).ec">
+  <programme start="20260930150000 -0500" stop="20260930163000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los hackers de la farándula</title></programme><programme start="20260930150000 -0500" stop="20260930160000 -0500" channel="TVC.ec"><title lang="es">Rosa de Guadalupe</title></programme><programme start="20260930150000 -0500" stop="20260930171000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Copa Mundial Femenina</title><desc lang="es">COREA DEL NORTE VS. COLOMBIA</desc></programme><programme start="20260930150000 -0500" stop="20260930171000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Copa Mundial Femenina</title><desc lang="es">COREA DEL NORTE VS. COLOMBIA</desc></programme><programme start="20260930150100 -0500" stop="20260930171800 -0500" channel="Canal.Warner.TV.(Ecuador).ec">
     <title lang="es">Sherlock Holmes</title>
   </programme>
   <programme start="20260930150200 -0500" stop="20260930150800 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
@@ -24214,7 +24214,7 @@
   <programme start="20260930153000 -0500" stop="20260930160000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Stars in Style</title>
   </programme>
-  <programme start="20260930153000 -0500" stop="20260930163000 -0500" channel="Ecuavisa.ec"><title lang="es">Sorpresas del destino</title></programme><programme start="20260930153000 -0500" stop="20260930160000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">La Dr. Polo vida sin límites</title></programme><programme start="20260930153200 -0500" stop="20260930172500 -0500" channel="Canal.Cinemax.(Ecuador).ec">
+  <programme start="20260930153000 -0500" stop="20260930163000 -0500" channel="Ecuavisa.ec"><title lang="es">Sorpresas del destino</title></programme><programme start="20260930153200 -0500" stop="20260930172500 -0500" channel="Canal.Cinemax.(Ecuador).ec">
     <title lang="es">La muerte le sienta bien</title>
   </programme>
   <programme start="20260930153200 -0500" stop="20260930173400 -0500" channel="Canal.FX.(Ecuador).ec">
@@ -24563,7 +24563,7 @@
   <programme start="20260930160000 -0500" stop="20260930163000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">La casa de subastas</title>
   </programme>
-  <programme start="20260930160000 -0500" stop="20260930170000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los García</title></programme><programme start="20260930160000 -0500" stop="20260930180000 -0500" channel="NTN24.co"><title lang="es">La tarde</title><desc lang="es">La franja de actualidad que revisa la agenda informativa de la región y el mundo, destacando las noticias relevantes junto con los personajes más influyentes.</desc></programme><programme start="20260930160000 -0500" stop="20260930170000 -0500" channel="TVC.ec"><title lang="es">Caso Cerrado</title></programme><programme start="20260930160400 -0500" stop="20260930161000 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20260930160000 -0500" stop="20260930180000 -0500" channel="NTN24.co"><title lang="es">La tarde</title><desc lang="es">La franja de actualidad que revisa la agenda informativa de la región y el mundo, destacando las noticias relevantes junto con los personajes más influyentes.</desc></programme><programme start="20260930160000 -0500" stop="20260930170000 -0500" channel="TVC.ec"><title lang="es">Caso Cerrado</title></programme><programme start="20260930160400 -0500" stop="20260930161000 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">La pequeña Lola visita la ciudad</title>
   </programme>
   <programme start="20260930160500 -0500" stop="20260930165500 -0500" channel="Canal.TLNovelas.(Ecuador).ec">
@@ -24745,7 +24745,7 @@
   <programme start="20260930163000 -0500" stop="20260930170000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">La casa de subastas</title>
   </programme>
-  <programme start="20260930163000 -0500" stop="20260930173000 -0500" channel="Ecuavisa.ec"><title lang="es">Demanda de amor</title></programme><programme start="20260930163500 -0500" stop="20260930164000 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20260930163000 -0500" stop="20260930173000 -0500" channel="Ecuavisa.ec"><title lang="es">Demanda de amor</title></programme><programme start="20260930163000 -0500" stop="20260930183000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20260930163500 -0500" stop="20260930164000 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Rastro de caracol</title>
     <sub-title lang="es">Ciempiés</sub-title>
   </programme>
@@ -25097,7 +25097,7 @@
   <programme start="20260930170000 -0500" stop="20260930173000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">La lista VIP</title>
   </programme>
-  <programme start="20260930170000 -0500" stop="20260930190000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20260930170000 -0500" stop="20260930180000 -0500" channel="TVC.ec"><title lang="es">Esmeralda</title></programme><programme start="20260930170500 -0500" stop="20260930171500 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20260930170000 -0500" stop="20260930180000 -0500" channel="TVC.ec"><title lang="es">Esmeralda</title></programme><programme start="20260930170500 -0500" stop="20260930171500 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Agencia de detectives de Zeina</title>
   </programme>
   <programme start="20260930170700 -0500" stop="20260930173000 -0500" channel="Canal.Discovery.Kids.(Ecuador).ec">
@@ -25788,7 +25788,7 @@
   <programme start="20260930183000 -0500" stop="20260930190000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las reinas del shopping</title>
   </programme>
-  <programme start="20260930183200 -0500" stop="20260930192000 -0500" channel="Canal.TLNovelas.(Ecuador).ec">
+  <programme start="20260930183000 -0500" stop="20260930190000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">La Dr. Polo vida sin límites</title></programme><programme start="20260930183200 -0500" stop="20260930192000 -0500" channel="Canal.TLNovelas.(Ecuador).ec">
     <title lang="es">Vivo por ElenaRepetición</title>
   </programme>
   <programme start="20260930183400 -0500" stop="20260930183900 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
@@ -26076,7 +26076,7 @@
   <programme start="20260930190000 -0500" stop="20260930193000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Íntimo y personal</title>
   </programme>
-  <programme start="20260930190000 -0500" stop="20260930210000 -0500" channel="Ecuavisa.ec"><title lang="es">Televistazo Estelar</title></programme><programme start="20260930190000 -0500" stop="20260930200000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Ojitos hechiceros</title></programme><programme start="20260930190000 -0500" stop="20260930200000 -0500" channel="NTN24.co"><title lang="es">El informativo 2</title><desc lang="es">Un programa que aborda lo más destacado de la agenda de noticias nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20260930190000 -0500" stop="20260930200000 -0500" channel="TVC.ec"><title lang="es">Mi Rival</title></programme><programme start="20260930190000 -0500" stop="20260930200000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">100 Ecuatorianos Dicen</title></programme><programme start="20260930190000 -0500" stop="20260930200000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">100 Ecuatorianos Dicen</title></programme><programme start="20260930190200 -0500" stop="20260930190600 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20260930190000 -0500" stop="20260930210000 -0500" channel="Ecuavisa.ec"><title lang="es">Televistazo Estelar</title></programme><programme start="20260930190000 -0500" stop="20260930200000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los García</title></programme><programme start="20260930190000 -0500" stop="20260930200000 -0500" channel="NTN24.co"><title lang="es">El informativo 2</title><desc lang="es">Un programa que aborda lo más destacado de la agenda de noticias nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20260930190000 -0500" stop="20260930200000 -0500" channel="TVC.ec"><title lang="es">Mi Rival</title></programme><programme start="20260930190000 -0500" stop="20260930200000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">100 Ecuatorianos Dicen</title></programme><programme start="20260930190000 -0500" stop="20260930200000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">100 Ecuatorianos Dicen</title></programme><programme start="20260930190200 -0500" stop="20260930190600 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Cierra tus ojos</title>
   </programme>
   <programme start="20260930190600 -0500" stop="20260930191000 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
@@ -26675,7 +26675,7 @@
     <title lang="es">¡Hola! TV Iconos</title>
     <sub-title lang="es">Julio Iglesias</sub-title>
   </programme>
-  <programme start="20260930200000 -0500" stop="20260930210000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los hackers de la farándula</title></programme><programme start="20260930200000 -0500" stop="20260930210000 -0500" channel="NTN24.co"><title lang="es">El informativo USA</title><desc lang="es">Un espacio enfocado en la actualidad política, económica y social de los Estados Unidos con una perspectiva dirigida a la audiencia hispanohablante.</desc></programme><programme start="20260930200000 -0500" stop="20260930220000 -0500" channel="TVC.ec"><title lang="es">Rosa de Guadalupe</title></programme><programme start="20260930200000 -0500" stop="20260930210000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas Emisión Estelar</title></programme><programme start="20260930200000 -0500" stop="20260930210000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas Emisión Estelar</title></programme><programme start="20260930200300 -0500" stop="20260930210000 -0500" channel="Canal.A&amp;E.(Ecuador).ec">
+  <programme start="20260930200000 -0500" stop="20260930220000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20260930200000 -0500" stop="20260930210000 -0500" channel="NTN24.co"><title lang="es">El informativo USA</title><desc lang="es">Un espacio enfocado en la actualidad política, económica y social de los Estados Unidos con una perspectiva dirigida a la audiencia hispanohablante.</desc></programme><programme start="20260930200000 -0500" stop="20260930220000 -0500" channel="TVC.ec"><title lang="es">Rosa de Guadalupe</title></programme><programme start="20260930200000 -0500" stop="20260930210000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas Emisión Estelar</title></programme><programme start="20260930200000 -0500" stop="20260930210000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas Emisión Estelar</title></programme><programme start="20260930200300 -0500" stop="20260930210000 -0500" channel="Canal.A&amp;E.(Ecuador).ec">
     <title lang="es">Escuadrón de homicidios Nueva Orleans</title>
     <sub-title lang="es">El guardián de mi hermana</sub-title>
   </programme>
@@ -27154,7 +27154,7 @@
   <programme start="20260930210000 -0500" stop="20260930213000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las reinas del shopping</title>
   </programme>
-  <programme start="20260930210000 -0500" stop="20260930220000 -0500" channel="Ecuavisa.ec"><title lang="es">Leyla</title></programme><programme start="20260930210000 -0500" stop="20260930233000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">En Contacto</title></programme><programme start="20260930210000 -0500" stop="20260930220000 -0500" channel="NTN24.co"><title lang="es">El punto clave de la noticia</title><desc lang="es">Un programa que repasa los hechos más destacados de la agenda de noticias nacional e internacional.</desc></programme><programme start="20260930210000 -0500" stop="20260930223000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Escape Perfecto</title></programme><programme start="20260930210000 -0500" stop="20260930223000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Escape Perfecto</title></programme><programme start="20260930210200 -0500" stop="20260930210600 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20260930210000 -0500" stop="20260930220000 -0500" channel="Ecuavisa.ec"><title lang="es">Leyla</title></programme><programme start="20260930210000 -0500" stop="20260930220000 -0500" channel="NTN24.co"><title lang="es">El punto clave de la noticia</title><desc lang="es">Un programa que repasa los hechos más destacados de la agenda de noticias nacional e internacional.</desc></programme><programme start="20260930210000 -0500" stop="20260930223000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Escape Perfecto</title></programme><programme start="20260930210000 -0500" stop="20260930223000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Escape Perfecto</title></programme><programme start="20260930210200 -0500" stop="20260930210600 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Cierra tus ojos</title>
   </programme>
   <programme start="20260930210200 -0500" stop="20260930210700 -0500" channel="Canal.Discovery.Kids.(Ecuador).ec">
@@ -27689,7 +27689,7 @@
   <programme start="20260930220000 -0500" stop="20260930223000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Íntimo y personal</title>
   </programme>
-  <programme start="20260930220000 -0500" stop="20260930230000 -0500" channel="Ecuavisa.ec"><title lang="es">El otro lado del amor</title></programme><programme start="20260930220000 -0500" stop="20260930230000 -0500" channel="NTN24.co"><title lang="es">El informativo 2</title><desc lang="es">Un programa que aborda lo más destacado de la agenda de noticias nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20260930220000 -0500" stop="20260930230000 -0500" channel="TVC.ec"><title lang="es">TVC Noticias</title></programme><programme start="20260930220200 -0500" stop="20260930225300 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
+  <programme start="20260930220000 -0500" stop="20260930230000 -0500" channel="Ecuavisa.ec"><title lang="es">El otro lado del amor</title></programme><programme start="20260930220000 -0500" stop="20260930230000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Ojitos hechiceros</title></programme><programme start="20260930220000 -0500" stop="20260930230000 -0500" channel="NTN24.co"><title lang="es">El informativo 2</title><desc lang="es">Un programa que aborda lo más destacado de la agenda de noticias nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20260930220000 -0500" stop="20260930230000 -0500" channel="TVC.ec"><title lang="es">TVC Noticias</title></programme><programme start="20260930220200 -0500" stop="20260930225300 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
     <title lang="es">Iron Resurrection</title>
     <sub-title lang="es">Bare Bones to Showstopper: 5-Window Chevy Truck Rebuild</sub-title>
     <episode-num system="onscreen">S5 E10</episode-num>
@@ -28175,7 +28175,7 @@
   <programme start="20260930230000 -0500" stop="20260930233000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Íntimo y personal</title>
   </programme>
-  <programme start="20260930230000 -0500" stop="20261001000000 -0500" channel="Ecuavisa.ec"><title lang="es">Programación Ecuavisa</title></programme><programme start="20260930230000 -0500" stop="20261001000000 -0500" channel="NTN24.co"><title lang="es">La noche</title><desc lang="es">"La Noche" es uno de los programas periodisticos y de opinion más reconocidos del país, transmitido por el Canal RCN, donde se tratan temas de interés político y actualidad de Colombia y el mundo. Por La Noche han pasado importantes personajes de la politica como el Ex presidente de Colombia; Alvaro Uribe Velez, la presidenta de Chile Michel Bachelet, el presidente de Ecuador Rafael Correa, El Ex presidente Jimmy Carter de Los Esados Unidos, entre otros. Actualmente es dirigido por Claudia Gurisatti y es presentado por Pablo Bieri.</desc></programme><programme start="20260930230000 -0500" stop="20261001000000 -0500" channel="TVC.ec"><title lang="es">Laura</title></programme><programme start="20260930230000 -0500" stop="20261001000000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">100 Días para Enamorarnos</title></programme><programme start="20260930230300 -0500" stop="20260930230600 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20260930230000 -0500" stop="20261001000000 -0500" channel="Ecuavisa.ec"><title lang="es">Programación Ecuavisa</title></programme><programme start="20260930230000 -0500" stop="20261001000000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los hackers de la farándula</title></programme><programme start="20260930230000 -0500" stop="20261001000000 -0500" channel="NTN24.co"><title lang="es">La noche</title><desc lang="es">"La Noche" es uno de los programas periodisticos y de opinion más reconocidos del país, transmitido por el Canal RCN, donde se tratan temas de interés político y actualidad de Colombia y el mundo. Por La Noche han pasado importantes personajes de la politica como el Ex presidente de Colombia; Alvaro Uribe Velez, la presidenta de Chile Michel Bachelet, el presidente de Ecuador Rafael Correa, El Ex presidente Jimmy Carter de Los Esados Unidos, entre otros. Actualmente es dirigido por Claudia Gurisatti y es presentado por Pablo Bieri.</desc></programme><programme start="20260930230000 -0500" stop="20261001000000 -0500" channel="TVC.ec"><title lang="es">Laura</title></programme><programme start="20260930230000 -0500" stop="20261001000000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">100 Días para Enamorarnos</title></programme><programme start="20260930230300 -0500" stop="20260930230600 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Cierra tus ojos</title>
   </programme>
   <programme start="20260930230500 -0500" stop="20261001000000 -0500" channel="Canal.Telefe.Internacional.ec">
@@ -28337,7 +28337,7 @@
     <title lang="es">¡Hola! TV Iconos</title>
     <sub-title lang="es">Julio Iglesias</sub-title>
   </programme>
-  <programme start="20260930233000 -0500" stop="20261001003000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">3 Familias</title></programme><programme start="20260930233000 -0500" stop="20261001000000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El After</title></programme><programme start="20260930233100 -0500" stop="20260930233400 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20260930233000 -0500" stop="20261001000000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El After</title></programme><programme start="20260930233100 -0500" stop="20260930233400 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Cierra tus ojos</title>
   </programme>
   <programme start="20260930233400 -0500" stop="20260930233700 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
@@ -28643,7 +28643,7 @@
     <title lang="es">¡Hola! TV Iconos</title>
     <sub-title lang="es">Julio Iglesias</sub-title>
   </programme>
-  <programme start="20261001000000 -0500" stop="20261001055000 -0500" channel="Ecuavisa.ec"><title lang="es">Telenovela</title></programme><programme start="20261001000000 -0500" stop="20261001010000 -0500" channel="NTN24.co"><title lang="es">El informativo 2</title><desc lang="es">Un programa que aborda lo más destacado de la agenda de noticias nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20261001000000 -0500" stop="20261001010000 -0500" channel="TVC.ec"><title lang="es">NCIS Los Angeles</title></programme><programme start="20261001000000 -0500" stop="20261001013000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">CSI</title></programme><programme start="20261001000000 -0500" stop="20261001021500 -0500" channel="TeleamazonasQuito.ec"><title lang="es">CSI</title></programme><programme start="20261001000200 -0500" stop="20261001020200 -0500" channel="Canal.Cinemax.(Ecuador).ec">
+  <programme start="20261001000000 -0500" stop="20261001055000 -0500" channel="Ecuavisa.ec"><title lang="es">Telenovela</title></programme><programme start="20261001000000 -0500" stop="20261001023000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">En Contacto</title></programme><programme start="20261001000000 -0500" stop="20261001010000 -0500" channel="NTN24.co"><title lang="es">El informativo 2</title><desc lang="es">Un programa que aborda lo más destacado de la agenda de noticias nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20261001000000 -0500" stop="20261001010000 -0500" channel="TVC.ec"><title lang="es">NCIS Los Angeles</title></programme><programme start="20261001000000 -0500" stop="20261001013000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">CSI</title></programme><programme start="20261001000000 -0500" stop="20261001021500 -0500" channel="TeleamazonasQuito.ec"><title lang="es">CSI</title></programme><programme start="20261001000200 -0500" stop="20261001020200 -0500" channel="Canal.Cinemax.(Ecuador).ec">
     <title lang="es">El juego del crimen</title>
   </programme>
   <programme start="20261001000200 -0500" stop="20261001002600 -0500" channel="Canal.Discovery.Kids.(Ecuador).ec">
@@ -28887,7 +28887,7 @@
   <programme start="20261001003000 -0500" stop="20261001010000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Tendencias SXXI</title>
   </programme>
-  <programme start="20261001003000 -0500" stop="20261001010000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Así pasa</title></programme><programme start="20261001003200 -0500" stop="20261001003500 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20261001003200 -0500" stop="20261001003500 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Cierra tus ojos</title>
   </programme>
   <programme start="20261001003200 -0500" stop="20261001012100 -0500" channel="Canal.TLC.(Ecuador).ec">
@@ -29272,7 +29272,7 @@
   <programme start="20261001010000 -0500" stop="20261001013000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">¡Hola! TV Iconos</title>
   </programme>
-  <programme start="20261001010000 -0500" stop="20261001020000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Sí Se Puede</title></programme><programme start="20261001010000 -0500" stop="20261001030000 -0500" channel="NTN24.co"><title lang="es">La tarde</title><desc lang="es">La franja de actualidad que revisa la agenda informativa de la región y el mundo, destacando las noticias relevantes junto con los personajes más influyentes.</desc></programme><programme start="20261001010000 -0500" stop="20261001020000 -0500" channel="TVC.ec"><title lang="es">The Walking Dead</title></programme><programme start="20261001010100 -0500" stop="20261001010500 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20261001010000 -0500" stop="20261001030000 -0500" channel="NTN24.co"><title lang="es">La tarde</title><desc lang="es">La franja de actualidad que revisa la agenda informativa de la región y el mundo, destacando las noticias relevantes junto con los personajes más influyentes.</desc></programme><programme start="20261001010000 -0500" stop="20261001020000 -0500" channel="TVC.ec"><title lang="es">The Walking Dead</title></programme><programme start="20261001010100 -0500" stop="20261001010500 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Cierra tus ojos</title>
   </programme>
   <programme start="20261001010500 -0500" stop="20261001010800 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
@@ -29838,7 +29838,7 @@
   <programme start="20261001020000 -0500" stop="20261001023000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las reinas del shopping</title>
   </programme>
-  <programme start="20261001020000 -0500" stop="20261001040000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20261001020000 -0500" stop="20261001030000 -0500" channel="TVC.ec"><title lang="es">NCIS New Orleans</title></programme><programme start="20261001020200 -0500" stop="20261001020500 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20261001020000 -0500" stop="20261001030000 -0500" channel="TVC.ec"><title lang="es">NCIS New Orleans</title></programme><programme start="20261001020200 -0500" stop="20261001020500 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Cierra tus ojos</title>
   </programme>
   <programme start="20261001020200 -0500" stop="20261001035700 -0500" channel="Canal.Cinemax.(Ecuador).ec">
@@ -30164,7 +30164,7 @@
   <programme start="20261001023000 -0500" stop="20261001030000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las reinas del shopping</title>
   </programme>
-  <programme start="20261001023100 -0500" stop="20261001023500 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20261001023000 -0500" stop="20261001033000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">3 Familias</title></programme><programme start="20261001023100 -0500" stop="20261001023500 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Cierra tus ojos</title>
   </programme>
   <programme start="20261001023100 -0500" stop="20261001024300 -0500" channel="Canal.Discovery.Kids.(Ecuador).ec">
@@ -30803,7 +30803,7 @@
   <programme start="20261001033000 -0500" stop="20261001040000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Coronas y palacios</title>
   </programme>
-  <programme start="20261001033300 -0500" stop="20261001034000 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20261001033000 -0500" stop="20261001040000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Así pasa</title></programme><programme start="20261001033300 -0500" stop="20261001034000 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Mona &amp; Sketch</title>
   </programme>
   <programme start="20261001033400 -0500" stop="20261001042300 -0500" channel="Canal.TNT.Novelas.(Ecuador).ec">
@@ -31095,7 +31095,7 @@
   <programme start="20261001040000 -0500" stop="20261001043000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">La lista VIP</title>
   </programme>
-  <programme start="20261001040000 -0500" stop="20261001050000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo al amanecer</title></programme><programme start="20261001040000 -0500" stop="20261001050000 -0500" channel="NTN24.co"><title lang="es">El informativo USA</title><desc lang="es">Un espacio enfocado en la actualidad política, económica y social de los Estados Unidos con una perspectiva dirigida a la audiencia hispanohablante.</desc></programme><programme start="20261001040000 -0500" stop="20261001050000 -0500" channel="TVC.ec"><title lang="es">Educa</title></programme><programme start="20261001040000 -0500" stop="20261001043000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Yo soy tu madre</title></programme><programme start="20261001040000 -0500" stop="20261001043000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Yo soy tu Madre</title></programme><programme start="20261001040100 -0500" stop="20261001044600 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
+  <programme start="20261001040000 -0500" stop="20261001050000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Sí Se Puede</title></programme><programme start="20261001040000 -0500" stop="20261001050000 -0500" channel="NTN24.co"><title lang="es">El informativo USA</title><desc lang="es">Un espacio enfocado en la actualidad política, económica y social de los Estados Unidos con una perspectiva dirigida a la audiencia hispanohablante.</desc></programme><programme start="20261001040000 -0500" stop="20261001050000 -0500" channel="TVC.ec"><title lang="es">Educa</title></programme><programme start="20261001040000 -0500" stop="20261001043000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Yo soy tu madre</title></programme><programme start="20261001040000 -0500" stop="20261001043000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Yo soy tu Madre</title></programme><programme start="20261001040100 -0500" stop="20261001044600 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
     <title lang="es">American Chopper</title>
     <sub-title lang="es">De reversa</sub-title>
     <episode-num system="onscreen">S12 E8</episode-num>
@@ -31739,7 +31739,7 @@
   <programme start="20261001050000 -0500" stop="20261001053000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">¡Hola! TV Iconos</title>
   </programme>
-  <programme start="20261001050000 -0500" stop="20261001053000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Contacto Directo</title></programme><programme start="20261001050000 -0500" stop="20261001060000 -0500" channel="NTN24.co"><title lang="es">El punto clave de la noticia</title><desc lang="es">Un programa que repasa los hechos más destacados de la agenda de noticias nacional e internacional.</desc></programme><programme start="20261001050000 -0500" stop="20261001054500 -0500" channel="TVC.ec"><title lang="es">TVC Noticias Reprise</title></programme><programme start="20261001050000 -0500" stop="20261001053000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20261001050000 -0500" stop="20261001053000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20261001050300 -0500" stop="20261001050800 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20261001050000 -0500" stop="20261001070000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20261001050000 -0500" stop="20261001060000 -0500" channel="NTN24.co"><title lang="es">El punto clave de la noticia</title><desc lang="es">Un programa que repasa los hechos más destacados de la agenda de noticias nacional e internacional.</desc></programme><programme start="20261001050000 -0500" stop="20261001054500 -0500" channel="TVC.ec"><title lang="es">TVC Noticias Reprise</title></programme><programme start="20261001050000 -0500" stop="20261001053000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20261001050000 -0500" stop="20261001053000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20261001050300 -0500" stop="20261001050800 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Bienvenidos a la isla</title>
   </programme>
   <programme start="20261001050500 -0500" stop="20261001053000 -0500" channel="Canal.History.2.(Ecuador).ec">
@@ -31963,7 +31963,7 @@
   <programme start="20261001053000 -0500" stop="20261001060000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">¡Hola! TV Iconos</title>
   </programme>
-  <programme start="20261001053000 -0500" stop="20261001073000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20261001053000 -0500" stop="20261001054500 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">El Chavo del Ocho</title></programme><programme start="20261001053000 -0500" stop="20261001055500 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chavo del Ocho</title></programme><programme start="20261001053100 -0500" stop="20261001053700 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20261001053000 -0500" stop="20261001054500 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">El Chavo del Ocho</title></programme><programme start="20261001053000 -0500" stop="20261001055500 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chavo del Ocho</title></programme><programme start="20261001053100 -0500" stop="20261001053700 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Mini Matinee</title>
   </programme>
   <programme start="20261001053200 -0500" stop="20261001060000 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
@@ -32854,7 +32854,7 @@
   <programme start="20261001070000 -0500" stop="20261001073000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Programa Pagado</title>
   </programme>
-  <programme start="20261001070000 -0500" stop="20261001080000 -0500" channel="NTN24.co"><title lang="es">El informativo 2</title><desc lang="es">Un programa que aborda lo más destacado de la agenda de noticias nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20261001070000 -0500" stop="20261001080000 -0500" channel="TVC.ec"><title lang="es">TVC Noticias Primera Emisión</title></programme><programme start="20261001070000 -0500" stop="20261001073000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas Nacional I</title></programme><programme start="20261001070200 -0500" stop="20261001070700 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20261001070000 -0500" stop="20261001080000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo al amanecer</title></programme><programme start="20261001070000 -0500" stop="20261001080000 -0500" channel="NTN24.co"><title lang="es">El informativo 2</title><desc lang="es">Un programa que aborda lo más destacado de la agenda de noticias nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20261001070000 -0500" stop="20261001080000 -0500" channel="TVC.ec"><title lang="es">TVC Noticias Primera Emisión</title></programme><programme start="20261001070000 -0500" stop="20261001073000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas Nacional I</title></programme><programme start="20261001070200 -0500" stop="20261001070700 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Charlie &amp; las figuras</title>
     <sub-title lang="es">Charlie conoce el óvalo y el globo</sub-title>
   </programme>
@@ -33103,7 +33103,7 @@
   <programme start="20261001073000 -0500" stop="20261001080000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Top de estilo</title>
   </programme>
-  <programme start="20261001073000 -0500" stop="20261001093000 -0500" channel="Ecuavisa.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20261001073000 -0500" stop="20261001110000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">En Contacto</title></programme><programme start="20261001073000 -0500" stop="20261001080000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Entrevistas en 24 Horas</title></programme><programme start="20261001073400 -0500" stop="20261001082100 -0500" channel="Canal.Discovery.Home.&amp;.Health.(Ecuador).ec">
+  <programme start="20261001073000 -0500" stop="20261001093000 -0500" channel="Ecuavisa.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20261001073000 -0500" stop="20261001080000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Entrevistas en 24 Horas</title></programme><programme start="20261001073400 -0500" stop="20261001082100 -0500" channel="Canal.Discovery.Home.&amp;.Health.(Ecuador).ec">
     <title lang="es">Remodelaciones con celebridades</title>
     <sub-title lang="es">El Condominio sorpresa de Lisa Kudrow</sub-title>
   </programme>
@@ -33401,7 +33401,7 @@
   <programme start="20261001080000 -0500" stop="20261001083000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Programa Pagado</title>
   </programme>
-  <programme start="20261001080000 -0500" stop="20261001090000 -0500" channel="NTN24.co"><title lang="es">El punto clave de la noticia</title><desc lang="es">Un programa que repasa los hechos más destacados de la agenda de noticias nacional e internacional.</desc></programme><programme start="20261001080000 -0500" stop="20261001093000 -0500" channel="TVC.ec"><title lang="es">TVC En La Comunidad</title></programme><programme start="20261001080000 -0500" stop="20261001100000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas 2da Emisión Local</title></programme><programme start="20261001080000 -0500" stop="20261001093000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas 2da Emisión Local</title></programme><programme start="20261001080200 -0500" stop="20261001080700 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20261001080000 -0500" stop="20261001083000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Contacto Directo</title></programme><programme start="20261001080000 -0500" stop="20261001090000 -0500" channel="NTN24.co"><title lang="es">El punto clave de la noticia</title><desc lang="es">Un programa que repasa los hechos más destacados de la agenda de noticias nacional e internacional.</desc></programme><programme start="20261001080000 -0500" stop="20261001093000 -0500" channel="TVC.ec"><title lang="es">TVC En La Comunidad</title></programme><programme start="20261001080000 -0500" stop="20261001100000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas 2da Emisión Local</title></programme><programme start="20261001080000 -0500" stop="20261001093000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas 2da Emisión Local</title></programme><programme start="20261001080200 -0500" stop="20261001080700 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">La pequeña Lola visita la ciudad</title>
   </programme>
   <programme start="20261001080500 -0500" stop="20261001083000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
@@ -33688,7 +33688,7 @@
   <programme start="20261001083000 -0500" stop="20261001090000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Programa Pagado</title>
   </programme>
-  <programme start="20261001083300 -0500" stop="20261001083800 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20261001083000 -0500" stop="20261001103000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20261001083300 -0500" stop="20261001083800 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Rastro de caracol</title>
     <sub-title lang="es">Gansos de granja</sub-title>
   </programme>
@@ -34929,7 +34929,7 @@
   <programme start="20261001103000 -0500" stop="20261001110000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Tendencias SXXI</title>
   </programme>
-  <programme start="20261001103300 -0500" stop="20261001103600 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20261001103000 -0500" stop="20261001140000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">En Contacto</title></programme><programme start="20261001103300 -0500" stop="20261001103600 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Giggle Wiggle</title>
     <sub-title lang="es">Si fuera elefante</sub-title>
   </programme>
@@ -35215,7 +35215,7 @@
   <programme start="20261001110000 -0500" stop="20261001113000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Íntimo y personal</title>
   </programme>
-  <programme start="20261001110000 -0500" stop="20261001120000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20261001110000 -0500" stop="20261001120000 -0500" channel="TVC.ec"><title lang="es">Perdóname</title></programme><programme start="20261001110100 -0500" stop="20261001110400 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20261001110000 -0500" stop="20261001120000 -0500" channel="TVC.ec"><title lang="es">Perdóname</title></programme><programme start="20261001110100 -0500" stop="20261001110400 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">El mundo de Charlie</title>
     <sub-title lang="es">Escondidas</sub-title>
   </programme>
@@ -35860,7 +35860,7 @@
   <programme start="20261001120000 -0500" stop="20261001123000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Íntimo y personal</title>
   </programme>
-  <programme start="20261001120000 -0500" stop="20261001133000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los hackers de la farándula</title></programme><programme start="20261001120000 -0500" stop="20261001140000 -0500" channel="NTN24.co"><title lang="es">El informativo 1</title><desc lang="es">Un programa que aborda los hechos más destacados respecto del acontecer nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20261001120000 -0500" stop="20261001130000 -0500" channel="TVC.ec"><title lang="es">El Privilegio de Amar</title></programme><programme start="20261001120000 -0500" stop="20261001130000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Por Amar Sin Ley</title></programme><programme start="20261001120000 -0500" stop="20261001130000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Por Amar Sin Ley</title></programme><programme start="20261001120400 -0500" stop="20261001121100 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20261001120000 -0500" stop="20261001140000 -0500" channel="NTN24.co"><title lang="es">El informativo 1</title><desc lang="es">Un programa que aborda los hechos más destacados respecto del acontecer nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20261001120000 -0500" stop="20261001130000 -0500" channel="TVC.ec"><title lang="es">El Privilegio de Amar</title></programme><programme start="20261001120000 -0500" stop="20261001130000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Por Amar Sin Ley</title></programme><programme start="20261001120000 -0500" stop="20261001130000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Por Amar Sin Ley</title></programme><programme start="20261001120400 -0500" stop="20261001121100 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">¡Ahoy, Piratas!</title>
     <sub-title lang="es">Ornitorrinco</sub-title>
   </programme>
@@ -36629,7 +36629,7 @@
   <programme start="20261001133000 -0500" stop="20261001140000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las consejeras de estilo</title>
   </programme>
-  <programme start="20261001133000 -0500" stop="20261001153000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20261001133100 -0500" stop="20261001151200 -0500" channel="Canal.Warner.TV.(Ecuador).ec">
+  <programme start="20261001133100 -0500" stop="20261001151200 -0500" channel="Canal.Warner.TV.(Ecuador).ec">
     <title lang="es">Sully, hazaña en el Hudson</title>
   </programme>
   <programme start="20261001133200 -0500" stop="20261001161500 -0500" channel="Canal.FX.(Ecuador).ec">
@@ -36881,7 +36881,7 @@
   <programme start="20261001140000 -0500" stop="20261001143000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Sí, quiero</title>
   </programme>
-  <programme start="20261001140000 -0500" stop="20261001153000 -0500" channel="Ecuavisa.ec"><title lang="es">Háckers del espectáculo</title></programme><programme start="20261001140000 -0500" stop="20261001160000 -0500" channel="NTN24.co"><title lang="es">Club de Prensa</title><desc lang="es">Junto a Juan Carlos Iragorri, desde Washington, se reúnen en la mesa los más reconocidos periodistas y corresponsales internacionales acreditados en la capital política de EE.UU para discutir sobre los eventos noticiosos más actuales.</desc></programme><programme start="20261001140000 -0500" stop="20261001150000 -0500" channel="TVC.ec"><title lang="es">Rosario</title></programme><programme start="20261001140100 -0500" stop="20261001141300 -0500" channel="Canal.Discovery.Kids.(Ecuador).ec">
+  <programme start="20261001140000 -0500" stop="20261001153000 -0500" channel="Ecuavisa.ec"><title lang="es">Háckers del espectáculo</title></programme><programme start="20261001140000 -0500" stop="20261001150000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20261001140000 -0500" stop="20261001160000 -0500" channel="NTN24.co"><title lang="es">Club de Prensa</title><desc lang="es">Junto a Juan Carlos Iragorri, desde Washington, se reúnen en la mesa los más reconocidos periodistas y corresponsales internacionales acreditados en la capital política de EE.UU para discutir sobre los eventos noticiosos más actuales.</desc></programme><programme start="20261001140000 -0500" stop="20261001150000 -0500" channel="TVC.ec"><title lang="es">Rosario</title></programme><programme start="20261001140100 -0500" stop="20261001141300 -0500" channel="Canal.Discovery.Kids.(Ecuador).ec">
     <title lang="es">Super Wish</title>
     <sub-title lang="es">Papel de regalo</sub-title>
   </programme>
@@ -37371,7 +37371,7 @@
   <programme start="20261001150000 -0500" stop="20261001153000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Cóctel de noticias</title>
   </programme>
-  <programme start="20261001150000 -0500" stop="20261001160000 -0500" channel="TVC.ec"><title lang="es">Rosa de Guadalupe</title></programme><programme start="20261001150200 -0500" stop="20261001151400 -0500" channel="Canal.Discovery.Kids.(Ecuador).ec">
+  <programme start="20261001150000 -0500" stop="20261001163000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los hackers de la farándula</title></programme><programme start="20261001150000 -0500" stop="20261001160000 -0500" channel="TVC.ec"><title lang="es">Rosa de Guadalupe</title></programme><programme start="20261001150200 -0500" stop="20261001151400 -0500" channel="Canal.Discovery.Kids.(Ecuador).ec">
     <title lang="es">Ba da Bean</title>
     <sub-title lang="es">Un York en el nido</sub-title>
   </programme>
@@ -37570,7 +37570,7 @@
   <programme start="20261001153000 -0500" stop="20261001160000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Stars in Style</title>
   </programme>
-  <programme start="20261001153000 -0500" stop="20261001163000 -0500" channel="Ecuavisa.ec"><title lang="es">Sorpresas del destino</title></programme><programme start="20261001153000 -0500" stop="20261001160000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Programa Pagado</title></programme><programme start="20261001153500 -0500" stop="20261001164000 -0500" channel="Canal.MTV.(Ecuador).ec">
+  <programme start="20261001153000 -0500" stop="20261001163000 -0500" channel="Ecuavisa.ec"><title lang="es">Sorpresas del destino</title></programme><programme start="20261001153500 -0500" stop="20261001164000 -0500" channel="Canal.MTV.(Ecuador).ec">
     <title lang="es">Ink Master</title>
     <sub-title lang="es">E5 Mezclas magistrales</sub-title>
     <desc lang="es">Los mejores artistas del tatuaje de Estados Unidos deberán competir desafíos extremos mostrando sus habilidades y garra en una batalla épica para poder llevarse el gran premio de $100,000.00 y el título de “INK MASTER”.</desc>
@@ -37837,7 +37837,7 @@
   <programme start="20261001160000 -0500" stop="20261001163000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">La casa de subastas</title>
   </programme>
-  <programme start="20261001160000 -0500" stop="20261001170000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los García</title></programme><programme start="20261001160000 -0500" stop="20261001180000 -0500" channel="NTN24.co"><title lang="es">La tarde</title><desc lang="es">La franja de actualidad que revisa la agenda informativa de la región y el mundo, destacando las noticias relevantes junto con los personajes más influyentes.</desc></programme><programme start="20261001160000 -0500" stop="20261001170000 -0500" channel="TVC.ec"><title lang="es">Caso Cerrado</title></programme><programme start="20261001160500 -0500" stop="20261001161000 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20261001160000 -0500" stop="20261001180000 -0500" channel="NTN24.co"><title lang="es">La tarde</title><desc lang="es">La franja de actualidad que revisa la agenda informativa de la región y el mundo, destacando las noticias relevantes junto con los personajes más influyentes.</desc></programme><programme start="20261001160000 -0500" stop="20261001170000 -0500" channel="TVC.ec"><title lang="es">Caso Cerrado</title></programme><programme start="20261001160500 -0500" stop="20261001161000 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">La pequeña Lola visita la ciudad</title>
   </programme>
   <programme start="20261001160500 -0500" stop="20261001165500 -0500" channel="Canal.TLNovelas.(Ecuador).ec">
@@ -38086,7 +38086,7 @@
   <programme start="20261001163000 -0500" stop="20261001170000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">La casa de subastas</title>
   </programme>
-  <programme start="20261001163000 -0500" stop="20261001173000 -0500" channel="Ecuavisa.ec"><title lang="es">Demanda de amor</title></programme><programme start="20261001163000 -0500" stop="20261001170000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20261001163200 -0500" stop="20261001180900 -0500" channel="Canal.TLC.(Ecuador).ec">
+  <programme start="20261001163000 -0500" stop="20261001173000 -0500" channel="Ecuavisa.ec"><title lang="es">Demanda de amor</title></programme><programme start="20261001163000 -0500" stop="20261001183000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20261001163000 -0500" stop="20261001170000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20261001163200 -0500" stop="20261001180900 -0500" channel="Canal.TLC.(Ecuador).ec">
     <title lang="es">Todo en 90 días</title>
     <sub-title lang="es">Confesiones, parte 2</sub-title>
   </programme>
@@ -38513,7 +38513,7 @@
   <programme start="20261001170000 -0500" stop="20261001173000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">La lista VIP</title>
   </programme>
-  <programme start="20261001170000 -0500" stop="20261001190000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20261001170000 -0500" stop="20261001180000 -0500" channel="TVC.ec"><title lang="es">Esmeralda</title></programme><programme start="20261001170000 -0500" stop="20261001173000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20261001170000 -0500" stop="20261001180000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chavo del Ocho</title></programme><programme start="20261001170300 -0500" stop="20261001175400 -0500" channel="Canal.TNT.Novelas.(Ecuador).ec">
+  <programme start="20261001170000 -0500" stop="20261001180000 -0500" channel="TVC.ec"><title lang="es">Esmeralda</title></programme><programme start="20261001170000 -0500" stop="20261001173000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20261001170000 -0500" stop="20261001180000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chavo del Ocho</title></programme><programme start="20261001170300 -0500" stop="20261001175400 -0500" channel="Canal.TNT.Novelas.(Ecuador).ec">
     <title lang="es">Quiéreme Siempre</title>
   </programme>
   <programme start="20261001170400 -0500" stop="20261001171100 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
@@ -39159,7 +39159,7 @@
   <programme start="20261001183000 -0500" stop="20261001190000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las reinas del shopping</title>
   </programme>
-  <programme start="20261001183100 -0500" stop="20261001183600 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
+  <programme start="20261001183000 -0500" stop="20261001190000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Programa Pagado</title></programme><programme start="20261001183100 -0500" stop="20261001183600 -0500" channel="Canal.Baby.TV.(Latinoamérica).ec">
     <title lang="es">Mira lo que encontré</title>
     <sub-title lang="es">Rana</sub-title>
   </programme>
@@ -39424,7 +39424,7 @@
   <programme start="20261001190000 -0500" stop="20261001193000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Hoteles increíbles</title>
   </programme>
-  <programme start="20261001190000 -0500" stop="20261001210000 -0500" channel="Ecuavisa.ec"><title lang="es">Televistazo Estelar</title></programme><programme start="20261001190000 -0500" stop="20261001200000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Ojitos hechiceros</title></programme><programme start="20261001190000 -0500" stop="20261001200000 -0500" channel="NTN24.co"><title lang="es">El informativo 2</title><desc lang="es">Un programa que aborda lo más destacado de la agenda de noticias nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20261001190000 -0500" stop="20261001200000 -0500" channel="TVC.ec"><title lang="es">Mi Rival</title></programme><programme start="20261001190000 -0500" stop="20261001200000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">100 Ecuatorianos Dicen</title></programme><programme start="20261001190000 -0500" stop="20261001200000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">100 Ecuatorianos Dicen</title></programme><programme start="20261001190500 -0500" stop="20261001194900 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
+  <programme start="20261001190000 -0500" stop="20261001210000 -0500" channel="Ecuavisa.ec"><title lang="es">Televistazo Estelar</title></programme><programme start="20261001190000 -0500" stop="20261001200000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los García</title></programme><programme start="20261001190000 -0500" stop="20261001200000 -0500" channel="NTN24.co"><title lang="es">El informativo 2</title><desc lang="es">Un programa que aborda lo más destacado de la agenda de noticias nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20261001190000 -0500" stop="20261001200000 -0500" channel="TVC.ec"><title lang="es">Mi Rival</title></programme><programme start="20261001190000 -0500" stop="20261001200000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">100 Ecuatorianos Dicen</title></programme><programme start="20261001190000 -0500" stop="20261001200000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">100 Ecuatorianos Dicen</title></programme><programme start="20261001190500 -0500" stop="20261001194900 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
     <title lang="es">El dúo mecánico</title>
     <sub-title lang="es">Modelo A</sub-title>
     <episode-num system="onscreen">S1 E1</episode-num>
@@ -39790,7 +39790,7 @@
   <programme start="20261001200000 -0500" stop="20261001203000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Hoteles increíbles</title>
   </programme>
-  <programme start="20261001200000 -0500" stop="20261001210000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los hackers de la farándula</title></programme><programme start="20261001200000 -0500" stop="20261001210000 -0500" channel="NTN24.co"><title lang="es">El informativo USA</title><desc lang="es">Un espacio enfocado en la actualidad política, económica y social de los Estados Unidos con una perspectiva dirigida a la audiencia hispanohablante.</desc></programme><programme start="20261001200000 -0500" stop="20261001220000 -0500" channel="TVC.ec"><title lang="es">Rosa de Guadalupe</title></programme><programme start="20261001200000 -0500" stop="20261001210000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas Emisión Estelar</title></programme><programme start="20261001200000 -0500" stop="20261001210000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas Emisión Estelar</title></programme><programme start="20261001200500 -0500" stop="20261001202500 -0500" channel="Canal.Nick.Jr..(Ecuador).ec">
+  <programme start="20261001200000 -0500" stop="20261001220000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20261001200000 -0500" stop="20261001210000 -0500" channel="NTN24.co"><title lang="es">El informativo USA</title><desc lang="es">Un espacio enfocado en la actualidad política, económica y social de los Estados Unidos con una perspectiva dirigida a la audiencia hispanohablante.</desc></programme><programme start="20261001200000 -0500" stop="20261001220000 -0500" channel="TVC.ec"><title lang="es">Rosa de Guadalupe</title></programme><programme start="20261001200000 -0500" stop="20261001210000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas Emisión Estelar</title></programme><programme start="20261001200000 -0500" stop="20261001210000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas Emisión Estelar</title></programme><programme start="20261001200500 -0500" stop="20261001202500 -0500" channel="Canal.Nick.Jr..(Ecuador).ec">
     <title lang="es">Santiago of the Seas</title>
     <sub-title lang="es">T1-E13 The Silver Lasso / The Sea Dragon's Treasure</sub-title>
   </programme>
@@ -40132,7 +40132,7 @@
   <programme start="20261001210000 -0500" stop="20261001213000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las reinas del shopping</title>
   </programme>
-  <programme start="20261001210000 -0500" stop="20261001220000 -0500" channel="Ecuavisa.ec"><title lang="es">Leyla</title></programme><programme start="20261001210000 -0500" stop="20261001233000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">En Contacto</title></programme><programme start="20261001210000 -0500" stop="20261001220000 -0500" channel="NTN24.co"><title lang="es">El punto clave de la noticia</title><desc lang="es">Un programa que repasa los hechos más destacados de la agenda de noticias nacional e internacional.</desc></programme><programme start="20261001210000 -0500" stop="20261001223000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Escape Perfecto</title></programme><programme start="20261001210000 -0500" stop="20261001223000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Escape perfecto</title></programme><programme start="20261001210500 -0500" stop="20261001213000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
+  <programme start="20261001210000 -0500" stop="20261001220000 -0500" channel="Ecuavisa.ec"><title lang="es">Leyla</title></programme><programme start="20261001210000 -0500" stop="20261001220000 -0500" channel="NTN24.co"><title lang="es">El punto clave de la noticia</title><desc lang="es">Un programa que repasa los hechos más destacados de la agenda de noticias nacional e internacional.</desc></programme><programme start="20261001210000 -0500" stop="20261001223000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Escape Perfecto</title></programme><programme start="20261001210000 -0500" stop="20261001223000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Escape perfecto</title></programme><programme start="20261001210500 -0500" stop="20261001213000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
     <title lang="es">South Park</title>
     <sub-title lang="es">E11 Cuarto grado</sub-title>
   </programme>
@@ -40483,7 +40483,7 @@
   <programme start="20261001220000 -0500" stop="20261001223000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Hoteles increíbles</title>
   </programme>
-  <programme start="20261001220000 -0500" stop="20261001230000 -0500" channel="Ecuavisa.ec"><title lang="es">El otro lado del amor</title></programme><programme start="20261001220000 -0500" stop="20261001230000 -0500" channel="NTN24.co"><title lang="es">El informativo 2</title><desc lang="es">Un programa que aborda lo más destacado de la agenda de noticias nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20261001220000 -0500" stop="20261001230000 -0500" channel="TVC.ec"><title lang="es">TVC Noticias</title></programme><programme start="20261001220900 -0500" stop="20261001225300 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
+  <programme start="20261001220000 -0500" stop="20261001230000 -0500" channel="Ecuavisa.ec"><title lang="es">El otro lado del amor</title></programme><programme start="20261001220000 -0500" stop="20261001230000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Ojitos hechiceros</title></programme><programme start="20261001220000 -0500" stop="20261001230000 -0500" channel="NTN24.co"><title lang="es">El informativo 2</title><desc lang="es">Un programa que aborda lo más destacado de la agenda de noticias nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20261001220000 -0500" stop="20261001230000 -0500" channel="TVC.ec"><title lang="es">TVC Noticias</title></programme><programme start="20261001220900 -0500" stop="20261001225300 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
     <title lang="es">Diesel Dave</title>
     <sub-title lang="es">Los hermanos de Detroit</sub-title>
     <episode-num system="onscreen">S6 E4</episode-num>
@@ -40769,7 +40769,7 @@
   <programme start="20261001230000 -0500" stop="20261001233000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Cóctel de noticias</title>
   </programme>
-  <programme start="20261001230000 -0500" stop="20261002000000 -0500" channel="Ecuavisa.ec"><title lang="es">Programación Ecuavisa</title></programme><programme start="20261001230000 -0500" stop="20261002000000 -0500" channel="NTN24.co"><title lang="es">La noche</title><desc lang="es">"La Noche" es uno de los programas periodisticos y de opinion más reconocidos del país, transmitido por el Canal RCN, donde se tratan temas de interés político y actualidad de Colombia y el mundo. Por La Noche han pasado importantes personajes de la politica como el Ex presidente de Colombia; Alvaro Uribe Velez, la presidenta de Chile Michel Bachelet, el presidente de Ecuador Rafael Correa, El Ex presidente Jimmy Carter de Los Esados Unidos, entre otros. Actualmente es dirigido por Claudia Gurisatti y es presentado por Pablo Bieri.</desc></programme><programme start="20261001230000 -0500" stop="20261002000000 -0500" channel="TVC.ec"><title lang="es">Laura</title></programme><programme start="20261001230000 -0500" stop="20261002000000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">100 Días Para Enamorarnos</title></programme><programme start="20261001231000 -0500" stop="20261002000000 -0500" channel="Canal.Las.Estrellas.(Ecuador).ec">
+  <programme start="20261001230000 -0500" stop="20261002000000 -0500" channel="Ecuavisa.ec"><title lang="es">Programación Ecuavisa</title></programme><programme start="20261001230000 -0500" stop="20261002000000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los hackers de la farándula</title></programme><programme start="20261001230000 -0500" stop="20261002000000 -0500" channel="NTN24.co"><title lang="es">La noche</title><desc lang="es">"La Noche" es uno de los programas periodisticos y de opinion más reconocidos del país, transmitido por el Canal RCN, donde se tratan temas de interés político y actualidad de Colombia y el mundo. Por La Noche han pasado importantes personajes de la politica como el Ex presidente de Colombia; Alvaro Uribe Velez, la presidenta de Chile Michel Bachelet, el presidente de Ecuador Rafael Correa, El Ex presidente Jimmy Carter de Los Esados Unidos, entre otros. Actualmente es dirigido por Claudia Gurisatti y es presentado por Pablo Bieri.</desc></programme><programme start="20261001230000 -0500" stop="20261002000000 -0500" channel="TVC.ec"><title lang="es">Laura</title></programme><programme start="20261001230000 -0500" stop="20261002000000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">100 Días Para Enamorarnos</title></programme><programme start="20261001231000 -0500" stop="20261002000000 -0500" channel="Canal.Las.Estrellas.(Ecuador).ec">
     <title lang="es">Mi Rival</title>
   </programme>
   <programme start="20261001231000 -0500" stop="20261002000000 -0500" channel="Canal.USA.Network.(Ecuador).ec">
@@ -40867,7 +40867,7 @@
   <programme start="20261001233000 -0500" stop="20261002000000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Íntimo y personal</title>
   </programme>
-  <programme start="20261001233000 -0500" stop="20261002003000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">3 Familias</title></programme><programme start="20261001233000 -0500" stop="20261002000000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Enchufe TV</title></programme><programme start="20261001233500 -0500" stop="20261002000000 -0500" channel="Canal.Nickelodeon.(Ecuador).ec">
+  <programme start="20261001233000 -0500" stop="20261002000000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Enchufe TV</title></programme><programme start="20261001233500 -0500" stop="20261002000000 -0500" channel="Canal.Nickelodeon.(Ecuador).ec">
     <title lang="es">Tales of the Teenage Mutant Ninja Turtles</title>
     <sub-title lang="es">T2-E3 Raph Fights Everyone</sub-title>
     <desc lang="es">De la imaginación de las propias Tortugas, TORTUGAS NINJA: HISTORIAS MUTANTES se centra en cada uno de los cuatro hermanos amantes de la pizza, desafiándolos como nunca antes.</desc>
@@ -41059,7 +41059,7 @@
   <programme start="20261002000000 -0500" stop="20261002003000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Íntimo y personal</title>
   </programme>
-  <programme start="20261002000000 -0500" stop="20261002055000 -0500" channel="Ecuavisa.ec"><title lang="es">Telenovela</title></programme><programme start="20261002000000 -0500" stop="20261002010000 -0500" channel="NTN24.co"><title lang="es">El informativo 2</title><desc lang="es">Un programa que aborda lo más destacado de la agenda de noticias nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20261002000000 -0500" stop="20261002010000 -0500" channel="TVC.ec"><title lang="es">NCIS Los Angeles</title></programme><programme start="20261002000000 -0500" stop="20261002013000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">CSI Miami</title></programme><programme start="20261002000000 -0500" stop="20261002013000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">CSI Miami</title></programme><programme start="20261002000200 -0500" stop="20261002021100 -0500" channel="Canal.TNT.(Ecuador).ec">
+  <programme start="20261002000000 -0500" stop="20261002055000 -0500" channel="Ecuavisa.ec"><title lang="es">Telenovela</title></programme><programme start="20261002000000 -0500" stop="20261002023000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">En Contacto</title></programme><programme start="20261002000000 -0500" stop="20261002010000 -0500" channel="NTN24.co"><title lang="es">El informativo 2</title><desc lang="es">Un programa que aborda lo más destacado de la agenda de noticias nacional e internacional. A través del trabajo de periodistas, reporteros y expertos, el público podrá informarse al completo sobre la realidad.</desc></programme><programme start="20261002000000 -0500" stop="20261002010000 -0500" channel="TVC.ec"><title lang="es">NCIS Los Angeles</title></programme><programme start="20261002000000 -0500" stop="20261002013000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">CSI Miami</title></programme><programme start="20261002000000 -0500" stop="20261002013000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">CSI Miami</title></programme><programme start="20261002000200 -0500" stop="20261002021100 -0500" channel="Canal.TNT.(Ecuador).ec">
     <title lang="es">Pequeños Secretos</title>
   </programme>
   <programme start="20261002001000 -0500" stop="20261002003000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
@@ -41143,7 +41143,7 @@
   <programme start="20261002003000 -0500" stop="20261002010000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Íntimo y personal</title>
   </programme>
-  <programme start="20261002003000 -0500" stop="20261002010000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Así pasa</title></programme><programme start="20261002003500 -0500" stop="20261002010000 -0500" channel="Canal.TLNovelas.(Ecuador).ec">
+  <programme start="20261002003500 -0500" stop="20261002010000 -0500" channel="Canal.TLNovelas.(Ecuador).ec">
     <title lang="es">Rina</title>
     <episode-num system="onscreen">E95</episode-num>
   </programme>
@@ -41403,7 +41403,7 @@
   <programme start="20261002010000 -0500" stop="20261002013000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">¡Hola! TV Iconos</title>
   </programme>
-  <programme start="20261002010000 -0500" stop="20261002020000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Sí Se Puede</title></programme><programme start="20261002010000 -0500" stop="20261002020000 -0500" channel="TVC.ec"><title lang="es">The Walking Dead</title></programme><programme start="20261002010100 -0500" stop="20261002014500 -0500" channel="Canal.History.(Chile).ec">
+  <programme start="20261002010000 -0500" stop="20261002020000 -0500" channel="TVC.ec"><title lang="es">The Walking Dead</title></programme><programme start="20261002010100 -0500" stop="20261002014500 -0500" channel="Canal.History.(Chile).ec">
     <title lang="es">Alienígenas ancestrales</title>
   </programme>
   <programme start="20261002010600 -0500" stop="20261002015400 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
@@ -41643,7 +41643,7 @@
   <programme start="20261002020000 -0500" stop="20261002023000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las reinas del shopping</title>
   </programme>
-  <programme start="20261002020000 -0500" stop="20261002040000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20261002020000 -0500" stop="20261002030000 -0500" channel="TVC.ec"><title lang="es">NCIS New Orleans</title></programme><programme start="20261002020500 -0500" stop="20261002023000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
+  <programme start="20261002020000 -0500" stop="20261002030000 -0500" channel="TVC.ec"><title lang="es">NCIS New Orleans</title></programme><programme start="20261002020500 -0500" stop="20261002023000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
     <title lang="es">Frasier</title>
     <sub-title lang="es">E2 Un hombre, un plan y Julia</sub-title>
     <desc lang="es">Frasier narra las vidas del presentador de radio Dr. Frasier Crane y sus familiares y compañeros de trabajo. Frasier combina brillantes personajes, sofisticados e ingeniosos juegos de palabras como también hilarante comedia física, que prueba que la risa es la mejor terapia.</desc>
@@ -41841,7 +41841,7 @@
   <programme start="20261002023000 -0500" stop="20261002030000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las reinas del shopping</title>
   </programme>
-  <programme start="20261002023500 -0500" stop="20261002032000 -0500" channel="Canal.TLNovelas.(Ecuador).ec">
+  <programme start="20261002023000 -0500" stop="20261002033000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">3 Familias</title></programme><programme start="20261002023500 -0500" stop="20261002032000 -0500" channel="Canal.TLNovelas.(Ecuador).ec">
     <title lang="es">La vecinaRepetición</title>
     <episode-num system="onscreen">E161</episode-num>
   </programme>
@@ -42198,7 +42198,7 @@
   <programme start="20261002033000 -0500" stop="20261002040000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Coronas y palacios</title>
   </programme>
-  <programme start="20261002033500 -0500" stop="20261002040000 -0500" channel="Canal.Europa.Europa.ec">
+  <programme start="20261002033000 -0500" stop="20261002040000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Así pasa</title></programme><programme start="20261002033500 -0500" stop="20261002040000 -0500" channel="Canal.Europa.Europa.ec">
     <title lang="es">Dos palabras</title>
   </programme>
   <programme start="20261002033500 -0500" stop="20261002035500 -0500" channel="Canal.Nick.Jr..(Ecuador).ec">
@@ -42382,7 +42382,7 @@
   <programme start="20261002040000 -0500" stop="20261002043000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">La lista VIP</title>
   </programme>
-  <programme start="20261002040000 -0500" stop="20261002050000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo al amanecer</title></programme><programme start="20261002040000 -0500" stop="20261002050000 -0500" channel="TVC.ec"><title lang="es">Educa</title></programme><programme start="20261002040000 -0500" stop="20261002043000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Yo soy Tu Madre</title></programme><programme start="20261002040000 -0500" stop="20261002043000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Yo soy tu Madre</title></programme><programme start="20261002040500 -0500" stop="20261002050300 -0500" channel="Canal.ESPN.(Ecuador).ec">
+  <programme start="20261002040000 -0500" stop="20261002050000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Sí Se Puede</title></programme><programme start="20261002040000 -0500" stop="20261002050000 -0500" channel="TVC.ec"><title lang="es">Educa</title></programme><programme start="20261002040000 -0500" stop="20261002043000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Yo soy Tu Madre</title></programme><programme start="20261002040000 -0500" stop="20261002043000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Yo soy tu Madre</title></programme><programme start="20261002040500 -0500" stop="20261002050300 -0500" channel="Canal.ESPN.(Ecuador).ec">
     <title lang="es">SportsCenter</title>
     <desc lang="es">SportsCenter (Sports Center) es un noticiero deportivo de televisión de la cadena ESPN. SportsCenter muestra repeticiones de las mejores jugadas del día así como también lo más sobresaliente en el deporte alrededor del mundo. En Latinoamérica SportsCenter se transmite por todos los canales de ESPN los cuales incluye ESPN Deportes (Estados Unidos) ESPN, ESPN2 y ESPN+.</desc>
     <category lang="es">Deporte</category>
@@ -42756,7 +42756,7 @@
   <programme start="20261002050000 -0500" stop="20261002053000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">¡Hola! TV Iconos</title>
   </programme>
-  <programme start="20261002050000 -0500" stop="20261002053000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Contacto Directo</title></programme><programme start="20261002050000 -0500" stop="20261002054500 -0500" channel="TVC.ec"><title lang="es">TVC Noticias Reprise</title></programme><programme start="20261002050000 -0500" stop="20261002053000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20261002050000 -0500" stop="20261002053000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20261002050300 -0500" stop="20261002060000 -0500" channel="Canal.ESPN.(Ecuador).ec">
+  <programme start="20261002050000 -0500" stop="20261002070000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20261002050000 -0500" stop="20261002054500 -0500" channel="TVC.ec"><title lang="es">TVC Noticias Reprise</title></programme><programme start="20261002050000 -0500" stop="20261002053000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20261002050000 -0500" stop="20261002053000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20261002050300 -0500" stop="20261002060000 -0500" channel="Canal.ESPN.(Ecuador).ec">
     <title lang="es">SportsCenter</title>
     <desc lang="es">SportsCenter (Sports Center) es un noticiero deportivo de televisión de la cadena ESPN. SportsCenter muestra repeticiones de las mejores jugadas del día así como también lo más sobresaliente en el deporte alrededor del mundo. En Latinoamérica SportsCenter se transmite por todos los canales de ESPN los cuales incluye ESPN Deportes (Estados Unidos) ESPN, ESPN2 y ESPN+.</desc>
     <category lang="es">Deporte</category>
@@ -42920,7 +42920,7 @@
   <programme start="20261002053000 -0500" stop="20261002060000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">¡Hola! TV Iconos</title>
   </programme>
-  <programme start="20261002053000 -0500" stop="20261002073000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20261002053000 -0500" stop="20261002060000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">El Chavo del Ocho</title></programme><programme start="20261002053000 -0500" stop="20261002055500 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chavo del Ocho</title></programme><programme start="20261002053400 -0500" stop="20261002060000 -0500" channel="Canal.History.(Chile).ec">
+  <programme start="20261002053000 -0500" stop="20261002060000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">El Chavo del Ocho</title></programme><programme start="20261002053000 -0500" stop="20261002055500 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chavo del Ocho</title></programme><programme start="20261002053400 -0500" stop="20261002060000 -0500" channel="Canal.History.(Chile).ec">
     <title lang="es">El Precio de la Historia</title>
     <desc lang="es">En la ciudad de Las Vegas, la tienda de empeño “Gold &amp; Silver Pawn Shop”, una empresa familiar que trabaja las 24 horas del día es operada por Richard, Rick y Corey Harrison. En el negocio se puede observar como aparecen de la nada objetos que han formado parte de la historia y que hoy en día tienen un precio histórico.</desc>
     <date>2009</date>
@@ -43497,7 +43497,7 @@
   <programme start="20261002070000 -0500" stop="20261002073000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Programa Pagado</title>
   </programme>
-  <programme start="20261002070000 -0500" stop="20261002080000 -0500" channel="TVC.ec"><title lang="es">TVC Noticias Primera Emisión</title></programme><programme start="20261002070000 -0500" stop="20261002073000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas Nacional I</title></programme><programme start="20261002070000 -0500" stop="20261002073000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas Nacional I</title></programme><programme start="20261002070400 -0500" stop="20261002071100 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
+  <programme start="20261002070000 -0500" stop="20261002080000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo al amanecer</title></programme><programme start="20261002070000 -0500" stop="20261002080000 -0500" channel="TVC.ec"><title lang="es">TVC Noticias Primera Emisión</title></programme><programme start="20261002070000 -0500" stop="20261002073000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas Nacional I</title></programme><programme start="20261002070000 -0500" stop="20261002073000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas Nacional I</title></programme><programme start="20261002070400 -0500" stop="20261002071100 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
     <title lang="es">El Increíble Mundo de Gumball</title>
     <sub-title lang="es">El menú</sub-title>
     <desc lang="es">Gumball y Darwin adoran sus disfraces de artes marciales y prometen nunca quitárselos. Hasta que todos los niños en la escuela se ríen en el edificio. Luego, Gumball y Darwin hacen todo lo posible para devolver un videojuego y recuperar su dinero. Hasta que Larry, el empleado, se ríe fuera de la tienda. Después de eso, Gumball y Darwin salen a hacer un picnic escolar. Hasta que un grupo de depredadores del bosque se ríe en el bosque. ¿Ves un patrón aquí?</desc>
@@ -43726,7 +43726,7 @@
   <programme start="20261002073000 -0500" stop="20261002080000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Top de estilo</title>
   </programme>
-  <programme start="20261002073000 -0500" stop="20261002093000 -0500" channel="Ecuavisa.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20261002073000 -0500" stop="20261002110000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">En Contacto</title></programme><programme start="20261002073000 -0500" stop="20261002080000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Entrevistas en 24 Horas</title></programme><programme start="20261002073000 -0500" stop="20261002080000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Entrevistas en 24 Horas</title></programme><programme start="20261002073200 -0500" stop="20261002081800 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
+  <programme start="20261002073000 -0500" stop="20261002093000 -0500" channel="Ecuavisa.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20261002073000 -0500" stop="20261002080000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Entrevistas en 24 Horas</title></programme><programme start="20261002073000 -0500" stop="20261002080000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Entrevistas en 24 Horas</title></programme><programme start="20261002073200 -0500" stop="20261002081800 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
     <title lang="es">Garaje Goblin</title>
     <sub-title lang="es">Datsun Callejero</sub-title>
     <episode-num system="onscreen">S1 E6</episode-num>
@@ -43888,7 +43888,7 @@
   <programme start="20261002080000 -0500" stop="20261002083000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Programa Pagado</title>
   </programme>
-  <programme start="20261002080000 -0500" stop="20261002093000 -0500" channel="TVC.ec"><title lang="es">TVC En La Comunidad</title></programme><programme start="20261002080000 -0500" stop="20261002093000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas 2da Emisión Local</title></programme><programme start="20261002080000 -0500" stop="20261002093000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas 2da Emisión Local</title></programme><programme start="20261002080500 -0500" stop="20261002083000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
+  <programme start="20261002080000 -0500" stop="20261002083000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Contacto Directo</title></programme><programme start="20261002080000 -0500" stop="20261002093000 -0500" channel="TVC.ec"><title lang="es">TVC En La Comunidad</title></programme><programme start="20261002080000 -0500" stop="20261002093000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas 2da Emisión Local</title></programme><programme start="20261002080000 -0500" stop="20261002093000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas 2da Emisión Local</title></programme><programme start="20261002080500 -0500" stop="20261002083000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
     <title lang="es">Frasier</title>
     <sub-title lang="es">E2 Un hombre, un plan y Julia</sub-title>
     <desc lang="es">Frasier narra las vidas del presentador de radio Dr. Frasier Crane y sus familiares y compañeros de trabajo. Frasier combina brillantes personajes, sofisticados e ingeniosos juegos de palabras como también hilarante comedia física, que prueba que la risa es la mejor terapia.</desc>
@@ -44131,7 +44131,7 @@
   <programme start="20261002083000 -0500" stop="20261002090000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Programa Pagado</title>
   </programme>
-  <programme start="20261002083600 -0500" stop="20261002092400 -0500" channel="Canal.TNT.Novelas.(Ecuador).ec">
+  <programme start="20261002083000 -0500" stop="20261002103000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20261002083600 -0500" stop="20261002092400 -0500" channel="Canal.TNT.Novelas.(Ecuador).ec">
     <title lang="es">Sueños de libertad</title>
   </programme>
   <programme start="20261002083800 -0500" stop="20261002084900 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
@@ -44804,7 +44804,7 @@
   <programme start="20261002103000 -0500" stop="20261002110000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Tendencias SXXI</title>
   </programme>
-  <programme start="20261002103500 -0500" stop="20261002105500 -0500" channel="Canal.Nick.Jr..(Ecuador).ec">
+  <programme start="20261002103000 -0500" stop="20261002140000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">En Contacto</title></programme><programme start="20261002103500 -0500" stop="20261002105500 -0500" channel="Canal.Nick.Jr..(Ecuador).ec">
     <title lang="es">Ben &amp; Holly's Little Kingdom</title>
     <sub-title lang="es">T1-E12 Books / Betty Caterpillar</sub-title>
   </programme>
@@ -44982,7 +44982,7 @@
   <programme start="20261002110000 -0500" stop="20261002113000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Hoteles increíbles</title>
   </programme>
-  <programme start="20261002110000 -0500" stop="20261002120000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20261002110000 -0500" stop="20261002120000 -0500" channel="TVC.ec"><title lang="es">Perdóname</title></programme><programme start="20261002110200 -0500" stop="20261002111500 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
+  <programme start="20261002110000 -0500" stop="20261002120000 -0500" channel="TVC.ec"><title lang="es">Perdóname</title></programme><programme start="20261002110200 -0500" stop="20261002111500 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
     <title lang="es">Los Jóvenes Titanes En Acción</title>
     <sub-title lang="es">Glunkakakakah</sub-title>
     <desc lang="es">¡Estos titanes adolescentes están en movimiento! Justo después de hacer un sándwich. O jugar algunos videojuegos. Espera, hay que lavar ropa. "¡No lo es!" Después de eso, definitivamente lucharán contra algún crimen. Tal vez… ¡Teen Titans Go! presenta el regreso de Robin, Starfire, Raven, Chico Bestia y Cyborg en nuevas aventuras cómicas. Estos cinco adolescentes superhéroes tienen más que solo superpoderes: ¡tienen quehaceres de gran tamaño y no tienen supervisión! Salvar el mundo puede parecer un gran problema, pero después de luchar contra el mal todo el día en Jump City, lo último que quieren hacer estos adolescentes es pelear por el remoto hogar de Titans Tower o tener que limpiar después de una maratón de pizza. Así que prepárate para el caos cómico marcado por bromas mientras los adolescentes se molestan mutuamente, con un poco de lucha contra el crimen. A menos que haya algo bueno en la televisión….</desc>
@@ -45454,7 +45454,7 @@
   <programme start="20261002120000 -0500" stop="20261002123000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Hoteles increíbles</title>
   </programme>
-  <programme start="20261002120000 -0500" stop="20261002133000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los hackers de la farándula</title></programme><programme start="20261002120000 -0500" stop="20261002130000 -0500" channel="TVC.ec"><title lang="es">El Privilegio de Amar</title></programme><programme start="20261002120000 -0500" stop="20261002130000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Por Amar Sin Ley</title></programme><programme start="20261002120000 -0500" stop="20261002130000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Por Amar Sin Ley</title></programme><programme start="20261002120500 -0500" stop="20261002123000 -0500" channel="Canal.Europa.Europa.ec">
+  <programme start="20261002120000 -0500" stop="20261002130000 -0500" channel="TVC.ec"><title lang="es">El Privilegio de Amar</title></programme><programme start="20261002120000 -0500" stop="20261002130000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Por Amar Sin Ley</title></programme><programme start="20261002120000 -0500" stop="20261002130000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Por Amar Sin Ley</title></programme><programme start="20261002120500 -0500" stop="20261002123000 -0500" channel="Canal.Europa.Europa.ec">
     <title lang="es">Paxmal, la estación intermedia</title>
   </programme>
   <programme start="20261002120500 -0500" stop="20261002124500 -0500" channel="Canal.MTV.(Ecuador).ec">
@@ -46021,7 +46021,7 @@
   <programme start="20261002133000 -0500" stop="20261002140000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las consejeras de estilo</title>
   </programme>
-  <programme start="20261002133000 -0500" stop="20261002153000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20261002133200 -0500" stop="20261002135000 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
+  <programme start="20261002133200 -0500" stop="20261002135000 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
     <title lang="es">Los Jóvenes Titanes En Acción</title>
     <sub-title lang="es">El mágico</sub-title>
     <desc lang="es">¡Estos titanes adolescentes están en movimiento! Justo después de hacer un sándwich. O jugar algunos videojuegos. Espera, hay que lavar ropa. "¡No lo es!" Después de eso, definitivamente lucharán contra algún crimen. Tal vez… ¡Teen Titans Go! presenta el regreso de Robin, Starfire, Raven, Chico Bestia y Cyborg en nuevas aventuras cómicas. Estos cinco adolescentes superhéroes tienen más que solo superpoderes: ¡tienen quehaceres de gran tamaño y no tienen supervisión! Salvar el mundo puede parecer un gran problema, pero después de luchar contra el mal todo el día en Jump City, lo último que quieren hacer estos adolescentes es pelear por el remoto hogar de Titans Tower o tener que limpiar después de una maratón de pizza. Así que prepárate para el caos cómico marcado por bromas mientras los adolescentes se molestan mutuamente, con un poco de lucha contra el crimen. A menos que haya algo bueno en la televisión….</desc>
@@ -46284,7 +46284,7 @@
   <programme start="20261002140000 -0500" stop="20261002143000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Sí, quiero</title>
   </programme>
-  <programme start="20261002140000 -0500" stop="20261002153000 -0500" channel="Ecuavisa.ec"><title lang="es">Háckers del espectáculo</title></programme><programme start="20261002140000 -0500" stop="20261002150000 -0500" channel="TVC.ec"><title lang="es">Rosario</title></programme><programme start="20261002140100 -0500" stop="20261002141200 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
+  <programme start="20261002140000 -0500" stop="20261002153000 -0500" channel="Ecuavisa.ec"><title lang="es">Háckers del espectáculo</title></programme><programme start="20261002140000 -0500" stop="20261002150000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20261002140000 -0500" stop="20261002150000 -0500" channel="TVC.ec"><title lang="es">Rosario</title></programme><programme start="20261002140100 -0500" stop="20261002141200 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
     <title lang="es">Los Jóvenes Titanes En Acción</title>
     <sub-title lang="es">El cumple de Bestia y Raven</sub-title>
     <desc lang="es">¡Estos titanes adolescentes están en movimiento! Justo después de hacer un sándwich. O jugar algunos videojuegos. Espera, hay que lavar ropa. "¡No lo es!" Después de eso, definitivamente lucharán contra algún crimen. Tal vez… ¡Teen Titans Go! presenta el regreso de Robin, Starfire, Raven, Chico Bestia y Cyborg en nuevas aventuras cómicas. Estos cinco adolescentes superhéroes tienen más que solo superpoderes: ¡tienen quehaceres de gran tamaño y no tienen supervisión! Salvar el mundo puede parecer un gran problema, pero después de luchar contra el mal todo el día en Jump City, lo último que quieren hacer estos adolescentes es pelear por el remoto hogar de Titans Tower o tener que limpiar después de una maratón de pizza. Así que prepárate para el caos cómico marcado por bromas mientras los adolescentes se molestan mutuamente, con un poco de lucha contra el crimen. A menos que haya algo bueno en la televisión….</desc>
@@ -46686,7 +46686,7 @@
   <programme start="20261002150000 -0500" stop="20261002153000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Sí, quiero</title>
   </programme>
-  <programme start="20261002150000 -0500" stop="20261002160000 -0500" channel="TVC.ec"><title lang="es">Rosa de Guadalupe</title></programme><programme start="20261002150000 -0500" stop="20261002151500 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">La Vuelta a España</title></programme><programme start="20261002150500 -0500" stop="20261002153000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
+  <programme start="20261002150000 -0500" stop="20261002163000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los hackers de la farándula</title></programme><programme start="20261002150000 -0500" stop="20261002160000 -0500" channel="TVC.ec"><title lang="es">Rosa de Guadalupe</title></programme><programme start="20261002150000 -0500" stop="20261002151500 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">La Vuelta a España</title></programme><programme start="20261002150500 -0500" stop="20261002153000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
     <title lang="es">The Exes</title>
     <sub-title lang="es">E16 Amigos sin beneficios</sub-title>
   </programme>
@@ -46783,7 +46783,7 @@
   <programme start="20261002153000 -0500" stop="20261002160000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Stars in Style</title>
   </programme>
-  <programme start="20261002153000 -0500" stop="20261002163000 -0500" channel="Ecuavisa.ec"><title lang="es">Sorpresas del destino</title></programme><programme start="20261002153000 -0500" stop="20261002160000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">La Dr. Polo vida sin límites</title></programme><programme start="20261002153500 -0500" stop="20261002155500 -0500" channel="Canal.MTV.(Ecuador).ec">
+  <programme start="20261002153000 -0500" stop="20261002163000 -0500" channel="Ecuavisa.ec"><title lang="es">Sorpresas del destino</title></programme><programme start="20261002153500 -0500" stop="20261002155500 -0500" channel="Canal.MTV.(Ecuador).ec">
     <title lang="es">Ink Master Redención</title>
     <sub-title lang="es">E2 Errores místicos</sub-title>
   </programme>
@@ -46936,7 +46936,7 @@
   <programme start="20261002160000 -0500" stop="20261002163000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Hoteles increíbles</title>
   </programme>
-  <programme start="20261002160000 -0500" stop="20261002170000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los García</title></programme><programme start="20261002160000 -0500" stop="20261002170000 -0500" channel="TVC.ec"><title lang="es">Caso Cerrado</title></programme><programme start="20261002160100 -0500" stop="20261002175400 -0500" channel="Canal.TNT.(Ecuador).ec">
+  <programme start="20261002160000 -0500" stop="20261002170000 -0500" channel="TVC.ec"><title lang="es">Caso Cerrado</title></programme><programme start="20261002160100 -0500" stop="20261002175400 -0500" channel="Canal.TNT.(Ecuador).ec">
     <title lang="es">¿Qué pasó ayer? Parte 2</title>
   </programme>
   <programme start="20261002160500 -0500" stop="20261002165500 -0500" channel="Canal.TLNovelas.(Ecuador).ec">
@@ -47053,7 +47053,7 @@
   <programme start="20261002163000 -0500" stop="20261002170000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Hoteles increíbles</title>
   </programme>
-  <programme start="20261002163000 -0500" stop="20261002173000 -0500" channel="Ecuavisa.ec"><title lang="es">Demanda de amor</title></programme><programme start="20261002163000 -0500" stop="20261002170000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20261002163500 -0500" stop="20261002170000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
+  <programme start="20261002163000 -0500" stop="20261002173000 -0500" channel="Ecuavisa.ec"><title lang="es">Demanda de amor</title></programme><programme start="20261002163000 -0500" stop="20261002183000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo en la comunidad</title></programme><programme start="20261002163000 -0500" stop="20261002170000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20261002163500 -0500" stop="20261002170000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
     <title lang="es">Spin City</title>
     <sub-title lang="es">E21 Brotherly Love</sub-title>
   </programme>
@@ -47282,7 +47282,7 @@
   <programme start="20261002170000 -0500" stop="20261002173000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">La lista VIP</title>
   </programme>
-  <programme start="20261002170000 -0500" stop="20261002190000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20261002170000 -0500" stop="20261002180000 -0500" channel="TVC.ec"><title lang="es">Esmeralda</title></programme><programme start="20261002170000 -0500" stop="20261002173000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20261002170000 -0500" stop="20261002180000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chavo del Ocho</title></programme><programme start="20261002170300 -0500" stop="20261002175400 -0500" channel="Canal.TNT.Novelas.(Ecuador).ec">
+  <programme start="20261002170000 -0500" stop="20261002180000 -0500" channel="TVC.ec"><title lang="es">Esmeralda</title></programme><programme start="20261002170000 -0500" stop="20261002173000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">El Chapulín Colorado</title></programme><programme start="20261002170000 -0500" stop="20261002180000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">El Chavo del Ocho</title></programme><programme start="20261002170300 -0500" stop="20261002175400 -0500" channel="Canal.TNT.Novelas.(Ecuador).ec">
     <title lang="es">Quiéreme Siempre</title>
   </programme>
   <programme start="20261002171000 -0500" stop="20261002180300 -0500" channel="Canal.History.(Chile).ec">
@@ -47748,7 +47748,7 @@
   <programme start="20261002183000 -0500" stop="20261002190000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las reinas del shopping</title>
   </programme>
-  <programme start="20261002183200 -0500" stop="20261002192000 -0500" channel="Canal.TLNovelas.(Ecuador).ec">
+  <programme start="20261002183000 -0500" stop="20261002190000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">La Dr. Polo vida sin límites</title></programme><programme start="20261002183200 -0500" stop="20261002192000 -0500" channel="Canal.TLNovelas.(Ecuador).ec">
     <title lang="es">Vivo por ElenaRepetición</title>
   </programme>
   <programme start="20261002184000 -0500" stop="20261002203500 -0500" channel="Canal.DHE.ec">
@@ -47890,7 +47890,7 @@
   <programme start="20261002190000 -0500" stop="20261002193000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Highclere: Un castillo fuera de serie</title>
   </programme>
-  <programme start="20261002190000 -0500" stop="20261002210000 -0500" channel="Ecuavisa.ec"><title lang="es">Televistazo Estelar</title></programme><programme start="20261002190000 -0500" stop="20261002200000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Ojitos hechiceros</title></programme><programme start="20261002190000 -0500" stop="20261002200000 -0500" channel="TVC.ec"><title lang="es">Mi Rival</title></programme><programme start="20261002190000 -0500" stop="20261002200000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">100 Ecuatorianos Dicen</title></programme><programme start="20261002190000 -0500" stop="20261002200000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">100 Ecuatorianos Dicen</title></programme><programme start="20261002190200 -0500" stop="20261002192600 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
+  <programme start="20261002190000 -0500" stop="20261002210000 -0500" channel="Ecuavisa.ec"><title lang="es">Televistazo Estelar</title></programme><programme start="20261002190000 -0500" stop="20261002200000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los García</title></programme><programme start="20261002190000 -0500" stop="20261002200000 -0500" channel="TVC.ec"><title lang="es">Mi Rival</title></programme><programme start="20261002190000 -0500" stop="20261002200000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">100 Ecuatorianos Dicen</title></programme><programme start="20261002190000 -0500" stop="20261002200000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">100 Ecuatorianos Dicen</title></programme><programme start="20261002190200 -0500" stop="20261002192600 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
     <title lang="es">Maestros de la Mecánica</title>
   </programme>
   <programme start="20261002191000 -0500" stop="20261002193500 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
@@ -48213,7 +48213,7 @@
   <programme start="20261002200000 -0500" stop="20261002203000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Starlite 2026</title>
   </programme>
-  <programme start="20261002200000 -0500" stop="20261002210000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los hackers de la farándula</title></programme><programme start="20261002200000 -0500" stop="20261002220000 -0500" channel="TVC.ec"><title lang="es">Rosa de Guadalupe</title></programme><programme start="20261002200000 -0500" stop="20261002210000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas</title></programme><programme start="20261002200000 -0500" stop="20261002210000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas Emisión Estelar</title></programme><programme start="20261002200500 -0500" stop="20261002202500 -0500" channel="Canal.Nick.Jr..(Ecuador).ec">
+  <programme start="20261002200000 -0500" stop="20261002220000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20261002200000 -0500" stop="20261002220000 -0500" channel="TVC.ec"><title lang="es">Rosa de Guadalupe</title></programme><programme start="20261002200000 -0500" stop="20261002210000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas</title></programme><programme start="20261002200000 -0500" stop="20261002210000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas Emisión Estelar</title></programme><programme start="20261002200500 -0500" stop="20261002202500 -0500" channel="Canal.Nick.Jr..(Ecuador).ec">
     <title lang="es">Santiago of the Seas</title>
     <sub-title lang="es">T1-E15 The Curse of the Gold Falcon / The Island of Lost Things</sub-title>
   </programme>
@@ -48459,7 +48459,7 @@
   <programme start="20261002210000 -0500" stop="20261002213000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las reinas del shopping</title>
   </programme>
-  <programme start="20261002210000 -0500" stop="20261002220000 -0500" channel="Ecuavisa.ec"><title lang="es">Leyla</title></programme><programme start="20261002210000 -0500" stop="20261002233000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">En Contacto</title></programme><programme start="20261002210000 -0500" stop="20261002223000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Escape Perfecto</title></programme><programme start="20261002210000 -0500" stop="20261002223000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Escape perfecto</title></programme><programme start="20261002210500 -0500" stop="20261002213000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
+  <programme start="20261002210000 -0500" stop="20261002220000 -0500" channel="Ecuavisa.ec"><title lang="es">Leyla</title></programme><programme start="20261002210000 -0500" stop="20261002223000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Escape Perfecto</title></programme><programme start="20261002210000 -0500" stop="20261002223000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Escape perfecto</title></programme><programme start="20261002210500 -0500" stop="20261002213000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
     <title lang="es">South Park</title>
     <sub-title lang="es">E9 Osama Bin Laden tiene los pantalones cagados</sub-title>
   </programme>
@@ -48819,7 +48819,7 @@
   <programme start="20261002220000 -0500" stop="20261002223000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Highclere: Un castillo fuera de serie</title>
   </programme>
-  <programme start="20261002220000 -0500" stop="20261002230000 -0500" channel="Ecuavisa.ec"><title lang="es">El otro lado del amor</title></programme><programme start="20261002220000 -0500" stop="20261002230000 -0500" channel="TVC.ec"><title lang="es">TVC Noticias</title></programme><programme start="20261002220900 -0500" stop="20261002221000 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
+  <programme start="20261002220000 -0500" stop="20261002230000 -0500" channel="Ecuavisa.ec"><title lang="es">El otro lado del amor</title></programme><programme start="20261002220000 -0500" stop="20261002230000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Ojitos hechiceros</title></programme><programme start="20261002220000 -0500" stop="20261002230000 -0500" channel="TVC.ec"><title lang="es">TVC Noticias</title></programme><programme start="20261002220900 -0500" stop="20261002221000 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
     <title lang="es">Los Jóvenes Titanes En Acción</title>
     <sub-title lang="es">La capa</sub-title>
     <desc lang="es">¡Estos titanes adolescentes están en movimiento! Justo después de hacer un sándwich. O jugar algunos videojuegos. Espera, hay que lavar ropa. "¡No lo es!" Después de eso, definitivamente lucharán contra algún crimen. Tal vez… ¡Teen Titans Go! presenta el regreso de Robin, Starfire, Raven, Chico Bestia y Cyborg en nuevas aventuras cómicas. Estos cinco adolescentes superhéroes tienen más que solo superpoderes: ¡tienen quehaceres de gran tamaño y no tienen supervisión! Salvar el mundo puede parecer un gran problema, pero después de luchar contra el mal todo el día en Jump City, lo último que quieren hacer estos adolescentes es pelear por el remoto hogar de Titans Tower o tener que limpiar después de una maratón de pizza. Así que prepárate para el caos cómico marcado por bromas mientras los adolescentes se molestan mutuamente, con un poco de lucha contra el crimen. A menos que haya algo bueno en la televisión….</desc>
@@ -49115,7 +49115,7 @@
   <programme start="20261002230000 -0500" stop="20261002233000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Starlite 2026</title>
   </programme>
-  <programme start="20261002230000 -0500" stop="20261003000000 -0500" channel="Ecuavisa.ec"><title lang="es">Programación Ecuavisa</title></programme><programme start="20261002230000 -0500" stop="20261003000000 -0500" channel="TVC.ec"><title lang="es">Laura</title></programme><programme start="20261002230000 -0500" stop="20261003000000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">100 Días Para Enamorarnos</title></programme><programme start="20261002230600 -0500" stop="20261002231100 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
+  <programme start="20261002230000 -0500" stop="20261003000000 -0500" channel="Ecuavisa.ec"><title lang="es">Programación Ecuavisa</title></programme><programme start="20261002230000 -0500" stop="20261003000000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los hackers de la farándula</title></programme><programme start="20261002230000 -0500" stop="20261003000000 -0500" channel="TVC.ec"><title lang="es">Laura</title></programme><programme start="20261002230000 -0500" stop="20261003000000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">100 Días Para Enamorarnos</title></programme><programme start="20261002230600 -0500" stop="20261002231100 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
     <title lang="es">Hora de aventura</title>
     <sub-title lang="es">El cometa</sub-title>
     <episode-num system="onscreen">S6</episode-num>
@@ -49183,7 +49183,7 @@
   <programme start="20261002233000 -0500" stop="20261003000000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Cóctel de noticias</title>
   </programme>
-  <programme start="20261002233000 -0500" stop="20261003003000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">3 Familias</title></programme><programme start="20261002233500 -0500" stop="20261003000000 -0500" channel="Canal.Nickelodeon.(Ecuador).ec">
+  <programme start="20261002233500 -0500" stop="20261003000000 -0500" channel="Canal.Nickelodeon.(Ecuador).ec">
     <title lang="es">Tales of the Teenage Mutant Ninja Turtles</title>
     <sub-title lang="es">T2-E5 The Other Mutanimals</sub-title>
     <desc lang="es">De la imaginación de las propias Tortugas, TORTUGAS NINJA: HISTORIAS MUTANTES se centra en cada uno de los cuatro hermanos amantes de la pizza, desafiándolos como nunca antes.</desc>
@@ -49335,7 +49335,7 @@
   <programme start="20261003000000 -0500" stop="20261003003000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Hoteles increíbles</title>
   </programme>
-  <programme start="20261003000000 -0500" stop="20261003010000 -0500" channel="Ecuavisa.ec"><title lang="es">Piso 17</title></programme><programme start="20261003000000 -0500" stop="20261003010000 -0500" channel="TVC.ec"><title lang="es">NCIS Los Angeles</title></programme><programme start="20261003000000 -0500" stop="20261003013000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">CSI</title></programme><programme start="20261003000000 -0500" stop="20261003013000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">CSI Miami</title></programme><programme start="20261003000100 -0500" stop="20261003001100 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
+  <programme start="20261003000000 -0500" stop="20261003010000 -0500" channel="Ecuavisa.ec"><title lang="es">Piso 17</title></programme><programme start="20261003000000 -0500" stop="20261003023000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">En Contacto</title></programme><programme start="20261003000000 -0500" stop="20261003010000 -0500" channel="TVC.ec"><title lang="es">NCIS Los Angeles</title></programme><programme start="20261003000000 -0500" stop="20261003013000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">CSI</title></programme><programme start="20261003000000 -0500" stop="20261003013000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">CSI Miami</title></programme><programme start="20261003000100 -0500" stop="20261003001100 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
     <title lang="es">Un show más</title>
     <sub-title lang="es">El gran ganador</sub-title>
     <episode-num system="onscreen">S3 E20</episode-num>
@@ -49408,7 +49408,7 @@
   <programme start="20261003003000 -0500" stop="20261003010000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Hoteles increíbles</title>
   </programme>
-  <programme start="20261003003000 -0500" stop="20261003010000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Así pasa</title></programme><programme start="20261003003100 -0500" stop="20261003011800 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
+  <programme start="20261003003100 -0500" stop="20261003011800 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
     <title lang="es">Alto Octanaje en Las Vegas</title>
     <sub-title lang="es">Un gran auto</sub-title>
     <episode-num system="onscreen">S4 E6</episode-num>
@@ -49564,7 +49564,7 @@
   <programme start="20261003010000 -0500" stop="20261003013000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">¡Hola! TV Iconos</title>
   </programme>
-  <programme start="20261003010000 -0500" stop="20261003060000 -0500" channel="Ecuavisa.ec"><title lang="es">Telenovela</title></programme><programme start="20261003010000 -0500" stop="20261003020000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Sí Se Puede</title></programme><programme start="20261003010000 -0500" stop="20261003020000 -0500" channel="TVC.ec"><title lang="es">The Walking Dead</title></programme><programme start="20261003010100 -0500" stop="20261003011100 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
+  <programme start="20261003010000 -0500" stop="20261003060000 -0500" channel="Ecuavisa.ec"><title lang="es">Telenovela</title></programme><programme start="20261003010000 -0500" stop="20261003020000 -0500" channel="TVC.ec"><title lang="es">The Walking Dead</title></programme><programme start="20261003010100 -0500" stop="20261003011100 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
     <title lang="es">Escandalosos</title>
     <sub-title lang="es">Gripe de oso</sub-title>
     <episode-num system="onscreen">S2 E11</episode-num>
@@ -49839,7 +49839,7 @@
   <programme start="20261003020000 -0500" stop="20261003023000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las reinas del shopping</title>
   </programme>
-  <programme start="20261003020000 -0500" stop="20261003040000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20261003020000 -0500" stop="20261003030000 -0500" channel="TVC.ec"><title lang="es">NCIS New Orleans</title></programme><programme start="20261003020100 -0500" stop="20261003021300 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
+  <programme start="20261003020000 -0500" stop="20261003030000 -0500" channel="TVC.ec"><title lang="es">NCIS New Orleans</title></programme><programme start="20261003020100 -0500" stop="20261003021300 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
     <title lang="es">El Increíble Mundo de Gumball</title>
     <sub-title lang="es">El más flojo</sub-title>
     <desc lang="es">Gumball y Darwin adoran sus disfraces de artes marciales y prometen nunca quitárselos. Hasta que todos los niños en la escuela se ríen en el edificio. Luego, Gumball y Darwin hacen todo lo posible para devolver un videojuego y recuperar su dinero. Hasta que Larry, el empleado, se ríe fuera de la tienda. Después de eso, Gumball y Darwin salen a hacer un picnic escolar. Hasta que un grupo de depredadores del bosque se ríe en el bosque. ¿Ves un patrón aquí?</desc>
@@ -50065,7 +50065,7 @@
   <programme start="20261003023000 -0500" stop="20261003030000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las reinas del shopping</title>
   </programme>
-  <programme start="20261003023900 -0500" stop="20261003024100 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
+  <programme start="20261003023000 -0500" stop="20261003033000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">3 Familias</title></programme><programme start="20261003023900 -0500" stop="20261003024100 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
     <title lang="es">El Increíble Mundo de Gumball</title>
     <sub-title lang="es">El reloj</sub-title>
     <desc lang="es">Gumball y Darwin adoran sus disfraces de artes marciales y prometen nunca quitárselos. Hasta que todos los niños en la escuela se ríen en el edificio. Luego, Gumball y Darwin hacen todo lo posible para devolver un videojuego y recuperar su dinero. Hasta que Larry, el empleado, se ríe fuera de la tienda. Después de eso, Gumball y Darwin salen a hacer un picnic escolar. Hasta que un grupo de depredadores del bosque se ríe en el bosque. ¿Ves un patrón aquí?</desc>
@@ -50362,7 +50362,7 @@
   <programme start="20261003033000 -0500" stop="20261003040000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Coronas y palacios</title>
   </programme>
-  <programme start="20261003033500 -0500" stop="20261003035500 -0500" channel="Canal.Nick.Jr..(Ecuador).ec">
+  <programme start="20261003033000 -0500" stop="20261003040000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Así pasa</title></programme><programme start="20261003033500 -0500" stop="20261003035500 -0500" channel="Canal.Nick.Jr..(Ecuador).ec">
     <title lang="es">Tim Rex in Space</title>
     <sub-title lang="es">T2-E1 Explorer / Happy Parky / Storm</sub-title>
   </programme>
@@ -50469,7 +50469,7 @@
   <programme start="20261003040000 -0500" stop="20261003043000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">La lista VIP</title>
   </programme>
-  <programme start="20261003040000 -0500" stop="20261003050000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Punto límite</title></programme><programme start="20261003040000 -0500" stop="20261003050000 -0500" channel="TVC.ec"><title lang="es">Ecuador Multicolor</title></programme><programme start="20261003040000 -0500" stop="20261003043000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Yo Soy tu Madre</title></programme><programme start="20261003040000 -0500" stop="20261003043000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Yo Soy Tu Madre</title></programme><programme start="20261003040500 -0500" stop="20261003042500 -0500" channel="Canal.MTV.(Ecuador).ec">
+  <programme start="20261003040000 -0500" stop="20261003050000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Sí Se Puede</title></programme><programme start="20261003040000 -0500" stop="20261003050000 -0500" channel="TVC.ec"><title lang="es">Ecuador Multicolor</title></programme><programme start="20261003040000 -0500" stop="20261003043000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Yo Soy tu Madre</title></programme><programme start="20261003040000 -0500" stop="20261003043000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Yo Soy Tu Madre</title></programme><programme start="20261003040500 -0500" stop="20261003042500 -0500" channel="Canal.MTV.(Ecuador).ec">
     <title lang="es">Ridiculousness</title>
     <sub-title lang="es">E23 Sterling y Lolo Wood LXVI</sub-title>
   </programme>
@@ -50677,7 +50677,7 @@
   <programme start="20261003050000 -0500" stop="20261003053000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">¡Hola! TV Iconos</title>
   </programme>
-  <programme start="20261003050000 -0500" stop="20261003053000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Crónicas urbanas</title></programme><programme start="20261003050000 -0500" stop="20261003060000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Tres Patines</title></programme><programme start="20261003050000 -0500" stop="20261003060000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Tres Patines</title></programme><programme start="20261003050500 -0500" stop="20261003052500 -0500" channel="Canal.Nick.Jr..(Ecuador).ec">
+  <programme start="20261003050000 -0500" stop="20261003070000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo</title></programme><programme start="20261003050000 -0500" stop="20261003060000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Tres Patines</title></programme><programme start="20261003050000 -0500" stop="20261003060000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Tres Patines</title></programme><programme start="20261003050500 -0500" stop="20261003052500 -0500" channel="Canal.Nick.Jr..(Ecuador).ec">
     <title lang="es">Blaze and the Monster Machines</title>
     <sub-title lang="es">T4-E17 Royal Rescue</sub-title>
   </programme>
@@ -50826,7 +50826,7 @@
   <programme start="20261003053000 -0500" stop="20261003060000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">¡Hola! TV Iconos</title>
   </programme>
-  <programme start="20261003053000 -0500" stop="20261003060000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">La Dr. Polo vida sin límites</title></programme><programme start="20261003053300 -0500" stop="20261003054500 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
+  <programme start="20261003053300 -0500" stop="20261003054500 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
     <title lang="es">Los Jóvenes Titanes En Acción</title>
     <sub-title lang="es">Al fin una lección</sub-title>
     <desc lang="es">¡Estos titanes adolescentes están en movimiento! Justo después de hacer un sándwich. O jugar algunos videojuegos. Espera, hay que lavar ropa. "¡No lo es!" Después de eso, definitivamente lucharán contra algún crimen. Tal vez… ¡Teen Titans Go! presenta el regreso de Robin, Starfire, Raven, Chico Bestia y Cyborg en nuevas aventuras cómicas. Estos cinco adolescentes superhéroes tienen más que solo superpoderes: ¡tienen quehaceres de gran tamaño y no tienen supervisión! Salvar el mundo puede parecer un gran problema, pero después de luchar contra el mal todo el día en Jump City, lo último que quieren hacer estos adolescentes es pelear por el remoto hogar de Titans Tower o tener que limpiar después de una maratón de pizza. Así que prepárate para el caos cómico marcado por bromas mientras los adolescentes se molestan mutuamente, con un poco de lucha contra el crimen. A menos que haya algo bueno en la televisión….</desc>
@@ -51030,7 +51030,7 @@
   <programme start="20261003060000 -0500" stop="20261003063000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Hashtag ¡Hola! TV</title>
   </programme>
-  <programme start="20261003060000 -0500" stop="20261003064500 -0500" channel="Ecuavisa.ec"><title lang="es">Así pasa</title></programme><programme start="20261003060000 -0500" stop="20261003063000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Crecer sin límites</title></programme><programme start="20261003060000 -0500" stop="20261003062930 -0500" channel="TVC.ec"><title lang="es">Dino Ranch</title></programme><programme start="20261003060000 -0500" stop="20261003063000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Geeks</title></programme><programme start="20261003060000 -0500" stop="20261003063000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Geeks</title></programme><programme start="20261003060500 -0500" stop="20261003070000 -0500" channel="Canal.Film.&amp;.Arts.ec">
+  <programme start="20261003060000 -0500" stop="20261003064500 -0500" channel="Ecuavisa.ec"><title lang="es">Así pasa</title></programme><programme start="20261003060000 -0500" stop="20261003062930 -0500" channel="TVC.ec"><title lang="es">Dino Ranch</title></programme><programme start="20261003060000 -0500" stop="20261003063000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Geeks</title></programme><programme start="20261003060000 -0500" stop="20261003063000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Geeks</title></programme><programme start="20261003060500 -0500" stop="20261003070000 -0500" channel="Canal.Film.&amp;.Arts.ec">
     <title lang="es">Miss Scarlet and The Duke</title>
     <episode-num system="onscreen">S5 E6</episode-num>
   </programme>
@@ -51163,7 +51163,7 @@
   <programme start="20261003063000 -0500" stop="20261003070000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Espléndida</title>
   </programme>
-  <programme start="20261003063000 -0500" stop="20261003070000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">De esto no se habla en la mesa</title></programme><programme start="20261003063000 -0500" stop="20261003070000 -0500" channel="TVC.ec"><title lang="es">Beyblade Burst</title></programme><programme start="20261003063000 -0500" stop="20261003070000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Game Shakers</title></programme><programme start="20261003063000 -0500" stop="20261003070000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Game Shakers</title></programme><programme start="20261003063300 -0500" stop="20261003064400 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
+  <programme start="20261003063000 -0500" stop="20261003070000 -0500" channel="TVC.ec"><title lang="es">Beyblade Burst</title></programme><programme start="20261003063000 -0500" stop="20261003070000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Game Shakers</title></programme><programme start="20261003063000 -0500" stop="20261003070000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Game Shakers</title></programme><programme start="20261003063300 -0500" stop="20261003064400 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
     <title lang="es">Los Jóvenes Titanes En Acción</title>
     <sub-title lang="es">Sueño gatuno</sub-title>
     <desc lang="es">¡Estos titanes adolescentes están en movimiento! Justo después de hacer un sándwich. O jugar algunos videojuegos. Espera, hay que lavar ropa. "¡No lo es!" Después de eso, definitivamente lucharán contra algún crimen. Tal vez… ¡Teen Titans Go! presenta el regreso de Robin, Starfire, Raven, Chico Bestia y Cyborg en nuevas aventuras cómicas. Estos cinco adolescentes superhéroes tienen más que solo superpoderes: ¡tienen quehaceres de gran tamaño y no tienen supervisión! Salvar el mundo puede parecer un gran problema, pero después de luchar contra el mal todo el día en Jump City, lo último que quieren hacer estos adolescentes es pelear por el remoto hogar de Titans Tower o tener que limpiar después de una maratón de pizza. Así que prepárate para el caos cómico marcado por bromas mientras los adolescentes se molestan mutuamente, con un poco de lucha contra el crimen. A menos que haya algo bueno en la televisión….</desc>
@@ -51340,7 +51340,7 @@
   <programme start="20261003070000 -0500" stop="20261003073000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Programa Pagado</title>
   </programme>
-  <programme start="20261003070000 -0500" stop="20261003080000 -0500" channel="Ecuavisa.ec"><title lang="es">A Team</title></programme><programme start="20261003070000 -0500" stop="20261003073000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Vive fit</title></programme><programme start="20261003070000 -0500" stop="20261003080000 -0500" channel="TVC.ec"><title lang="es">El Show de la Pantera Rosa</title></programme><programme start="20261003070000 -0500" stop="20261003073000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Victorious</title></programme><programme start="20261003070000 -0500" stop="20261003073000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Victorious</title></programme><programme start="20261003070500 -0500" stop="20261003090500 -0500" channel="Canal.Las.Estrellas.(Ecuador).ec">
+  <programme start="20261003070000 -0500" stop="20261003080000 -0500" channel="Ecuavisa.ec"><title lang="es">A Team</title></programme><programme start="20261003070000 -0500" stop="20261003080000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Punto límite</title></programme><programme start="20261003070000 -0500" stop="20261003080000 -0500" channel="TVC.ec"><title lang="es">El Show de la Pantera Rosa</title></programme><programme start="20261003070000 -0500" stop="20261003073000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Victorious</title></programme><programme start="20261003070000 -0500" stop="20261003073000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Victorious</title></programme><programme start="20261003070500 -0500" stop="20261003090500 -0500" channel="Canal.Las.Estrellas.(Ecuador).ec">
     <title lang="es">Tan cerca de ti, nace el amor</title>
   </programme>
   <programme start="20261003071000 -0500" stop="20261003073000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
@@ -51447,7 +51447,7 @@
   <programme start="20261003073000 -0500" stop="20261003080000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Top de estilo</title>
   </programme>
-  <programme start="20261003073000 -0500" stop="20261003080000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Del huerto a la mesa</title></programme><programme start="20261003073000 -0500" stop="20261003080000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Drake and Josh</title></programme><programme start="20261003073000 -0500" stop="20261003080000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Drake y Josh</title></programme><programme start="20261003073200 -0500" stop="20261003081800 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
+  <programme start="20261003073000 -0500" stop="20261003080000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Drake and Josh</title></programme><programme start="20261003073000 -0500" stop="20261003080000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Drake y Josh</title></programme><programme start="20261003073200 -0500" stop="20261003081800 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
     <title lang="es">Te debo una: Celebridades y autos</title>
     <sub-title lang="es">Juan Diego Martínez</sub-title>
     <episode-num system="onscreen">S1 E4</episode-num>
@@ -51575,7 +51575,7 @@
   <programme start="20261003080000 -0500" stop="20261003083000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Programa Pagado</title>
   </programme>
-  <programme start="20261003080000 -0500" stop="20261003090000 -0500" channel="Ecuavisa.ec"><title lang="es">Ventas Mundo TV</title></programme><programme start="20261003080000 -0500" stop="20261003083000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">El Pan Nuestro</title></programme><programme start="20261003080000 -0500" stop="20261003090000 -0500" channel="TVC.ec"><title lang="es">Beyblade Burst</title></programme><programme start="20261003080000 -0500" stop="20261003100000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">TVentas</title></programme><programme start="20261003080000 -0500" stop="20261003100000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">TVentas</title></programme><programme start="20261003080500 -0500" stop="20261003083000 -0500" channel="Canal.MTV.(Ecuador).ec">
+  <programme start="20261003080000 -0500" stop="20261003090000 -0500" channel="Ecuavisa.ec"><title lang="es">Ventas Mundo TV</title></programme><programme start="20261003080000 -0500" stop="20261003083000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Crónicas urbanas</title></programme><programme start="20261003080000 -0500" stop="20261003090000 -0500" channel="TVC.ec"><title lang="es">Beyblade Burst</title></programme><programme start="20261003080000 -0500" stop="20261003100000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">TVentas</title></programme><programme start="20261003080000 -0500" stop="20261003100000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">TVentas</title></programme><programme start="20261003080500 -0500" stop="20261003083000 -0500" channel="Canal.MTV.(Ecuador).ec">
     <title lang="es">Ridiculousness</title>
     <sub-title lang="es">E5 Sterling y Nina Agdal LXVII</sub-title>
   </programme>
@@ -51741,7 +51741,7 @@
   <programme start="20261003083000 -0500" stop="20261003090000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Programa Pagado</title>
   </programme>
-  <programme start="20261003083000 -0500" stop="20261003093000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Esta semana</title></programme><programme start="20261003083500 -0500" stop="20261003102000 -0500" channel="Canal.Eurochannel.ec">
+  <programme start="20261003083000 -0500" stop="20261003090000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">La Dr. Polo vida sin límites</title></programme><programme start="20261003083500 -0500" stop="20261003102000 -0500" channel="Canal.Eurochannel.ec">
     <title lang="es">Enterrados</title>
   </programme>
   <programme start="20261003083500 -0500" stop="20261003102000 -0500" channel="Canal.Multipremier.ec">
@@ -51888,7 +51888,7 @@
   <programme start="20261003090000 -0500" stop="20261003093000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Programa Pagado</title>
   </programme>
-  <programme start="20261003090000 -0500" stop="20261003100000 -0500" channel="Ecuavisa.ec"><title lang="es">Tventas</title></programme><programme start="20261003090000 -0500" stop="20261003100000 -0500" channel="TVC.ec"><title lang="es">El Show de la Pantera Rosa</title></programme><programme start="20261003090400 -0500" stop="20261003095000 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
+  <programme start="20261003090000 -0500" stop="20261003100000 -0500" channel="Ecuavisa.ec"><title lang="es">Tventas</title></programme><programme start="20261003090000 -0500" stop="20261003093000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Crecer sin límites</title></programme><programme start="20261003090000 -0500" stop="20261003100000 -0500" channel="TVC.ec"><title lang="es">El Show de la Pantera Rosa</title></programme><programme start="20261003090400 -0500" stop="20261003095000 -0500" channel="Canal.Discovery.Turbo.(Latinoamérica).ec">
     <title lang="es">Te debo una: Celebridades y autos</title>
     <sub-title lang="es">Matisse</sub-title>
     <episode-num system="onscreen">S1 E6</episode-num>
@@ -51960,7 +51960,7 @@
   <programme start="20261003093000 -0500" stop="20261003100000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Fashion Forward</title>
   </programme>
-  <programme start="20261003093000 -0500" stop="20261003100000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">América 360</title></programme><programme start="20261003093500 -0500" stop="20261003100000 -0500" channel="Canal.MTV.(Ecuador).ec">
+  <programme start="20261003093000 -0500" stop="20261003100000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">De esto no se habla en la mesa</title></programme><programme start="20261003093500 -0500" stop="20261003100000 -0500" channel="Canal.MTV.(Ecuador).ec">
     <title lang="es">Ridiculousness</title>
     <sub-title lang="es">E14 Sterling y Nina Agdal LXXVI</sub-title>
   </programme>
@@ -52060,7 +52060,7 @@
   <programme start="20261003100000 -0500" stop="20261003103000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Cóctel de noticias</title>
   </programme>
-  <programme start="20261003100000 -0500" stop="20261003103000 -0500" channel="Ecuavisa.ec"><title lang="es">Pan Nuestro</title></programme><programme start="20261003100000 -0500" stop="20261003103000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">La Dr. Polo vida sin límites</title></programme><programme start="20261003100000 -0500" stop="20261003110000 -0500" channel="TVC.ec"><title lang="es">Saber y Ganar</title></programme><programme start="20261003100000 -0500" stop="20261003110000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Ful House</title></programme><programme start="20261003100000 -0500" stop="20261003103000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Full House</title></programme><programme start="20261003100500 -0500" stop="20261003103000 -0500" channel="Canal.Nickelodeon.(Ecuador).ec">
+  <programme start="20261003100000 -0500" stop="20261003103000 -0500" channel="Ecuavisa.ec"><title lang="es">Pan Nuestro</title></programme><programme start="20261003100000 -0500" stop="20261003103000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Vive fit</title></programme><programme start="20261003100000 -0500" stop="20261003110000 -0500" channel="TVC.ec"><title lang="es">Saber y Ganar</title></programme><programme start="20261003100000 -0500" stop="20261003110000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Ful House</title></programme><programme start="20261003100000 -0500" stop="20261003103000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Full House</title></programme><programme start="20261003100500 -0500" stop="20261003103000 -0500" channel="Canal.Nickelodeon.(Ecuador).ec">
     <title lang="es">SpongeBob SquarePants</title>
     <sub-title lang="es">T3-E27 The Haunted Bucket / Go Fetch</sub-title>
   </programme>
@@ -52127,7 +52127,7 @@
   <programme start="20261003103000 -0500" stop="20261003110000 -0500" channel="Canal.RTS.ec"><title lang="es">La hora pico</title></programme><programme start="20261003103000 -0500" stop="20261003110000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Tendencias SXXI</title>
   </programme>
-  <programme start="20261003103000 -0500" stop="20261003113000 -0500" channel="Ecuavisa.ec"><title lang="es">Si se puede</title></programme><programme start="20261003103000 -0500" stop="20261003120000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">En Contacto</title></programme><programme start="20261003103000 -0500" stop="20261003110000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Fuller House</title></programme><programme start="20261003103500 -0500" stop="20261003110000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
+  <programme start="20261003103000 -0500" stop="20261003113000 -0500" channel="Ecuavisa.ec"><title lang="es">Si se puede</title></programme><programme start="20261003103000 -0500" stop="20261003110000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Del huerto a la mesa</title></programme><programme start="20261003103000 -0500" stop="20261003110000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Fuller House</title></programme><programme start="20261003103500 -0500" stop="20261003110000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
     <title lang="es">El rey de queens</title>
     <sub-title lang="es">E18 Risos en venta</sub-title>
   </programme>
@@ -52247,7 +52247,7 @@
   <programme start="20261003110000 -0500" stop="20261003113000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Código royal</title>
   </programme>
-  <programme start="20261003110000 -0500" stop="20261003120000 -0500" channel="TVC.ec"><title lang="es">El Conciertazo</title></programme><programme start="20261003110000 -0500" stop="20261003120000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Fuller House</title></programme><programme start="20261003110000 -0500" stop="20261003120000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Lo Mejor de esTAmañana</title></programme><programme start="20261003111000 -0500" stop="20261003130500 -0500" channel="Canal.TVE.Internacional.(Televisión.Española).ec">
+  <programme start="20261003110000 -0500" stop="20261003113000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">El Pan Nuestro</title></programme><programme start="20261003110000 -0500" stop="20261003120000 -0500" channel="TVC.ec"><title lang="es">El Conciertazo</title></programme><programme start="20261003110000 -0500" stop="20261003120000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Fuller House</title></programme><programme start="20261003110000 -0500" stop="20261003120000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Lo Mejor de esTAmañana</title></programme><programme start="20261003111000 -0500" stop="20261003130500 -0500" channel="Canal.TVE.Internacional.(Televisión.Española).ec">
     <title lang="es">D Corazón</title>
   </programme>
   <programme start="20261003111000 -0500" stop="20261003130000 -0500" channel="Canal.Univision.(Ecuador).ec">
@@ -52347,7 +52347,7 @@
   <programme start="20261003113000 -0500" stop="20261003120000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Código royal</title>
   </programme>
-  <programme start="20261003113000 -0500" stop="20261003123000 -0500" channel="Ecuavisa.ec"><title lang="es">Historias de la vírgen morena</title></programme><programme start="20261003113500 -0500" stop="20261003123000 -0500" channel="Canal.Telehit.ec">
+  <programme start="20261003113000 -0500" stop="20261003123000 -0500" channel="Ecuavisa.ec"><title lang="es">Historias de la vírgen morena</title></programme><programme start="20261003113000 -0500" stop="20261003123000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Esta semana</title></programme><programme start="20261003113500 -0500" stop="20261003123000 -0500" channel="Canal.Telehit.ec">
     <title lang="es">Rainbowlist</title>
   </programme>
   <programme start="20261003113600 -0500" stop="20261003122400 -0500" channel="Canal.Discovery.Science.(Latinoamérica).ec">
@@ -52506,7 +52506,7 @@
   <programme start="20261003120000 -0500" stop="20261003123000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Highclere: Un castillo fuera de serie</title>
   </programme>
-  <programme start="20261003120000 -0500" stop="20261003133000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los hackers de la farándula</title></programme><programme start="20261003120000 -0500" stop="20261003130000 -0500" channel="TVC.ec"><title lang="es">Policias Novatos</title></programme><programme start="20261003120000 -0500" stop="20261003130000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Día a Día (RP)</title></programme><programme start="20261003120000 -0500" stop="20261003130000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Día a Día (RP)</title></programme><programme start="20261003120400 -0500" stop="20261003120600 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
+  <programme start="20261003120000 -0500" stop="20261003130000 -0500" channel="TVC.ec"><title lang="es">Policias Novatos</title></programme><programme start="20261003120000 -0500" stop="20261003130000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Día a Día (RP)</title></programme><programme start="20261003120000 -0500" stop="20261003130000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Día a Día (RP)</title></programme><programme start="20261003120400 -0500" stop="20261003120600 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
     <title lang="es">Liga de la Justicia Lego: Batalla cósmica</title>
   </programme>
   <programme start="20261003120500 -0500" stop="20261003130500 -0500" channel="Canal.Europa.Europa.ec">
@@ -52657,7 +52657,7 @@
   <programme start="20261003123000 -0500" stop="20261003130000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Highclere: Un castillo fuera de serie</title>
   </programme>
-  <programme start="20261003123000 -0500" stop="20261003140000 -0500" channel="Ecuavisa.ec"><title lang="es">Más sabe el Diablo</title></programme><programme start="20261003123400 -0500" stop="20261003132200 -0500" channel="Canal.TLNovelas.(Ecuador).ec">
+  <programme start="20261003123000 -0500" stop="20261003140000 -0500" channel="Ecuavisa.ec"><title lang="es">Más sabe el Diablo</title></programme><programme start="20261003123000 -0500" stop="20261003130000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">América 360</title></programme><programme start="20261003123400 -0500" stop="20261003132200 -0500" channel="Canal.TLNovelas.(Ecuador).ec">
     <title lang="es">Para volver a amar</title>
     <episode-num system="onscreen">E102</episode-num>
   </programme>
@@ -52787,7 +52787,7 @@
   <programme start="20261003130000 -0500" stop="20261003133000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Íntimo y personal</title>
   </programme>
-  <programme start="20261003130000 -0500" stop="20261003140000 -0500" channel="TVC.ec"><title lang="es">Escape Perfecto</title></programme><programme start="20261003130000 -0500" stop="20261003140000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas Emisión Central</title></programme><programme start="20261003130000 -0500" stop="20261003140000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas</title></programme><programme start="20261003130500 -0500" stop="20261003140500 -0500" channel="Canal.Europa.Europa.ec">
+  <programme start="20261003130000 -0500" stop="20261003133000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">La Dr. Polo vida sin límites</title></programme><programme start="20261003130000 -0500" stop="20261003140000 -0500" channel="TVC.ec"><title lang="es">Escape Perfecto</title></programme><programme start="20261003130000 -0500" stop="20261003140000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas Emisión Central</title></programme><programme start="20261003130000 -0500" stop="20261003140000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas</title></programme><programme start="20261003130500 -0500" stop="20261003140500 -0500" channel="Canal.Europa.Europa.ec">
     <title lang="es">Sisi</title>
     <episode-num system="onscreen">S1 E2</episode-num>
   </programme>
@@ -52886,7 +52886,7 @@
   <programme start="20261003133000 -0500" stop="20261003140000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Íntimo y personal</title>
   </programme>
-  <programme start="20261003133000 -0500" stop="20261003150000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Resumen de ``Los García``</title></programme><programme start="20261003133500 -0500" stop="20261003140000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
+  <programme start="20261003133000 -0500" stop="20261003150000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">En Contacto</title></programme><programme start="20261003133500 -0500" stop="20261003140000 -0500" channel="Canal.Comedy.Central.(Ecuador).ec">
     <title lang="es">Frasier</title>
     <sub-title lang="es">E14 Daphne hace la cena</sub-title>
     <desc lang="es">Frasier narra las vidas del presentador de radio Dr. Frasier Crane y sus familiares y compañeros de trabajo. Frasier combina brillantes personajes, sofisticados e ingeniosos juegos de palabras como también hilarante comedia física, que prueba que la risa es la mejor terapia.</desc>
@@ -53353,7 +53353,7 @@
   <programme start="20261003150000 -0500" stop="20261003153000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Íntimo y personal</title>
   </programme>
-  <programme start="20261003150000 -0500" stop="20261003173000 -0500" channel="Ecuavisa.ec"><title lang="es">Largometraje</title></programme><programme start="20261003150000 -0500" stop="20261003170000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Resumen semanal: 3 familias</title></programme><programme start="20261003150000 -0500" stop="20261003160000 -0500" channel="TVC.ec"><title lang="es">NCIS Los Angeles</title></programme><programme start="20261003150000 -0500" stop="20261003153000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Malcom</title></programme><programme start="20261003150000 -0500" stop="20261003153000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Malcom</title></programme><programme start="20261003150500 -0500" stop="20261003164000 -0500" channel="Canal.Eurochannel.ec">
+  <programme start="20261003150000 -0500" stop="20261003173000 -0500" channel="Ecuavisa.ec"><title lang="es">Largometraje</title></programme><programme start="20261003150000 -0500" stop="20261003163000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Los hackers de la farándula</title></programme><programme start="20261003150000 -0500" stop="20261003160000 -0500" channel="TVC.ec"><title lang="es">NCIS Los Angeles</title></programme><programme start="20261003150000 -0500" stop="20261003153000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Malcom</title></programme><programme start="20261003150000 -0500" stop="20261003153000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Malcom</title></programme><programme start="20261003150500 -0500" stop="20261003164000 -0500" channel="Canal.Eurochannel.ec">
     <title lang="es">Rumores</title>
   </programme>
   <programme start="20261003150500 -0500" stop="20261003172000 -0500" channel="Canal.Europa.Europa.ec">
@@ -53780,7 +53780,7 @@
     <title lang="es">¡Hola! TV Iconos</title>
     <sub-title lang="es">Julio Iglesias</sub-title>
   </programme>
-  <programme start="20261003163000 -0500" stop="20261003180000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Sábado de Cine I:</title></programme><programme start="20261003163000 -0500" stop="20261003180000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Sábados de Cine I:</title></programme><programme start="20261003164000 -0500" stop="20261003190000 -0500" channel="Canal.Eurochannel.ec">
+  <programme start="20261003163000 -0500" stop="20261003180000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Resumen de ``Los García``</title></programme><programme start="20261003163000 -0500" stop="20261003180000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Sábado de Cine I:</title></programme><programme start="20261003163000 -0500" stop="20261003180000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Sábados de Cine I:</title></programme><programme start="20261003164000 -0500" stop="20261003190000 -0500" channel="Canal.Eurochannel.ec">
     <title lang="es">Las Fugitivas</title>
   </programme>
   <programme start="20261003164000 -0500" stop="20261003172500 -0500" channel="Canal.MTV.(Ecuador).ec">
@@ -53889,7 +53889,7 @@
   <programme start="20261003170000 -0500" stop="20261003173000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">La lista VIP</title>
   </programme>
-  <programme start="20261003170000 -0500" stop="20261003173000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo sábado</title></programme><programme start="20261003170000 -0500" stop="20261003180000 -0500" channel="TVC.ec"><title lang="es">Lobo del Aire</title></programme><programme start="20261003170500 -0500" stop="20261003171500 -0500" channel="Canal.Nickelodeon.(Ecuador).ec">
+  <programme start="20261003170000 -0500" stop="20261003180000 -0500" channel="TVC.ec"><title lang="es">Lobo del Aire</title></programme><programme start="20261003170500 -0500" stop="20261003171500 -0500" channel="Canal.Nickelodeon.(Ecuador).ec">
     <title lang="es">The Loud House</title>
     <sub-title lang="es">T3-E7 Fandom Pains</sub-title>
     <desc lang="es">¿Alguna vez te has preguntado cómo es crecer en una gran familia? Lincoln Loud, de 11 años, ofrece a los espectadores una mirada interna sobre cómo sobrevivir al caos de una gran familia, ¡especialmente como el único niño con diez hermanas!</desc>
@@ -54196,7 +54196,7 @@
   <programme start="20261003180000 -0500" stop="20261003183000 -0500" channel="Canal.¡HOLA!.TV.ec">
     <title lang="es">Las consejeras de estilo</title>
   </programme>
-  <programme start="20261003180000 -0500" stop="20261003200000 -0500" channel="Ecuavisa.ec"><title lang="es">Liga Ecuabet</title></programme><programme start="20261003180000 -0500" stop="20261003190000 -0500" channel="TVC.ec"><title lang="es">Los Ángeles de Charlie</title></programme><programme start="20261003180000 -0500" stop="20261003200000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Sábado de Cine II:</title></programme><programme start="20261003180000 -0500" stop="20261003200000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Sábado de Cine II:</title></programme><programme start="20261003180200 -0500" stop="20261003182800 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
+  <programme start="20261003180000 -0500" stop="20261003200000 -0500" channel="Ecuavisa.ec"><title lang="es">Liga Ecuabet</title></programme><programme start="20261003180000 -0500" stop="20261003200000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Resumen semanal: 3 familias</title></programme><programme start="20261003180000 -0500" stop="20261003190000 -0500" channel="TVC.ec"><title lang="es">Los Ángeles de Charlie</title></programme><programme start="20261003180000 -0500" stop="20261003200000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">Sábado de Cine II:</title></programme><programme start="20261003180000 -0500" stop="20261003200000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">Sábado de Cine II:</title></programme><programme start="20261003180200 -0500" stop="20261003182800 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
     <title lang="es">Los Jóvenes Titanes En Acción</title>
     <sub-title lang="es">El cerebro de la familia</sub-title>
     <desc lang="es">¡Estos titanes adolescentes están en movimiento! Justo después de hacer un sándwich. O jugar algunos videojuegos. Espera, hay que lavar ropa. "¡No lo es!" Después de eso, definitivamente lucharán contra algún crimen. Tal vez… ¡Teen Titans Go! presenta el regreso de Robin, Starfire, Raven, Chico Bestia y Cyborg en nuevas aventuras cómicas. Estos cinco adolescentes superhéroes tienen más que solo superpoderes: ¡tienen quehaceres de gran tamaño y no tienen supervisión! Salvar el mundo puede parecer un gran problema, pero después de luchar contra el mal todo el día en Jump City, lo último que quieren hacer estos adolescentes es pelear por el remoto hogar de Titans Tower o tener que limpiar después de una maratón de pizza. Así que prepárate para el caos cómico marcado por bromas mientras los adolescentes se molestan mutuamente, con un poco de lucha contra el crimen. A menos que haya algo bueno en la televisión….</desc>
@@ -54791,7 +54791,7 @@
   <programme start="20261003200000 -0500" stop="20261003210000 -0500" channel="Canal.Ve.Plus.(Latinoamérica).ec">
     <title lang="es">El cotorreo</title>
   </programme>
-  <programme start="20261003200000 -0500" stop="20261003203000 -0500" channel="Ecuavisa.ec"><title lang="es">Televistazo</title></programme><programme start="20261003200000 -0500" stop="20261003220000 -0500" channel="TVC.ec"><title lang="es">Cine TVC</title></programme><programme start="20261003200000 -0500" stop="20261003210000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas</title></programme><programme start="20261003200000 -0500" stop="20261003210000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas</title></programme><programme start="20261003200300 -0500" stop="20261003201100 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
+  <programme start="20261003200000 -0500" stop="20261003203000 -0500" channel="Ecuavisa.ec"><title lang="es">Televistazo</title></programme><programme start="20261003200000 -0500" stop="20261003203000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">Televistazo sábado</title></programme><programme start="20261003200000 -0500" stop="20261003220000 -0500" channel="TVC.ec"><title lang="es">Cine TVC</title></programme><programme start="20261003200000 -0500" stop="20261003210000 -0500" channel="TeleamazonasGuayaquil.ec"><title lang="es">24 Horas</title></programme><programme start="20261003200000 -0500" stop="20261003210000 -0500" channel="TeleamazonasQuito.ec"><title lang="es">24 Horas</title></programme><programme start="20261003200300 -0500" stop="20261003201100 -0500" channel="Canal.Cartoon.Network.(Ecuador).ec">
     <title lang="es">El mundo de Craig</title>
     <sub-title lang="es">Misión solitaria</sub-title>
     <episode-num system="onscreen">S1 E40</episode-num>
@@ -55456,7 +55456,7 @@
   <programme start="20261003233000 -0500" stop="20261004000000 -0500" channel="Canal.Gamavisión.ec"><title lang="es">Memorias</title></programme><programme start="20261003233000 -0500" stop="20261004002000 -0500" channel="Canal.Las.Estrellas.(Ecuador).ec">
     <title lang="es">La Rosa de Guadalupe</title>
   </programme>
-  <programme start="20261003233000 -0500" stop="20261004003000 -0500" channel="EcuavisaInternacional.ec"><title lang="es">3 Familias</title></programme><programme start="20261003233500 -0500" stop="20261004011000 -0500" channel="Canal.Eurochannel.ec">
+  <programme start="20261003233500 -0500" stop="20261004011000 -0500" channel="Canal.Eurochannel.ec">
     <title lang="es">El aspirante</title>
   </programme>
   <programme start="20261003233500 -0500" stop="20261004000000 -0500" channel="Canal.Nickelodeon.(Ecuador).ec">
