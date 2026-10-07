@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-06T10:55:57.528940-05:00",
+  "generated_at": "2026-10-06T19:41:03.112547-05:00",
   "base_date": "2026-10-06",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
@@ -12,16 +12,16 @@
     "ecuador_tv_official_page": "https://www.ecuadortv.ec/programas"
   },
   "ecuavisa_internacional_days": 4,
-  "cnn_en_espanol_days": 2,
+  "cnn_en_espanol_days": 1,
   "ntn24_days": 2,
   "channels": 95,
-  "programmes": 11477,
+  "programmes": 11453,
   "teleamazonas_quito": 199,
   "teleamazonas_guayaquil": 200,
   "ecuavisa": 106,
   "ecuavisa_internacional": 74,
   "tvc": 156,
-  "cnn_en_espanol": 48,
+  "cnn_en_espanol": 24,
   "ntn24": 38,
   "tvc_source_mode": "official",
   "epgshare_resilient_channels": {
