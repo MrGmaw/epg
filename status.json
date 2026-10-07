@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-06T19:41:03.112547-05:00",
-  "base_date": "2026-10-06",
+  "generated_at": "2026-10-07T11:27:10.853550-05:00",
+  "base_date": "2026-10-07",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
     "teleamazonas": "https://www.teleamazonas.com/programacion/",
@@ -12,23 +12,23 @@
     "ecuador_tv_official_page": "https://www.ecuadortv.ec/programas"
   },
   "ecuavisa_internacional_days": 4,
-  "cnn_en_espanol_days": 1,
+  "cnn_en_espanol_days": 2,
   "ntn24_days": 2,
   "channels": 95,
-  "programmes": 11453,
-  "teleamazonas_quito": 199,
+  "programmes": 9754,
+  "teleamazonas_quito": 198,
   "teleamazonas_guayaquil": 200,
   "ecuavisa": 106,
-  "ecuavisa_internacional": 74,
+  "ecuavisa_internacional": 81,
   "tvc": 156,
-  "cnn_en_espanol": 24,
+  "cnn_en_espanol": 49,
   "ntn24": 38,
   "tvc_source_mode": "official",
   "epgshare_resilient_channels": {
     "Canal.TC.Televisión.ec": {
       "name": "TC Televisión",
       "source": "epgshare",
-      "programmes": 60
+      "programmes": 39
     },
     "Canal.Gamavisión.ec": {
       "name": "Gamavisión",
@@ -45,7 +45,7 @@
     "Canal.Ecuador.TV.ec": {
       "name": "Ecuador TV",
       "source": "epgshare",
-      "programmes": 64
+      "programmes": 41
     },
     "Ecuavisa.ec": {
       "name": "Ecuavisa",
@@ -55,10 +55,10 @@
     }
   },
   "tc_source_mode": "epgshare",
-  "tc_programmes": 60,
+  "tc_programmes": 39,
   "version": "0.2.71",
   "programme_counts": {
-    "Canal.Ecuador.TV.ec": 89
+    "Canal.Ecuador.TV.ec": 64
   },
   "ecuador_tv_epg": {
     "version": "0.2.71",
@@ -70,15 +70,15 @@
     "mode": "official-api-today+existing-guide-other-days",
     "fetch_method": "requests",
     "http_status": 200,
-    "body_chars": 23873,
+    "body_chars": 24027,
     "official_dates": [
-      "2026-10-06"
+      "2026-10-07"
     ],
     "official_api_programmes": 24,
     "replaced_programmes": 23,
-    "programmes": 89,
+    "programmes": 64,
     "daily": {
-      "2026-10-06": {
+      "2026-10-07": {
         "api_programmes": 24,
         "span_hours": 23.5,
         "accepted": true,
