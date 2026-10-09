@@ -1,15 +1,15 @@
 {
   "version": "0.2.71",
-  "generated_at": "2026-10-08T11:28:17.669142-05:00",
+  "generated_at": "2026-10-08T20:13:51.746462-05:00",
   "source_commit": "7ee951c6fc28d5e163fe716e39d00363be7c051a",
-  "github_run_id": "37808854229",
+  "github_run_id": "37868638546",
   "github_run_attempt": "1",
   "base_date": "2026-10-08",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 44,
-  "programmes": 3308,
+  "programmes": 3303,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 124,
     "Canal.Gamavisión.ec": 170,
@@ -18,31 +18,31 @@
     "TeleamazonasQuito.ec": 198,
     "TeleamazonasGuayaquil.ec": 200,
     "Ecuavisa.ec": 106,
-    "EcuavisaInternacional.ec": 89,
+    "EcuavisaInternacional.ec": 109,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 49,
     "NTN24.co": 38,
     "CanalRCN.co": 34,
-    "CaracolTV.co": 40,
+    "CaracolTV.co": 41,
     "Canal.Elgourmet.ec": 90,
-    "Canal.History.co": 58,
+    "Canal.History.co": 30,
     "Canal.History.2.co": 50,
     "TV.Publica.canal.7.ar": 33,
     "Telefe.ar": 39,
     "Deutsche.Welle.cl": 94,
-    "hgtv.ar": 86,
+    "hgtv.ar": 85,
     "France24Espanol.fr": 208,
     "Antena3-America.co": 36,
     "Star-Channel.co": 31,
     "Warner-channel.co": 70,
     "HBO-Family.co": 28,
     "Canal24Horas.es": 217,
-    "La1.es": 108,
+    "La1.es": 111,
     "Clan.es": 478,
     "MakroDigitalTV.ec": 202,
     "Canal.Ecuador.TV.ec": 65,
-    "NBC6-Miami.us": 85,
-    "ABC-Miami.us": 90,
+    "NBC6-Miami.us": 115,
+    "ABC-Miami.us": 125,
     "CBS.(WCBS).New.York,.NY.us": 233,
     "OromarTV.ec": 140,
     "TVEStarHD.es": 77,
@@ -52,7 +52,7 @@
     "Canal.ESPN2.ec": 65,
     "Canal.ESPN3.ec": 62,
     "Canal.ESPN4.ec": 101,
-    "Canal.ESPN5.ec": 60,
+    "Canal.ESPN5.ec": 61,
     "Canal.ESPN6.ec": 68,
     "Canal.ESPN7.ec": 64
   },
@@ -61,7 +61,7 @@
     "CanalRCN.co": 3,
     "CaracolTV.co": 3,
     "Canal.Elgourmet.ec": 3,
-    "Canal.History.co": 3,
+    "Canal.History.co": 2,
     "Canal.History.2.co": 3,
     "TV.Publica.canal.7.ar": 3,
     "Telefe.ar": 3,
@@ -90,9 +90,9 @@
     },
     "La1.es": {
       "2026-10-08": 19,
-      "2026-10-09": 23,
-      "2026-10-10": 20,
-      "2026-10-11": 16,
+      "2026-10-09": 21,
+      "2026-10-10": 23,
+      "2026-10-11": 18,
       "2026-10-12": 19,
       "2026-10-13": 16
     },
@@ -593,7 +593,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 85,
+        "programmes": 115,
         "window_start": "2026-10-08",
         "window_days": 7
       },
@@ -608,7 +608,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 90,
+        "programmes": 125,
         "window_start": "2026-10-08",
         "window_days": 7
       }
@@ -620,7 +620,7 @@
     "manual_offset_minutes": 0,
     "channels": {
       "CBS.(WCBS).New.York,.NY.us": {
-        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=8",
+        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=9",
         "source": "https://www.tvpassport.com/tv-listings/stations/cbs-wcbs-new-york-ny-hd/4555",
         "fallback_sources": [
           "https://epgshare01.online/epgshare01/epg_ripper_US1.xml.gz",
@@ -686,7 +686,7 @@
     },
     "loaded_source_days": 3,
     "programmes": 77,
-    "cached_programmes_available": 54,
+    "cached_programmes_available": 77,
     "cache_policy": "fresh source preferred; exact-date cache fills gaps; uncovered days use explicit unavailable placeholders",
     "field_validation": {
       "date": "2026-08-30",
@@ -760,7 +760,7 @@
     "source": "GatoTV Ecuador",
     "output_timezone": "America/Guayaquil",
     "manual_offset_minutes": 0,
-    "programmes_total": 482,
+    "programmes_total": 483,
     "channel_status": {
       "Canal.ESPN.ec": {
         "channel_id": "Canal.ESPN.ec",
@@ -847,7 +847,7 @@
         "modes_used": [
           "ampm-runner-geo-table-fallback"
         ],
-        "programmes": 60,
+        "programmes": 61,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN5.ec.png",
         "logo_source": "cache"
