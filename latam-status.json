@@ -1,15 +1,15 @@
 {
   "version": "0.2.71",
-  "generated_at": "2026-10-10T10:22:43.256608-05:00",
+  "generated_at": "2026-10-10T19:15:13.943381-05:00",
   "source_commit": "7ee951c6fc28d5e163fe716e39d00363be7c051a",
-  "github_run_id": "38063277739",
+  "github_run_id": "38097709673",
   "github_run_attempt": "1",
   "base_date": "2026-10-10",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 44,
-  "programmes": 3374,
+  "programmes": 3369,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 111,
     "Canal.Gamavisión.ec": 170,
@@ -22,13 +22,13 @@
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 70,
     "NTN24.co": 48,
-    "CanalRCN.co": 36,
+    "CanalRCN.co": 37,
     "CaracolTV.co": 34,
     "Canal.Elgourmet.ec": 89,
     "Canal.History.co": 62,
     "Canal.History.2.co": 52,
     "TV.Publica.canal.7.ar": 40,
-    "Telefe.ar": 37,
+    "Telefe.ar": 31,
     "Deutsche.Welle.cl": 115,
     "hgtv.ar": 86,
     "France24Espanol.fr": 229,
@@ -41,9 +41,9 @@
     "Clan.es": 489,
     "MakroDigitalTV.ec": 201,
     "Canal.Ecuador.TV.ec": 64,
-    "NBC6-Miami.us": 87,
-    "ABC-Miami.us": 94,
-    "CBS.(WCBS).New.York,.NY.us": 233,
+    "NBC6-Miami.us": 115,
+    "ABC-Miami.us": 123,
+    "CBS.(WCBS).New.York,.NY.us": 222,
     "OromarTV.ec": 140,
     "TVEStarHD.es": 61,
     "AsambleaNacional.ec": 63,
@@ -593,7 +593,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 87,
+        "programmes": 115,
         "window_start": "2026-10-10",
         "window_days": 7
       },
@@ -608,7 +608,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 94,
+        "programmes": 123,
         "window_start": "2026-10-10",
         "window_days": 7
       }
@@ -628,7 +628,7 @@
         ],
         "source_timezone": "America/New_York / explicit XMLTV offset",
         "output_timezone": "America/Guayaquil",
-        "programmes": 233
+        "programmes": 222
       },
       "OromarTV.ec": {
         "mode": "bundled-weekly-fallback",
@@ -686,7 +686,7 @@
     },
     "loaded_source_days": 3,
     "programmes": 61,
-    "cached_programmes_available": 55,
+    "cached_programmes_available": 61,
     "cache_policy": "fresh source preferred; exact-date cache fills gaps; uncovered days use explicit unavailable placeholders",
     "field_validation": {
       "date": "2026-08-30",
