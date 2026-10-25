@@ -1,15 +1,15 @@
 {
   "version": "0.2.71",
-  "generated_at": "2026-10-25T08:42:53.923811-05:00",
+  "generated_at": "2026-10-25T18:16:00.573146-05:00",
   "source_commit": "7ee951c6fc28d5e163fe716e39d00363be7c051a",
-  "github_run_id": "40198778893",
+  "github_run_id": "40243867122",
   "github_run_attempt": "1",
   "base_date": "2026-10-25",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 44,
-  "programmes": 3139,
+  "programmes": 3141,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 94,
     "Canal.Gamavisión.ec": 170,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 199,
     "TeleamazonasGuayaquil.ec": 201,
     "Ecuavisa.ec": 106,
-    "EcuavisaInternacional.ec": 79,
+    "EcuavisaInternacional.ec": 78,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 55,
     "NTN24.co": 46,
@@ -36,13 +36,13 @@
     "Star-Channel.co": 31,
     "Warner-channel.co": 56,
     "HBO-Family.co": 28,
-    "Canal24Horas.es": 149,
-    "La1.es": 82,
+    "Canal24Horas.es": 151,
+    "La1.es": 83,
     "Clan.es": 427,
     "MakroDigitalTV.ec": 201,
     "Canal.Ecuador.TV.ec": 66,
-    "NBC6-Miami.us": 86,
-    "ABC-Miami.us": 90,
+    "NBC6-Miami.us": 115,
+    "ABC-Miami.us": 122,
     "CBS.(WCBS).New.York,.NY.us": 233,
     "OromarTV.ec": 140,
     "TVEStarHD.es": 44,
@@ -81,25 +81,25 @@
   },
   "gatotv_daily_counts": {
     "Canal24Horas.es": {
-      "2026-10-25": 50,
-      "2026-10-26": 28,
+      "2026-10-25": 49,
+      "2026-10-26": 29,
       "2026-10-27": 26,
-      "2026-10-28": 28,
-      "2026-10-29": 17
+      "2026-10-28": 29,
+      "2026-10-29": 19
     },
     "La1.es": {
-      "2026-10-25": 18,
-      "2026-10-26": 19,
-      "2026-10-27": 20,
-      "2026-10-28": 9,
-      "2026-10-29": 16
+      "2026-10-25": 19,
+      "2026-10-26": 20,
+      "2026-10-27": 21,
+      "2026-10-28": 10,
+      "2026-10-29": 17
     },
     "Clan.es": {
       "2026-10-25": 50,
-      "2026-10-26": 96,
-      "2026-10-27": 95,
-      "2026-10-28": 99,
-      "2026-10-29": 87
+      "2026-10-26": 93,
+      "2026-10-27": 97,
+      "2026-10-28": 97,
+      "2026-10-29": 94
     }
   },
   "gatotv_source_timezones": {
@@ -486,7 +486,7 @@
     "mode": "official-api-today+existing-guide-other-days",
     "fetch_method": "requests",
     "http_status": 200,
-    "body_chars": 21704,
+    "body_chars": 21703,
     "official_dates": [
       "2026-10-25"
     ],
@@ -589,7 +589,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 86,
+        "programmes": 115,
         "window_start": "2026-10-25",
         "window_days": 7
       },
@@ -604,7 +604,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 90,
+        "programmes": 122,
         "window_start": "2026-10-25",
         "window_days": 7
       }
@@ -677,12 +677,12 @@
       "degraded-uncovered-day-placeholder"
     ],
     "runner_timezone": {
-      "timezone": "America/Chicago",
+      "timezone": "America/New_York",
       "source": "ipapi"
     },
     "loaded_source_days": 3,
     "programmes": 44,
-    "cached_programmes_available": 38,
+    "cached_programmes_available": 44,
     "cache_policy": "fresh source preferred; exact-date cache fills gaps; uncovered days use explicit unavailable placeholders",
     "field_validation": {
       "date": "2026-08-30",
