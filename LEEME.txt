@@ -1,0 +1,41 @@
+HOTFIX XMLTV UTC / HORARIO DE VERANO - EPG MrG - 1 de noviembre de 2026
+===========================================================================
+
+PROBLEMA
+El generador base evalúa start[:14] >= stop[:14] ignorando los offsets
+XMLTV. El cambio de UTC-4 a UTC-5 de Estados Unidos del 01-11-2026 permite
+intervalos válidos en UTC aunque la hora local parezca retroceder.
+
+CONTENIDO
+scripts/xmltv_validation_utc.py     Módulo de validación consciente de UTC
+APLICAR_HOTFIX_XMLTV_UTC.py          Instalador no destructivo
+LEEME.txt                            Este documento
+
+INSTALACIÓN
+1. Descomprimir el ZIP en la RAÍZ del repositorio, conservando 'scripts/'.
+2. Ejecutar desde la raíz: python APLICAR_HOTFIX_XMLTV_UTC.py
+3. Probar: python scripts/xmltv_validation_utc.py --self-test
+4. Verificar con git diff que únicamente se añadió la importación y la
+   instalación de xmltv_validation_utc en scripts/build_epg.py.
+5. Confirmar en GitHub los dos archivos actualizados en scripts/ y ejecutar
+   nuevamente el workflow.
+
+ALTERNATIVA SI SOLO SE EDITA DESDE LA WEB DE GITHUB
+- Subir scripts/xmltv_validation_utc.py a la carpeta scripts.
+- Editar scripts/build_epg.py:
+  A) Inmediatamente después de 'import build_epg_base as epg' añadir:
+       import xmltv_validation_utc
+  B) Inmediatamente antes de '    result = epg.main()' añadir:
+           xmltv_validation_utc.instalar(epg)
+- Guardar, ejecutar el workflow.
+
+NOTAS
+* Conserva los timestamps y offsets publicados en ec.xml.
+* Los falsos positivos se verifican con instantes UTC en una COPIA para el
+  validador histórico; el XML original no se modifica.
+* No desactiva validación estructural ni DTD ni reemplaza fuentes.
+* Si hay horarios realmente inválidos, el workflow sigue fallando pero el
+  registro ahora indica canal, título, start y stop.
+* No cambia VERSION; no afirma una nueva versión global del proyecto.
+* La causa por horario de verano es una HIPÓTESIS probable. La lista del log
+  permitirá confirmar cuáles de los 16 intervalos se deben al offset.
