@@ -1,15 +1,15 @@
 {
   "version": "0.2.71",
-  "generated_at": "2026-11-03T12:02:33.723231-05:00",
+  "generated_at": "2026-11-03T20:20:18.355313-05:00",
   "source_commit": "00525d44cf07713c0a433c018b7f50113f0aa98f",
-  "github_run_id": "41679969056",
+  "github_run_id": "41753205062",
   "github_run_attempt": "1",
   "base_date": "2026-11-03",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 44,
-  "programmes": 3268,
+  "programmes": 3291,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 142,
     "Canal.Gamavisión.ec": 170,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 199,
     "TeleamazonasGuayaquil.ec": 200,
     "Ecuavisa.ec": 106,
-    "EcuavisaInternacional.ec": 76,
+    "EcuavisaInternacional.ec": 99,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 31,
     "NTN24.co": 38,
@@ -43,7 +43,7 @@
     "Canal.Ecuador.TV.ec": 65,
     "NBC6-Miami.us": 80,
     "ABC-Miami.us": 92,
-    "CBS.(WCBS).New.York,.NY.us": 217,
+    "CBS.(WCBS).New.York,.NY.us": 205,
     "OromarTV.ec": 140,
     "TVEStarHD.es": 83,
     "AsambleaNacional.ec": 63,
@@ -628,7 +628,7 @@
         ],
         "source_timezone": "America/New_York / explicit XMLTV offset",
         "output_timezone": "America/Guayaquil",
-        "programmes": 217
+        "programmes": 205
       },
       "OromarTV.ec": {
         "mode": "bundled-weekly-fallback",
@@ -686,7 +686,7 @@
     },
     "loaded_source_days": 3,
     "programmes": 83,
-    "cached_programmes_available": 1,
+    "cached_programmes_available": 83,
     "cache_policy": "fresh source preferred; exact-date cache fills gaps; uncovered days use explicit unavailable placeholders",
     "field_validation": {
       "date": "2026-08-30",
