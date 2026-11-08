@@ -1,21 +1,21 @@
 {
   "version": "0.2.71",
   "source_commit": "00525d44cf07713c0a433c018b7f50113f0aa98f",
-  "github_run_id": "42430249742",
+  "github_run_id": "42497362434",
   "github_run_attempt": "1",
-  "generated_at": "2026-11-07T19:34:36.341968-05:00",
+  "generated_at": "2026-11-08T10:58:20.756646-05:00",
   "files": {
     "latam.xml": {
-      "sha256": "416ae08ecf5a22a6ad453cab86b2f60902f3d62ba3c8adc312304901acf32df8",
-      "bytes": 1083041
+      "sha256": "dcd70c20712604060c2da9f7289b562e05d49ca05cf84f45e444e28a27b505ca",
+      "bytes": 1050061
     },
     "latam.xml.gz": {
-      "sha256": "154d9f4d43c66d4cb238d52a292683ced8e791036d068fcb1c1cc86b9f8de39a",
-      "bytes": 170933
+      "sha256": "a6cb021727c0dc84d5573cda69ad8189ee491d2c69e9643345fbb424eecf6a89",
+      "bytes": 170974
     },
     "latam-status.json": {
-      "sha256": "19d75007a6d3a7296b5fc7d00d5cfe20096263b9a2655b2333a4c22f828f1cdc",
-      "bytes": 29211
+      "sha256": "2e2a47e4547339610449a77bab6dc6e2de953896bafbea62e56b69b7fe71ec83",
+      "bytes": 29209
     }
   }
 }
