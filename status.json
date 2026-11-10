@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-09T22:33:07.659031-05:00",
-  "base_date": "2026-11-09",
+  "generated_at": "2026-11-10T12:01:12.699924-05:00",
+  "base_date": "2026-11-10",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
     "teleamazonas": "https://www.teleamazonas.com/programacion/",
@@ -11,24 +11,24 @@
     "ecuador_tv_official_api": "https://www.ecuadortv.ec/api/schedule/today",
     "ecuador_tv_official_page": "https://www.ecuadortv.ec/programas"
   },
-  "ecuavisa_internacional_days": 5,
+  "ecuavisa_internacional_days": 4,
   "cnn_en_espanol_days": 2,
   "ntn24_days": 2,
   "channels": 95,
-  "programmes": 12209,
-  "teleamazonas_quito": 198,
+  "programmes": 12350,
+  "teleamazonas_quito": 199,
   "teleamazonas_guayaquil": 200,
-  "ecuavisa": 57,
-  "ecuavisa_internacional": 82,
+  "ecuavisa": 55,
+  "ecuavisa_internacional": 66,
   "tvc": 156,
-  "cnn_en_espanol": 53,
-  "ntn24": 42,
+  "cnn_en_espanol": 47,
+  "ntn24": 38,
   "tvc_source_mode": "official",
   "epgshare_resilient_channels": {
     "Canal.TC.Televisión.ec": {
       "name": "TC Televisión",
       "source": "epgshare",
-      "programmes": 67
+      "programmes": 58
     },
     "Canal.Gamavisión.ec": {
       "name": "Gamavisión",
@@ -38,12 +38,12 @@
     "Canal.RTS.ec": {
       "name": "RTS",
       "source": "epgshare",
-      "programmes": 60
+      "programmes": 61
     },
     "Canal.Ecuador.TV.ec": {
       "name": "Ecuador TV",
       "source": "epgshare",
-      "programmes": 66
+      "programmes": 64
     },
     "Ecuavisa.ec": {
       "name": "Ecuavisa",
@@ -52,10 +52,10 @@
     }
   },
   "tc_source_mode": "epgshare",
-  "tc_programmes": 67,
+  "tc_programmes": 58,
   "version": "0.2.71",
   "programme_counts": {
-    "Canal.Ecuador.TV.ec": 86
+    "Canal.Ecuador.TV.ec": 88
   },
   "ecuador_tv_epg": {
     "version": "0.2.71",
@@ -67,25 +67,25 @@
     "mode": "official-api-today+existing-guide-other-days",
     "fetch_method": "requests",
     "http_status": 200,
-    "body_chars": 23565,
+    "body_chars": 24426,
     "official_dates": [
-      "2026-11-09"
+      "2026-11-10"
     ],
-    "official_api_programmes": 23,
-    "replaced_programmes": 25,
-    "programmes": 86,
+    "official_api_programmes": 24,
+    "replaced_programmes": 23,
+    "programmes": 88,
     "daily": {
-      "2026-11-09": {
-        "api_programmes": 23,
+      "2026-11-10": {
+        "api_programmes": 24,
         "span_hours": 23.5,
         "accepted": true,
         "reason": "accepted"
       }
     },
     "parser": {
-      "dicts_scanned": 93,
-      "candidate_records": 23,
-      "selected_rows": 23,
+      "dicts_scanned": 97,
+      "candidate_records": 24,
+      "selected_rows": 24,
       "selected_keys": [
         {
           "title_key": "programDetails.name",
