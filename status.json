@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-10T20:13:50.555409-05:00",
-  "base_date": "2026-11-10",
+  "generated_at": "2026-11-11T12:05:57.023878-05:00",
+  "base_date": "2026-11-11",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
     "teleamazonas": "https://www.teleamazonas.com/programacion/",
@@ -11,17 +11,17 @@
     "ecuador_tv_official_api": "https://www.ecuadortv.ec/api/schedule/today",
     "ecuador_tv_official_page": "https://www.ecuadortv.ec/programas"
   },
-  "ecuavisa_internacional_days": 5,
+  "ecuavisa_internacional_days": 4,
   "cnn_en_espanol_days": 2,
   "ntn24_days": 2,
   "channels": 95,
-  "programmes": 12372,
-  "teleamazonas_quito": 199,
+  "programmes": 11130,
+  "teleamazonas_quito": 198,
   "teleamazonas_guayaquil": 200,
   "ecuavisa": 55,
-  "ecuavisa_internacional": 88,
+  "ecuavisa_internacional": 71,
   "tvc": 156,
-  "cnn_en_espanol": 47,
+  "cnn_en_espanol": 49,
   "ntn24": 38,
   "tvc_source_mode": "official",
   "epgshare_resilient_channels": {
@@ -38,7 +38,7 @@
     "Canal.RTS.ec": {
       "name": "RTS",
       "source": "epgshare",
-      "programmes": 61
+      "programmes": 62
     },
     "Canal.Ecuador.TV.ec": {
       "name": "Ecuador TV",
@@ -55,7 +55,7 @@
   "tc_programmes": 58,
   "version": "0.2.71",
   "programme_counts": {
-    "Canal.Ecuador.TV.ec": 88
+    "Canal.Ecuador.TV.ec": 86
   },
   "ecuador_tv_epg": {
     "version": "0.2.71",
@@ -67,15 +67,15 @@
     "mode": "official-api-today+existing-guide-other-days",
     "fetch_method": "requests",
     "http_status": 200,
-    "body_chars": 24427,
+    "body_chars": 24581,
     "official_dates": [
-      "2026-11-10"
+      "2026-11-11"
     ],
     "official_api_programmes": 24,
     "replaced_programmes": 23,
-    "programmes": 88,
+    "programmes": 86,
     "daily": {
-      "2026-11-10": {
+      "2026-11-11": {
         "api_programmes": 24,
         "span_hours": 23.5,
         "accepted": true,
