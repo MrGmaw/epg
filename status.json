@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T12:34:34.512471-05:00",
+  "generated_at": "2026-11-12T20:49:02.972887-05:00",
   "base_date": "2026-11-12",
   "sources": {
     "epgshare": "https://epgshare01.online/epgshare01/epg_ripper_EC1.xml.gz",
@@ -11,15 +11,15 @@
     "ecuador_tv_official_api": "https://www.ecuadortv.ec/api/schedule/today",
     "ecuador_tv_official_page": "https://www.ecuadortv.ec/programas"
   },
-  "ecuavisa_internacional_days": 4,
+  "ecuavisa_internacional_days": 5,
   "cnn_en_espanol_days": 2,
   "ntn24_days": 2,
   "channels": 95,
-  "programmes": 10936,
+  "programmes": 10958,
   "teleamazonas_quito": 198,
   "teleamazonas_guayaquil": 200,
   "ecuavisa": 56,
-  "ecuavisa_internacional": 77,
+  "ecuavisa_internacional": 99,
   "tvc": 156,
   "cnn_en_espanol": 50,
   "ntn24": 38,
