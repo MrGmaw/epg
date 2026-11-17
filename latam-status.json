@@ -1,15 +1,15 @@
 {
   "version": "0.2.71",
-  "generated_at": "2026-11-16T14:35:15.155245-05:00",
+  "generated_at": "2026-11-16T22:51:23.832693-05:00",
   "source_commit": "00525d44cf07713c0a433c018b7f50113f0aa98f",
-  "github_run_id": "43940635078",
+  "github_run_id": "44012968463",
   "github_run_attempt": "1",
   "base_date": "2026-11-16",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 44,
-  "programmes": 2759,
+  "programmes": 2778,
   "programme_counts": {
     "Canal.TC.Televisión.ec": 58,
     "Canal.Gamavisión.ec": 57,
@@ -18,7 +18,7 @@
     "TeleamazonasQuito.ec": 198,
     "TeleamazonasGuayaquil.ec": 200,
     "Ecuavisa.ec": 41,
-    "EcuavisaInternacional.ec": 68,
+    "EcuavisaInternacional.ec": 70,
     "TVC.ec": 156,
     "Canal.CNN.en.Español.ec": 53,
     "NTN24.co": 44,
@@ -36,25 +36,25 @@
     "Star-Channel.co": 29,
     "Warner-channel.co": 76,
     "HBO-Family.co": 28,
-    "Canal24Horas.es": 129,
-    "La1.es": 79,
-    "Clan.es": 405,
-    "MakroDigitalTV.ec": 198,
+    "Canal24Horas.es": 130,
+    "La1.es": 80,
+    "Clan.es": 417,
+    "MakroDigitalTV.ec": 201,
     "Canal.Ecuador.TV.ec": 65,
-    "NBC6-Miami.us": 89,
-    "ABC-Miami.us": 91,
-    "CBS.(WCBS).New.York,.NY.us": 224,
-    "OromarTV.ec": 42,
-    "TVEStarHD.es": 19,
+    "NBC6-Miami.us": 117,
+    "ABC-Miami.us": 121,
+    "CBS.(WCBS).New.York,.NY.us": 214,
+    "OromarTV.ec": 63,
+    "TVEStarHD.es": 20,
     "AsambleaNacional.ec": 63,
     "Canal.Elgourmet.ar": 91,
-    "Canal.ESPN.ec": 52,
-    "Canal.ESPN2.ec": 57,
-    "Canal.ESPN3.ec": 45,
-    "Canal.ESPN4.ec": 90,
-    "Canal.ESPN5.ec": 54,
-    "Canal.ESPN6.ec": 41,
-    "Canal.ESPN7.ec": 42
+    "Canal.ESPN.ec": 54,
+    "Canal.ESPN2.ec": 59,
+    "Canal.ESPN3.ec": 47,
+    "Canal.ESPN4.ec": 92,
+    "Canal.ESPN5.ec": 56,
+    "Canal.ESPN6.ec": 42,
+    "Canal.ESPN7.ec": 44
   },
   "mitv_source_days": {
     "Canal.TVE.Internacional.(Televisión.Española).ec": 3,
@@ -85,21 +85,21 @@
       "2026-11-17": 26,
       "2026-11-18": 28,
       "2026-11-19": 27,
-      "2026-11-20": 20
+      "2026-11-20": 21
     },
     "La1.es": {
-      "2026-11-16": 20,
+      "2026-11-16": 19,
       "2026-11-17": 18,
-      "2026-11-18": 10,
+      "2026-11-18": 9,
       "2026-11-19": 18,
-      "2026-11-20": 15
+      "2026-11-20": 16
     },
     "Clan.es": {
-      "2026-11-16": 86,
-      "2026-11-17": 88,
-      "2026-11-18": 87,
-      "2026-11-19": 87,
-      "2026-11-20": 61
+      "2026-11-16": 85,
+      "2026-11-17": 87,
+      "2026-11-18": 86,
+      "2026-11-19": 86,
+      "2026-11-20": 73
     }
   },
   "gatotv_source_timezones": {
@@ -132,17 +132,15 @@
       20
     ],
     "queries": 42,
-    "successful_queries": 41,
-    "api_errors": [
-      "2026-11-16T04:05:00-05:00: HTTPSConnectionPool(host='makrodigitaltelevision.com', port=443): Read timed out. (read timeout=25)"
-    ],
-    "dynamic_programmes": 198,
+    "successful_queries": 42,
+    "api_errors": [],
+    "dynamic_programmes": 201,
     "weekly_programmes_replaced": 197,
-    "programmes": 198,
+    "programmes": 201,
     "daily": {
       "2026-11-16": {
-        "programmes": 27,
-        "coverage_hours": 19.25,
+        "programmes": 30,
+        "coverage_hours": 21.25,
         "full_day": true
       },
       "2026-11-17": {
@@ -576,7 +574,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 89,
+        "programmes": 117,
         "window_start": "2026-11-16",
         "window_days": 7
       },
@@ -591,7 +589,7 @@
         "source_timezone_policy": "XMLTV offset; America/New_York fallback",
         "output_timezone": "America/Guayaquil",
         "manual_offset_minutes": 0,
-        "programmes": 91,
+        "programmes": 121,
         "window_start": "2026-11-16",
         "window_days": 7
       }
@@ -611,7 +609,7 @@
         ],
         "source_timezone": "America/New_York / explicit XMLTV offset",
         "output_timezone": "America/Guayaquil",
-        "programmes": 224
+        "programmes": 214
       },
       "OromarTV.ec": {
         "mode": "americatvlistings-live",
@@ -623,8 +621,8 @@
         ],
         "source_timezone": "America/Guayaquil",
         "output_timezone": "America/Guayaquil",
-        "programmes": 42,
-        "loaded_days": 2
+        "programmes": 63,
+        "loaded_days": 3
       }
     },
     "logos": [
@@ -664,11 +662,11 @@
       "degraded-uncovered-day-placeholder"
     ],
     "runner_timezone": {
-      "timezone": "America/Phoenix",
+      "timezone": "America/New_York",
       "source": "ipapi"
     },
     "loaded_source_days": 2,
-    "programmes": 19,
+    "programmes": 20,
     "cached_programmes_available": 19,
     "cache_policy": "fresh source preferred; exact-date cache fills gaps; uncovered days use explicit unavailable placeholders",
     "field_validation": {
@@ -743,7 +741,7 @@
     "source": "GatoTV Ecuador",
     "output_timezone": "America/Guayaquil",
     "manual_offset_minutes": 0,
-    "programmes_total": 381,
+    "programmes_total": 394,
     "channel_status": {
       "Canal.ESPN.ec": {
         "channel_id": "Canal.ESPN.ec",
@@ -758,7 +756,7 @@
         "modes_used": [
           "ampm-runner-geo-table-fallback"
         ],
-        "programmes": 52,
+        "programmes": 54,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN.ec.png",
         "logo_source": "cache"
@@ -776,7 +774,7 @@
         "modes_used": [
           "ampm-runner-geo-table-fallback"
         ],
-        "programmes": 57,
+        "programmes": 59,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN2.ec.png",
         "logo_source": "cache"
@@ -794,7 +792,7 @@
         "modes_used": [
           "ampm-runner-geo-table-fallback"
         ],
-        "programmes": 45,
+        "programmes": 47,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN3.ec.png",
         "logo_source": "cache"
@@ -812,7 +810,7 @@
         "modes_used": [
           "ampm-runner-geo-table-fallback"
         ],
-        "programmes": 90,
+        "programmes": 92,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN4.ec.png",
         "logo_source": "cache"
@@ -830,7 +828,7 @@
         "modes_used": [
           "ampm-runner-geo-table-fallback"
         ],
-        "programmes": 54,
+        "programmes": 56,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN5.ec.png",
         "logo_source": "cache"
@@ -848,7 +846,7 @@
         "modes_used": [
           "ampm-runner-geo-table-fallback"
         ],
-        "programmes": 41,
+        "programmes": 42,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN6.ec.png",
         "logo_source": "cache"
@@ -866,7 +864,7 @@
         "modes_used": [
           "ampm-runner-geo-table-fallback"
         ],
-        "programmes": 42,
+        "programmes": 44,
         "gatotv_error": null,
         "logo_url": "https://mrgmaw.github.io/epg/logos/Canal.ESPN7.ec.png",
         "logo_source": "cache"
