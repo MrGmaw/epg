@@ -1,17 +1,17 @@
 {
   "version": "0.2.71",
-  "generated_at": "2026-11-20T12:47:26.972976-05:00",
+  "generated_at": "2026-11-20T21:12:39.562959-05:00",
   "source_commit": "00525d44cf07713c0a433c018b7f50113f0aa98f",
-  "github_run_id": "44786400800",
+  "github_run_id": "44854474928",
   "github_run_attempt": "1",
   "base_date": "2026-11-20",
   "window_days": 7,
   "mitv_local_days": 2,
   "gatotv_requested_days": 7,
   "channels": 44,
-  "programmes": 2961,
+  "programmes": 2957,
   "programme_counts": {
-    "Canal.TC.Televisión.ec": 79,
+    "Canal.TC.Televisión.ec": 77,
     "Canal.Gamavisión.ec": 53,
     "Canal.RTS.ec": 64,
     "Canal.TVE.Internacional.(Televisión.Española).ec": 54,
@@ -27,7 +27,7 @@
     "Canal.Elgourmet.ec": 91,
     "Canal.History.co": 56,
     "Canal.History.2.co": 63,
-    "TV.Publica.canal.7.ar": 38,
+    "TV.Publica.canal.7.ar": 36,
     "Telefe.ar": 34,
     "Deutsche.Welle.cl": 93,
     "hgtv.ar": 86,
@@ -43,8 +43,8 @@
     "Canal.Ecuador.TV.ec": 64,
     "NBC6-Miami.us": 122,
     "ABC-Miami.us": 124,
-    "CBS.(WCBS).New.York,.NY.us": 216,
-    "OromarTV.ec": 34,
+    "CBS.(WCBS).New.York,.NY.us": 204,
+    "OromarTV.ec": 47,
     "TVEStarHD.es": 70,
     "AsambleaNacional.ec": 49,
     "Canal.Elgourmet.ar": 89,
@@ -269,7 +269,7 @@
       "OromarTV.ec": "https://americatvlistings.com/es/ec-ECT/oromar-tv"
     },
     "star_tve": "https://www.gatotv.com/canal/star_tve",
-    "asamblea_nacional": "https://tvl.asambleanacional.gob.ec/",
+    "asamblea_nacional": "epg-data/latam.xml",
     "gatotv": {
       "Canal.ESPN.ec": "https://www.gatotv.com/canal/espn_ecuador",
       "Canal.ESPN2.ec": "https://www.gatotv.com/canal/espn_2_ecuador",
@@ -375,14 +375,14 @@
       "2026-11-25",
       "2026-11-26"
     ],
-    "official_programmes": 35,
+    "official_programmes": 33,
     "fallback_programmes_kept": 44,
     "replaced_programmes": 34,
-    "programmes": 79,
+    "programmes": 77,
     "daily": {
       "2026-11-20": {
-        "scraped_programmes": 35,
-        "span_hours": 23.33,
+        "scraped_programmes": 33,
+        "span_hours": 23.75,
         "accepted": true
       },
       "2026-11-21": {
@@ -420,7 +420,7 @@
       {
         "target_date": "2026-11-20",
         "parsed_date": "2026-11-20",
-        "programmes": 35,
+        "programmes": 33,
         "mode": "rendered-text",
         "clicked": false
       },
@@ -611,11 +611,11 @@
         ],
         "source_timezone": "America/New_York / explicit XMLTV offset",
         "output_timezone": "America/Guayaquil",
-        "programmes": 216
+        "programmes": 204
       },
       "OromarTV.ec": {
-        "mode": "americatvguide-live",
-        "source": "https://americatvguide.com/es/ec/channel/oromar_tv",
+        "mode": "americatvlistings-live",
+        "source": "https://americatvlistings.com/es/ec-ECT/oromar-tv",
         "fallback_sources": [
           "https://americatvguide.com/es/ec/channel/oromar_tv",
           "bundled-weekly-grid-2026-08-29",
@@ -623,7 +623,7 @@
         ],
         "source_timezone": "America/Guayaquil",
         "output_timezone": "America/Guayaquil",
-        "programmes": 34,
+        "programmes": 47,
         "loaded_days": 3
       }
     },
@@ -669,7 +669,7 @@
     },
     "loaded_source_days": 3,
     "programmes": 70,
-    "cached_programmes_available": 45,
+    "cached_programmes_available": 70,
     "cache_policy": "fresh source preferred; exact-date cache fills gaps; uncovered days use explicit unavailable placeholders",
     "field_validation": {
       "date": "2026-08-30",
@@ -695,11 +695,11 @@
     "version": "0.2.58",
     "channel_id": "AsambleaNacional.ec",
     "source": "https://tvl.asambleanacional.gob.ec/",
-    "source_mode": "tvl-official-program-pages",
+    "source_mode": "epg-data-weekly-cache",
     "source_timezone": "America/Guayaquil",
     "output_timezone": "America/Guayaquil",
     "manual_offset_minutes": 0,
-    "schedule_model": "official programme-page schedules aggregated by local weekday",
+    "schedule_model": "previous epg-data weekly template",
     "cache_policy": "home weekly grid -> official programme pages -> previous epg-data/latam.xml weekly template",
     "programmes": 49,
     "weekly_counts": {
@@ -711,7 +711,7 @@
       "sabado": 4,
       "domingo": 4
     },
-    "live_error": "No se pudo obtener la parrilla semanal del home TVL: HTTPSConnectionPool(host='tvl.asambleanacional.gob.ec', port=443): Read timed out. (read timeout=35)"
+    "live_error": "fichas oficiales TVL insuficientes: días=0/7, emisiones_semana=0, fichas_utiles=0, fichas_fallidas=13, faltan=['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo']"
   },
   "elgourmet_sur_epg": {
     "version": "0.2.59",
