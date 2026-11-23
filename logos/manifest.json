@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-22T12:10:12.705530-05:00",
+  "generated_at": "2026-11-22T20:43:33.536207-05:00",
   "public_base_url": "https://mrgmaw.github.io/epg/logos",
   "targets": 13,
   "available": 13,
@@ -159,8 +159,8 @@
       "page_url": "https://mi.tv/co/canales/antena3",
       "local_url": "https://mrgmaw.github.io/epg/logos/Antena3-America.co.png",
       "available": true,
-      "source": "downloaded",
-      "source_url": "https://upload.wikimedia.org/wikipedia/commons/8/83/Antena3Internacional2025.png",
+      "source": "cache",
+      "source_url": null,
       "width": 538,
       "height": 514,
       "sha256": "479f3ad3e0d323a4ebbe3ddd8c876f53bbb8aa8cd516e666b08c7bc568f88f5e"
