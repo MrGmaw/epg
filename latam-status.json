@@ -1,8 +1,8 @@
 {
   "version": "0.2.71",
-  "generated_at": "2026-11-24T15:09:18.676524-05:00",
+  "generated_at": "2026-11-24T23:11:18.561365-05:00",
   "source_commit": "00525d44cf07713c0a433c018b7f50113f0aa98f",
-  "github_run_id": "45477515268",
+  "github_run_id": "45544883222",
   "github_run_attempt": "1",
   "base_date": "2026-11-24",
   "window_days": 7,
@@ -44,7 +44,7 @@
     "NBC6-Miami.us": 105,
     "ABC-Miami.us": 114,
     "CBS.(WCBS).New.York,.NY.us": 222,
-    "OromarTV.ec": 43,
+    "OromarTV.ec": 63,
     "TVEStarHD.es": 74,
     "AsambleaNacional.ec": 63,
     "Canal.Elgourmet.ar": 92,
@@ -603,7 +603,7 @@
     "manual_offset_minutes": 0,
     "channels": {
       "CBS.(WCBS).New.York,.NY.us": {
-        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=8",
+        "mode": "tvpassport-live:cbs-wcbs-new-york-ny-hd/4555;pages=9",
         "source": "https://www.tvpassport.com/tv-listings/stations/cbs-wcbs-new-york-ny-hd/4555",
         "fallback_sources": [
           "https://epgshare01.online/epgshare01/epg_ripper_US1.xml.gz",
@@ -614,8 +614,8 @@
         "programmes": 222
       },
       "OromarTV.ec": {
-        "mode": "americatvguide-live",
-        "source": "https://americatvguide.com/es/ec/channel/oromar_tv",
+        "mode": "americatvlistings-live",
+        "source": "https://americatvlistings.com/es/ec-ECT/oromar-tv",
         "fallback_sources": [
           "https://americatvguide.com/es/ec/channel/oromar_tv",
           "bundled-weekly-grid-2026-08-29",
@@ -623,7 +623,7 @@
         ],
         "source_timezone": "America/Guayaquil",
         "output_timezone": "America/Guayaquil",
-        "programmes": 43,
+        "programmes": 63,
         "loaded_days": 3
       }
     },
@@ -669,7 +669,7 @@
     },
     "loaded_source_days": 3,
     "programmes": 74,
-    "cached_programmes_available": 28,
+    "cached_programmes_available": 74,
     "cache_policy": "fresh source preferred; exact-date cache fills gaps; uncovered days use explicit unavailable placeholders",
     "field_validation": {
       "date": "2026-08-30",
